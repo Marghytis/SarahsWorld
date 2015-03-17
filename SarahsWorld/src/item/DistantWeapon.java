@@ -1,0 +1,32 @@
+package item;
+
+import render.Texture;
+import util.math.Rect;
+import world.World;
+
+public class DistantWeapon extends ItemType{
+
+	public int distPower;
+	
+	public DistantWeapon(Texture texWorld, Texture texHand, Texture texinv,
+			Rect boxWorld, Rect boxHand, int defaultRotationHand, String name,
+			int coolDownStart, int value, int distPower, Animation animation) {
+		super(texWorld, texHand, texinv, boxWorld, boxHand, defaultRotationHand, name,
+				coolDownStart, value, animation);
+		this.distPower = distPower;
+	}
+	
+	@Override
+	public boolean use(float x, float y){
+		if(super.use(x, y)){
+			startEffect(x, y);
+			World.sarah.useItem(this);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public void startEffect(float x, float y){}
+
+}
