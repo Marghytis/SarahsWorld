@@ -33,6 +33,9 @@ public class Thing implements Savable{
 	public ThingType type;
 	public Random rand;
 	
+	//for the thing lists
+	public Thing right, left;
+	
 	public AiPlugin[] ai;
 	
 	//No action

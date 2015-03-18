@@ -39,7 +39,10 @@ public enum Biome {
 						new ThingSpawner((w, f, p) -> ThingType.CLOUD.create(w, f, p.copy()), 0.05)),
 	GRAVEYARD(		new AimLayer[]{new AimLayer(Material.GRASS, 30.0, 1.0, 100), new AimLayer(Material.EARTH, 50.0, 5.0, 80), new AimLayer(Material.STONE, 100000000.0, 20.0, 0)},
 						new ThingSpawner((w, f, p) -> ThingType.TREE_GRAVE.create(w, f, p.copy()), 0.3),
-						new ThingSpawner((w, f, p) -> ThingType.CLOUD.create(w, f, p.copy(), new Color(0.4f, 0.4f, 0.4f)), 0.05)),;
+						new ThingSpawner((w, f, p) -> ThingType.CLOUD.create(w, f, p.copy(), new Color(0.4f, 0.4f, 0.4f)), 0.05)),
+	DESERT(			new AimLayer[]{new AimLayer(Material.SAND, 60.0, 1.0, 92), new AimLayer(Material.SANDSTONE, 100000000.0, 200.0, 1)},
+						new ThingSpawner((w, f, p) -> ThingType.PYRAMID.create(w, f, p.copy()), 0.03),
+						new ThingSpawner((w, f, p) -> ThingType.CACTUS.create(w, f, p.copy()), 0.05)),;
 	
 	public AimLayer[] layers;
 	public ThingSpawner[] spawners;

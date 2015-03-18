@@ -17,7 +17,7 @@ public class Main {
 	public static void main(String[] args){
 		
 		String worldName = "Sarahs World";
-		Core core = new Core(worldName, new Vec(1300, 700));
+		Core core = new Core(worldName);
 		if(Window.WIDTH == 0){
 			System.out.println("ERROR AT START!!! Try again.");
 			Window.destroy();

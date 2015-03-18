@@ -26,7 +26,7 @@ public enum Menu {
 		DataSnake data = new DataSnake(Window.WIDTH/5, Window.WIDTH/5 * 4);
 
 		public void update(double delta) {
-			data.head.data = Time.delta[2]/10000;
+			data.head.data = Time.delta[0]/1000000000;
 			data.head = data.head.next;
 		}
 
@@ -37,7 +37,7 @@ public enum Menu {
 			font.drawString(0, 0, fps, 1, 1);
 			TexFile.bindNone();
 			
-			GL11.glBegin(GL11.GL_LINES);
+			GL11.glBegin(GL11.GL_LINE);
 				GL11.glVertex2d(stringLength, 0);
 				GL11.glVertex2d(stringLength + data.graphWidth, 0);
 			GL11.glEnd();
@@ -46,6 +46,7 @@ public enum Menu {
 			SnakeNode helper = data.head;
 			int x = stringLength;
 			GL11.glBegin(GL11.GL_LINE_STRIP);
+//			for(SnakeNode sn = data.head; !sn.equals(data.head); sn = sn.next, x+=4)
 			do {
 				GL11.glVertex2d(x, helper.data);
 				x += 4;

@@ -7,6 +7,7 @@ public enum Material {
 	GRASS(Color.GREEN, 400f, new TexFile("res/materials/Grass.png")),
 	EARTH(Color.BROWN, 300f, new TexFile("res/materials/Earth.png")),
 	STONE(Color.GRAY, 300f, new TexFile("res/materials/Stone.png")),
+	SANDSTONE(Color.YELLOW, 300f, new TexFile("res/materials/Sandstone.png")),
 	SAND(Color.YELLOW, 300f, new TexFile("res/materials/Sand.png")),
 	WATER(Color.BLUE, 300f, new TexFile("res/materials/Water.png")),
 	CANDY(Color.BLUE, 400f, new TexFile("res/materials/Candy.png")),

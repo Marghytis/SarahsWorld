@@ -25,7 +25,7 @@ public class Res {
 	public static final TexFile cactus = new TexFile("res/objects/Cactus.png", 1, 3, -0.5f, -0.05f);
 	public static final TexFile grasstuft = new TexFile("res/objects/Grass_tuft.png", 4, 1, -0.5f, -0.2f);
 	public static final TexFile flower_normal = new TexFile("res/objects/Flower.png", 1, 3, -0.5f, 0f);
-	public static final TexFile pyramide = new TexFile("res/objects/Pyramide.png", 1, 4, -0.5f, -0.2f);
+	public static final TexFile pyramide = new TexFile("res/objects/Pyramide.png", 1, 4, -0.5f, -0.1f);
 	public static final TexFile house = new TexFile("res/objects/House.png", 1, 6, -0.5f, -0.05f);
 	public static final TexFile townobject = new TexFile("res/objects/TownObject.png", 1, 5, -0.5f, -0.02f);
 	public static final TexFile flower_candy = new TexFile("res/objects/Candy.png", 1, 6, -0.5f, 0f);

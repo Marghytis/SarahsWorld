@@ -8,8 +8,8 @@ import util.math.Vec;
 import world.World;
 import world.WorldContainer.WorldColumn;
 import world.WorldContainer.WorldField;
+import world.generation.zones.Desert;
 import world.generation.zones.Flat;
-import world.generation.zones.Graveyard;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
 
@@ -39,13 +39,21 @@ public class Generator implements Savable{
 		biomeL = new BiomeManager(Biome.NORMAL, world);
 		biomeR = new BiomeManager(Biome.NORMAL, world);
 
-		zoneL = new Graveyard(biomeL, 0);
+		zoneL = new Desert(biomeL, 0);
 		zoneR = new Mountains(biomeR, 0);
 	}
 	
 	public WorldColumn shift(boolean left){
 		if(left){
-			return shiftZone(true);
+			WorldColumn out = shiftZone(true);
+			if(zoneL.end){
+				switch(random.nextInt(3)){
+				case 0 : zoneL = new Desert(biomeL, posL.x); break;
+				case 1 : zoneL = new Meadow(biomeL, posL.x); break;
+				case 2 : zoneL = new Mountains(biomeL, posL.x); break;
+				}
+			}
+			return out;
 		} else {
 			WorldColumn out = shiftZone(false);
 			if(zoneR.end){

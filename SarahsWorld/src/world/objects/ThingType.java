@@ -326,7 +326,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length)), file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length)), tex.pixelBox.copy(), 0);
 
 			t.createAi();
 			
