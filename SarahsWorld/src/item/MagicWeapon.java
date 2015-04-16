@@ -27,7 +27,7 @@ public class MagicWeapon extends DistantWeapon{
 	
 	@Override
 	public void startEffect(float x, float y){
-		WorldView.particleEffects.add(new BasicMagicEffect(World.sarah.pos.minus(World.sarah.animator.box).plus(new Vec(World.sarah.getHandPosition()[0], World.sarah.getHandPosition()[1])), new Vec(x - (World.sarah.animator.box.middle().x + World.sarah.pos.x), y - (World.sarah.animator.box.middle().y + World.sarah.pos.y)).normalise(), World.sarah));
+		WorldView.particleEffects.add(new BasicMagicEffect(World.sarah.pos.minus(World.sarah.animator.box).plus(new Vec(World.sarah.getHandPosition()[0], World.sarah.getHandPosition()[1])), new Vec(x - (World.sarah.animator.box.middle().xIndex + World.sarah.pos.x), y - (World.sarah.animator.box.middle().y + World.sarah.pos.y)).normalise(), World.sarah));
 		World.sarah.mana -= manaUse;
 	}
 	

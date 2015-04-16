@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-import main.Avatar;
 import main.Main;
 import main.Savable;
 
@@ -38,7 +37,7 @@ public class World implements Updater, Renderer {
 	public Columns columns;
 	
 	//OBJECTS
-	public Avatar avatar;
+	public Thing avatar;
 	public List<Thing> deletionRequested;
 	public List<Thing>[] objects;
 	
@@ -63,10 +62,8 @@ public class World implements Updater, Renderer {
 			container.generator = new Generator(this);
 			container.generator.createStartZones();
 
-			ThingType.SARAH.create(this, null, new Vec(0, 50));
+			avatar = ThingType.SARAH.create(this, null, new Vec(0, 50));
 		}
-		
-		avatar = new Avatar(objects[ThingType.SARAH.ordinal()].get(0));
 		
 		//WORLD
 		int width = (Window.WIDTH/WorldField.width)/2*2+24;
@@ -77,7 +74,7 @@ public class World implements Updater, Renderer {
 
 	public boolean update(double delta) {
 		//WORLD
-		int avatarPosIndex = (int)avatar.pos.x/WorldField.width;
+		int avatarPosIndex = (int)avatar.pos.p.x/WorldField.width;
 		
 		container.expandTo(avatarPosIndex - (columns.count/2));
 		container.expandTo(avatarPosIndex + (columns.count/2));
@@ -101,7 +98,7 @@ public class World implements Updater, Renderer {
 		GL11.glLoadIdentity();
 		GL11.glClearColor(clear.r, clear.g, clear.b, clear.a);
 		
-		GL11.glTranslated(Window.WIDTH/2-avatar.pos.x, Window.HEIGHT/2-avatar.pos.y, 0);
+		GL11.glTranslated(Window.WIDTH/2-avatar.pos.p.x, Window.HEIGHT/2-avatar.pos.p.y, 0);
 		
 		//Things in the back
 		draw((t) -> t.ani.behind == -1);

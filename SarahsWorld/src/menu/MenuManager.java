@@ -26,6 +26,7 @@ public class MenuManager implements Updater, Listener, Renderer {
 	public Menu open = Menu.MAIN;
 	
 	public MenuManager(){
+		Menu.MAIN.blockWorld = true;
 		resetAll();
 	}
 	

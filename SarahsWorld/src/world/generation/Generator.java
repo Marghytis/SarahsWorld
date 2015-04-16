@@ -13,7 +13,7 @@ import world.generation.zones.Flat;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
 
-public class Generator implements Savable{
+public class Generator implements Savable {
 
 	World world;
 	Random random;

@@ -20,7 +20,7 @@ import world.objects.ai.Gravity;
 import world.objects.ai.Grounding;
 import world.objects.ai.Inventory;
 import world.objects.ai.ItemBeing;
-import world.objects.ai.KeyControlWalking;
+import world.objects.ai.AvatarControl;
 import world.objects.ai.Life;
 import world.objects.ai.Magic;
 import world.objects.ai.Position;
@@ -49,7 +49,7 @@ public class Thing implements Savable{
 	
 	//set acceleration and animation
 	public Controller cont;//summarize all controlling plug-ins in one controller
-	public KeyControlWalking key;
+	public AvatarControl avatar;
 	public FlyAround flyAround;
 	public WalkAround walkAround;
 	public Following follow;
@@ -102,6 +102,11 @@ public class Thing implements Savable{
 			if(plugin != null) plugin.partRender();
 		}
 		GL11.glPopMatrix();
+	}
+	
+	public void disconnect(){
+		if(left != null) left.right = right;
+		if(right != null) right.left = left;
 	}
 
 	public String save() {

@@ -38,6 +38,8 @@ public class Riding extends AiPlugin {
 		
 		
 		isRiding = true;
+		
+		t.type.file = ridingTexs[0][0].file;
 
 		for(int i = 0; i < changingTexs.length; i++){
 			for(int j = 0; j < changingTexs[i].length; j++){
@@ -86,6 +88,7 @@ public class Riding extends AiPlugin {
 			Main.world.add(mountedThing);
 			mountedThing = null;
 			t.ani.setTex(t.ani.texs[0]);
+			t.type.file = normalTexs[0][0].file;
 		});
 	}
 

@@ -1,5 +1,7 @@
 package main;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.CompilerException;
+
 import menu.MenuManager;
 import util.math.Vec;
 import world.World;
@@ -15,7 +17,6 @@ public class Main {
 	public static World world;
 
 	public static void main(String[] args){
-		
 		String worldName = "Sarahs World";
 		Core core = new Core(worldName);
 		if(Window.WIDTH == 0){
@@ -35,7 +36,7 @@ public class Main {
 		Renderer.renderers.add(menu);
 
 		Listener.listeners.add(menu);
-		Listener.listeners.add(world.avatar);
+		Listener.listeners.add(world.avatar.avatar);
 		
 		core.coreLoop();
 	}

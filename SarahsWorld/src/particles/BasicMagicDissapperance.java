@@ -12,7 +12,7 @@ public class BasicMagicDissapperance implements ParticleEffect {
 
 		@Override
 		public void makeParticle(Particle p) {
-			p.pos.set(pos.x, pos.y);
+			p.pos.set(pos.xIndex, pos.y);
 			float angle = random.nextFloat()*(float)(Math.PI*2);
 			
 			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f);//-0.8f
@@ -40,7 +40,7 @@ public class BasicMagicDissapperance implements ParticleEffect {
 
 		@Override
 		public void makeParticle(Particle p) {
-			p.pos.set(pos.x, pos.y);
+			p.pos.set(pos.xIndex, pos.y);
 			float angle = random.nextFloat()*(float)(Math.PI*2);
 			
 			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f);//-0.8f

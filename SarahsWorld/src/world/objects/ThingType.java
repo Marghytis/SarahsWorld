@@ -20,7 +20,7 @@ import world.objects.ai.Gravity;
 import world.objects.ai.Grounding;
 import world.objects.ai.Inventory;
 import world.objects.ai.ItemBeing;
-import world.objects.ai.KeyControlWalking;
+import world.objects.ai.AvatarControl;
 import world.objects.ai.Life;
 import world.objects.ai.Magic;
 import world.objects.ai.Position;
@@ -30,7 +30,7 @@ import world.objects.ai.WalkAround;
 
 public enum ThingType {
 	//LIVING THINGS
-	SARAH {
+	SARAH(Res.sarah) {
 		
 		Texture flying = new Texture(Res.sarah, 				6, 3);
 		Texture standing = new Texture(Res.sarah, 			0, 0);
@@ -53,7 +53,7 @@ public enum ThingType {
 		Texture walkingCow = new Texture(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
 		Texture sprintingCow = new Texture(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
 			Thing t = new Thing(this, world.random);
 
 			t.pos = new Position(t, pos);
@@ -63,10 +63,10 @@ public enum ThingType {
 			
 			t.ground = new Grounding(t, true, 0,standing,	 walking,	 sprinting,		jumping,		flying,		landing);
 			Texture[] cowGrounding = {			standingCow, walkingCow, sprintingCow,	jumpingCow,		flyingCow,	landingCow};
-			t.key = new KeyControlWalking(t);
-			t.cont = new Controller(t, t.key){
+			t.avatar = new AvatarControl(t);
+			t.cont = new Controller(t, t.avatar){
 				public boolean action(double delta){
-					t.key.action(delta);
+					t.avatar.action(delta);
 					return false;
 				}
 			};
@@ -83,24 +83,23 @@ public enum ThingType {
 																							  new Texture[][]{cowAni		,cowAttack,		cowGrounding});
 			t.inv = new Inventory(t, ItemType.fist, 5);
 			
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	SNAIL {
-		public TexFile tex = Res.snail;
-		Texture standing = new Texture(tex);
-		Texture walking = new Texture(tex, 10, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
-		Texture sprinting = new Texture(tex, 20, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
-		Texture attacking = new Texture(tex, 30, 1, /**/1, 2, 3, 4, 5, 6, 5);
+	SNAIL(Res.snail) {
+		Texture standing = new Texture(file);
+		Texture walking = new Texture(file, 10, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
+		Texture sprinting = new Texture(file, 20, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
+		Texture attacking = new Texture(file, 30, 1, /**/1, 2, 3, 4, 5, 6, 5);
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			Thing t = new Thing(this, world.random);
 
 			t.pos = new Position(t, pos);
 			t.vel = new Velocity(t);
-			t.ani = new Animating(t, standing, tex.pixelBox.copy(), 0);
+			t.ani = new Animating(t, standing, file.pixelBox.copy(), 0);
 			
 			t.life = new Life(t, 10, 10);
 			t.attack = new Attacking(t, ItemType.fist, 2, 0.05, 50, attacking);
@@ -119,21 +118,20 @@ public enum ThingType {
 			t.collision = new Collision(t);
 			t.gravity = new Gravity(t);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	COW {
-		public TexFile tex = Res.cow;
-		Texture chewing = new Texture(tex, 10, 0, /**/0, 1, 2, 3, 4, 5, 6);
+	COW(Res.cow) {
+		Texture chewing = new Texture(file, 10, 0, /**/0, 1, 2, 3, 4, 5, 6);
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			Thing t = new Thing(this, world.random);
 			
 			t.pos = new Position(t, pos);
 			t.vel = new Velocity(t);
-			t.ani = new Animating(t, chewing, tex.pixelBox.copy(), 0);
+			t.ani = new Animating(t, chewing, file.pixelBox.copy(), 0);
 			
 			t.life = new Life(t, 4, 3);
 			
@@ -143,20 +141,19 @@ public enum ThingType {
 			t.collision = new Collision(t);
 			t.gravity = new Gravity(t);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	BUTTERFLY {
-		public TexFile tex = Res.butterfly;
+	BUTTERFLY(Res.butterfly) {
 		
-		Texture[] sit =  {new Texture(tex, 0, 0), new Texture(tex, 0, 1)};
-		Texture[] flap = {new Texture(tex, 10, 0, /**/0, 1, 2, 3, 2, 1),
-							new Texture(tex, 10, 1, /**/0, 1, 2, 3, 2, 1)};
+		Texture[] sit =  {new Texture(file, 0, 0), new Texture(file, 0, 1)};
+		Texture[] flap = {new Texture(file, 10, 0, /**/0, 1, 2, 3, 2, 1),
+							new Texture(file, 10, 1, /**/0, 1, 2, 3, 2, 1)};
 		
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 
 			int type = world.random.nextInt(2);
 			
@@ -179,17 +176,16 @@ public enum ThingType {
 				}
 			};
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
 	//DEAD THINGS
-	CLOUD {
-		TexFile tex = Res.cloud;
-		Texture cloud = tex.tex();
+	CLOUD(Res.cloud) {
+		Texture cloud = file.tex();
 
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			Color color = extraData.length > 0 ? (Color)extraData[0] : new Color(Color.WHITE);
 			
 			Thing t = new Thing(this, world.random);
@@ -200,53 +196,52 @@ public enum ThingType {
 			t.pos = new Position(t, pos.shift(0, height));
 			
 			t.color = new Coloration(t, color);
-			t.ani = new Animating(t, cloud, tex.pixelBox.copy().scale(world.random.nextDouble() + 0.5), -1);
+			t.ani = new Animating(t, cloud, file.pixelBox.copy().scale(world.random.nextDouble() + 0.5), -1);
 			t.vel = new Velocity(t);
 			t.ground = new Grounding(t, false, -height, cloud, cloud, cloud, cloud, cloud, cloud);
 			t.ground.speed = 10;
 			t.ground.g = true;
 			t.ground.link = field;
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
 	TREE_NORMAL(Res.tree){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.TREE.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.TREE.create(world, field, pos, this);
 		}
 	},
 	TREE_FIR(Res.tree_fir){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.TREE.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.TREE.create(world, field, pos, this);
 		}
 	},
 	TREE_FIR_SNOW(Res.tree_firSnow){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.TREE.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.TREE.create(world, field, pos, this);
 		}
 	},
 	TREE_CANDY(Res.tree_candy){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.TREE.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.TREE.create(world, field, pos, this);
 		}
 	},
 	TREE_GRAVE(Res.tree_grave){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.TREE.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.TREE.create(world, field, pos, this);
 		}
 	},
 	TREE_PALM(Res.tree_palm){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.TREE.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.TREE.create(world, field, pos, this);
 		}
 	},
-	GRASS {
-		public TexFile tex = Res.grasstuft;
-		Texture waving = new Texture(tex, 10, 0, /**/0, 1, 2, 3, 2, 1);
+	GRASS(Res.grasstuft) {
+		Texture waving = new Texture(file, 10, 0, /**/0, 1, 2, 3, 2, 1);
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			
 			Thing t = new Thing(this, world.random);
@@ -254,177 +249,168 @@ public enum ThingType {
 			t.ani = new Animating(t, waving, waving.file.pixelBox.copy(), 0);
 			t.ani.animator.pos = world.random.nextInt(waving.sequenceX.length);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	GIANT_GRASS {
-		public TexFile tex = Res.grass_giant;
+	GIANT_GRASS(Res.grass_giant) {
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length));
+			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
 			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	GIANT_PLANT {
-		public TexFile tex = Res.plant_giant;
+	GIANT_PLANT(Res.plant_giant) {
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length));
+			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
 			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
 	BUSH_NORMAL(Res.bush_normal){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.BUSH.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.BUSH.create(world, field, pos, this);
 		}
 	},
 	BUSH_JUNGLE(Res.bush_jungle){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.BUSH.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.BUSH.create(world, field, pos, this);
 		}
 	},
 	BUSH_CANDY(Res.bush_candy){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.BUSH.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.BUSH.create(world, field, pos, this);
 		}
 	},
 	FLOWER_NORMAL(Res.flower_normal){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.FLOWER.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.FLOWER.create(world, field, pos, this);
 		}
 	},
 	FLOWER_CANDY(Res.flower_candy){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.FLOWER.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.FLOWER.create(world, field, pos, this);
 		}
 	},
 	FLOWER_JUNGLE(Res.flower_jungle){
-		public void create(World world, WorldField field, Vec pos, Object... extraData) {
-			SuperTypes.FLOWER.create(world, field, pos, this);
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			return SuperTypes.FLOWER.create(world, field, pos, this);
 		}
 	},
-	PYRAMID {
-		public TexFile tex = Res.pyramide;
+	PYRAMID(Res.pyramide) {
 
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length)), tex.pixelBox.copy(), 0);
+			t.ani = new Animating(t, file.tex(0, t.rand.nextInt(file.sectorPos[0].length)), file.pixelBox.copy(), 0);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	HOUSE {
-		public TexFile tex = Res.house;
+	HOUSE(Res.house) {
 
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length));
+			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
 			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	TOWN_OBJECT {
-		public TexFile tex = Res.townobject;
+	TOWN_OBJECT(Res.townobject) {
 
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length));
+			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
 			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	BAMBOO {
-		TexFile tex = Res.bamboo;
+	BAMBOO(Res.bamboo) {
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length));
-			t.ani = new Animating(t, texture, tex.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
+			t.ani = new Animating(t, texture, file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	FERN {
-		TexFile tex = Res.plant_jungle;
+	FERN(Res.plant_jungle) {
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length));
-			t.ani = new Animating(t, texture, tex.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
+			t.ani = new Animating(t, texture, file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	CACTUS {
-		TexFile tex = Res.cactus;
+	CACTUS(Res.cactus) {
 		
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length));
-			t.ani = new Animating(t, texture, tex.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
+			t.ani = new Animating(t, texture, file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
-	GRAVE {
-		public TexFile tex = Res.grave;
+	GRAVE(Res.grave) {
 
-		public void create(World world, WorldField field, Vec pos, Object... extraData){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, tex.tex(0, t.rand.nextInt(tex.sectorPos[0].length)), file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, file.tex(0, t.rand.nextInt(file.sectorPos[0].length)), file.pixelBox.copy(), 0);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
 		}
 	},
 	//OTHER THINGS
-	ITEM {
-		public void create(World world, WorldField field, Vec pos,	Object... extraData) {
+	ITEM(ItemType.ITEMS_WORLD) {
+		public Thing create(World world, WorldField field, Vec pos,	Object... extraData) {
 			
 			ItemType type = (ItemType)extraData[0];
 			
@@ -438,15 +424,21 @@ public enum ThingType {
 			t.collision = new Collision(t);
 			t.ground = new Grounding(t, false, 0, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld);
 
-			t.createAi();
 			
-			world.add(t);
+			
+			return create(t, world);
+		}
+	},
+	DUMMY(TexFile.emptyTex.file){
+		public Thing create(World world, WorldField field, Vec pos, Object... extraData) {
+			Thing t = new Thing(this, world.random);
+
+			return create(t, world);
 		}
 	};
 	
-	TexFile file;
+	public TexFile file;
 	
-	ThingType(){}
 	/**
 	 * Only if using a SuperType
 	 * @param file
@@ -455,5 +447,11 @@ public enum ThingType {
 		this.file = file;
 	}
 	
-	public abstract void create(World world, WorldField field, Vec pos, Object... extraData);
+	public abstract Thing create(World world, WorldField field, Vec pos, Object... extraData);
+	
+	public Thing create(Thing t, World world){
+		t.createAi();
+		world.add(t);
+		return t;
+	}
 }

@@ -160,15 +160,15 @@ public class WorldContainer implements Savable {
 				
 				if(field.mat.tex != null){
 					Color.WHITE.bind();
-					field.mat.tex.bind();
+					field.mat.tex.file.bind();
 					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glTexCoord2f((float)(p1.p.x/field.mat.tex.pixelBox.size.x), (float)(p1.p.y/field.mat.tex.pixelBox.size.y));
+						GL11.glTexCoord2f((float)(p1.p.x/field.mat.tex.file.pixelBox.size.x), (float)(p1.p.y/field.mat.tex.file.pixelBox.size.y));
 						GL11.glVertex2d(p1.p.x, p1.p.y);
-						GL11.glTexCoord2f((float)(p2.p.x/field.mat.tex.pixelBox.size.x), (float)(p2.p.y/field.mat.tex.pixelBox.size.y));
+						GL11.glTexCoord2f((float)(p2.p.x/field.mat.tex.file.pixelBox.size.x), (float)(p2.p.y/field.mat.tex.file.pixelBox.size.y));
 						GL11.glVertex2d(p2.p.x, p2.p.y);
-						GL11.glTexCoord2f((float)(p3.p.x/field.mat.tex.pixelBox.size.x), (float)(p3.p.y/field.mat.tex.pixelBox.size.y));
+						GL11.glTexCoord2f((float)(p3.p.x/field.mat.tex.file.pixelBox.size.x), (float)(p3.p.y/field.mat.tex.file.pixelBox.size.y));
 						GL11.glVertex2d(p3.p.x, p3.p.y);
-						GL11.glTexCoord2f((float)(p4.p.x/field.mat.tex.pixelBox.size.x), (float)(p4.p.y/field.mat.tex.pixelBox.size.y));
+						GL11.glTexCoord2f((float)(p4.p.x/field.mat.tex.file.pixelBox.size.x), (float)(p4.p.y/field.mat.tex.file.pixelBox.size.y));
 						GL11.glVertex2d(p4.p.x, p4.p.y);
 					GL11.glEnd();
 				} else {
