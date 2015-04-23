@@ -2,7 +2,7 @@ package world.generation;
 
 import main.Savable;
 import world.WorldContainer.WorldPoint;
-import world.generation.Biome.AimLayer;
+import world.generation.BiomeOld.AimLayer;
 
 public class Layer implements Savable{
 

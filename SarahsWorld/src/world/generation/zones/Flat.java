@@ -1,8 +1,8 @@
 package world.generation.zones;
 
-import world.generation.Biome;
-import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.worldGeneration.Biome;
+import world.worldGeneration.BiomeManager;
 
 public class Flat extends Zone{
 
@@ -11,7 +11,7 @@ public class Flat extends Zone{
 	public Flat(BiomeManager biome, double originX, Biome b, double aimWidth) {
 		super(biome, originX);
 		this.width = aimWidth;
-		biome.set(b);
+		biome.switchToBiome(b);
 	}
 
 	public double step(double x) {

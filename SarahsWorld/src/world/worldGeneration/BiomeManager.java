@@ -11,16 +11,16 @@ public class BiomeManager {
 
 	public Ant[] ants;
 	public Column lastColumn;//for the old vertices to change
-	public World world;
+	public WorldData world;
 	/**
 	 * 
-	 * @param start : necessary to prevent errors later
+	 * @param normal : necessary to prevent errors later
 	 */
-	public BiomeManager(World world, Biome start){
+	public BiomeManager(WorldData world, Biome normal){
 		this.world = world;
 		ants = new Ant[World.layerCount];
 		for(int yIndx = 0; yIndx < ants.length; yIndx++){
-			ants[yIndx] = new Ant(start.stratums[yIndx]);
+			ants[yIndx] = new Ant(normal.stratums[yIndx]);
 		}
 	}
 	
@@ -29,24 +29,26 @@ public class BiomeManager {
 //		each new stratum gets attached
 		for(Stratum stratum : newBiome.stratums){
 			
-			int yIndex = stratum.layerIndex;
-			
-			//it shoudn't happen that there's not already a material
-			int transition = Math.min(stratum.transitionWidth, ants[yIndex].transitions.write.previous.data.width);
-			if(transition <= 0){//This means, the new material will be fully visible instantly,
-								//so we can firstly clear the buffers
-				ants[yIndex].mats.clear();
-				ants[yIndex].transitions.clear();	
+			if(stratum != null){
+				int yIndex = stratum.layerIndex;
+				
+				//it shoudn't happen that there's not already a material
+				int transition = Math.min(stratum.transitionWidth, ants[yIndex].transitions.write.previous.data.width);
+				if(transition <= 0){//This means, the new material will be fully visible instantly,
+									//so we can firstly clear the buffers
+					ants[yIndex].mats.clear();
+					ants[yIndex].transitions.clear();	
+				}
+	
+				//add another material to the vertex
+				ants[yIndex].mats.enqueue(stratum.material);
+				//add the smallest transition width to the vertex for this material
+				ants[yIndex].transitions.enqueue(new Alpha(transition));
+	
+				ants[yIndex].resetAlphas();
+				ants[yIndex].resize(stratum.thickness, stratum.sizingSpeed);
+				//TODO change old vertices here (left in your thinking)
 			}
-
-			//add another material to the vertex
-			ants[yIndex].mats.enqueue(stratum.material);
-			//add the smallest transition width to the vertex for this material
-			ants[yIndex].transitions.enqueue(new Alpha(transition));
-
-			ants[yIndex].resetAlphas();
-			ants[yIndex].resize(stratum.thickness, stratum.sizingSpeed);
-			//TODO change old vertices here (left in your thinking)
 		}
 	}
 	
@@ -56,7 +58,7 @@ public class BiomeManager {
 		
 		double y = yTop;
 		for(int i = 0; i < out.length; i++){
-			out[i] = world.data.new Vertex();
+			out[i] = world.new Vertex();
 			out[i].mats = ants[i].mats.copy();
 			out[i].alphas = Arrays.copyOf(ants[i].alphas, Vertex.maxMatCount);
 			out[i].y = y;

@@ -6,8 +6,8 @@ import java.util.Random;
 
 import util.math.Vec;
 import world.Material;
-import world.objects.Thing;
-import world.objects.ThingType;
+import world.worldGeneration.objects.ai.Thing;
+import world.worldGeneration.objects.ai.ThingType;
 import data.IndexBuffer;
 import data.Queue;
 
@@ -20,6 +20,12 @@ public class WorldData {
 	public WorldData() {
 		
 	}
+	@Deprecated //too expensive
+	public void add(Thing t){
+		int xIndex = t.pos.p.xInt()/(int)Column.step;//I know, the middle one has the things of two areas
+		get(xIndex).add(t);
+	}
+	
 	public void addFirst(Vertex... vertices){
 		Column l = new Column(0, vertices);
 		mostRight = l;
@@ -61,6 +67,9 @@ public class WorldData {
 			this.xIndex = xIndex;
 			this.xReal = xIndex*step;
 			this.vertices = vertices;
+			for(Vertex v : vertices){
+				v.parent = this;
+			}
 			this.things = new Thing[ThingType.values().length];
 			collisionVecs();
 		}
@@ -108,6 +117,10 @@ public class WorldData {
 			t.right = things[t2];
 			t.left.right = t;
 		}
+		
+		public Vec getTopLine(){
+			return new Vec(xReal - left.xReal, collisionVecs[0] - left.collisionVecs[0]);
+		}
 	}
 	public class Vertex {
 		public static final int maxMatCount = 5;
@@ -116,6 +129,7 @@ public class WorldData {
 		public double transition;
 		public double[] alphas;
 		public int matCount;
+		public Column parent;
 		public Vertex(){
 			mats = new IndexBuffer<>(maxMatCount);
 			alphas = new double[maxMatCount];

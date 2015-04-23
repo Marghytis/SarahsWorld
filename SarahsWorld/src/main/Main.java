@@ -1,10 +1,7 @@
 package main;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.CompilerException;
-
 import menu.MenuManager;
-import util.math.Vec;
-import world.World;
+import world.worldGeneration.Save;
 import core.Core;
 import core.Listener;
 import core.Renderer;
@@ -14,7 +11,7 @@ import core.Window;
 public class Main {
 	
 	public static MenuManager menu;
-	public static World world;
+	public static world.worldGeneration.World world;
 
 	public static void main(String[] args){
 		String worldName = "Sarahs World";
@@ -27,12 +24,16 @@ public class Main {
 		}
 
 		menu = new MenuManager();
-		world = new World(worldName, false);
+		if(Save.worldSaved()){
+			world = Save.loadWorld();
+		} else {
+			world = new world.worldGeneration.World();
+		}
 
 		Updater.updaters.add(menu);
-		Updater.updaters.add(world);
+		Updater.updaters.add(world.window);
 
-		Renderer.renderers.add(world);
+		Renderer.renderers.add(world.window);
 		Renderer.renderers.add(menu);
 
 		Listener.listeners.add(menu);

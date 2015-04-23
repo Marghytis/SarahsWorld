@@ -2,9 +2,9 @@ package world.generation.zones;
 
 import util.math.Function;
 import util.math.Vec;
-import world.WorldContainer.WorldField;
-import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.worldGeneration.BiomeManager;
+import world.worldGeneration.WorldData.Column;
 
 public class Hills extends Zone {
 	
@@ -38,7 +38,7 @@ public class Hills extends Zone {
 		ownHeight = curve.f(x - p1.x) + p1.y;
 		
 		//interpolate hills
-		if(x + WorldField.width >= p2.x){
+		if(x + Column.step >= p2.x){
 			
 			if((p1.x + p2.x)/2 > aimWidth){
 				if(last){

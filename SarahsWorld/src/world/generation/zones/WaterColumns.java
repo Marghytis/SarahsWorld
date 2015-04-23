@@ -1,8 +1,8 @@
 package world.generation.zones;
 
 import util.math.Vec;
-import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.worldGeneration.BiomeManager;
 
 public class WaterColumns extends Zone{
 
@@ -11,6 +11,12 @@ public class WaterColumns extends Zone{
 	}
 
 	public double deltaY() {
+		return 0;
+	}
+
+	@Override
+	public double step(double x) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 

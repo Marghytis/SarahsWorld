@@ -1,9 +1,9 @@
 package world.generation.zones;
 
 import util.math.Function;
-import world.generation.Biome;
-import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.worldGeneration.Biome;
+import world.worldGeneration.BiomeManager;
 
 public class Mountains extends Zone {
 
@@ -13,7 +13,7 @@ public class Mountains extends Zone {
 
 	public Mountains(BiomeManager biome, double originX) {
 		super(biome, originX);
-		biome.set(Biome.FIR_FORREST);
+		biome.switchToBiome(Biome.FIR_FORREST);
 		
 		width =  40000 + random.nextInt(10000);
 		height = 20000 + random.nextInt(5000);

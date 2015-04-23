@@ -10,8 +10,8 @@ import world.World;
 import world.WorldContainer.WorldColumn;
 import world.WorldContainer.WorldField;
 import world.WorldContainer.WorldPoint;
-import world.generation.Biome.AimLayer;
-import world.generation.Biome.ThingSpawner;
+import world.generation.BiomeOld.AimLayer;
+import world.generation.BiomeOld.ThingSpawner;
 
 public class BiomeManager {
 
@@ -27,9 +27,9 @@ public class BiomeManager {
 	List<Layer> current;
 	List<Layer> news;
 	List<Layer> all;
-	Biome biome;
+	BiomeOld biome;
 	
-	public BiomeManager(Biome start, World world){
+	public BiomeManager(BiomeOld start, World world){
 		this.world = world;
 		this.biome = start;
 		this.random = new Random();
@@ -76,7 +76,7 @@ public class BiomeManager {
 		all.sort(comp);
 	}
 	
-	public boolean set(Biome b){
+	public boolean set(BiomeOld b){
 		old.addAll(current);
 		current.clear();
 		for(AimLayer l : b.layers){
@@ -89,7 +89,7 @@ public class BiomeManager {
 		return true;
 	}
 	
-	public Biome getBiome(){
+	public BiomeOld getBiome(){
 		return biome;
 	}
 	

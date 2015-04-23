@@ -1,15 +1,14 @@
-package world.objects.ai;
+package world.worldGeneration.objects.ai;
 
 import java.io.IOException;
 
 import main.Main;
-import main.S;
 import menu.Menu;
 
 import org.lwjgl.input.Keyboard;
 
 import util.math.Vec;
-import world.objects.Thing;
+import world.worldGeneration.Save;
 import core.Listener;
 import core.Window;
 
@@ -62,7 +61,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 	private static final int touchSensitivityX = 90, touchSensitivityY = 60;
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
 		Vec worldPos = mousePos.minus(new Vec(Window.WIDTH/2, Window.HEIGHT/2)).shift(t.pos.p);
-		Thing[] livingsClickedOn = Main.world.livingsAt(worldPos);
+		Thing[] livingsClickedOn = Main.world.window.livingsAt(worldPos);
 		
 		if(pathSincePress.y > pathSincePress.x && pathSincePress.y > -pathSincePress.x && pathSincePress.y > touchSensitivityY && livingsClickedOn.length == 0){
 			t.ground.jump();
@@ -112,8 +111,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		case Keyboard.KEY_SPACE: if(t.ground.g) t.ground.jump(); break;
 		case Keyboard.KEY_E: if(t.riding.isRiding) t.riding.dismount(); break;
 		case Keyboard.KEY_S: if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
-			try { S.saveWorld(Main.world); }
-			catch (IOException e) {e.printStackTrace();}
+			Save.saveWorld(Main.world);
 			break;
 		case Keyboard.KEY_Q:
 			if(Main.menu.open != Menu.INVENTORY){

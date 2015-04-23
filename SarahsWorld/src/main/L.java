@@ -14,7 +14,7 @@ import world.WorldContainer.WorldColumn;
 import world.WorldContainer.WorldField;
 import world.generation.Layer;
 import world.generation.WorldGenerator;
-import world.generation.Biome.AimLayer;
+import world.generation.BiomeOld.AimLayer;
 import world.objects.Thing;
 
 public class L {

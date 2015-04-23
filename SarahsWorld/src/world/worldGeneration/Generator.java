@@ -8,7 +8,7 @@ import util.math.Vec;
 import world.generation.Zone;
 import world.generation.zones.Desert;
 import world.generation.zones.Mountains;
-import world.objects.ThingType;
+import world.worldGeneration.WorldData.Column;
 
 
 public class Generator {
@@ -38,8 +38,6 @@ public class Generator {
 		zoneR = new Mountains(biomeR, 0);
 		
 		world.addFirst(biomeR.createVertices(0));
-		world.mostLeft.add(ThingType.SARAH.create(world, world.mostLeft.vertices[0], new Vec(0, world.yTop(0))));
-		
 	}
 
 	public Generator(WorldData data, DataInputStream input) {
@@ -48,7 +46,10 @@ public class Generator {
 	}
 
 	public void borders(double d, double e) {
-		// TODO Auto-generated method stub
+		while(posR.x < e)
+			posR.y = zoneR.step(posR.x += Column.step);
+		while(posL.x > d)
+			posL.y = zoneL.step(posL.x -= Column.step);
 		
 	}
 

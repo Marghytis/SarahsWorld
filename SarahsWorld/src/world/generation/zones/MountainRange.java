@@ -2,8 +2,8 @@ package world.generation.zones;
 
 import util.math.Function;
 import util.math.Vec;
-import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.worldGeneration.BiomeManager;
 
 public class MountainRange extends Zone {
 

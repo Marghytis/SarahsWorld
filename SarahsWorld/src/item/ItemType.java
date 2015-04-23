@@ -14,7 +14,7 @@ import render.TexFileInfo;
 import render.Texture;
 import util.math.Rect;
 import util.math.Vec;
-import world.objects.Thing;
+import world.worldGeneration.objects.ai.Thing;
 
 public class ItemType {
 
@@ -35,8 +35,8 @@ public class ItemType {
 	public static final ItemType berry	= new ItemType		(ITEMS_WORLD.tex(0, 0),	ITEMS_INV.tex(6, 0),		ITEMS_INV.tex(6, 0), new Rect(-25, -2, 50, 50), new Rect(-10, -10, 30, 30), 0,						"Berry",		0,				8, 			WeaponType.PUNCH,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false){
 		@Override
 		public boolean use(Thing src, Vec pos){
-			src.inv.stacks[Main.world.avatar.sarah.inv.selectedItem].item = ItemType.fist;
-			if(src.magic != null && src.magic.mana + 2 <= Main.world.avatar.sarah.magic.maxMana){
+			src.inv.stacks[Main.world.avatar.inv.selectedItem].item = ItemType.fist;
+			if(src.magic != null && src.magic.mana + 2 <= Main.world.avatar.magic.maxMana){
 				src.magic.mana += 2;
 //				WorldView.particleEffects.add(new BerryEat(new Vec(World.sarah.pos.x + (World.sarah.animator.box.size.x/2), World.sarah.pos.y + (World.sarah.animator.box.size.y/2))));TODO watch above
 				return true;
@@ -59,7 +59,7 @@ public class ItemType {
 				case ITEM:
 					if(src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 25000){
 						src.inv.addItem(dest.item.type);
-						Main.world.deletionRequested.add(dest);
+						Main.world.window.deletionRequested.add(dest);
 					}
 					break;
 	//			case BUSH:

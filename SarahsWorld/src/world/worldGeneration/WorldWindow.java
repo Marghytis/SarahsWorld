@@ -1,17 +1,26 @@
 package world.worldGeneration;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.lwjgl.opengl.GL11;
 
 import render.Texture;
+import util.math.Vec;
 import world.Material;
-import world.objects.Thing;
-import world.objects.ThingType;
 import world.worldGeneration.WorldData.Column;
+import world.worldGeneration.objects.ai.Thing;
+import world.worldGeneration.objects.ai.ThingType;
+import core.Renderer;
+import core.Updater;
 
-public class WorldWindow {
+public class WorldWindow implements Updater, Renderer{
 	public WorldData layer;
 	public Column rightEnd, leftEnd;
 	public int xIndex, r;
+	
+	public List<Thing> deletionRequested = new ArrayList<>();
 	
 	/**
 	*For this, the Layer must contain startX, otherwise you'll get a NPE somewhere.
@@ -50,7 +59,36 @@ public class WorldWindow {
 			GL11.glVertex2d(cursor.xReal, cursor.vertices[i+1].y - cursor.vertices[i].transition);
 	};
 	
-	public void render(){
+	public void execute(Consumer<Column> cons){
+		for(Column cursor = leftEnd; cursor != null; cursor = cursor.right){
+			cons.accept(cursor);
+		}
+	}
+	
+	public Thing[] livingsAt(Vec loc){
+		List<Thing> things = new ArrayList<>();
+		for(int type = 0; type < ThingType.values().length; type++)
+		for(Thing t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
+			if(t.life != null && !t.equals(this) && loc.containedBy(t.ani.box.pos.x + t.pos.p.x, t.ani.box.pos.y + t.pos.p.y, t.ani.box.size.x, t.ani.box.size.y)){
+				things.add(t);
+			}
+		}
+		things.sort((t1, t2) -> t1.ani.behind > t2.ani.behind ? 1 : t1.ani.behind < t2.ani.behind ?  -1 : 0);
+		return things.toArray(new Thing[things.size()]);
+	}
+	
+	public boolean update(double delta){
+		for(Thing t : deletionRequested){
+			t.disconnect();
+		}
+		for(int type = 0; type < ThingType.values().length; type++)
+		for(Thing t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
+			t.update(delta);
+		}
+		return false;
+	}
+	
+	public void draw(){
 		//normal layers
 		for(int i = 0; i < leftEnd.vertices.length-1; i++){
 			renderLayer(i, defaultRenderer);
@@ -85,7 +123,7 @@ public class WorldWindow {
 		Column cursor = leftEnd;
 		while(cursor != null){
 			
-			//check if current material has vanished
+			//check if current material hasn't vanished
 			if(cursor.vertices[i].mats.get(currentMatIndex).data == currentMat){	
 				if(newMatStart == null && cursor.vertices[i].mats.get(currentMatIndex).next.data != Material.NO){
 					newMatStart = cursor;

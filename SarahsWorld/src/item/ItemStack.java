@@ -3,10 +3,7 @@ package item;
 import render.TexFile;
 import render.Texture;
 import util.math.Rect;
-import util.math.Vec;
-import world.World;
-import world.objects.Thing;
-import world.objects.ai.Inventory;
+import world.worldGeneration.objects.ai.Inventory;
 import core.Window;
 
 
@@ -21,10 +18,10 @@ public class ItemStack extends Rect{
 	public Inventory inv;
 	public int coolDown;
 	
-	public ItemStack(int slot, Inventory inv){
+	public ItemStack(int slot, Inventory inventory2){
 		super((slot+1)*(Window.WIDTH/7) -50, Window.HEIGHT/5 -50, 100, 100);
 		this.slot = slot;
-		this.inv = inv;
+		this.inv = inventory2;
 	}
 	
 	public void update(double delta){

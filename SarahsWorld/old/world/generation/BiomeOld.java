@@ -8,7 +8,7 @@ import world.WorldContainer.WorldField;
 import world.objects.ThingType;
 
 
-public enum Biome {
+public enum BiomeOld {
 	NORMAL(			new AimLayer[]{new AimLayer(Material.GRASS, 30.0, 1.0, 100), new AimLayer(Material.EARTH, 50.0, 5.0, 80), new AimLayer(Material.STONE, 100000000.0, 20.0, 0)}),
 	
 	UNNORMAL(		new AimLayer[]{new AimLayer(Material.EARTH, 20.0, 1.0, 90), new AimLayer(Material.SAND, 60.0, 5.0, 79), new AimLayer(Material.WATER, 100000000.0, 20.0, 1)}),
@@ -47,7 +47,7 @@ public enum Biome {
 	public AimLayer[] layers;
 	public ThingSpawner[] spawners;
 	
-	Biome(AimLayer[] layers, ThingSpawner... spawners){
+	BiomeOld(AimLayer[] layers, ThingSpawner... spawners){
 		this.layers = layers;
 		this.spawners = spawners;
 	}

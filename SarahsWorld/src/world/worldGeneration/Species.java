@@ -2,8 +2,8 @@ package world.worldGeneration;
 
 import java.io.DataInputStream;
 
-import world.objects.Thing;
-import world.objects.ThingType;
+import world.worldGeneration.objects.ai.Thing;
+import world.worldGeneration.objects.ai.ThingType;
 
 public class Species {
 	public ThingType type;

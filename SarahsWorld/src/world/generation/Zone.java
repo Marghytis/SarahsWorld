@@ -6,7 +6,7 @@ import java.util.Random;
 public abstract class Zone {
 
 	protected Random random;
-	public BiomeManager biome;
+	public world.worldGeneration.BiomeManager biome;
 	public boolean end;
 	public double ownHeight;
 	public Zone subZone;
@@ -17,7 +17,7 @@ public abstract class Zone {
 	 * @param biome the BiomeManager this zone shall use
 	 * @param originX the starting point on the x-Axis of this zone
 	 */
-	public Zone(BiomeManager biome, double originX){
+	public Zone(world.worldGeneration.BiomeManager biome, double originX){
 		this.biome = biome;
 		this.originX = originX;
 		random = new Random();
