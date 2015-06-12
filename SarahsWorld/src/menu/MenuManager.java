@@ -44,6 +44,8 @@ public class MenuManager implements Updater, Listener, Renderer {
 	}
 
 	public void draw() {
+		TexFile.bindNone();
+		GL11.glColor4f(1, 1, 1, 1);
 		GL11.glLoadIdentity();
 		for(Element e : open.elements){
 			e.draw();

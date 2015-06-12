@@ -11,16 +11,18 @@ public abstract class Zone {
 	public double ownHeight;
 	public Zone subZone;
 	public double originX;
+	public boolean left;
 	
 	/**
 	 * The Zone is just responsible for the terrain height - the biome manager manages the rest like structure materials and things
 	 * @param biome the BiomeManager this zone shall use
 	 * @param originX the starting point on the x-Axis of this zone
 	 */
-	public Zone(world.worldGeneration.BiomeManager biome, double originX){
+	public Zone(world.worldGeneration.BiomeManager biome, double originX, boolean left){
 		this.biome = biome;
-		this.originX = originX;
+		this.originX = left? -originX : originX;
 		random = new Random();
+		this.left = left;
 	}
 	
 	/**
@@ -34,6 +36,8 @@ public abstract class Zone {
 	 * @return the height at x of this zone and all subZones together
 	 */
 	public double y(double x){
+		if(left) x = -x;
+		x -= originX;
 		return step(x) + (subZone != null ? subZone.y(x - subZone.originX) : 0);
 	}
 }

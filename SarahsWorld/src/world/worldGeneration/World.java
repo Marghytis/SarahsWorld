@@ -3,7 +3,6 @@ package world.worldGeneration;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Random;
 
 import util.math.Vec;
 import world.worldGeneration.WorldData.Column;
@@ -19,12 +18,11 @@ public class World {
 	public WorldData data;
 	public Generator generator;
 	public WorldWindow window;
-	public Random random = new Random();
 	public Thing avatar;
 	
 	public World(){
 		
-		data = new WorldData();
+		data = new WorldData(this);
 		generator = new Generator(data);
 		//TODO TODO TODO
 		/*
@@ -33,11 +31,12 @@ public class World {
 		 * Delete old classes
 		 * create save functions and load constructors
 		 */
-
-		Vertex[] v = new Vertex[1];
-		Vec pos = data.get(0).getRandomTopLocation(generator.random, false, v);
 		
-		avatar = ThingType.SARAH.create(this, v[0], pos);
+
+		Vertex v = data.mostRight.vertices[data.mostRight.collisionVec];
+		Vec pos = new Vec(0, v.y);
+		avatar = ThingType.SARAH.create(data, v, pos);
+		
 		init();
 	}
 
@@ -49,10 +48,10 @@ public class World {
 	}
 	
 	public void init(){
-		int radius = (int)(Window.WIDTH_HALF/Column.step) + 2;
-		generator.borders(avatar.pos.p.x - radius, avatar.pos.p.x + radius);
+		int radius = (int)(Window.WIDTH_HALF/Column.step) + 4;
+		generator.borders(avatar.pos.p.x - (radius*Column.step), avatar.pos.p.x + (radius*Column.step));
 		
-		window = new WorldWindow(data, (int)(avatar.pos.p.x/Column.step), radius);
+		window = new WorldWindow(data, (int)(avatar.pos.p.x/Column.step), radius-2);
 	}
 	
 	public void save(DataOutputStream output) throws IOException {

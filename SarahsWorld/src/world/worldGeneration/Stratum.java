@@ -4,7 +4,6 @@ import world.Material;
 
 public class Stratum {
 
-	public int layerIndex;
 	public Material material;
 	public double thickness;
 	public double thicknessVariance;//(multiplier)
@@ -13,8 +12,7 @@ public class Stratum {
 	public int wait;
 	public double sizingSpeed;
 	
-	public Stratum(int layerIndex, Material material, double defaultThickness, double thicknessVariance, double thicknessSizingSpeed, double transitionHeight, int transitionWidth, int wait){
-		this.layerIndex = layerIndex;
+	public Stratum(Material material, double defaultThickness, double thicknessVariance, double thicknessSizingSpeed, double transitionHeight, int transitionWidth, int wait){
 		this.material = material;
 		this.thickness = defaultThickness;
 		this.thicknessVariance = thicknessVariance;

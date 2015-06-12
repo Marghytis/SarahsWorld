@@ -38,7 +38,7 @@ public class Grounding extends AiPlugin {
 		if(g){
 			Vec pos = t.pos.p.copy().shift(0, yOffset);
 			if(friction){
-				double friction = link.mats.first.data.deceleration*speed*delta;
+				double friction = link.mats.write.previous.data.deceleration*speed*delta;
 				if(acc == 0 && UsefulF.abs(friction*delta) > UsefulF.abs(speed)){
 					speed = 0;
 					t.vel.v.set(0, 0);
@@ -53,33 +53,35 @@ public class Grounding extends AiPlugin {
 				t.vel.v.set(0, 0);
 			} else {
 				Vec i = new Vec(Integer.MIN_VALUE, Integer.MIN_VALUE);
-				Vertex[] f = new Vertex[1];
+				Vertex f = null;
 				Vec lastVec = null, currentVec = null;
 				for(Column c = Main.world.window.leftEnd; c != null; c = c.right){
+					if(c.collisionVec == -1) continue;
 					if(c.equals(Main.world.window.leftEnd)){
-						lastVec = new Vec(c.xReal, c.collisionVecs[0]);
+						lastVec = new Vec(c.xReal, c.vertices[c.collisionVec].y);//c.vertices[c.collisionVec].y right???
 						currentVec = lastVec.copy();
 					} else {
-						Vertex field = c.vertices[0];
-						Vec[] intersections = UsefulF.circleIntersection(lastVec, currentVec.set(c.xReal, c.collisionVecs[0]), pos, UsefulF.abs(speed*delta));
+						Vertex field = c.vertices[c.collisionVec];
+						Vec[] intersections = UsefulF.circleIntersection(lastVec, currentVec.set(c.xReal, c.vertices[c.collisionVec].y), pos, UsefulF.abs(speed*delta));
 						lastVec.set(currentVec);
 						if(speed > 0){
 							if(intersections[1] != null && intersections[1].y > i.y){
 								i.set(intersections[1]);
-								f[0] = field;
+								f = field;
 							}
 						} else {
 							if(intersections[0] != null && intersections[0].y > i.y){
 								i.set(intersections[0]);
-								f[0] = field;
+								f = field;
 							}
 						}
 					}
 				};
 
-				if(f[0] != null){
+				if(f != null){
 					t.vel.v.set(i.minus(pos).scale(1/delta));
-					link = f[0];
+					f.parent.add(t);
+					link = f;
 				}
 				acc = 0;
 			}
@@ -88,6 +90,12 @@ public class Grounding extends AiPlugin {
 			}
 			if(speed > 0){
 				t.ani.dir = false;
+			}
+		} else {
+			if(link == null || (int)(t.pos.p.x/Column.step) != link.parent.xIndex){
+				Column below = Main.world.window.get((int)(t.pos.p.x/Column.step));
+				Vertex link = below.vertices[0];
+				link.parent.add(t);
 			}
 		}
 		return false;
@@ -108,7 +116,9 @@ public class Grounding extends AiPlugin {
 	}
 	
 	public void land() {
-		t.ani.setTex(texs[5], () -> t.ani.setTex(t.ani.texs[0]));
+		t.ani.setTex(texs[5], () -> {
+			t.ani.setTex(t.ani.texs[0]);
+		});
 	}
 
 	public String save() {

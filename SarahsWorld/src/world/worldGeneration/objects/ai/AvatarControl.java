@@ -1,7 +1,5 @@
 package world.worldGeneration.objects.ai;
 
-import java.io.IOException;
-
 import main.Main;
 import menu.Menu;
 
@@ -23,21 +21,16 @@ public  class AvatarControl extends AiPlugin implements Listener{
 	}
 	
 	private double walkingDir;
-	private boolean lastChangeKey = true;
 	
 	public boolean action(double delta) {
 		if(t.ground.g){
 			float a = aWalking;
-			if(lastChangeKey){
-				walkingDir = 0;
-			}			
+			walkingDir = 0;
 			if(Keyboard.isKeyDown(Keyboard.KEY_D)){
 				if(walkingDir < 2) walkingDir++;
-				lastChangeKey = true;
 			}
 			if(Keyboard.isKeyDown(Keyboard.KEY_A)){
 				if(walkingDir > -2) walkingDir--;
-				lastChangeKey = true;
 			}
 			if(walkingDir != 0){
 				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
@@ -58,22 +51,9 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		return false;
 	}
 
-	private static final int touchSensitivityX = 90, touchSensitivityY = 60;
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
 		Vec worldPos = mousePos.minus(new Vec(Window.WIDTH/2, Window.HEIGHT/2)).shift(t.pos.p);
 		Thing[] livingsClickedOn = Main.world.window.livingsAt(worldPos);
-		
-		if(pathSincePress.y > pathSincePress.x && pathSincePress.y > -pathSincePress.x && pathSincePress.y > touchSensitivityY && livingsClickedOn.length == 0){
-			t.ground.jump();
-		} else {
-			if(pathSincePress.x > touchSensitivityX){
-				if(walkingDir < 2) walkingDir++;
-				lastChangeKey = false;
-			} else if(pathSincePress.x < -touchSensitivityX){
-				if(walkingDir > -2) walkingDir--;
-				lastChangeKey = false;
-			}
-		}
 		
 		switch(button){
 		case 0://ATTACK

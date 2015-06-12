@@ -4,11 +4,11 @@ import world.worldGeneration.Biome;
 import world.worldGeneration.BiomeManager;
 
 
-public class Desert extends Hills {
+public class Test extends Hills {
 
-	public Desert(BiomeManager biome, double originX, boolean left) {
+	public Test(BiomeManager biome, double originX, boolean left) {
 		super(biome, originX, left, 3, 1, 4000);
-		biome.switchToBiome(Biome.DESERT);
+		biome.switchToBiome(Biome.FIR_FORREST);
 	}
 
 }

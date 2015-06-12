@@ -50,7 +50,8 @@ public class Following extends AiPlugin{
 			Thing closest = null;
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
-				for(Thing t = Main.world.window.leftEnd.left.things[targetClasses[type].ordinal()];t != Main.world.window.rightEnd.things[targetClasses[type].ordinal()];t = t.right){
+				for(Thing t = Main.world.window.leftEnd.left.things[targetClasses[type].ordinal()];t != null && t != Main.world.window.rightEnd.things[targetClasses[type].ordinal()];t = t.right){
+					if(t.type == ThingType.DUMMY) continue;
 					double distSqu = this.t.pos.p.minus(t.pos.p).lengthSquare();
 					if(distSqu < distanceSquare){
 						closest = t;

@@ -11,8 +11,8 @@ public class Mountains extends Zone {
 	double width;
 	double height;
 
-	public Mountains(BiomeManager biome, double originX) {
-		super(biome, originX);
+	public Mountains(BiomeManager biome, double originX, boolean left) {
+		super(biome, originX, left);
 		biome.switchToBiome(Biome.FIR_FORREST);
 		
 		width =  40000 + random.nextInt(10000);
@@ -30,10 +30,10 @@ public class Mountains extends Zone {
 				switch(random.nextInt(2)){
 				case 0 :
 					double amplifier = ownHeight/height;
-					subZone = new Hills(biome, x, 20*amplifier + 1, 100*amplifier + 1, width/30);
+					subZone = new Hills(biome, x, left, 100*amplifier + 1, width/30, 20*amplifier + 1);
 					break;
 				case 1 :
-					subZone = new Hills(biome, x, 1, 1, width/30);
+					subZone = new Hills(biome, x, left, 1, 1, width/30);
 					break;
 				}
 			}

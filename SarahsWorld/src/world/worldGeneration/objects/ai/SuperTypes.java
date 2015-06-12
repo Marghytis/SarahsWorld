@@ -3,7 +3,7 @@ package world.worldGeneration.objects.ai;
 import item.ItemType;
 import render.Texture;
 import util.math.Vec;
-import world.worldGeneration.World;
+import world.worldGeneration.WorldData;
 import world.worldGeneration.WorldData.Column;
 import world.worldGeneration.WorldData.Vertex;
 
@@ -11,7 +11,7 @@ public enum SuperTypes {
 	TREE(ThingType.TREE_NORMAL, ThingType.TREE_FIR, ThingType.TREE_FIR_SNOW, 
 		 ThingType.TREE_CANDY, ThingType.TREE_GRAVE, ThingType.TREE_PALM){
 		
-		public Thing create(World world, Vertex field, Vec pos, ThingType type, Object... extraData){
+		public Thing create(WorldData world, Vertex field, Vec pos, ThingType type, Object... extraData){
 			
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
@@ -27,7 +27,7 @@ public enum SuperTypes {
 	},
 	BUSH(ThingType.BUSH_NORMAL, ThingType.BUSH_JUNGLE, ThingType.BUSH_CANDY){
 		
-		public Thing create(World world, Vertex field, Vec pos, ThingType type, Object... extraData){
+		public Thing create(WorldData world, Vertex field, Vec pos, ThingType type, Object... extraData){
 			
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
@@ -45,7 +45,7 @@ public enum SuperTypes {
 	},
 	FLOWER(ThingType.FLOWER_NORMAL, ThingType.FLOWER_CANDY, ThingType.FLOWER_JUNGLE){
 		
-		public Thing create(World world, Vertex field, Vec pos, ThingType type, Object... extraData){
+		public Thing create(WorldData world, Vertex field, Vec pos, ThingType type, Object... extraData){
 			
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
@@ -64,8 +64,8 @@ public enum SuperTypes {
 		this.subTypes = subTypes;
 	}
 
-	public abstract Thing create(World world, Vertex field, Vec pos, ThingType thingType, Object... extraData);
-	public Thing create(Thing t, World world, Column c){
+	public abstract Thing create(WorldData world, Vertex field, Vec pos, ThingType thingType, Object... extraData);
+	public Thing create(Thing t, WorldData world, Column c){
 		t.createAi();
 		c.add(t);
 		return t;

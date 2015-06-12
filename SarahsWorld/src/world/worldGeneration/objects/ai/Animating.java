@@ -39,7 +39,7 @@ public class Animating extends AiPlugin{
 	}
 
 	public void setTex(Texture tex, Runnable task) {
-		if(tex == null) new Exception("ERROR!!! No Texture selceted!!").printStackTrace();
+		if(tex == null) new Exception("ERROR!!! No Texture selected!!").printStackTrace();
 		animator.setAnimation(tex, task);
 	}
 
