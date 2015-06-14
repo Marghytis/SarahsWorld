@@ -1,9 +1,12 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import item.ItemType;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import world.things.AiPlugin;
+import world.things.Thing;
 
 
 public class Fruits extends AiPlugin {

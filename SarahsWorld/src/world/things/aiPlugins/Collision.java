@@ -1,8 +1,10 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import main.Main;
 import util.math.UsefulF;
 import util.math.Vec;
+import world.things.AiPlugin;
+import world.things.Thing;
 import world.worldGeneration.WorldData.Column;
 import world.worldGeneration.WorldData.Vertex;
 
@@ -37,13 +39,15 @@ public class Collision extends AiPlugin{
 			if(f != null){
 				
 				t.pos.p.set(finalIntersection);
-				
+
+				if(t.friction != null && !t.friction.swimming){
+					t.ground.land();
+				}
 				t.ground.speed = t.vel.v.dot(f.parent.getTopLine())/f.parent.getTopLine().length();
 				t.vel.v.set(0, 0);
+				t.ground.g = true;
 				t.ground.link = f;
 				f.parent.add(t);
-				t.ground.g = true;
-				t.ground.land();
 			}
 		}
 		return true;

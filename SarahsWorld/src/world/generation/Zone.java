@@ -20,7 +20,7 @@ public abstract class Zone {
 	 */
 	public Zone(world.worldGeneration.BiomeManager biome, double originX, boolean left){
 		this.biome = biome;
-		this.originX = left? -originX : originX;
+		this.originX = originX;
 		random = new Random();
 		this.left = left;
 	}
@@ -36,8 +36,6 @@ public abstract class Zone {
 	 * @return the height at x of this zone and all subZones together
 	 */
 	public double y(double x){
-		if(left) x = -x;
-		x -= originX;
 		return step(x) + (subZone != null ? subZone.y(x - subZone.originX) : 0);
 	}
 }

@@ -61,7 +61,6 @@ public class Res {
 	public static final TexFile sloth  = new TexFile("res/creatures/Sloth.png", 5, 1, -0.5f, -0.05f);
 	public static final TexFile coin  = new TexFile("res/Items/Coin.png", -0.5f, -0.2f);
 
-	public static final TexFile menu_button = new TexFile("res/Button.png", 1, 2, -0.5f, -0.5f);
 	public static final TexFile inventory = new TexFile("res/items/Inventory.png", 1, 2);
 	public static final TexFile items_world = new TexFile("res/items/ItemsWorld.png", 5, 1, -0.5f, -0.5f);
 	public static final TexFile items_hand = new TexFile("res/items/ItemsHand.png", 6, 1, -0.5f, -0.5f);

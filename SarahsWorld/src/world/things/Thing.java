@@ -1,10 +1,32 @@
-package world.worldGeneration.objects.ai;
+package world.things;
 
 import java.util.Random;
 
 import main.Savable;
 
 import org.lwjgl.opengl.GL11;
+
+import world.things.aiPlugins.Acceleration;
+import world.things.aiPlugins.Animating;
+import world.things.aiPlugins.Attacking;
+import world.things.aiPlugins.AvatarControl;
+import world.things.aiPlugins.Collision;
+import world.things.aiPlugins.Coloration;
+import world.things.aiPlugins.Controller;
+import world.things.aiPlugins.FlyAround;
+import world.things.aiPlugins.Following;
+import world.things.aiPlugins.Fruits;
+import world.things.aiPlugins.Gravity;
+import world.things.aiPlugins.Grounding;
+import world.things.aiPlugins.Inventory;
+import world.things.aiPlugins.ItemBeing;
+import world.things.aiPlugins.Life;
+import world.things.aiPlugins.Magic;
+import world.things.aiPlugins.MatFriction;
+import world.things.aiPlugins.Position;
+import world.things.aiPlugins.Riding;
+import world.things.aiPlugins.Velocity;
+import world.things.aiPlugins.WalkAround;
 
 public class Thing implements Savable{
 
@@ -37,6 +59,7 @@ public class Thing implements Savable{
 	
 	//physics
 	public Gravity gravity;
+	public MatFriction friction;
 	public Acceleration acc;
 	public Collision collision;
 	public Velocity vel;
@@ -53,6 +76,7 @@ public class Thing implements Savable{
 		cont,
 		ground,
 		gravity,
+		friction,
 		acc,
 		collision,
 		vel,

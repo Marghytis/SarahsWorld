@@ -1,5 +1,7 @@
 package world.worldGeneration;
 
+import util.math.Function;
+import util.math.UsefulF;
 import world.Material;
 import world.worldGeneration.WorldData.Column;
 import world.worldGeneration.WorldData.Vertex;
@@ -49,7 +51,23 @@ public class BiomeManager {
 		
 		double y = yTop;
 		for(int i = 0; i < out.length; i++){
-			out[i] = world.new Vertex(ants[i].mats.copy(), ants[i].getAlphas(), ants[i].transitionHeight, y);
+			//otherwise there are ugly borders at the end of a layer
+			double transitionHeight = ants[i].stratum == null ? 0 : ants[i].transitionHeight*(ants[i].thickness/ants[i].stratum.thickness);
+			
+			//to prevent stripes and invisible connections between patches (lakes)
+			boolean make0 = ants[i].thickness == 0;
+			
+			//put water a bit deeper so the lake is not filled to the rim
+			double apparentY = y;
+			if(ants[i].mats.read.data == Material.WATER){
+				if(y - 5 > y - ants[i].thickness){
+					apparentY = y - 5;
+				} else {
+					apparentY = y - ants[i].thickness;
+					make0 = true;
+				}
+			}
+			out[i] = world.new Vertex(i, make0 ? new IndexBuffer<Material>(Vertex.maxMatCount) : ants[i].mats.copy(), ants[i].getAlphas(), transitionHeight, apparentY);
 			
 			y -= ants[i].thickness;
 		}
@@ -71,6 +89,7 @@ public class BiomeManager {
 		public double aimThickness;//aim thickness of the layer
 		public double sizingSpeed;//speed with which the layer gets to the aim thickness
 		public boolean reachedSize;//if the layer has reached the aim thickness
+		public Stratum stratum;
 		
 		public double transitionHeight;
 		
@@ -83,6 +102,7 @@ public class BiomeManager {
 				enqueueMat(stratum.material, alpha);
 				this.thickness = stratum.thickness;
 				this.transitionHeight = stratum.transitionHeight;
+				this.stratum = stratum;
 			}
 			//ants get created only once per generator and layer and then they should be already full size
 			this.reachedSize = true;
@@ -122,12 +142,10 @@ public class BiomeManager {
 		public void switchTo(Stratum stratum, int yIndex){
 			if(stratum != null){
 				
-
+				this.stratum = stratum;
 				//add another material to the vertex
 				//add the smallest transition width to the vertex for this material
-				this.aimThickness = stratum.thickness;
-				this.sizingSpeed = stratum.sizingSpeed;
-				this.reachedSize = false;
+				resize(stratum.thickness, stratum.sizingSpeed);
 				
 				this.transitionHeight = stratum.transitionHeight;
 				
@@ -147,7 +165,7 @@ public class BiomeManager {
 					Column c = lastColumn;
 					for(int x = 1; x <= transition; x++){//but if right, it goes to the left!!
 						if(c != null){
-							double alpha = (1-((double)x/transition))*0.5;
+							double alpha = alpha(-(double)x/transition);
 							
 							c.vertices[yIndex].mats.enqueue(stratum.material);
 							c.vertices[yIndex].alphas[mats.write.previous.index] = alpha;
@@ -158,25 +176,46 @@ public class BiomeManager {
 				}
 				
 			} else {//just get smaller until its at 0 size
-				this.aimThickness = 0;
-				this.sizingSpeed = -sizingSpeed;
-				this.reachedSize = false;
+				resize(0, sizingSpeed);
 			}
 		}
+		
+		public void resize(double aimThickness, double speed){
+			this.aimThickness = aimThickness;
+			this.sizingSpeed = speed;
+			this.reachedSize = false;
+			double start = thickness;
+			x = 0;
+			final double dy = aimThickness - start;
+			final double dx = UsefulF.abs(dy/sizingSpeed);
+			resizer = (x) -> start + (UsefulF.cubicUnit.f(x/dx)*dy);
+		}
+		
+		int x;
+		Function resizer;//old: f(x) = startThickness + x*sizingSpeed
 
 		public void step(){
+			x++;
 			for(IndexBuffer<Transitioner>.Node cursor = transitions.read; cursor != transitions.write; cursor = cursor.next){
 				cursor.data.step();
 			}
 			removeInvisibleMats();
 			if(!reachedSize){
-				if(thickness > aimThickness && thickness - sizingSpeed > aimThickness){
-					thickness -= sizingSpeed;
-				} else if(thickness < aimThickness && thickness + sizingSpeed < aimThickness){
-					thickness += sizingSpeed;
-				} else {
-					thickness = aimThickness;
-					reachedSize = true;
+				if(thickness > aimThickness){
+					
+					thickness = resizer.f(x);
+					
+					if(thickness <= aimThickness){
+						reachedSize = true;
+					}
+				}
+				if(thickness < aimThickness){
+
+					thickness = resizer.f(x);
+					
+					if(thickness >= aimThickness){
+						reachedSize = true;
+					}
 				}
 			}
 		}
@@ -192,7 +231,7 @@ public class BiomeManager {
 		}
 		
 		public double getAlpha(){
-			return finished ? 1 : (0.5*x)/width + 0.5;
+			return finished ? 1 : alpha(((double)x)/width);
 		}
 		
 		public void step(){
@@ -205,5 +244,9 @@ public class BiomeManager {
 		public boolean finished(){
 			return x >= width;
 		}
+	}
+	
+	public static double alpha(double xQuotient){
+		return 0.5*(1 + xQuotient);
 	}
 }

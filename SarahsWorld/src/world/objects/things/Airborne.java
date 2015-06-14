@@ -2,7 +2,6 @@ package world.objects.things;
 
 import java.util.Random;
 
-import world.objects.ThingType;
 import world.objects.ai.Acceleration;
 import world.objects.ai.AiAddon;
 import world.objects.ai.Animating;
@@ -10,6 +9,7 @@ import world.objects.ai.Grounding;
 import world.objects.ai.Life;
 import world.objects.ai.Position;
 import world.objects.ai.Velocity;
+import world.things.ThingType;
 
 public class Airborne extends Moving {
 	

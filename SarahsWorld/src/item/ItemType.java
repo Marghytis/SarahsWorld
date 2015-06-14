@@ -14,7 +14,7 @@ import render.TexFileInfo;
 import render.Texture;
 import util.math.Rect;
 import util.math.Vec;
-import world.worldGeneration.objects.ai.Thing;
+import world.things.Thing;
 
 public class ItemType {
 
@@ -107,7 +107,7 @@ public class ItemType {
 	 * @param texinv Texture of the item in the inventory
 	 * @param boxWorld The box the item has lying around
 	 * @param boxHand The box of the item held in the hand
-	 * @param defaultRotationHand The rotation the item already has in the texture 0° would be horizontal to the right TODO true?
+	 * @param defaultRotationHand The rotation the item already has in the texture 0ï¿½ would be horizontal to the right TODO true?
 	 * @param name The name the item shows in inventory
 	 * @param coolDownStart Length of the cool down after usage
 	 * @param value Value when trading

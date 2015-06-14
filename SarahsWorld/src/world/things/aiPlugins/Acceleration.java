@@ -1,10 +1,12 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import util.math.Vec;
+import world.things.AiPlugin;
+import world.things.Thing;
 
 
 public class Acceleration extends AiPlugin {
-	
+
 	public Vec a;
 	
 	public Acceleration(Thing thing){
@@ -13,7 +15,9 @@ public class Acceleration extends AiPlugin {
 	}
 	
 	public boolean action(double delta) {
-		if(!t.ground.g) t.vel.v.shift(a, delta);
+		if(!t.ground.g){
+			t.vel.v.shift(a, delta);
+		}
 		a.set(0, 0);
 		return false;
 	}

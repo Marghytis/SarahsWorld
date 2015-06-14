@@ -6,8 +6,7 @@ import java.util.Random;
 
 import util.math.Vec;
 import world.generation.Zone;
-import world.generation.zones.Desert;
-import world.generation.zones.Test;
+import world.generation.zones.Mountains;
 import world.worldGeneration.WorldData.Column;
 
 
@@ -28,7 +27,7 @@ public class Generator {
 	public Generator(WorldData world){
 		this.world = world;
 		
-		Biome startBiome = Biome.DESERT;//TODO make it random
+		Biome startBiome = Biome.FIR_FORREST;//TODO make it random
 		
 		posL = new Vec();
 		posR = new Vec();
@@ -36,8 +35,8 @@ public class Generator {
 		biomeL = new BiomeManager(world, startBiome, true);
 		biomeR = new BiomeManager(world, startBiome, false);
 
-		zoneL = new Desert(biomeL, 0, true);
-		zoneR = new Desert(biomeR, 0, false);
+		zoneL = new Mountains(biomeL, 0, true);
+		zoneR = new Mountains(biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}
@@ -52,10 +51,10 @@ public class Generator {
 			biomeR.step(world.mostRight);
 			posR.x += Column.step;
 			
-			posR.y = zoneR.y(posR.x);
+			posR.y = zoneR.y(posR.x - zoneR.originX);
 			
 			if(zoneR.end){
-				zoneR = new Test(biomeR, posR.x, false);
+				zoneR = new Mountains(biomeR, posR.x, false);
 			}
 			world.addRight(biomeR.biome, biomeR.createVertices(posR.y));
 			world.mostRight.biome.spawnThings(world, world.mostRight.left);
@@ -64,10 +63,10 @@ public class Generator {
 			biomeL.step(world.mostLeft);
 			posL.x -= Column.step;
 			
-			posL.y = zoneL.y(posL.x);
+			posL.y = zoneL.y(-posL.x - zoneL.originX);
 
 			if(zoneL.end){
-				zoneL = new Test(biomeL, posL.x, true);
+				zoneL = new Mountains(biomeL, -posL.x, true);
 			}
 			world.addLeft(biomeL.biome, biomeL.createVertices(posL.y));
 			world.mostLeft.biome.spawnThings(world, world.mostLeft.right);

@@ -1,14 +1,13 @@
 package world.generation.zones;
 
 import util.math.Function;
+import util.math.UsefulF;
 import util.math.Vec;
 import world.generation.Zone;
 import world.worldGeneration.BiomeManager;
 import world.worldGeneration.WorldData.Column;
 
 public class Hills extends Zone {
-	
-	static Function cubicUnit = (x) -> 3*x*x - (2*x*x*x);
 
 	double aimWidth;
 	int partWidth;
@@ -20,7 +19,7 @@ public class Hills extends Zone {
 	Function curve;
 	boolean last;
 	
-	public Hills(BiomeManager biome, double originX, boolean left, double amplifierX, double amplifierY, double aimWidth) {
+	public Hills(BiomeManager biome, double originX, boolean left, double startHeight, double amplifierX, double amplifierY, double aimWidth) {
 		super(biome, originX, left);
 		
 		this.aimWidth = aimWidth;
@@ -29,14 +28,23 @@ public class Hills extends Zone {
 		widthVariance = (int)(40*amplifierX);
 		heightVariance = (int)(30*amplifierY);
 		
-		p1 = new Vec();
-		p2 = new Vec();
+		p1 = new Vec(0, startHeight);
+		p2 = new Vec(0, startHeight);
 		
 		curve = next(nextDelta());
 	}
 	
+	public void setAmplifier(double ampX, double ampY){
+		partWidth = (int)(200*ampX);
+		widthVariance = (int)(40*ampX);
+		heightVariance = (int)(30*ampY);
+	}
+	
+	public boolean reachedP2;
+	
 	public double step(double x) {
 		ownHeight = curve.f(x - p1.x) + p1.y;
+		reachedP2 = false;
 		
 		//interpolate hills
 		if(x + Column.step >= p2.x){
@@ -50,6 +58,7 @@ public class Hills extends Zone {
 				}
 			} else {
 				curve = next(nextDelta());
+				reachedP2 = true;
 			}
 		}
 		
@@ -59,13 +68,13 @@ public class Hills extends Zone {
 	
 	public Function next(Vec d){
 		p1.set(p2);
-		p2.shift(d.x, d.y);
-		return (x) -> cubicUnit.f(x/d.x)*d.y;
+		p2.shift(d);
+		return (x) -> UsefulF.cubicUnit.f(x/d.x)*d.y;
 	}
 	
 	public Vec nextDelta(){
 		double dx =	partWidth + (random.nextInt(2*widthVariance) - widthVariance);
-		double dy = (random.nextInt(2*heightVariance) - heightVariance);// - p2.y???? was there i don't know the reason
+		double dy = (random.nextInt(2*heightVariance) - heightVariance) - p2.y;
 		return new Vec(dx, dy);
 	}
 }

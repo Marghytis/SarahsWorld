@@ -1,13 +1,12 @@
 package world.generation.zones;
 
-import util.math.Vec;
 import world.generation.Zone;
 import world.worldGeneration.BiomeManager;
 
 public class WaterColumns extends Zone{
 
-	public WaterColumns(BiomeManager biome, Vec start, boolean left) {
-		super(biome, start, left);
+	public WaterColumns(BiomeManager biome, double originX, boolean left) {
+		super(biome, originX, left);
 	}
 
 	public double deltaY() {

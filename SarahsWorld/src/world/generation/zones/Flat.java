@@ -8,8 +8,8 @@ public class Flat extends Zone{
 
 	double width;
 	
-	public Flat(BiomeManager biome, double originX, Biome b, double aimWidth) {
-		super(biome, originX);
+	public Flat(BiomeManager biome, double originX, Biome b, double aimWidth, boolean left) {
+		super(biome, originX, left);
 		this.width = aimWidth;
 		biome.switchToBiome(b);
 	}

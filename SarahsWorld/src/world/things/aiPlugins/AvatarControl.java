@@ -1,11 +1,14 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import main.Main;
+import main.Settings;
 import menu.Menu;
 
 import org.lwjgl.input.Keyboard;
 
 import util.math.Vec;
+import world.things.AiPlugin;
+import world.things.Thing;
 import world.worldGeneration.Save;
 import core.Listener;
 import core.Window;
@@ -13,8 +16,7 @@ import core.Window;
 public  class AvatarControl extends AiPlugin implements Listener{
 
 	public static final float aWalking = 1000;
-	public static final float aSprint = 2500;
-	public static final float aDebug = 10000;
+	public static final float aSwimming = 500;
 	
 	public AvatarControl(Thing t){
 		super(t);
@@ -27,10 +29,10 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			float a = aWalking;
 			walkingDir = 0;
 			if(Keyboard.isKeyDown(Keyboard.KEY_D)){
-				if(walkingDir < 2) walkingDir++;
+				walkingDir++;
 			}
 			if(Keyboard.isKeyDown(Keyboard.KEY_A)){
-				if(walkingDir > -2) walkingDir--;
+				walkingDir--;
 			}
 			if(walkingDir != 0){
 				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
@@ -43,6 +45,17 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			t.ground.sprint = walkingDir > 1 || walkingDir < -1;
 			t.ground.setAni(walkingDir*a);
 			t.ground.acc += walkingDir*a;
+		} else if(t.friction.swimming){
+			float a = aSwimming;
+			walkingDir = 0;
+			if(Keyboard.isKeyDown(Keyboard.KEY_D)){
+				walkingDir++;
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_A)){
+				walkingDir--;
+			}
+			t.acc.a.shift(walkingDir*a, 0);
+			//TODO set swimming animation
 		}
 		return false;
 	}
@@ -104,7 +117,13 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			Main.menu.open = Main.menu.open != Menu.MAIN ? Menu.MAIN : Menu.EMPTY;
 			break;
 		case Keyboard.KEY_F1:
-			Main.menu.open = Main.menu.open != Menu.DEBUG ? Menu.DEBUG : Menu.EMPTY;
+			if(Main.menu.open != Menu.DEBUG){
+				Main.menu.open = Menu.DEBUG;
+				Settings.SHOW_BOUNDING_BOX = true;
+			} else {
+				Main.menu.open = Menu.EMPTY;
+				Settings.SHOW_BOUNDING_BOX = false;
+			}
 			break;
 		}
 		return false;

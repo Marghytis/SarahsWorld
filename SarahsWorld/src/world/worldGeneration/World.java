@@ -5,10 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import util.math.Vec;
+import world.things.Thing;
+import world.things.ThingType;
 import world.worldGeneration.WorldData.Column;
 import world.worldGeneration.WorldData.Vertex;
-import world.worldGeneration.objects.ai.Thing;
-import world.worldGeneration.objects.ai.ThingType;
 import core.Window;
 
 public class World {

@@ -1,5 +1,8 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
+import world.things.AiPlugin;
+import world.things.Thing;
+import world.things.ThingType;
 import main.Main;
 import main.Settings;
 

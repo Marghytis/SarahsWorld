@@ -3,7 +3,7 @@ package item;
 import render.TexFile;
 import render.Texture;
 import util.math.Rect;
-import world.worldGeneration.objects.ai.Inventory;
+import world.things.aiPlugins.Inventory;
 import core.Window;
 
 

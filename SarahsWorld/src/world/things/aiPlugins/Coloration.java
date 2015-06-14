@@ -1,6 +1,8 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import util.Color;
+import world.things.AiPlugin;
+import world.things.Thing;
 
 public class Coloration extends AiPlugin {
 	

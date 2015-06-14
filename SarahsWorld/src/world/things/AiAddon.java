@@ -1,4 +1,4 @@
-package world.worldGeneration.objects.ai;
+package world.things;
 
 import render.Texture;
 

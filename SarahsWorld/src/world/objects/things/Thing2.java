@@ -6,12 +6,12 @@ import main.Savable;
 
 import org.lwjgl.opengl.GL11;
 
-import world.objects.ThingType;
 import world.objects.ai.AiAddon;
 import world.objects.ai.AiPlugin;
 import world.objects.ai.Animating;
 import world.objects.ai.Life;
 import world.objects.ai.Position;
+import world.things.ThingType;
 
 public class Thing2 implements Savable{
 

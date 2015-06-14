@@ -1,8 +1,10 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import util.math.Vec;
+import world.things.AiPlugin;
+import world.things.Thing;
 public class Velocity extends AiPlugin{
-	
+
 	Vec v;
 	
 	public Velocity(Thing t){
@@ -15,6 +17,7 @@ public class Velocity extends AiPlugin{
 	}
 	
 	public boolean action(double delta) {
+		
 		t.pos.p.shift(v, delta);
 		return false;
 	}

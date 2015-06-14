@@ -1,6 +1,8 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import util.math.Vec;
+import world.things.AiPlugin;
+import world.things.Thing;
 
 public class Gravity extends AiPlugin{
 
@@ -16,7 +18,7 @@ public class Gravity extends AiPlugin{
 	}
 
 	public boolean action(double delta) {
-		if(!t.ground.g)t.acc.a.shift(grav);
+		t.acc.a.shift(grav);
 		return false;
 	}
 

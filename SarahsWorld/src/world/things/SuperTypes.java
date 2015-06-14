@@ -1,8 +1,11 @@
-package world.worldGeneration.objects.ai;
+package world.things;
 
 import item.ItemType;
 import render.Texture;
 import util.math.Vec;
+import world.things.aiPlugins.Animating;
+import world.things.aiPlugins.Fruits;
+import world.things.aiPlugins.Position;
 import world.worldGeneration.WorldData;
 import world.worldGeneration.WorldData.Column;
 import world.worldGeneration.WorldData.Vertex;

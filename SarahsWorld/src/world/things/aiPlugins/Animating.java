@@ -1,17 +1,17 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
-import main.Settings;
 import render.Animator;
-import render.TexFile;
 import render.Texture;
-import util.Color;
 import util.math.Rect;
+import world.things.AiPlugin;
+import world.things.Thing;
 
 public class Animating extends AiPlugin{
 
 	public Animator animator;
 	public Rect box;
 	public int behind;
+	public double yOffset;
 	
 	public boolean dir;
 	
@@ -26,15 +26,9 @@ public class Animating extends AiPlugin{
 	public void partRender(){
 		//Scale x -1 is not possible sadly
 		if(dir){
-			animator.fillBash(box, t.pos.p.x, t.pos.p.y, 1);
+			animator.fillBash(box, t.pos.p.x, t.pos.p.y + yOffset, 1);
 		} else {
-			animator.fillBash(box, t.pos.p.x, t.pos.p.y, 0);
-		}
-		if(Settings.SHOW_BOUNDING_BOX){
-			TexFile.bindNone();
-			Color.RED.bindKeepAlpha();
-			box.outline();
-			Color.WHITE.bindKeepAlpha();
+			animator.fillBash(box, t.pos.p.x, t.pos.p.y + yOffset, 0);
 		}
 	}
 

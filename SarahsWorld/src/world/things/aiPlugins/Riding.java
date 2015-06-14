@@ -1,8 +1,10 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import main.Main;
 import render.Texture;
 import util.math.Rect;
+import world.things.AiPlugin;
+import world.things.Thing;
 
 public class Riding extends AiPlugin {
 

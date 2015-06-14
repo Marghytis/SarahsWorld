@@ -54,6 +54,18 @@ public enum Menu {
 			} while (!helper.equals(data.head));
 			GL11.glEnd();
 			
+			if(Main.world.avatar.friction.swimming){
+				Color.GREEN.bind();
+			} else {
+				Color.RED.bind();
+			}
+			GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2d(100, 100);
+				GL11.glVertex2d(200, 100);
+				GL11.glVertex2d(200, 200);
+				GL11.glVertex2d(100, 200);
+			GL11.glEnd();
+			
 			Color.WHITE.bind();
 		}
 		class DataSnake {
@@ -105,7 +117,7 @@ public enum Menu {
 	
 	public boolean blockWorld;
 	public Element[] elements;
-	public Button[] buttons;//buttons € elements :D
+	public Button[] buttons;//buttons ï¿½ elements :D
 	
 	Menu(boolean blockWorld, Element... elements){
 		this.blockWorld = blockWorld;

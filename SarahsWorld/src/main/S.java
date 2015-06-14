@@ -13,8 +13,8 @@ import world.WorldContainer.WorldField;
 import world.WorldContainer.WorldPoint;
 import world.generation.Layer;
 import world.generation.WorldGenerator;
-import world.objects.Thing;
 import world.objects.ai.AiPlugin;
+import world.things.Thing;
 
 public class S {
 	

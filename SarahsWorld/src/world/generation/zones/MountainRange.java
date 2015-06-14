@@ -1,8 +1,8 @@
 package world.generation.zones;
 
 import util.math.Function;
-import util.math.Vec;
 import world.generation.Zone;
+import world.worldGeneration.Biome;
 import world.worldGeneration.BiomeManager;
 
 public class MountainRange extends Zone {
@@ -14,8 +14,9 @@ public class MountainRange extends Zone {
 	double height;
 	double borderWidth;
 	
-	public MountainRange(BiomeManager biome, Vec start) {
-		super(biome, start);
+	public MountainRange(BiomeManager biome, double originX, boolean left) {
+		super(biome, originX, left);
+		biome.switchToBiome(Biome.FIR_FORREST);
 		
 		width = 20000 + (Math.random()*1000);
 		height = 5000 + (Math.random()*1000);
@@ -24,21 +25,22 @@ public class MountainRange extends Zone {
 		slope = Function.parabola2(borderWidth, height);
 	}
 	
-	public double step() {
+	public double step(double x) {
 		double dy = 0;
-		if(pos.x < borderWidth){
-			dy = slope.f(pos.x);
-		} else if(pos.x >= width){
+		if(x < borderWidth){
+			dy = slope.f(x);
+		} else if(x >= width){
 			dy = 0;
 			end = true;
-		} else if(pos.x > width - borderWidth){
-			dy = -slope.f(width - pos.x);
+		} else if(x > width - borderWidth){
+			dy = -slope.f(width - x);
 		} else {
 			dy = 0;
 		}
 		
-		dy += Math.sin(pos.x*0.01)*5;//TODO add Mountains
+		ownHeight += dy;
+		ownHeight += Math.sin(x*0.01)*5;//TODO add Mountains
 		
-		return dy;
+		return ownHeight;
 	}
 }

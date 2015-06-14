@@ -1,8 +1,11 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import item.ItemType;
 import main.Settings;
 import render.Texture;
+import world.things.AiPlugin;
+import world.things.Thing;
+import world.things.ThingType;
 
 
 public class Attacking extends AiPlugin {

@@ -1,9 +1,11 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import main.Main;
 import render.Texture;
 import util.math.UsefulF;
 import util.math.Vec;
+import world.things.AiPlugin;
+import world.things.Thing;
 import world.worldGeneration.WorldData.Column;
 import world.worldGeneration.WorldData.Vertex;
 
@@ -18,6 +20,7 @@ public class Grounding extends AiPlugin {
 	public float acc;
 	public double yOffset;
 	public boolean friction;
+	public boolean waterWalking;
 	//standing	walking	sprinting	jumping	flying	landing
 	//0			1		2			3		4		5
 	
@@ -27,10 +30,11 @@ public class Grounding extends AiPlugin {
 		this.friction = friction;
 	}
 
-	public Grounding(Thing t, boolean friction, double yOffset, Vertex link, Texture standing, Texture walking, Texture sprinting, Texture jumping, Texture flying, Texture landing){
+	public Grounding(Thing t, boolean friction, double yOffset, boolean waterWalking, Vertex link, Texture standing, Texture walking, Texture sprinting, Texture jumping, Texture flying, Texture landing){
 		this(t, friction, yOffset, standing, walking, sprinting, jumping, flying, landing);
 		g = true;
 		this.link = link;
+		this.waterWalking = waterWalking;
 	}
 	
 	
@@ -58,11 +62,11 @@ public class Grounding extends AiPlugin {
 				for(Column c = Main.world.window.leftEnd; c != null; c = c.right){
 					if(c.collisionVec == -1) continue;
 					if(c.equals(Main.world.window.leftEnd)){
-						lastVec = new Vec(c.xReal, c.vertices[c.collisionVec].y);//c.vertices[c.collisionVec].y right???
+						lastVec = new Vec(c.xReal, c.vertices[waterWalking ? c.collisionVecWater : c.collisionVec].y);
 						currentVec = lastVec.copy();
 					} else {
-						Vertex field = c.vertices[c.collisionVec];
-						Vec[] intersections = UsefulF.circleIntersection(lastVec, currentVec.set(c.xReal, c.vertices[c.collisionVec].y), pos, UsefulF.abs(speed*delta));
+						Vertex field = c.vertices[waterWalking ? c.collisionVecWater : c.collisionVec];
+						Vec[] intersections = UsefulF.circleIntersection(lastVec, currentVec.set(c.xReal, field.y), pos, UsefulF.abs(speed*delta));
 						lastVec.set(currentVec);
 						if(speed > 0){
 							if(intersections[1] != null && intersections[1].y > i.y){
@@ -94,7 +98,7 @@ public class Grounding extends AiPlugin {
 		} else {
 			if(link == null || (int)(t.pos.p.x/Column.step) != link.parent.xIndex){
 				Column below = Main.world.window.get((int)(t.pos.p.x/Column.step));
-				Vertex link = below.vertices[0];
+				link = below.vertices[below.collisionVec];
 				link.parent.add(t);
 			}
 		}

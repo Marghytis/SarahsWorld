@@ -4,7 +4,7 @@ import particles.Particle.ParticleType;
 import render.TexFile;
 import util.Color;
 import util.math.Vec;
-import world.objects.Thing;
+import world.things.Thing;
 
 public class RainbowSpit implements ParticleEffect{
 	

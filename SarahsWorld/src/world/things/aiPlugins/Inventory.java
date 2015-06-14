@@ -1,9 +1,11 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import item.ItemStack;
 import item.ItemType;
 import render.Animator;
 import util.math.Vec;
+import world.things.AiPlugin;
+import world.things.Thing;
 
 public class Inventory extends AiPlugin{
 

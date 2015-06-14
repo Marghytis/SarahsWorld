@@ -1,6 +1,8 @@
-package world.worldGeneration.objects.ai;
+package world.things.aiPlugins;
 
 import world.Material;
+import world.things.AiPlugin;
+import world.things.Thing;
 
 public class FlyAround extends AiPlugin{
 

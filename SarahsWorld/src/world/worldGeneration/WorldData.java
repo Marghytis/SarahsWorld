@@ -6,8 +6,8 @@ import java.util.Random;
 
 import util.math.Vec;
 import world.Material;
-import world.worldGeneration.objects.ai.Thing;
-import world.worldGeneration.objects.ai.ThingType;
+import world.things.Thing;
+import world.things.ThingType;
 import data.IndexBuffer;
 
 
@@ -66,13 +66,14 @@ public class WorldData {
 		}
 	}
 	public class Column {
-		public static final double step = 100;
+		public static final double step = 20;
 		public Column left, right;
 		public Vertex[] vertices;
 		public Thing[] things;//just dummies
 		public int xIndex;
 		public double xReal;
 		public int collisionVec;
+		public int collisionVecWater;
 		public Biome biome;
 		
 		public Column(int xIndex, Biome biome, Vertex[] vertices){
@@ -84,6 +85,7 @@ public class WorldData {
 				v.parent = this;
 			}
 			collisionVec = getCollisionVec();
+			collisionVecWater = getCollisionVecWater();
 			this.things = new Thing[ThingType.values().length];
 			for(int i = 0; i < things.length; i++){
 				things[i] = ThingType.DUMMY.create(WorldData.this, vertices[0], null);
@@ -92,7 +94,15 @@ public class WorldData {
 		
 		public int getCollisionVec(){
 			int i = 0;
-				while(i < World.layerCount - 1 && (vertices[i].mats.empty() || vertices[i].mats.write.previous.data.solid == false))
+				while(i < World.layerCount - 1 && (vertices[i].mats.empty() || vertices[i].mats.write.previous.data.solidity <= 1))
+					i++;
+			if(i == World.layerCount - 1) i = -1;
+			return i;
+		}
+		
+		public int getCollisionVecWater(){
+			int i = 0;
+				while(i < World.layerCount - 1 && (vertices[i].mats.empty() || vertices[i].mats.write.previous.data.solidity < 1))
 					i++;
 			if(i == World.layerCount - 1) i = -1;
 			return i;
@@ -136,11 +146,9 @@ public class WorldData {
 		public double transitionHeight;
 		public double[] alphas;
 		public Column parent;
-		public Vertex(){
-			mats = new IndexBuffer<>(maxMatCount);
-			alphas = new double[maxMatCount];
-		}
-		public Vertex(IndexBuffer<Material> copy, double[] alphas, double transitionHeight, double y) {
+		public int yIndex;
+		public Vertex(int yIndex, IndexBuffer<Material> copy, double[] alphas, double transitionHeight, double y) {
+			this.yIndex = yIndex;
 			mats = copy;
 			this.alphas = alphas;
 			this.transitionHeight = transitionHeight;

@@ -2,9 +2,9 @@ package world.worldGeneration;
 
 import util.math.Vec;
 import world.Material;
+import world.things.ThingType;
 import world.worldGeneration.WorldData.Column;
 import world.worldGeneration.WorldData.Vertex;
-import world.worldGeneration.objects.ai.ThingType;
 
 public enum Biome {
 	DESERT(new Stratum[]{
@@ -63,13 +63,14 @@ public enum Biome {
 			null,
 			new Stratum(Material.STONE, 100000000.0, 200.0, 20, 40, 5, 5),
 			null
-			},
+			}
 			
-			new ThingSpawner((w, p, f) -> ThingType.TREE_FIR.create(w, f, p.copy()), 0.3),
+			,new ThingSpawner((w, p, f) -> ThingType.TREE_FIR.create(w, f, p.copy()), 0.3),
 			new ThingSpawner((w, p, f) -> ThingType.GRASS.create(w, f, p.copy()), 01.2),
 			new ThingSpawner((w, p, f) -> ThingType.CLOUD.create(w, f, p.copy()), 0.05),
 			new ThingSpawner((w, p, f) -> ThingType.SNAIL.create(w, f, p.copy()), 0.01),
-			new ThingSpawner((w, p, f) -> ThingType.BUTTERFLY.create(w, f, p.copy().shift(0, 90)), 0.01)),
+			new ThingSpawner((w, p, f) -> ThingType.BUTTERFLY.create(w, f, p.copy().shift(0, 90)), 0.01)
+			),
 	NORMAL(new Stratum[]{
 			null,
 			new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
@@ -81,7 +82,16 @@ public enum Biome {
 			},
 			
 			new ThingSpawner((w, p, f) -> ThingType.PYRAMID.create(w, f, p.copy()), 0.03),
-			new ThingSpawner((w, p, f) -> ThingType.CACTUS.create(w, f, p.copy()), 0.05));
+			new ThingSpawner((w, p, f) -> ThingType.CACTUS.create(w, f, p.copy()), 0.05)),
+	LAKE(new Stratum[]{
+			new Stratum(Material.WATER, 200.0, 20.0, 10, 50, 0, 4),
+			new Stratum(Material.SAND, 20.0, 20.0, 5, 40, 2, 4),
+			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
+			null,
+			null,
+			new Stratum(Material.STONE, 100000000.0, 200.0, 20, 40, 1, 5),
+			null
+			});
 	
 	ThingSpawner[] spawners;
 	Stratum[] stratums;
