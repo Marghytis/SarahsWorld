@@ -2,7 +2,7 @@ package world.things.aiPlugins;
 
 import main.Main;
 import main.Settings;
-import menu.Menu;
+import menu.Menu.Menus;
 
 import org.lwjgl.input.Keyboard;
 
@@ -12,6 +12,7 @@ import world.things.Thing;
 import world.worldGeneration.Save;
 import core.Listener;
 import core.Window;
+import effects.Effect;
 
 public  class AvatarControl extends AiPlugin implements Listener{
 
@@ -61,20 +62,29 @@ public  class AvatarControl extends AiPlugin implements Listener{
 	}
 
 	public boolean pressed(int button, Vec mousePos) {
+		for(Effect e : Main.world.window.effects){
+			e.pressed(button, mousePos);
+		}
 		return false;
 	}
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
-		Vec worldPos = mousePos.minus(new Vec(Window.WIDTH/2, Window.HEIGHT/2)).shift(t.pos.p);
+		Vec worldPos = mousePos.minus(Window.WIDTH/2, Window.HEIGHT/2).shift(t.pos.p);
 		Thing[] livingsClickedOn = Main.world.window.livingsAt(worldPos);
 		
 		switch(button){
 		case 0://ATTACK
-			if(livingsClickedOn.length > 0) t.attack.attack(t.inv.getSelectedItem(), livingsClickedOn);
+			if(livingsClickedOn.length > 0 && !t.friction.swimming){
+				t.attack.attack(t.inv.getSelectedItem(), livingsClickedOn);
+			}
 			break;
 		case 1://USE
 			t.inv.useSelectedItem(worldPos, livingsClickedOn);
 			break;
+		}
+		
+		for(Effect e : Main.world.window.effects){
+			e.released(button, mousePos, pathSincePress);
 		}
 //		int hitThingLoc = -3;
 //		Thing[] hitThing = new Thing[1];
@@ -107,23 +117,32 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			Save.saveWorld(Main.world);
 			break;
 		case Keyboard.KEY_Q:
-			if(Main.menu.open != Menu.INVENTORY){
-				Main.menu.open = Menu.INVENTORY;
+			if(Main.menu.open.stay) break;
+			if(Main.menu.open != Menus.INVENTORY){
+				Main.menu.setMenu(Menus.INVENTORY);
 			} else {
-				Main.menu.open = Menu.EMPTY;
+				Main.menu.setLast();
 			}
 			break;
 		case Keyboard.KEY_ESCAPE:
-			Main.menu.open = Main.menu.open != Menu.MAIN ? Menu.MAIN : Menu.EMPTY;
+			if(Main.menu.open != Menus.MAIN){
+				Main.menu.setMenu(Menus.MAIN);
+			} else {
+					Main.menu.setLast();
+			}
 			break;
 		case Keyboard.KEY_F1:
-			if(Main.menu.open != Menu.DEBUG){
-				Main.menu.open = Menu.DEBUG;
+			if(Main.menu.open.stay) break;
+			if(Main.menu.open != Menus.DEBUG){
 				Settings.SHOW_BOUNDING_BOX = true;
+				Main.menu.setMenu(Menus.DEBUG);
 			} else {
-				Main.menu.open = Menu.EMPTY;
 				Settings.SHOW_BOUNDING_BOX = false;
+				Main.menu.setLast();
 			}
+			break;
+		case Keyboard.KEY_T:
+			Settings.STOP_GRAPH = !Settings.STOP_GRAPH;
 			break;
 		}
 		return false;

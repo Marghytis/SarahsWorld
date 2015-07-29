@@ -1,10 +1,9 @@
 package item;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import main.Main;
+import main.Res;
 
 import org.lwjgl.opengl.GL11;
 
@@ -16,26 +15,20 @@ import util.math.Rect;
 import util.math.Vec;
 import world.things.Thing;
 
-public class ItemType {
+public enum ItemType {
 
-	public static final TexFile ITEMS_WORLD = new TexFile("res/items/ItemsWorld.png", 5, 1, -0.5f, -0.5f);
-	public static final TexFile ITEMS_HAND = new TexFile("res/items/ItemsHand.png", 6, 1, -0.5f, -0.5f);
-	public static final TexFile ITEMS_INV = new TexFile("res/items/ItemsInv.png", 7, 1, -0.5f, -0.5f);
-	public static final TexFile ITEMS_WEAPONS = new TexFile("res/items/Weapons.png", 1, 6, -0.5f, -0.5f);
-
-	public static List<ItemType> list = new ArrayList<>();
-//															Texture texWorld,		Texture texHand,			Texture texinv,		Rect boxWorld,				Rect boxHand,				int defaultRotationHand, String name, int coolDownStart, int value, WeaponType weaponType, ItemUsageType useType, BodyPos bodyPos, int attackStrength, double crit, double critProb, boolean needsTarget
-//															Texture World           |Texture on creature		|Texture inventory	 |Box world					|Box on creature			|rotation in Tex|Name			|Cooldown						
-	public static final ItemType sword	= new ItemType		(ITEMS_WORLD.tex(0, 0),	ITEMS_WEAPONS.tex(0, 0),	ITEMS_INV.tex(0, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -21, 80, 40), 180,					"Sword",		500,			20, 		WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 4, 	6, 	0.1,false);
-	public static final ItemType axe = new ItemType			(ITEMS_WORLD.tex(1, 0),	ITEMS_WEAPONS.tex(0, 1),	ITEMS_INV.tex(1, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Axe",			1000,			100, 		WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 10, 	14,	0.1,false);
-	public static final ItemType stick	= new ItemType		(ITEMS_WORLD.tex(2, 0),	ITEMS_WEAPONS.tex(0, 2),	ITEMS_INV.tex(3, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -21, 80, 40), 180,					"Stick",		500,			2, 			WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 2, 	2, 	0,	false);
-	public static final ItemType candyCane	= new ItemType	(ITEMS_WORLD.tex(3, 0),	ITEMS_WEAPONS.tex(0, 3),	ITEMS_INV.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Candy cane",	1000,			2, 			WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 2,	2,	0,	false);
-	public static final ItemType shovel = new ItemType		(ITEMS_WORLD.tex(4, 0),	ITEMS_WEAPONS.tex(0, 4),	ITEMS_INV.tex(4, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Shovel",		700,			70, 		WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.1,false);
-//	public static final MagicWeapon horn = new MagicWeapon	(ITEMS_WORLD.tex(4, 0),	ITEMS_HAND.tex(5, 0),		ITEMS_INV.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
-	public static final ItemType berry	= new ItemType		(ITEMS_WORLD.tex(0, 0),	ITEMS_INV.tex(6, 0),		ITEMS_INV.tex(6, 0), new Rect(-25, -2, 50, 50), new Rect(-10, -10, 30, 30), 0,						"Berry",		0,				8, 			WeaponType.PUNCH,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false){
+//															Texture texWorld,			Texture texHand,				Texture texinv,			Rect boxWorld,				Rect boxHand,				int defaultRotationHand, String name, int coolDownStart, int value, WeaponType weaponType, ItemUsageType useType, BodyPos bodyPos, int attackStrength, double crit, double critProb, boolean needsTarget
+//															Texture World           	|Texture on creature			|Texture inventory	 	|Box world					|Box on creature			|rotation in Tex|Name			|Cooldown						
+	SWORD(Res.items_world.tex(0, 0),	Res.items_weapons.tex(0, 0),	Res.items_inv.tex(0, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -21, 80, 40), 180,					"Sword",		500,			20, 		WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 4, 	6, 	0.1,false),
+	AXE(Res.items_world.tex(1, 0),	Res.items_weapons.tex(0, 1),	Res.items_inv.tex(1, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Axe",			1000,			100, 		WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 10, 	14,	0.1,false),
+	STICK(Res.items_world.tex(2, 0),	Res.items_weapons.tex(0, 2),	Res.items_inv.tex(3, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -21, 80, 40), 180,					"Stick",		500,			2, 			WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 2, 	2, 	0,	false),
+	CANDY_CANE(Res.items_world.tex(3, 0),	Res.items_weapons.tex(0, 3),	Res.items_inv.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Candy cane",	1000,			2, 			WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 2,	2,	0,	false),
+	SHOVEL(Res.items_world.tex(4, 0),	Res.items_weapons.tex(0, 4),	Res.items_inv.tex(4, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Shovel",		700,			70, 		WeaponType.STRIKE,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.1,false),
+//	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.items_inv.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
+	BERRY(Res.items_world.tex(0, 0),	Res.items_inv.tex(6, 0),		Res.items_inv.tex(6, 0), new Rect(-25, -2, 50, 50), new Rect(-10, -10, 30, 30), 0,						"Berry",		0,				8, 			WeaponType.PUNCH,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false){
 		@Override
 		public boolean use(Thing src, Vec pos){
-			src.inv.stacks[Main.world.avatar.inv.selectedItem].item = ItemType.fist;
+			src.inv.stacks[Main.world.avatar.inv.selectedItem].item = ItemType.FIST;
 			if(src.magic != null && src.magic.mana + 2 <= Main.world.avatar.magic.maxMana){
 				src.magic.mana += 2;
 //				WorldView.particleEffects.add(new BerryEat(new Vec(World.sarah.pos.x + (World.sarah.animator.box.size.x/2), World.sarah.pos.y + (World.sarah.animator.box.size.y/2))));TODO watch above
@@ -43,14 +36,14 @@ public class ItemType {
 			}
 			return false;
 		}
-	};
+	},
 	
 	//Item types below this line won't appear in traders inventories
-	public static ItemType fist = new ItemType(null, null, null, null, null, 0, "Fist", 300, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
+	FIST(null, null, null, null, null, 0, "Fist", 300, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
 		@Override
 		public boolean use(Thing src, Vec pos, Thing dest){
 			if(dest.fruits != null && src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 25000){
-				src.inv.addItem(dest.fruits.dropItem());
+				src.inv.addItem(dest.fruits.dropItem(), 1);
 			} else {
 				switch(dest.type){
 				case COW:
@@ -58,7 +51,7 @@ public class ItemType {
 					break;
 				case ITEM:
 					if(src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 25000){
-						src.inv.addItem(dest.item.type);
+						src.inv.addItem(dest.item.type, 1);
 						Main.world.window.deletionRequested.add(dest);
 					}
 					break;
@@ -69,8 +62,8 @@ public class ItemType {
 			}
 			return needsTarget;
 		}
-	};
-//	public static final ItemType coin = new ItemType(Res.COIN, Res.COIN, Res.COIN, new Rect(-15, -6, 30, 30), new Rect(-55, -19, 80, 40), 180, "Coin", 0, 1, null){
+	},
+	COIN(Res.coin.tex(), Res.coin.tex(), Res.coin.tex(), Res.coin.pixelBox, null, 0, "Coin", 0, 1, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 0, 0, 0, false){
 //		public void update(float delta, WorldItem item){
 //			if(item.pos.minus(World.sarah.pos).lengthSqare() < 400){
 //				WorldView.thingTasks.add(() -> World.items[coin.id].remove(item));
@@ -78,7 +71,13 @@ public class ItemType {
 //				Res.coinSound.play();
 //			}
 //		}
-//	};
+	};
+	
+	public static ItemType[] values;
+	
+	static {
+		values = values();
+	}
 	
 	public Texture texWorld;
 	public Texture texHand;
@@ -119,7 +118,7 @@ public class ItemType {
 	 * @param critProb The default probability of landing a critical hit
 	 * @param needsTarget If the item needs a thing target to use it or not
 	 */
-	public ItemType(Texture texWorld, Texture texHand, Texture texinv, Rect boxWorld, Rect boxHand, int defaultRotationHand, String name, int coolDownStart, int value, WeaponType weaponType, ItemUsageType useType, BodyPos bodyPos, int attackStrength, double crit, double critProb, boolean needsTarget) {
+	ItemType(Texture texWorld, Texture texHand, Texture texinv, Rect boxWorld, Rect boxHand, int defaultRotationHand, String name, int coolDownStart, int value, WeaponType weaponType, ItemUsageType useType, BodyPos bodyPos, int attackStrength, double crit, double critProb, boolean needsTarget) {
 		this.texWorld = texWorld;
 		this.texHand = texHand;
 		this.texInv = texinv;
@@ -136,12 +135,9 @@ public class ItemType {
 		this.crit = crit;
 		this.critProb = critProb;
 		this.needsTarget = needsTarget;
-		
-		list.add(this);
-		this.id = list.indexOf(this);
 	}
 	
-	public boolean specialUse(Thing src, Vec pos, Thing... dest){
+	public boolean specialUse(Thing src, Vec pos, Thing[] dest){
 		if(needsTarget){
 			for(Thing t : dest){
 				if(use(src, pos, t)){
@@ -165,24 +161,31 @@ public class ItemType {
 	 */
 	public void renderHand(Thing t, Animator ani){
 		if(texHand == null) return;
-		int[] handPos = null;
-		TexFileInfo info = t.ani.animator.getAnimation().file.infos[bodyPos.ordinal()];
+		TexFile thingTex = t.ani.animator.getAnimation().file;
+		TexFileInfo info = thingTex.infos[bodyPos.ordinal()];
+		
+		int handX = 0;
+		int handY = 0;
+		int handAngle = 180;
+		
 		if(info != null){
-			handPos = info.info[texHand.x][texHand.y];
-		} else {
-			handPos = new int[]{0, 0, 180};
+//			System.out.println(t.ani.animator.getAnimation().file.name + "  " + info.info.length + "  " + info.info[0].length + "  " + info.info[0][0].length);
+			handX = info.info[t.ani.animator.y][t.ani.animator.x][0];
+			handY = info.info[t.ani.animator.y][t.ani.animator.x][1];
+			handAngle = info.info[t.ani.animator.y][t.ani.animator.x][2];
 		}
 		
-		int handX = (t.ani.dir? -1 : 1)*(handPos[0] + texHand.file.pixelBox.pos.xInt());
-		int handY = handPos[1] + texHand.file.pixelBox.pos.yInt();
-		int handAngle = 180 - handPos[2];
+		if(t.ani.dir){
+			handX = thingTex.pixelBox.size.xInt() - handX;
+			handAngle = 180 - handAngle;
+		}
 		
 		GL11.glPushMatrix();
-		GL11.glTranslatef(handX, handY, 0);
+		GL11.glTranslated(handX + t.pos.p.x + thingTex.pixelBox.pos.xInt(), handY + t.pos.p.y + thingTex.pixelBox.pos.yInt(), 0);
 		GL11.glRotatef(defaultRotationHand + handAngle, 0, 0, 1);
 		
 		if(t.ani.dir){
-			ani.fill(boxHand, 1);
+			ani.fill(boxHand, 2);
 		} else {
 			ani.fill(boxHand, 0);
 		}
@@ -191,7 +194,7 @@ public class ItemType {
 	}
 	
 	public static ItemType getRandomItem(Random random){
-		return list.get(random.nextInt(list.size()-1));
+		return values[random.nextInt(values.length-1)];
 	}
 
 	public static enum ItemUsageType {FIST}

@@ -1,28 +1,30 @@
 package menu;
 
+import java.awt.Font;
+
+import render.Texture;
 import util.Color;
-import util.math.Rect;
-import util.math.Vec;
+import util.TrueTypeFont;
 
 public class TextField extends Element {
 
-	Text text;
+	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 47), true);
+	public static Color fontColor = new Color(0.9f, 0.8f, 0.1f);
 	
-	public TextField(Rect box, Vec relativePos, Text text) {
-		super(null, box, relativePos);
+	public String text;
+	
+	public TextField(String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color background, Texture backgroundTex){
+		super(relX1, relY1, relX2, relY2, x1, y1, x2, y2, background, backgroundTex);
 		this.text = text;
 	}
 	
-	public void draw(){
-		String string = text.getText();
-		float xText = - (MenuManager.font.getWidth(string)/3);
-		float yText = - (MenuManager.font.getHeight()/2);
-		MenuManager.fontColor.bind();
-		MenuManager.font.drawString(realPos.xInt() + xText, realPos.yInt() + yText, string, 1, 1);
+	public void render() {
+		super.render();
+		float xText = ((x1 + x2)/2)- (font.getWidth(text)/3);
+		float yText = ((y1+y2)/2) - (font.getHeight()/2);
+		fontColor.bind();
+		font.drawString(xText, yText, text, 1, 1);
 		Color.WHITE.bind();
 	}
 
-	public static interface Text {
-		public String getText();
-	}
 }

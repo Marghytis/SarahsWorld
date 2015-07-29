@@ -35,7 +35,7 @@ public class ItemStack extends Rect{
 	}
 	
 	public String toString(){
-		if(item != null && item != ItemType.fist){
+		if(item != null && item != ItemType.FIST){
 			return item.name + "\nValue: " + item.value;
 		} else {
 			return "Noooothing!!!";

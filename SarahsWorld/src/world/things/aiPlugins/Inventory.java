@@ -2,10 +2,16 @@ package world.things.aiPlugins;
 
 import item.ItemStack;
 import item.ItemType;
+import main.Main;
+import main.Res;
+
+import org.lwjgl.opengl.GL11;
+
 import render.Animator;
 import util.math.Vec;
 import world.things.AiPlugin;
 import world.things.Thing;
+import world.things.ThingType;
 
 public class Inventory extends AiPlugin{
 
@@ -38,6 +44,14 @@ public class Inventory extends AiPlugin{
 		for(ItemStack stack : stacks){
 			stack.update(delta);
 		}
+		for(Thing t = Main.world.window.leftEnd.things[ThingType.COIN.ordinal()]; t != null && t !=  Main.world.window.rightEnd.things[ThingType.COIN.ordinal()]; t = t.right){
+			//TODO endless loop
+			if(t.type != ThingType.DUMMY && t.pos.p.minus(this.t.pos.p).lengthSquare() < 1000){
+				Main.world.window.deletionRequested.add(t);
+				coins++;
+				Res.coinSound.play();
+			}
+		}
 		return true;
 	}
 	
@@ -46,20 +60,23 @@ public class Inventory extends AiPlugin{
 		if(selected.texHand != null && !selected.texHand.equals(itemAnimator.getAnimation())){
 			itemAnimator.setAnimation(selected.texHand);
 		}
-		selected.renderHand(t, itemAnimator);
+		GL11.glEnd();
+			selected.renderHand(t, itemAnimator);
+		GL11.glBegin(GL11.GL_QUADS);
 	}
 	
 	public ItemType getSelectedItem(){
 		return stacks[selectedItem].item;
-	}
+	} 
 	
-	public boolean addItem(ItemType item){
+	public boolean addItem(ItemType item, int amount){
 		for(int i = 0; i < stacks.length; i++){
 			if(stacks[i].item == item){
-				stacks[i].count++;
+				stacks[i].count += amount;;
 				return true;
-			} else if (stacks[i].item == ItemType.fist){
+			} else if (stacks[i].item == ItemType.FIST){
 				stacks[i].item = item;
+				stacks[i].count = amount;
 				return true;
 			}
 		}
@@ -74,7 +91,7 @@ public class Inventory extends AiPlugin{
 		
 	}
 
-	public void useSelectedItem(Vec worldPos, Thing... thingsAtThatLocation) {
+	public void useSelectedItem(Vec worldPos, Thing[] thingsAtThatLocation) {
 		ItemStack selected = stacks[selectedItem];
 		if(selected.coolDown <= 0){
 			if(selected.item.specialUse(t, worldPos, thingsAtThatLocation)){

@@ -21,7 +21,7 @@ public enum SuperTypes {
 			Texture tex = type.file.tex(0, t.rand.nextInt(type.file.sectorPos[0].length));
 			t.ani = new Animating(t, tex, tex.file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
-			t.fruits = new Fruits(t, new ItemType[]{ItemType.stick}, new int[]{t.rand.nextInt(6)});
+			t.fruits = new Fruits(t, new ItemType[]{ItemType.STICK}, new int[]{t.rand.nextInt(6)});
 			
 			
 			
@@ -38,7 +38,7 @@ public enum SuperTypes {
 			t.ani = new Animating(t, tex, tex.file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 			
 			if(type == ThingType.BUSH_NORMAL && tex.y == 1){
-				t.fruits = new Fruits(t, new ItemType[]{ItemType.berry}, new int[]{1 + t.rand.nextInt(2)});
+				t.fruits = new Fruits(t, new ItemType[]{ItemType.BERRY}, new int[]{1 + t.rand.nextInt(2)});
 			}
 
 			

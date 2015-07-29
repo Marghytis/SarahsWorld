@@ -2,8 +2,11 @@ package world.worldGeneration;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import quest.ActiveQuest;
 import util.math.Vec;
 import world.Material;
 import world.things.Thing;
@@ -15,6 +18,9 @@ public class WorldData {
 	public Random random = new Random();
 	public Column mostRight, mostLeft;
 	public World world;
+	
+	public List<ActiveQuest> quests = new ArrayList<>();
+	
 	public WorldData(DataInputStream input) {
 		//TODO ...
 	}
@@ -88,7 +94,7 @@ public class WorldData {
 			collisionVecWater = getCollisionVecWater();
 			this.things = new Thing[ThingType.values().length];
 			for(int i = 0; i < things.length; i++){
-				things[i] = ThingType.DUMMY.create(WorldData.this, vertices[0], null);
+				things[i] = ThingType.DUMMY.create(WorldData.this, vertices[0], null, i);
 			}
 		}
 		
@@ -108,13 +114,12 @@ public class WorldData {
 			return i;
 		}
 		
-		public Vec getRandomTopLocation(Random random, Vertex[] linkField){
+		public Vertex getRandomTopLocation(Random random, Vec posField){
 			collisionVec = getCollisionVec();
-			int index = collisionVec;
-			linkField[0] = vertices[index];
 			double fac = random.nextDouble();
-			return new Vec(xReal + (fac*(right.xReal - xReal)),
-					vertices[index].y + (fac*(right.vertices[index].y - vertices[index].y)));
+			posField.set(xReal + (fac*(right.xReal - xReal)),
+					vertices[collisionVec].y + (fac*(right.vertices[collisionVec].y - vertices[collisionVec].y)));
+			return vertices[collisionVec];
 		}
 		
 		/**
@@ -123,20 +128,16 @@ public class WorldData {
 		 * @param t
 		 */
 		public void add(Thing t){
-			if(t.type == ThingType.DUMMY){
-				things[t.type.ordinal()] = t;
-			} else {
-				t.disconnect();
-				int t2 = t.type.ordinal();
-				t.left = things[t2].left;
-				things[t2].left = t;
-				t.right = things[t2];
-				if(t.left != null) t.left.right = t;
-			}
+			t.disconnect();
+			int o = t.type.ordinal();
+			t.left = things[o].left;
+			things[o].left = t;
+			t.right = things[o];
+			if(t.left != null) t.left.right = t;
 		}
 		
-		public Vec getTopLine(){
-			return new Vec(xReal - left.xReal, vertices[collisionVec].y - left.vertices[collisionVec].y);
+		public Vec getTopLine(Vec topLine){
+			return topLine.set(xReal - left.xReal, vertices[collisionVec].y - left.vertices[collisionVec].y);
 		}
 	}
 	public class Vertex {

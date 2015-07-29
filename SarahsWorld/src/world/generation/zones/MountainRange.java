@@ -1,5 +1,7 @@
 package world.generation.zones;
 
+import java.util.Random;
+
 import util.math.Function;
 import world.generation.Zone;
 import world.worldGeneration.Biome;
@@ -14,8 +16,8 @@ public class MountainRange extends Zone {
 	double height;
 	double borderWidth;
 	
-	public MountainRange(BiomeManager biome, double originX, boolean left) {
-		super(biome, originX, left);
+	public MountainRange(Random random, BiomeManager biome, double originX, boolean left) {
+		super(random, biome, originX, left, null);
 		biome.switchToBiome(Biome.FIR_FORREST);
 		
 		width = 20000 + (Math.random()*1000);

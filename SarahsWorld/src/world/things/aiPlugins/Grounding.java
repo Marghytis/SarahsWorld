@@ -38,6 +38,8 @@ public class Grounding extends AiPlugin {
 	}
 	
 	
+	Vec finalIntersection = new Vec(), lastVec = new Vec(), currentVec = new Vec();
+	
 	public boolean action(double delta) {
 		if(g){
 			Vec pos = t.pos.p.copy().shift(0, yOffset);
@@ -56,26 +58,25 @@ public class Grounding extends AiPlugin {
 				acc = 0;
 				t.vel.v.set(0, 0);
 			} else {
-				Vec i = new Vec(Integer.MIN_VALUE, Integer.MIN_VALUE);
+				finalIntersection.set(Integer.MIN_VALUE, Integer.MIN_VALUE);
 				Vertex f = null;
-				Vec lastVec = null, currentVec = null;
-				for(Column c = Main.world.window.leftEnd; c != null; c = c.right){
+				for(Column c = Main.world.window.leftEnd; c != Main.world.window.rightEnd &&  c != null; c = c.right){
 					if(c.collisionVec == -1) continue;
 					if(c.equals(Main.world.window.leftEnd)){
-						lastVec = new Vec(c.xReal, c.vertices[waterWalking ? c.collisionVecWater : c.collisionVec].y);
+						lastVec.set(c.xReal, c.vertices[waterWalking ? c.collisionVecWater : c.collisionVec].y);
 						currentVec = lastVec.copy();
 					} else {
 						Vertex field = c.vertices[waterWalking ? c.collisionVecWater : c.collisionVec];
 						Vec[] intersections = UsefulF.circleIntersection(lastVec, currentVec.set(c.xReal, field.y), pos, UsefulF.abs(speed*delta));
 						lastVec.set(currentVec);
 						if(speed > 0){
-							if(intersections[1] != null && intersections[1].y > i.y){
-								i.set(intersections[1]);
+							if(intersections[1] != null && intersections[1].y > finalIntersection.y){
+								finalIntersection.set(intersections[1]);
 								f = field;
 							}
 						} else {
-							if(intersections[0] != null && intersections[0].y > i.y){
-								i.set(intersections[0]);
+							if(intersections[0] != null && intersections[0].y > finalIntersection.y){
+								finalIntersection.set(intersections[0]);
 								f = field;
 							}
 						}
@@ -83,7 +84,7 @@ public class Grounding extends AiPlugin {
 				};
 
 				if(f != null){
-					t.vel.v.set(i.minus(pos).scale(1/delta));
+					t.vel.v.set(finalIntersection.minus(pos).scale(1/delta));
 					f.parent.add(t);
 					link = f;
 				}
@@ -104,10 +105,12 @@ public class Grounding extends AiPlugin {
 		}
 		return false;
 	}
+	
+	Vec topLine = new Vec();
 
 	public void jump(){
 		t.ani.setTex(texs[3], () -> {
-			leaveGround(Math.cos(Math.atan(link.parent.getTopLine().slope()))*speed, 400.0);
+			leaveGround(Math.cos(Math.atan(link.parent.getTopLine(topLine).slope()))*speed, 400.0);
 			t.ani.setTex(texs[4]);
 		});
 	}

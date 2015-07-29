@@ -1,0 +1,99 @@
+Attributes{
+    TREES
+}
+Characters{
+    sarah = SARAH;
+    villy1 = VILLAGER
+}
+Start{
+    IF
+        daytime()==evening
+        &&
+        random(100)<=1
+    ~DO
+        spawn(villy1)
+    ~NEXT
+        WillYouDoIt?
+}
+WillYouDoIt?{
+    IF
+        distance(sarah, villy1) <= 300
+    ~DO
+        showSpeechBubble(villy1, quests.firefighter.question1)
+    ~NEXT
+        YesOrNo
+}
+YesOrNo{
+    IF
+        timeDelta() >= 2
+    ~DO
+        showAnswers(villy1,
+              A: accept.kind,
+              B: reject.unkind)
+    ~NEXT
+        YesAnswer;
+        NoAnswer
+}
+YesAnswer{
+	IF
+		lastAnswer() == A
+    ~DO
+        showSpeechBubble(villy1, wait.friendly)
+    ~NEXT
+        Wait
+}
+NoAnswer{
+	IF
+		lastAnswer() == B
+    ~DO
+        showSpeechBubble(villy1, rejected)
+}
+Wait{
+    IF
+        distance(sarah, villy1) >> 300
+    ~NEXT
+        Ready?
+}
+Ready?{
+    IF
+        distance(sarah, villy1) <= 300
+        ||
+        timeDelta() >> 10
+    ~DO
+        showSpeechBubble(villy1, questions.ready)
+    ~NEXT
+        Ready;
+        NotReady
+}
+NotReady{
+    IF
+        timeDelta() >= 2
+        &&
+        has(sarah, STICK, 10) == false
+    ~DO
+        showAnswers(
+              A: answers.notYet.kind)
+    ~NEXT
+        Wait
+}
+Ready{
+    IF
+        timeDelta() >= 2
+        &&
+        has(sarah, STICK, 10) == true
+    ~DO
+        showAnswers(
+              A: answers.yes.kind,
+              B: answers.notYet.kind)
+    ~NEXT
+        A: GiveWood;
+        B: Wait
+}
+GiveWood{
+    DO
+        give(villy1, STICK, 10);
+        give(sarah, STICK, -10);
+        give(villy1, STICK, -30);
+        give(sarah, STICK, 30);
+        showSpeechBubble(villy1, thankYou.kind)
+}

@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import world.things.aiPlugins.Acceleration;
 import world.things.aiPlugins.Animating;
 import world.things.aiPlugins.Attacking;
+import world.things.aiPlugins.Aura;
 import world.things.aiPlugins.AvatarControl;
 import world.things.aiPlugins.Collision;
 import world.things.aiPlugins.Coloration;
@@ -25,6 +26,7 @@ import world.things.aiPlugins.Magic;
 import world.things.aiPlugins.MatFriction;
 import world.things.aiPlugins.Position;
 import world.things.aiPlugins.Riding;
+import world.things.aiPlugins.Speaking;
 import world.things.aiPlugins.Velocity;
 import world.things.aiPlugins.WalkAround;
 
@@ -46,13 +48,15 @@ public class Thing implements Savable{
 	public Riding riding;
 	public Inventory inv;
 	public ItemBeing item;
+	public Speaking speak;
+	public Aura aura;
 	
 	//set acceleration and animation
 	public Controller cont;//summarize all controlling plug-ins in one controller
-	public AvatarControl avatar;
-	public FlyAround flyAround;
-	public WalkAround walkAround;
-	public Following follow;
+	public AvatarControl avatar;//not directly in a.i.
+	public FlyAround flyAround;//not directly in a.i.
+	public WalkAround walkAround;//not directly in a.i.
+	public Following follow;//not directly in a.i.
 	
 	/**0:standing, 1:walking, 2:sprinting, 3:jumping, 4:flying, 5:landing*/
 	public Grounding ground;
@@ -71,7 +75,6 @@ public class Thing implements Savable{
 	
 	public void createAi(){
 		ai = new AiPlugin[]{
-		life,
 		attack,
 		cont,
 		ground,
@@ -84,6 +87,9 @@ public class Thing implements Savable{
 		color,
 		ani,
 		inv,
+		life,
+		speak,
+		aura
 		};
 	}
 	
@@ -133,5 +139,11 @@ public class Thing implements Savable{
 			t.ai[k].load(infos[k]);
 		}
 		return t;
+	}
+
+	public void remove() {
+		for(AiPlugin plugin : ai){
+			if(plugin != null) plugin.remove();
+		}
 	}
 }

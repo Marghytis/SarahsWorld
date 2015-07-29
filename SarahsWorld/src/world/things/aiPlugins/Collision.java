@@ -14,19 +14,18 @@ public class Collision extends AiPlugin{
 		super(t);
 	}
 
+	Vec finalIntersection = new Vec(), lastVec = new Vec(), currentVec = new Vec(), intersection = new Vec(), topLine = new Vec();
 	public boolean action(double delta) {
 		if(!t.ground.g){
 			//TODO set the WorldLink of the Walking (and speed)
 			Vertex f = null;
-			Vec finalIntersection = new Vec(Integer.MIN_VALUE, Integer.MIN_VALUE);
-			Vec lastVec = null, currentVec = null;
-			for(Column c = Main.world.window.leftEnd; c != null; c = c.right){
+			finalIntersection.set(Integer.MIN_VALUE, Integer.MIN_VALUE);
+			for(Column c = Main.world.window.leftEnd; c != Main.world.window.rightEnd && c != null; c = c.right){
 				if(c.collisionVec == -1) continue;
 				if(c.equals(Main.world.window.leftEnd)){
-					lastVec = new Vec(c.xReal, c.vertices[c.collisionVec].y);
+					lastVec.set(c.xReal, c.vertices[c.collisionVec].y);
 					currentVec = lastVec.copy();
 				} else {
-					Vec intersection = new Vec();
 					boolean collision = UsefulF.intersectionLines(t.pos.p, t.pos.p.copy().shift(t.vel.v.copy().shift(t.acc.a, delta), delta), lastVec, currentVec.set(c.xReal, c.vertices[c.collisionVec].y), intersection);
 					
 					if(collision && intersection.y > finalIntersection.y){
@@ -37,13 +36,12 @@ public class Collision extends AiPlugin{
 				}
 			};
 			if(f != null){
-				
 				t.pos.p.set(finalIntersection);
 
 				if(t.friction != null && !t.friction.swimming){
 					t.ground.land();
 				}
-				t.ground.speed = t.vel.v.dot(f.parent.getTopLine())/f.parent.getTopLine().length();
+				t.ground.speed = t.vel.v.dot(f.parent.getTopLine(topLine))/f.parent.getTopLine(topLine).length();
 				t.vel.v.set(0, 0);
 				t.ground.g = true;
 				t.ground.link = f;

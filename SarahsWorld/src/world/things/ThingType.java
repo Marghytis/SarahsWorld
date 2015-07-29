@@ -9,6 +9,8 @@ import util.math.Vec;
 import world.things.aiPlugins.Acceleration;
 import world.things.aiPlugins.Animating;
 import world.things.aiPlugins.Attacking;
+import world.things.aiPlugins.Aura;
+import world.things.aiPlugins.Aura.Mood;
 import world.things.aiPlugins.AvatarControl;
 import world.things.aiPlugins.Collision;
 import world.things.aiPlugins.Coloration;
@@ -24,6 +26,7 @@ import world.things.aiPlugins.Magic;
 import world.things.aiPlugins.MatFriction;
 import world.things.aiPlugins.Position;
 import world.things.aiPlugins.Riding;
+import world.things.aiPlugins.Speaking;
 import world.things.aiPlugins.Velocity;
 import world.things.aiPlugins.WalkAround;
 import world.worldGeneration.WorldData;
@@ -80,13 +83,14 @@ public enum ThingType {
 			
 			t.life = new Life(t, 20, 0);
 			t.magic = new Magic(t, 20, 20);
-			t.attack = new Attacking(t, ItemType.fist, 4, 0.01, 5000, attacking_punch, attacking_kick, attacking_strike, attacking_spell);
+			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 5000, attacking_punch, attacking_kick, attacking_strike, attacking_spell);
 			Texture[] cowAttack = {								attackingCow, attackingCow, attackingCow, attackingCow};//TODO
 			t.riding = new Riding(t, mountingCow, dismountingCow, t.ani.box, Res.sarah_onCow.pixelBox.copy(), new Texture[][]{t.ani.texs,	t.attack.texs,	t.ground.texs},
 																							  new Texture[][]{cowAni		,cowAttack,		cowGrounding});
-			t.inv = new Inventory(t, ItemType.fist, 5);
+			t.inv = new Inventory(t, ItemType.FIST, 5);
+			t.inv.addItem(ItemType.SWORD, 1);
 			
-			
+			t.aura = new Aura(t, Mood.SARAH, 0, 100);
 			
 			return create(t, field.parent);
 		}
@@ -105,7 +109,7 @@ public enum ThingType {
 			t.ani = new Animating(t, standing, file.pixelBox.copy(), 0);
 			
 			t.life = new Life(t, 10, 10);
-			t.attack = new Attacking(t, ItemType.fist, 2, 0.05, 50, attacking);
+			t.attack = new Attacking(t, ItemType.FIST, 2, 0.05, 50, attacking);
 			
 			t.ground = new Grounding(t, true, 0, false, field, standing, walking, sprinting, standing, standing, standing);
 			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
@@ -120,8 +124,8 @@ public enum ThingType {
 			t.acc = new Acceleration(t);
 			t.collision = new Collision(t);
 			t.gravity = new Gravity(t);
-
 			
+			t.aura = new Aura(t, Mood.ANGRY, 0, 60);
 			
 			return create(t, field.parent);
 		}
@@ -166,7 +170,7 @@ public enum ThingType {
 			
 			t.ani = new Animating(t, flap[type], flap[type].file.pixelBox.copy(), 0);
 			t.ani.animator.pos = world.random.nextInt(this.flap[type].sequenceX.length);
-			t.life = new Life(t, -1, 1);
+			t.life = new Life(t, 1, 1);
 			t.vel = new Velocity(t);
 			t.acc = new Acceleration(t);
 			t.collision = new Collision(t);
@@ -352,6 +356,44 @@ public enum ThingType {
 			return create(t, field.parent);
 		}
 	},
+	VILLAGER(Res.villager) {
+
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
+			Thing t = new Thing(this, world.random);
+
+			t.pos = new Position(t, pos);
+			t.vel = new Velocity(t);
+			
+			Texture tex = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
+			
+			t.ani = new Animating(t, tex,	file.pixelBox, 0);
+			
+			t.ground = new Grounding(t, true, 0, false, field, tex,	 tex,	 tex,		tex,		tex,		tex);
+//			t.cont = new Controller(t, t.avatar){
+//				public boolean action(double delta){
+//					t.avatar.action(delta);
+//					return false;
+//				}
+//			};
+			
+			t.acc = new Acceleration(t);
+			t.collision = new Collision(t);
+			t.gravity = new Gravity(t);
+			t.friction = new MatFriction(t);
+			
+			t.life = new Life(t, 10, 0);
+			t.magic = new Magic(t, 20, 20);
+			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 5000, tex, tex, tex, tex);
+			t.inv = new Inventory(t, ItemType.FIST, 20);
+			t.inv.coins = 20;
+			
+			t.speak = new Speaking(t);
+			t.aura = new Aura(t, Mood.NEUTRAL, 0, 100);
+			
+			return create(t, field.parent);
+		}
+		
+	},
 	BAMBOO(Res.bamboo) {
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
@@ -408,7 +450,7 @@ public enum ThingType {
 		}
 	},
 	//OTHER THINGS
-	ITEM(ItemType.ITEMS_WORLD) {
+	ITEM(Res.items_world) {
 		public Thing create(WorldData world, Vertex field, Vec pos,	Object... extraData) {
 			
 			ItemType type = (ItemType)extraData[0];
@@ -420,10 +462,30 @@ public enum ThingType {
 			t.ani = new Animating(t, type.texWorld, type.boxWorld, 0);
 			t.vel = new Velocity(t);
 			t.acc = new Acceleration(t);
+			t.gravity = new Gravity(t);
 			t.collision = new Collision(t);
-			t.ground = new Grounding(t, false, 0, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld);
+			t.ground = new Grounding(t, true, 0, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld);
 
 			
+			
+			return create(t, field.parent);
+		}
+	},
+	COIN(Res.coin) {
+		
+		public Texture texture = Res.coin.tex();
+		
+		public Thing create(WorldData world, Vertex field, Vec pos,	Object... extraData) {
+			
+			Thing t = new Thing(this, world.random);
+			
+			t.pos = new Position(t, pos);
+			t.ani = new Animating(t, texture, Res.coin.pixelBox, 0);
+			t.vel = new Velocity(t); t.vel.v.set((Vec)extraData[0]);
+			t.acc = new Acceleration(t);
+			t.gravity = new Gravity(t);
+			t.collision = new Collision(t);
+			t.ground = new Grounding(t, true, 0, texture, texture, texture, texture, texture, texture);
 			
 			return create(t, field.parent);
 		}
@@ -431,7 +493,8 @@ public enum ThingType {
 	DUMMY(TexFile.emptyTex.file){
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
 			Thing t = new Thing(this, world.random);
-			return create(t, field.parent);
+			t.createAi();
+			return t;
 		}
 	};
 	

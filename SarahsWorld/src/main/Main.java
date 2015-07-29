@@ -1,7 +1,11 @@
 package main;
 
-import menu.MenuManager;
+import menu.Menu;
+
+import org.lwjgl.opengl.Display;
+
 import world.worldGeneration.Save;
+import world.worldGeneration.World;
 import core.Core;
 import core.Listener;
 import core.Renderer;
@@ -10,8 +14,8 @@ import core.Window;
 
 public class Main {
 	
-	public static MenuManager menu;
-	public static world.worldGeneration.World world;
+	public static Menu menu;
+	public static World world;
 
 	public static void main(String[] args){
 		String worldName = "Sarahs World";
@@ -22,12 +26,13 @@ public class Main {
 			System.exit(0);
 			return;
 		}
+		Display.setVSyncEnabled(true);
 
-		menu = new MenuManager();
+		menu = new Menu();
 		if(Save.worldSaved()){
 			world = Save.loadWorld();
 		} else {
-			world = new world.worldGeneration.World();
+			world = new World();
 		}
 
 		Updater.updaters.add(menu);

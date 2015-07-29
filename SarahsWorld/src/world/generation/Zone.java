@@ -2,27 +2,42 @@ package world.generation;
 
 import java.util.Random;
 
+import world.worldGeneration.BiomeManager;
+
 
 public abstract class Zone {
 
+	public static enum Attribute {
+		TREES, DRY, MOIST, LAKES, ROUGH, FLAT, LONELY, BUSY, HOT, HILLY
+	}
 	protected Random random;
-	public world.worldGeneration.BiomeManager biome;
+	public BiomeManager biome;
 	public boolean end;
 	public double ownHeight;
 	public Zone subZone;
 	public double originX;
 	public boolean left;
+	public boolean[] description;
 	
 	/**
 	 * The Zone is just responsible for the terrain height - the biome manager manages the rest like structure materials and things
 	 * @param biome the BiomeManager this zone shall use
 	 * @param originX the starting point on the x-Axis of this zone
 	 */
-	public Zone(world.worldGeneration.BiomeManager biome, double originX, boolean left){
+	public Zone(Random random, BiomeManager biome, double originX, boolean left, boolean[] description){
 		this.biome = biome;
 		this.originX = originX;
-		random = new Random();
+		this.random = random;
 		this.left = left;
+		this.description = description;
+	}
+	
+	public static boolean[] describe(Attribute... attributes){
+		boolean[] out = new boolean[Attribute.values().length];
+		for(Attribute attr : attributes){
+			out[attr.ordinal()] = true;
+		}
+		return out;
 	}
 	
 	/**

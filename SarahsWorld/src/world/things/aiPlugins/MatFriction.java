@@ -1,8 +1,8 @@
 package world.things.aiPlugins;
 
+import effects.particles.WaterSplash;
 import main.Main;
 import main.Settings;
-import particles.WaterSplash;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.things.AiPlugin;
@@ -19,6 +19,7 @@ public class MatFriction extends AiPlugin{
 	}
 	
 	public Vec lastBouyancy = new Vec();
+	public double splashCooldown, splashCooldown2;
 
 	public boolean action(double delta) {
 		//which material is the thing in?
@@ -26,7 +27,7 @@ public class MatFriction extends AiPlugin{
 		try {
 			Column c = t.ground.link.parent;
 			int yIndex = -1;
-			double y = t.pos.p.y + t.ani.box.pos.y + 10;//+ t.ani.box.pos.y + 10
+			double y = t.pos.p.y + t.ani.box.pos.y + 20;//+ t.ani.box.pos.y + 10
 			//get the material the thing is located in
 			while(c.vertices[yIndex+1].y > y) yIndex++;
 			if(yIndex != -1 && !c.vertices[yIndex].mats.empty()) vert = c.vertices[yIndex];
@@ -36,9 +37,13 @@ public class MatFriction extends AiPlugin{
 		
 		if(vert != null && vert.mats.read.data.solidity == 1){
 			
-			if(!swimming){
+			if((splashCooldown <= 0 || (t.ground.g && splashCooldown2 <= 0)) && (t.vel.v.x > 5 || t.vel.v.x < -5)){
 				Main.world.window.effects.add(new WaterSplash(new Vec(t.pos.p.x, vert.y)));
+				splashCooldown = 0.3;
+				splashCooldown2 = 0.2;
 			}
+			if(splashCooldown > 0) splashCooldown -= delta;
+			if(splashCooldown2 > 0) splashCooldown2 -= delta;
 			
 			double ratio = (vert.y - (t.pos.p.y + t.ani.box.pos.y - 10))/t.ani.box.size.y;
 			ratio = Math.min(ratio, 1);
@@ -55,7 +60,7 @@ public class MatFriction extends AiPlugin{
 					t.ani.dir = false;
 				}
 				t.ani.setTex(t.ani.texs[0]);
-				if(t.ground.g && lastBouyancy.y > -t.gravity.grav.y){
+				if(t.ground.g && lastBouyancy.y - 10> -t.gravity.grav.y){
 					t.ground.leaveGround(t.vel.v.x, 1);
 				}
 			}

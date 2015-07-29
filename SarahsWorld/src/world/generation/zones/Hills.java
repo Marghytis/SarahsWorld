@@ -1,5 +1,7 @@
 package world.generation.zones;
 
+import java.util.Random;
+
 import util.math.Function;
 import util.math.UsefulF;
 import util.math.Vec;
@@ -9,6 +11,8 @@ import world.worldGeneration.WorldData.Column;
 
 public class Hills extends Zone {
 
+	public static boolean[] description = describe(Attribute.HILLY);
+	
 	double aimWidth;
 	int partWidth;
 	int widthVariance;
@@ -19,8 +23,8 @@ public class Hills extends Zone {
 	Function curve;
 	boolean last;
 	
-	public Hills(BiomeManager biome, double originX, boolean left, double startHeight, double amplifierX, double amplifierY, double aimWidth) {
-		super(biome, originX, left);
+	public Hills(Random random, BiomeManager biome, double originX, boolean left, double startHeight, double amplifierX, double amplifierY, double aimWidth) {
+		super(random, biome, originX, left, description);
 		
 		this.aimWidth = aimWidth;
 
@@ -31,7 +35,8 @@ public class Hills extends Zone {
 		p1 = new Vec(0, startHeight);
 		p2 = new Vec(0, startHeight);
 		
-		curve = next(nextDelta());
+		nextDelta();
+		curve = next();
 	}
 	
 	public void setAmplifier(double ampX, double ampY){
@@ -53,11 +58,13 @@ public class Hills extends Zone {
 				if(last){
 					end = true;
 				} else {
-					curve = next(new Vec(partWidth, -p2.y));
+					shift.set(partWidth, -p2.y);
+					curve = next();
 					last = true;
 				}
 			} else {
-				curve = next(nextDelta());
+				nextDelta();
+				curve = next();
 				reachedP2 = true;
 			}
 		}
@@ -66,15 +73,16 @@ public class Hills extends Zone {
 		return ownHeight;
 	}
 	
-	public Function next(Vec d){
+	public Vec shift = new Vec();
+	
+	public Function next(){
 		p1.set(p2);
-		p2.shift(d);
-		return (x) -> UsefulF.cubicUnit.f(x/d.x)*d.y;
+		p2.shift(shift);
+		return (x) -> UsefulF.cubicUnit.f(x/shift.x)*shift.y;
 	}
 	
-	public Vec nextDelta(){
-		double dx =	partWidth + (random.nextInt(2*widthVariance) - widthVariance);
-		double dy = (random.nextInt(2*heightVariance) - heightVariance) - p2.y;
-		return new Vec(dx, dy);
+	public void nextDelta(){
+		shift.set(partWidth + (random.nextInt(2*widthVariance) - widthVariance),
+				(random.nextInt(2*heightVariance) - heightVariance) - p2.y);
 	}
 }

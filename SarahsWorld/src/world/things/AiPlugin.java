@@ -22,4 +22,6 @@ public abstract class AiPlugin {
 	public abstract String save();
 	
 	public abstract void load(String save);
+
+	public void remove() {}
 }

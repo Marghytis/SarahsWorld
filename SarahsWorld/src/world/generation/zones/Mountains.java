@@ -1,5 +1,7 @@
 package world.generation.zones;
 
+import java.util.Random;
+
 import util.math.Function;
 import world.generation.Zone;
 import world.worldGeneration.Biome;
@@ -7,13 +9,15 @@ import world.worldGeneration.BiomeManager;
 
 public class Mountains extends Zone {
 
+	public static boolean[] description = describe(Attribute.LAKES,Attribute.TREES, Attribute.LONELY);
+	
 	Function f;
 	double width;
 	double height;
 	double offsetByLakes;
 
-	public Mountains(BiomeManager biome, double originX, boolean left) {
-		super(biome, originX, left);
+	public Mountains(Random random, BiomeManager biome, double originX, boolean left) {
+		super(random, biome, originX, left, description);
 		biome.switchToBiome(Biome.FIR_FORREST);
 		
 		width =  40000 + random.nextInt(10000);
@@ -25,7 +29,7 @@ public class Mountains extends Zone {
 		double b = (2*h)/Math.pow(wH, 2);
 		f = (x) -> (a*Math.pow(x - wH, 4)) - (b*Math.pow(x - wH, 2)) + h;
 
-		subZone = new Hills(biome, 0, left, 0, 3, 1, width);
+		subZone = new Hills(random, biome, 0, left, 0, 3, 1, width);
 	}
 	
 	public double step(double x) {
@@ -34,7 +38,7 @@ public class Mountains extends Zone {
 		
 		if(subZone instanceof Hills && ((Hills)subZone).reachedP2){
 			if(random.nextInt(100) < 50){
-				subZone = new Lake(biome, x, 500, subZone.ownHeight, left);//It's p1, because it has already shifted by now
+				subZone = new Lake(random, biome, x, 500, subZone.ownHeight, left);//It's p1, because it has already shifted by now
 			}
 		}
 		
@@ -44,12 +48,12 @@ public class Mountains extends Zone {
 		} else if(subZone.end){
 			offsetByLakes += x - subZone.originX;
 			width += x - subZone.originX;
-			subZone = new Hills(biome, x, left, subZone.ownHeight, 2*amplifier + 3, 20*amplifier + 1, width - x);
+			subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2*amplifier + 3, 20*amplifier + 1, width - x);
 		}
 		
 		//return height
 		if(x < width && !(subZone instanceof Lake)) {//
-			ownHeight = f.f(x - offsetByLakes) + random.nextInt(3) - 1;
+			ownHeight = f.f(x - offsetByLakes);
 		}
 
 		return ownHeight;

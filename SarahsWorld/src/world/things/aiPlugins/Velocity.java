@@ -5,7 +5,7 @@ import world.things.AiPlugin;
 import world.things.Thing;
 public class Velocity extends AiPlugin{
 
-	Vec v;
+	public Vec v;
 	
 	public Velocity(Thing t){
 		super(t);

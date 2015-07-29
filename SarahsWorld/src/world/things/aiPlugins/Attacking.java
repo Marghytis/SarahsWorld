@@ -3,6 +3,7 @@ package world.things.aiPlugins;
 import item.ItemType;
 import main.Settings;
 import render.Texture;
+import util.Time;
 import world.things.AiPlugin;
 import world.things.Thing;
 import world.things.ThingType;
@@ -60,14 +61,17 @@ public class Attacking extends AiPlugin {
 				damage[i] = calculateDamage(targets[i], item, strength);
 			}
 			
-			t.ani.setTex(texs[item.weaponType.ordinal()], () -> {
+			final int weapontype = item.weaponType.ordinal();
+			
+			t.ani.setTex(texs[weapontype]);
+			Time.schedule(texs[weapontype].sequenceX.length*texs[weapontype].dt, () -> {
 				for(int i = 0; i < targets.length; i++){
 					if(t.pos.p.minus(targets[i].pos.p).lengthSquare() <= radiusSq){
 						targets[i].life.getHit(t, damage[i]);
 					}
 				}
 				attacking = false;
-				t.ani.setTex(t.ani.texs[0]);
+				if(t.ani.animator.getAnimation() == texs[weapontype]) t.ani.setTex(t.ani.texs[0]);
 			});
 		}
 	}

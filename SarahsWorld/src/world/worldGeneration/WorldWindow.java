@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import main.Framebuffer;
 import main.Main;
 import main.Settings;
+import main.Shader20;
 
 import org.lwjgl.opengl.GL11;
 
-import particles.ParticleEffect;
+import quest.ActiveQuest;
 import render.TexFile;
 import render.Texture;
 import util.Color;
@@ -22,25 +24,30 @@ import world.worldGeneration.WorldData.Vertex;
 import core.Renderer;
 import core.Updater;
 import core.Window;
+import effects.Effect;
 
 public class WorldWindow implements Updater, Renderer{
-	public WorldData layer;
+	public WorldData world;
 	public Column rightEnd, leftEnd;
 	public int xIndex, r;
 	
 	public List<Thing> deletionRequested = new ArrayList<>();
 	
 
-	public List<ParticleEffect> effects = new ArrayList<>();
+	public List<Effect> effects = new ArrayList<>();
+	public List<Effect> toAdd = new ArrayList<>();
+	
+	public Framebuffer framebuffer;
 	
 	/**
 	*For this, the Layer must contain startX, otherwise you'll get a NPE somewhere.
 	*/
 	public WorldWindow(WorldData l, int startX, int startRadius) {
-		this.layer = l;
+		this.world = l;
 		this.rightEnd = l.get(startX);
 		this.leftEnd = rightEnd;
 		setRadius(startRadius);
+		this.framebuffer = new Framebuffer(Window.WIDTH, Window.HEIGHT);
 	}
 	
 	public static double darknessDistance = 600;
@@ -92,23 +99,29 @@ public class WorldWindow implements Updater, Renderer{
 		}
 	}
 	
+	List<Thing> thingsAt = new ArrayList<>();
+	
 	public Thing[] livingsAt(Vec loc){
-		List<Thing> things = new ArrayList<>();
+		thingsAt.clear();
 		for(int type = 0; type < ThingType.values().length; type++)
 		for(Thing t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
 			if(t.life != null && !t.equals(this) && loc.containedBy(t.ani.box.pos.x + t.pos.p.x, t.ani.box.pos.y + t.pos.p.y, t.ani.box.size.x, t.ani.box.size.y)){
-				things.add(t);
+				thingsAt.add(t);
 			}
 		}
-		things.sort((t1, t2) -> t1.ani.behind > t2.ani.behind ? 1 : t1.ani.behind < t2.ani.behind ?  -1 : 0);
-		return things.toArray(new Thing[things.size()]);
+		thingsAt.sort((t1, t2) -> t1.ani.behind > t2.ani.behind ? 1 : t1.ani.behind < t2.ani.behind ?  -1 : 0);
+		return thingsAt.toArray(new Thing[thingsAt.size()]);
 	}
 	
 	public boolean update(double delta){
 		//Delete dead things
 		for(Thing t : deletionRequested){
-			t.disconnect();
+			if(t.type != ThingType.DUMMY){
+				t.disconnect();
+				t.remove();
+			}
 		}
+		deletionRequested.clear();
 		
 		//generate terrain
 		int radius = (int)(Window.WIDTH_HALF/Column.step) + 2;
@@ -125,18 +138,26 @@ public class WorldWindow implements Updater, Renderer{
 			}
 		}
 		
+		effects.addAll(toAdd);
+		toAdd.clear();
+
 		for(int i = 0; i < effects.size(); i++){
-			effects.get(i).tick((float)delta);
+			effects.get(i).update(delta);
 			if(!effects.get(i).living()){
 				effects.remove(i);
 				i--;
 			}
 		}
+		
+		for(ActiveQuest aq : world.quests){
+			aq.update(delta);
+		}
 		return false;
 	}
 	
 	public void draw(){
-		GL11.glClearColor(0.7f, 0.7f, 9f, 1);
+		GL11.glClearColor(0.7f, 0.7f, 0.9f, 1);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.p.x, Window.HEIGHT_HALF - Main.world.avatar.pos.p.y, 0);
 
 		GL11.glColor4f(1, 1, 1, 1);
@@ -145,16 +166,23 @@ public class WorldWindow implements Updater, Renderer{
 		
 		renderLandscape();
 		
+		//auras
+//		renderAuras();
+		
+		//Things
 		GL11.glColor4f(1, 1, 1, 1);
-		//things
 		renderThings((t) -> t.ani.behind == 0);
-		renderThings((t) -> t.ani.behind == 1);
-		//living things can be seen through other things
-		GL11.glColor4f(1, 1, 1, 0.1f);
-		renderThings((t) -> t.life != null);
 		
 		//draw water on top
 		renderWater();
+
+		GL11.glColor4f(1, 1, 1, 1);
+		//render things that are in front of everything else
+		renderThings((t) -> t.ani.behind == 1);
+		
+		//living things can be seen through other things
+		GL11.glColor4f(1, 1, 1, 0.1f);
+		renderThings((t) -> t.life != null);
 
 		//draw the darkness which is crouching out of the earth
 		if(Settings.DARKNESS){
@@ -165,9 +193,12 @@ public class WorldWindow implements Updater, Renderer{
 		if(Settings.SHOW_BOUNDING_BOX){
 			renderBoundingBoxes();
 		}
-		
-		for(ParticleEffect effect : effects){
+		for(Effect effect : effects){
 			effect.render();
+		}
+
+		for(ActiveQuest aq : world.quests){
+			aq.render();
 		}
 	}
 	
@@ -210,6 +241,37 @@ public class WorldWindow implements Updater, Renderer{
 			}
 			GL11.glEnd();
 		}
+	}
+	
+	public void renderAuras(){
+		framebuffer.bind();
+		GL11.glClearColor(1, 1, 1, 0);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		Shader20.AURA.bind();
+//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
+		for(int i = 0; i < ThingType.values().length; i++) {
+			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
+				if(cursor.type != ThingType.DUMMY && cursor.aura != null){
+					cursor.aura.render(cursor.pos.p.x, cursor.pos.p.y);
+				}
+			}
+		}
+		Shader20.bindNone();
+		framebuffer.release();
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+		GL11.glPushMatrix();
+		GL11.glLoadIdentity();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.texture);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glTexCoord2f(0, 0);	GL11.glVertex2i(0, 0);
+		GL11.glTexCoord2f(1, 0);	GL11.glVertex2i(Window.WIDTH, 0);
+		GL11.glTexCoord2f(1, 1);	GL11.glVertex2i(Window.WIDTH, Window.HEIGHT);
+		GL11.glTexCoord2f(0, 1);	GL11.glVertex2i(0, Window.HEIGHT);
+		GL11.glEnd();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		GL11.glPopMatrix();
 	}
 	
 	public void renderDarkness(){
@@ -350,7 +412,7 @@ public class WorldWindow implements Updater, Renderer{
 	}
 	
 	public void setRadius(int r){
-		if(r <= 0 || xIndex + r > layer.mostRight.xIndex || xIndex - r < layer.mostLeft.xIndex){
+		if(r <= 0 || xIndex + r > world.mostRight.xIndex || xIndex - r < world.mostLeft.xIndex){
 			(new Exception("Can't change radius, not enough lines generated. OR Radius may not be less than 1.")).printStackTrace();
 		} else {
 			for(; this.r > r; this.r--){
@@ -364,7 +426,7 @@ public class WorldWindow implements Updater, Renderer{
 		}
 	}
 	public void setPos(int xIndex){
-		if(xIndex + r > layer.mostRight.xIndex || xIndex - r < layer.mostLeft.xIndex){
+		if(xIndex + r > world.mostRight.xIndex || xIndex - r < world.mostLeft.xIndex){
 			(new Exception("Can't change radius, not enough lines generated. OR Radius may not be less than 1.")).printStackTrace();
 		} else {
 			for(; this.xIndex > xIndex; this.xIndex--){
@@ -380,5 +442,9 @@ public class WorldWindow implements Updater, Renderer{
 				} else break;
 			}
 		}
+	}
+
+	public static String getDayTime() {
+		return "evening";
 	}
 }

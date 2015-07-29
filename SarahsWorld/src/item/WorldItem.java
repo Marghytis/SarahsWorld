@@ -28,7 +28,7 @@ public class WorldItem extends MovableThing{
 		for(int i = 0; i < World.sarah.inventory.stacks.length; i++){
 			if(World.sarah.inventory.stacks[i].item == item || World.sarah.pos.minus(pos).lengthSqare() > 25000){
 				return false;
-			} else if (World.sarah.inventory.stacks[i].item == ItemType.fist){
+			} else if (World.sarah.inventory.stacks[i].item == ItemType.FIST){
 				World.sarah.inventory.stacks[i].item = item;
 				WorldView.thingTasks.add(() -> World.items[item.id].remove(this));
 				return true;

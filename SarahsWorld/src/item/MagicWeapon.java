@@ -1,7 +1,7 @@
 package item;
 
-import particles.BasicMagicEffect;
-import particles.MagicEffect;
+import effects.particles.BasicMagicEffect;
+import effects.particles.MagicEffect;
 import render.Texture;
 import util.math.Rect;
 import util.math.Vec;

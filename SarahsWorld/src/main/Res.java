@@ -1,7 +1,12 @@
 package main;
 
+import java.awt.Font;
+
 import render.TexFile;
 import render.TexFileInfo;
+import util.Color;
+import util.Sound;
+import util.TrueTypeFont;
 
 public class Res {
 	
@@ -33,7 +38,7 @@ public class Res {
 	public static final TexFile fossil = new TexFile("res/objects/Fossil.png", 1, 3, -0.5f, -0.5f);
 	public static final TexFile grave = new TexFile("res/objects/Grave.png", 1, 7, -0.5f, -0.05f);
 	public static final TexFile rainbow = new TexFile("res/objects/Rainbow.png", 1, 1, -0.5f, 0f);
-	public static final TexFile flower_light = new TexFile("res/Light_dimmed.png");
+//	public static final TexFile flower_light = new TexFile("res/Light_dimmed.png");
 	
 	//Creatures
 	public static final TexFileInfo sloth_onTreePos = new TexFileInfo("res/objects/Sloth_JungleTree.txt");
@@ -41,8 +46,8 @@ public class Res {
 	public static final TexFileInfo sarah_HandPos_onCow = new TexFileInfo("res/creatures/Sarah_riding_cow.txt");
 	public static final TexFileInfo sarah_HeadPos = new TexFileInfo("res/creatures/Sarah_HORN.txt");
 	public static final TexFileInfo sarah_HeadPos_onCow = new TexFileInfo("res/creatures/Sarah_riding_cow_horn.txt");
-	public static final TexFile sarah = new TexFile("res/creatures/Sarah.png", 11, 10, -0.5, -0.1);{sarah.addInfo(sarah_HandPos, sarah_HeadPos);}
-	public static final TexFile sarah_onCow = new TexFile("res/creatures/Sarah_riding_cow.png", 7, 2, -0.5, -0.1);{sarah.addInfo(sarah_HandPos_onCow, sarah_HeadPos_onCow);}
+	public static final TexFile sarah = new TexFile("res/creatures/Sarah.png", 11, 10, -0.5, -0.1);static {sarah.addInfo(sarah_HandPos, sarah_HeadPos);}
+	public static final TexFile sarah_onCow = new TexFile("res/creatures/Sarah_riding_cow.png", 7, 2, -0.5, -0.1);static {sarah_onCow.addInfo(sarah_HandPos_onCow, sarah_HeadPos_onCow);}
 	public static final TexFile sarah_death = new TexFile("res/creatures/Sarah_death.png", 14, 1, -0.5f, -0.5f);
 	public static final TexFile snail  = new TexFile("res/creatures/Snail.png", 7, 3, -0.5f, -0.1f);
 	public static final TexFile butterfly  = new TexFile("res/creatures/Butterfly.png", 5, 2, -0.5f, -0.5f);
@@ -64,7 +69,19 @@ public class Res {
 	public static final TexFile inventory = new TexFile("res/items/Inventory.png", 1, 2);
 	public static final TexFile items_world = new TexFile("res/items/ItemsWorld.png", 5, 1, -0.5f, -0.5f);
 	public static final TexFile items_hand = new TexFile("res/items/ItemsHand.png", 6, 1, -0.5f, -0.5f);
-	public static final TexFile items_inv = new TexFile("res/items/ItemsInv.png", 7, 1, -0.5f, -0.5f);
+	public static final TexFile items_inv = new TexFile("res/items/ItemsInv.png", 20, 1, -0.5f, -0.5f);
 	public static final TexFile items_weapons = new TexFile("res/items/Weapons.png", 1, 6, -0.5f, -0.5f);
 	public static final TexFile moneybag = new TexFile("res/items/Moneybag.png", 1, 1, -0.5f, -0.5f);
+	
+	public static final TexFile answer = new TexFile("res/menu/Answer.png", 1, 2, -0.5, -0.5);
+
+	public static final TexFile light = new TexFile("res/particles/Light.png", -0.5, -0.5);
+	public static final TexFile light1 = new TexFile("res/particles/Light1.png", -0.5, -0.5);
+	public static final TexFile light2 = new TexFile("res/particles/Light2.png", -0.5, -0.5);
+	
+	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 30), true);
+	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);
+
+	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);
+	public static final Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.wav", null);
 }
