@@ -46,6 +46,7 @@ public class Res {
 	public static final TexFileInfo sarah_HandPos_onCow = new TexFileInfo("res/creatures/Sarah_riding_cow.txt");
 	public static final TexFileInfo sarah_HeadPos = new TexFileInfo("res/creatures/Sarah_HORN.txt");
 	public static final TexFileInfo sarah_HeadPos_onCow = new TexFileInfo("res/creatures/Sarah_riding_cow_horn.txt");
+	public static final TexFileInfo villager_HandPos = new TexFileInfo("res/creatures/NPC.txt");
 	public static final TexFile sarah = new TexFile("res/creatures/Sarah.png", 11, 10, -0.5, -0.1);static {sarah.addInfo(sarah_HandPos, sarah_HeadPos);}
 	public static final TexFile sarah_onCow = new TexFile("res/creatures/Sarah_riding_cow.png", 7, 2, -0.5, -0.1);static {sarah_onCow.addInfo(sarah_HandPos_onCow, sarah_HeadPos_onCow);}
 	public static final TexFile sarah_death = new TexFile("res/creatures/Sarah_death.png", 14, 1, -0.5f, -0.5f);
@@ -61,7 +62,7 @@ public class Res {
 	public static final TexFile unicorn_hair  = new TexFile("res/creatures/Unicorn_hair.png", 6, 3, -0.5f, -0.1f);
 	public static final TexFile trex  = new TexFile("res/creatures/Trex.png", 9, 4, -0.5f, -0.05f);
 	public static final TexFile cat_giant  = new TexFile("res/creatures/GiantCat.png", 5, 2, -0.5f, -0.05f);
-	public static final TexFile villager  = new TexFile("res/creatures/NPC.png", 1, 4, -0.5f, -0.05f);
+	public static final TexFile villager  = new TexFile("res/creatures/NPC.png", 1, 4, -0.5f, -0.05f);static {villager.addInfo(villager_HandPos);}
 	public static final TexFile zombie  = new TexFile("res/creatures/Zombie.png", 4, 2, -0.5f, -0.05f);
 	public static final TexFile sloth  = new TexFile("res/creatures/Sloth.png", 5, 1, -0.5f, -0.05f);
 	public static final TexFile coin  = new TexFile("res/Items/Coin.png", -0.5f, -0.2f);
@@ -79,7 +80,7 @@ public class Res {
 	public static final TexFile light1 = new TexFile("res/particles/Light1.png", -0.5, -0.5);
 	public static final TexFile light2 = new TexFile("res/particles/Light2.png", -0.5, -0.5);
 	
-	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 30), true);
+	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 46), true);
 	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);
 
 	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);

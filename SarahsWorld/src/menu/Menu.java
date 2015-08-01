@@ -7,34 +7,46 @@ import main.Main;
 import org.lwjgl.opengl.GL11;
 
 import render.TexFile;
+import util.Anim;
 import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
+import core.Window;
 
 public class Menu implements Updater, Renderer, Listener {
 	
 	public static TexFile MONEYBAG = new TexFile("res/items/Moneybag.png", 1, 1, -0.5f, -0.5f);
-	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 1), true);
-	public static Color fontColor = new Color(0.9f, 0.8f, 0.1f);
+	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 20), true);
+	public static Color fontColor = new Color(0.9f, 0.8f, 0.8f, 1);
+	public static Dialog21 dialog = new Dialog21();
 	
-	public Menus open = Menus.MAIN, last = Menus.MAIN;
+	public Menus open = Menus.EMPTY, last = Menus.EMPTY, next = Menus.EMPTY;
 	public Element[] elements;
 	
-	public void setMenu(Menus menu, Object... info){
+	public void setMenu(Menus menu){
 		if(open != menu){
-			last = open;
-			open = menu;
-			elements = menu.elements;
+			next = menu;
+			open.close();
+		} else {
+			open.stopClosing();
 		}
 	}
 	
 	public void setLast(){
 		if(open != last){
-			open = last;
+			next = last;
+			open.close();
 		}
+	}
+	
+	private void setNext(){
+		last = open;
+		open = next;
+		elements = open.elements;
+		open.open();
 	}
 	
 	public boolean update(double delta) {
@@ -81,9 +93,9 @@ public class Menu implements Updater, Renderer, Listener {
 		MAIN(false, false) {
 			public void setElements(){
 				elements = new Element[]{
-					new Button("Continue", 0.5, 0.5, 0.5, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+					new Button("Exit", 0.5, 0.5, 0.5, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 						public void released(int button) {
-							Main.menu.setMenu(EMPTY);
+							Window.closeRequested = true;
 						}
 					}
 				};
@@ -108,7 +120,7 @@ public class Menu implements Updater, Renderer, Listener {
 		},
 		DIALOG(false, true){
 			public void setElements(){
-				elements = new Element[]{new Dialog()};
+				elements = new Element[]{new Dialog21()};
 			}
 		},
 		DEBUG(false, false){
@@ -120,8 +132,7 @@ public class Menu implements Updater, Renderer, Listener {
 		public boolean blockWorld;
 		public boolean stay;//can only be switched of by itself
 		public Element[] elements;
-		public double timer;
-		public boolean opening, closing;
+		public Anim ani;
 		
 		Menus(boolean blockWorld, boolean stay){
 			this.blockWorld = blockWorld;
@@ -133,29 +144,34 @@ public class Menu implements Updater, Renderer, Listener {
 		
 		public boolean keyPressed(int key){return false;}
 		
-		public void open(){
-			timer = 0;
-			opening = true;
-			closing = false;
-		}
-		
 		public void close(){
-			timer = 0;
-			opening = false;
-			closing = true;
-		}
-		
-		public void update(double delta){
-			timer += delta;
-			if(opening){
-				openAnimation(delta);
-			} else if(closing){
-				closeAnimation(delta);
+			if(ani != null){
+				ani.dir = false;
+			} else {
+				Main.menu.setNext();
 			}
 		}
 		
-		public void openAnimation(double delta){}
-
-		public void closeAnimation(double delta){}
+		public void stopClosing(){
+			if(ani != null){
+				ani.dir = true;
+			}
+		}
+		
+		public void open(){
+			if(ani != null){
+				ani.time = 0;
+				ani.dir = true;
+			}
+		}
+		
+		public void update(double delta){
+			if(ani != null){
+				ani.update(delta);
+				if(!ani.dir && ani.time <= 0){
+					Main.menu.setNext();
+				}
+			}
+		}
 	}
 }

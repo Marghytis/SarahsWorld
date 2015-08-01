@@ -1,13 +1,18 @@
 package world.things.aiPlugins;
 
 import main.Main;
-import menu.Dialog;
+import menu.Dialog21;
 import menu.Menu.Menus;
 
 import org.lwjgl.opengl.GL11;
 
 import quest.ActiveQuest;
+import quest.Strings;
 import render.TexFile;
+import util.Anim;
+import util.Anim.AnimPart;
+import util.Anim.Func;
+import util.Anim.Value;
 import util.Color;
 import util.math.Vec;
 import world.things.AiPlugin;
@@ -18,6 +23,7 @@ import effects.Effect;
 public class Speaking extends AiPlugin {
 	
 	public String currentSpeech = "";
+	public String[] answers;
 	public ThoughtBubble tb;
 	boolean speaking;
 	public ActiveQuest quest;
@@ -27,17 +33,34 @@ public class Speaking extends AiPlugin {
 		this.tb = new ThoughtBubble(thing);
 	}
 	
-	public void say(String what){
-		currentSpeech = what;
+	public void say(boolean thoughtBubble, ActiveQuest quest, String what, String[] answers){
+		this.quest = quest;
+		this.currentSpeech = what;
+		this.answers = answers;
+		if(!thoughtBubble && t.pos.p.minus(Main.world.avatar.pos.p).lengthSquare() < 90000){
+			speaking = true;
+			String[] realAnswers = new String[answers.length];
+			for(int i = 0; i < answers.length; i++){
+				realAnswers[i] = Strings.get(answers[i], t.rand);
+			}
+			((Dialog21)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(what, t.rand), realAnswers);
+			Menus.DIALOG.ani = ((Dialog21)Menus.DIALOG.elements[0]).ani;
+			Main.menu.setMenu(Menus.DIALOG);
+		}
 	}
 
 	public boolean action(double delta) {
-		if(t.pos.p.minus(Main.world.avatar.pos.p).lengthSquare() < 90000 && !speaking){
-			tb.popUp();
+		if(t.pos.p.minus(Main.world.avatar.pos.p).lengthSquare() < 90000 && !speaking && currentSpeech != ""){
+			if(Main.menu.open == Menus.DIALOG && ((Dialog21)Menus.DIALOG.elements[0]).other == t){
+				Main.menu.setMenu(Menus.DIALOG);
+			} else {
+				tb.popUp();
+			}
 		} else if(t.pos.p.minus(Main.world.avatar.pos.p).lengthSquare() > 90000){
 			if(tb.living) tb.goAway();
-			if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
-				Main.menu.setLast();
+			if(Main.menu.open == Menus.DIALOG && ((Dialog21)Menus.DIALOG.elements[0]).other == t){
+				Main.menu.setMenu(Menus.EMPTY);
+				speaking = false;
 			}
 		}
 		return false;
@@ -58,33 +81,39 @@ public class Speaking extends AiPlugin {
 	public static TexFile bubble1 = new TexFile("res/particles/Bubble.png");
 	public static TexFile bubble2 = new TexFile("res/particles/ThoughtBubble.png", 1, 3, -0.5, -0.5);
 	public static double animationTime = 1.8;
-	public static double[] positions = {0.1, 0.01, 0.25, 0.0625, 0.45, 0.2025, 0.65, 0.44225},
-			popUpTiming = {0, 0.2, 0.4, 0.6, 0.8};
+	public static double[] positions = {0.1, 0.01, 0.25, 0.0625, 0.45, 0.2025, 0.65, 0.44225};
 	public class ThoughtBubble implements Effect {
 		public int tex;
 		public Thing speaker;
-		public boolean appearing;
-		public double time = -1;
+		public Anim ani;
 		public Vec relPos, pos, vel = new Vec();
-		double popUpTime = 1, rWobble = 0.8;
+		double rWobble = 0.8;
+		Value[] rs = {new Value(), new Value(), new Value(), new Value(), new Value()};
 		
 		public ThoughtBubble(Thing speaker){
 			this.speaker = speaker;
 			relPos = new Vec(50, 75);
 			pos = speaker.pos.p.copy();
 			tex = speaker.rand.nextInt(3);
+			Func f = (t) -> {
+				if(t > 0) return Math.sin(Math.PI*t)*rWobble + t;
+				else return -1;
+			};
+			ani = new Anim(
+					new AnimPart(rs[0], f, 0.2, 1.0),
+					new AnimPart(rs[1], f, 0.2, 1.0),
+					new AnimPart(rs[2], f, 0.2, 1.0),
+					new AnimPart(rs[3], f, 0.2, 1.0),
+					new AnimPart(rs[4], f, 0.2, 1.0));
+			ani.time = -1;
 		}
 
 		public void update(double delta) {
-			if(time < 0){//not else, because then you couldn't remove this from outside
+			if(ani.time < 0){
 				living = false;
 			} else {
+				ani.update(delta);
 				living = true;
-				if(appearing){
-					time = Math.min(time + delta, animationTime);
-				} else {
-					time = time - delta;
-				}
 				
 				Vec shift = speaker.pos.p.minus(pos);
 				double speakerMovement = shift.lengthSquare();
@@ -97,16 +126,16 @@ public class Speaking extends AiPlugin {
 		}
 
 		public void popUp() {
-			appearing = true;
+			ani.dir = true;
 			if(!living){
 				living = true;
-				time = 0;
+				ani.time = 0;
 				Main.world.window.toAdd.add(this);
 			}
 		}
 		
 		public void goAway() {
-			appearing = false;
+			ani.dir = false;
 		}
 
 		@SuppressWarnings("deprecation")
@@ -116,13 +145,10 @@ public class Speaking extends AiPlugin {
 			Color.WHITE.bind();
 			GL11.glBegin(GL11.GL_QUADS);
 			for(int i = 0, s = 1; i < 8; i += 2, s += 3){
-				if(time >= popUpTiming[i/2]){
+				double r = rs[i/2].v*s;
+				if(r >= 0){
 					double x = speaker.pos.p.x + shift.x*positions[i];
 					double y = speaker.pos.p.y + shift.y*positions[i+1] + 60;
-					double r = s;
-					if(time < popUpTiming[i/2] + popUpTime){
-						r = r(time - popUpTiming[i/2], r);
-					}
 					GL11.glTexCoord2d(0, 1);
 					GL11.glVertex2d(x - r, y - r);
 					GL11.glTexCoord2d(1, 1);
@@ -134,23 +160,15 @@ public class Speaking extends AiPlugin {
 				}
 			}
 			GL11.glEnd();
-			if(time >= popUpTiming[4]){
-				bubbleR = pressed ? 0.16 : 0.2;
-				if(time < popUpTiming[4] + popUpTime){
-					bubbleR = r(time - popUpTiming[4], bubbleR);
-				}
+			double bR = rs[4].v*(pressed ? 0.16 : 0.2);
+			if(bR >= 0){
+				bubbleR = bR;
 				bubble2.bind();
 				bubble2.tex(0, tex).fill(bubble2.pixelBox.copy().scale(bubbleR).shift(speaker.pos.p.x + shift.x, speaker.pos.p.y + shift.y+60), 0);
 			}
 			TexFile.bindNone();
 		}
 		double bubbleR;
-		
-		public double r(double t, double r1){
-			return 
-					(Math.sin(Math.PI*t/popUpTime)*rWobble + 
-					(t/popUpTime))*r1;
-		}
 		
 		boolean living = false;
 		public boolean living() {
@@ -162,7 +180,12 @@ public class Speaking extends AiPlugin {
 				pressed = false;
 				goAway();
 				speaker.speak.speaking = true;
-				((Dialog)Menus.DIALOG.elements[0]).setup(quest, t, "Test, Test, testing!!??", new String[]{"First Answer.", "2.", "And another nice answer."});
+				String[] realAnswers = new String[answers.length];
+				for(int i = 0; i < answers.length; i++){
+					realAnswers[i] = Strings.get(answers[i], t.rand);
+				}
+				((Dialog21)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(currentSpeech, t.rand), realAnswers);
+				Menus.DIALOG.ani = ((Dialog21)Menus.DIALOG.elements[0]).ani;
 				Main.menu.setMenu(Menus.DIALOG);
 				return true;
 			}

@@ -44,7 +44,6 @@ public class Element {
 	
 	public void update(double delta){}
 	public void render(){
-		TexFile.bindNone();
 		boolean noColor = color == null;
 		if(!noColor){
 			color.bind();
@@ -55,6 +54,7 @@ public class Element {
 			tex.file.bind();
 			Render.quad(x1, y1, x2, y2, tex);
 		} else if(!noColor){
+			TexFile.bindNone();
 			Render.quad(x1, y1, x2, y2);
 		}
 	}

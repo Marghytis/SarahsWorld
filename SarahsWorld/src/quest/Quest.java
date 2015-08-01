@@ -8,14 +8,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
-import main.Main;
-import menu.Answers;
-import menu.Menu;
+import world.WorldData;
+import world.WorldWindow;
 import world.generation.Zone.Attribute;
-import world.things.Thing;
 import world.things.ThingType;
-import world.worldGeneration.WorldData;
-import world.worldGeneration.WorldWindow;
 
 public enum Quest {
 	FIREFIGHTER("res/quest/Firefighter.txt");
@@ -24,7 +20,6 @@ public enum Quest {
 	
 	static {
 		values = values();
-		values = new Quest[0];
 	}
 	public Hashtable<String, ThingType> characters = new Hashtable<>();
 	public int[] startAttributes;
@@ -103,8 +98,10 @@ public enum Quest {
 		}
 		for(int i = 0; i < events.length; i++){
 			events[i].next = new Event[events[i].nextTemp.length];
+			events[i].answerCondition = new int[events[i].nextTemp.length];
 			for(int i2 = 0; i2 < events[i].nextTemp.length; i2++){
-				events[i].next[i2] = events[events[i].nextTemp[i2]];
+				events[i].next[i2] = events[events[i].nextTemp[i2]%1000];
+				events[i].answerCondition[i2] = events[i].nextTemp[i2]/1000;
 			}
 		}
 		start = events[0];
@@ -133,37 +130,40 @@ public enum Quest {
 				ItemStack[] stacks = q.characters.get(args[0]).inv.stacks;
 				for(int i1 = 0; i1 < stacks.length; i1++){
 					if(stacks[i1].item == ItemType.valueOf(args[1])){
-						return stacks[i1].count > Integer.parseInt(args[2]);
+						return (stacks[i1].count >= Integer.parseInt(args[2])) ? "true" : "false";
 					}
 				}
 				return false;
 			};break;
-			case "lastAnswer": leftSide = (q, w) -> q.lastAnswer; break;
 			default: throw(new UnknownMethodException("condition", method[0]));
 			}
 			list[i] = getCondition(leftSide, data[1].substring(0, 2), data[1].substring(2));
 		}
-		return (q, w) -> {//connect all the conditions with the operators to one single condition
-			boolean out = list[0].isMet(q, w);
-			for(int i = 1; i < list.length; i++){
-				boolean op = operators[i];
-				boolean cur = list[i].isMet(q, w);
-				if(out && !op){
-					return true;
-				} else if(!out && op){
-					out = false;
-				} else if(cur){
-					if(out) out = cur && op;
-					else out = cur && !op;
+		if(conditions.length > 0){
+			return (q, w) -> {//connect all the conditions with the operators to one single condition
+				boolean out = list[0].isMet(q, w);
+				for(int i = 1; i < list.length; i++){
+					boolean op = operators[i];
+					boolean cur = list[i].isMet(q, w);
+					if(out && !op){
+						return true;
+					} else if(!out && op){
+						out = false;
+					} else if(cur){
+						if(out) out = cur && op;
+						else out = cur && !op;
+					}
 				}
-			}
-			return out;
-		};
+				return out;
+			};
+		} else {
+			return null;
+		}
 	}
 	
 	public Condition getCondition(Objector left, String operator, String rightSide){
 		switch(operator){
-		case "==": return (q, w) -> left.object(q, w) == rightSide;
+		case "==": return (q, w) -> {return left.object(q, w).equals(rightSide);};
 		case "<=": return (q, w) -> ((Number)left.object(q, w)).intValue() <= Integer.parseInt(rightSide);
 		case ">=": return (q, w) -> ((Number)left.object(q, w)).intValue() >= Integer.parseInt(rightSide);
 		case "<<": return (q, w) -> ((Number)left.object(q, w)).intValue() < Integer.parseInt(rightSide);
@@ -184,20 +184,9 @@ public enum Quest {
 			String[] args = method[1].split(",");
 			switch(method[0]){
 			case "spawn": realActions[i] = (q, w) -> w.world.generator.questThings.add(new QuestSpawner(characters.get(args[0]), q, args[0], true)); break;
-			case "showSpeechBubble": realActions[i] = (q, w) -> {};/*q.characters.get(args[0]).quest.say = Strings.get(args[1], w.random); */break;
+			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).speak.say(Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
+			//say(booblen thoughtBubble, villager, question, answers)break;
 			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).inv.addItem(ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
-			case "showAnswers": realActions[i] = (q, w) -> {
-				String[] answers = new String[args.length - 1];
-				String[] possibleAnswers = new String[args.length-1];
-				Thing asker = q.characters.get(args[0]);
-				for(int i2 = 0; i2 < args.length-1; i2++){
-					String[] data = args[i2+1].split(":");
-					possibleAnswers[i2] = data[0];
-					answers[i2] = Strings.get(data[1], w.random);
-				}
-//				Main.menu.setMenu(Menu.ANSWER);
-//				((Answers)Menu.ANSWER.elements[0]).setButtons(q, answers, possibleAnswers, asker);TODO
-			};break;
 			default: throw(new UnknownMethodException("action", method[0]));
 			}
 		}
@@ -213,9 +202,16 @@ public enum Quest {
 		String[] nexts = next.split(";");
 		int[] out = new int[nexts.length];
 		for(int i = 0; i < nexts.length; i++){
+			String[] data = nexts[i].split(":");
+			String name = data[0];
+			int thousands = 0;
+			if(data.length > 1){
+				name = data[1];
+				thousands = Integer.parseInt(data[0])*1000;
+			}
 			for(int i2 = 0; i2 < names.length; i2++){
-				if(nexts[i].equals(names[i2])){
-					out[i] = i2;
+				if(name.equals(names[i2])){
+					out[i] = thousands + i2;
 					break;
 				}
 			}

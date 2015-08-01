@@ -3,9 +3,9 @@ package world.generation.zones;
 import java.util.Random;
 
 import util.math.Function;
+import world.generation.Biome;
+import world.generation.BiomeManager;
 import world.generation.Zone;
-import world.worldGeneration.Biome;
-import world.worldGeneration.BiomeManager;
 
 public class MountainRange extends Zone {
 

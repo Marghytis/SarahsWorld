@@ -1,7 +1,7 @@
 package world.generation.zones;
 
+import world.generation.BiomeManager;
 import world.generation.Zone;
-import world.worldGeneration.BiomeManager;
 
 public class WaterColumns extends Zone{
 

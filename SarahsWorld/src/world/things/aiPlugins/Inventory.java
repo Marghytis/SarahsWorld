@@ -70,9 +70,12 @@ public class Inventory extends AiPlugin{
 	} 
 	
 	public boolean addItem(ItemType item, int amount){
+		if(item == ItemType.COIN){
+			coins += amount;
+		} else
 		for(int i = 0; i < stacks.length; i++){
 			if(stacks[i].item == item){
-				stacks[i].count += amount;;
+				stacks[i].count += amount;
 				return true;
 			} else if (stacks[i].item == ItemType.FIST){
 				stacks[i].item = item;

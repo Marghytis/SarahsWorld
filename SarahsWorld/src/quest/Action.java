@@ -1,6 +1,6 @@
 package quest;
 
-import world.worldGeneration.WorldData;
+import world.WorldData;
 
 public interface Action {
 	public void run(ActiveQuest quest, WorldData world);

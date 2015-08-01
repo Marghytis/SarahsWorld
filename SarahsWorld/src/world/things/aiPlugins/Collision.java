@@ -3,10 +3,10 @@ package world.things.aiPlugins;
 import main.Main;
 import util.math.UsefulF;
 import util.math.Vec;
+import world.WorldData.Column;
+import world.WorldData.Vertex;
 import world.things.AiPlugin;
 import world.things.Thing;
-import world.worldGeneration.WorldData.Column;
-import world.worldGeneration.WorldData.Vertex;
 
 public class Collision extends AiPlugin{
 	

@@ -3,12 +3,12 @@ package world.things;
 import item.ItemType;
 import render.Texture;
 import util.math.Vec;
+import world.WorldData;
+import world.WorldData.Column;
+import world.WorldData.Vertex;
 import world.things.aiPlugins.Animating;
 import world.things.aiPlugins.Fruits;
 import world.things.aiPlugins.Position;
-import world.worldGeneration.WorldData;
-import world.worldGeneration.WorldData.Column;
-import world.worldGeneration.WorldData.Vertex;
 
 public enum SuperTypes {
 	TREE(ThingType.TREE_NORMAL, ThingType.TREE_FIR, ThingType.TREE_FIR_SNOW, 

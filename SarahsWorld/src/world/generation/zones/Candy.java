@@ -5,9 +5,9 @@ import java.util.List;
 
 import util.math.Function;
 import util.math.Vec;
+import world.generation.Biome;
+import world.generation.BiomeManager;
 import world.generation.Zone;
-import world.worldGeneration.Biome;
-import world.worldGeneration.BiomeManager;
 
 public class Candy extends Zone {
 

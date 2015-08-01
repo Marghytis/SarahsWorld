@@ -6,6 +6,9 @@ import render.TexFile;
 import render.Texture;
 import util.Color;
 import util.math.Vec;
+import world.WorldData;
+import world.WorldData.Column;
+import world.WorldData.Vertex;
 import world.things.aiPlugins.Acceleration;
 import world.things.aiPlugins.Animating;
 import world.things.aiPlugins.Attacking;
@@ -29,9 +32,6 @@ import world.things.aiPlugins.Riding;
 import world.things.aiPlugins.Speaking;
 import world.things.aiPlugins.Velocity;
 import world.things.aiPlugins.WalkAround;
-import world.worldGeneration.WorldData;
-import world.worldGeneration.WorldData.Column;
-import world.worldGeneration.WorldData.Vertex;
 
 public enum ThingType {
 	//LIVING THINGS

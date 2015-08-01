@@ -39,11 +39,12 @@ public enum ItemType {
 	},
 	
 	//Item types below this line won't appear in traders inventories
-	FIST(null, null, null, null, null, 0, "Fist", 300, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
+	FIST(null, null, null, null, null, 0, "Fist", 1, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
 		@Override
 		public boolean use(Thing src, Vec pos, Thing dest){
-			if(dest.fruits != null && src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 25000){
-				src.inv.addItem(dest.fruits.dropItem(), 1);
+			if(dest.fruits != null && src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 90000){
+				ItemType i = dest.fruits.dropItem();
+				src.inv.addItem(i, 1);
 			} else {
 				switch(dest.type){
 				case COW:

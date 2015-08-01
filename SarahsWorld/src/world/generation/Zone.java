@@ -2,8 +2,6 @@ package world.generation;
 
 import java.util.Random;
 
-import world.worldGeneration.BiomeManager;
-
 
 public abstract class Zone {
 

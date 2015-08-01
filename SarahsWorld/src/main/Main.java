@@ -4,8 +4,8 @@ import menu.Menu;
 
 import org.lwjgl.opengl.Display;
 
-import world.worldGeneration.Save;
-import world.worldGeneration.World;
+import world.Save;
+import world.World;
 import core.Core;
 import core.Listener;
 import core.Renderer;
@@ -16,10 +16,11 @@ public class Main {
 	
 	public static Menu menu;
 	public static World world;
+	public static Core core;
 
 	public static void main(String[] args){
 		String worldName = "Sarahs World";
-		Core core = new Core(worldName);
+		core = new Core(worldName);
 		if(Window.WIDTH == 0){
 			System.out.println("ERROR AT START!!! Try again.");
 			Window.destroy();

@@ -5,9 +5,9 @@ import java.util.Random;
 import util.math.Function;
 import util.math.UsefulF;
 import util.math.Vec;
+import world.WorldData.Column;
+import world.generation.BiomeManager;
 import world.generation.Zone;
-import world.worldGeneration.BiomeManager;
-import world.worldGeneration.WorldData.Column;
 
 public class Hills extends Zone {
 

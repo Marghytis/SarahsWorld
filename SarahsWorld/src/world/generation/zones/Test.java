@@ -2,8 +2,8 @@ package world.generation.zones;
 
 import java.util.Random;
 
-import world.worldGeneration.Biome;
-import world.worldGeneration.BiomeManager;
+import world.generation.Biome;
+import world.generation.BiomeManager;
 
 
 public class Test extends Hills {

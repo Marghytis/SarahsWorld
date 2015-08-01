@@ -2,9 +2,9 @@ package world.generation.zones;
 
 import java.util.Random;
 
+import world.generation.Biome;
+import world.generation.BiomeManager;
 import world.generation.Zone;
-import world.worldGeneration.Biome;
-import world.worldGeneration.BiomeManager;
 
 public class Flat extends Zone{
 

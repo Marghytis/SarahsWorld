@@ -7,7 +7,7 @@ public class Event {
 	public Condition condition;
 	public Action action;
 	public Event[] next;
-	public int[] nextTemp;
+	public int[] nextTemp, answerCondition;
 
 	public Event(int id, String name){
 		this.id = id;

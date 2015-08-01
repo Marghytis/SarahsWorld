@@ -5,11 +5,12 @@ import main.Settings;
 import menu.Menu.Menus;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import util.math.Vec;
+import world.Save;
 import world.things.AiPlugin;
 import world.things.Thing;
-import world.worldGeneration.Save;
 import core.Listener;
 import core.Window;
 import effects.Effect;
@@ -58,6 +59,13 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			t.acc.a.shift(walkingDir*a, 0);
 			//TODO set swimming animation
 		}
+		int scroll = Mouse.getDWheel();
+		t.inv.selectedItem += -scroll/120;
+		if(t.inv.selectedItem < 0){
+			t.inv.selectedItem %= t.inv.stacks.length;
+			t.inv.selectedItem += t.inv.stacks.length;
+		}
+		t.inv.selectedItem %= t.inv.stacks.length;
 		return false;
 	}
 
@@ -79,7 +87,8 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			}
 			break;
 		case 1://USE
-			t.inv.useSelectedItem(worldPos, livingsClickedOn);
+			Thing[] objectsClickedOn = Main.world.window.objectsAt(worldPos);
+			t.inv.useSelectedItem(worldPos, objectsClickedOn);
 			break;
 		}
 		
@@ -107,7 +116,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 //		}
 		return false;
 	}
-
+	
 	public boolean keyPressed(int key) {
 		
 		switch(key){
@@ -128,7 +137,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			if(Main.menu.open != Menus.MAIN){
 				Main.menu.setMenu(Menus.MAIN);
 			} else {
-					Main.menu.setLast();
+				Main.menu.setLast();
 			}
 			break;
 		case Keyboard.KEY_F1:
