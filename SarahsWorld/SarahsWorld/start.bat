@@ -1,3 +1,3 @@
 @echo on
-java -Djava.library.path="natives/" -jar SarahsWorld.jar
-pause
+java -Djava.library.path="natives/" -jar SarahsWorld.JAR
+//pause
