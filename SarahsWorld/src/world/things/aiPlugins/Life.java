@@ -21,6 +21,7 @@ public class Life extends AiPlugin {
 	public int health;
 	public int armor;
 	double cooldown;
+	public boolean immortal;
 	
 	public Life(Thing t, int health, int coins){
 		super(t);
@@ -31,7 +32,7 @@ public class Life extends AiPlugin {
 
 	public boolean action(double delta) {
 		if(cooldown > 0) cooldown -= delta;
-		if(health < 0){
+		if(health < 0 && !immortal){
 			if(t.inv != null){
 				for(ItemStack item : t.inv.stacks){
 					for(int i = 0; i < item.count; i++){

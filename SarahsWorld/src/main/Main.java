@@ -36,16 +36,24 @@ public class Main {
 			world = new World();
 		}
 
+		resetCoreClasses();
+		
+		core.coreLoop();
+	}
+	
+	public static void resetCoreClasses(){
+
+		Updater.updaters.clear();
 		Updater.updaters.add(menu);
 		Updater.updaters.add(world.window);
 
+		Renderer.renderers.clear();
 		Renderer.renderers.add(world.window);
 		Renderer.renderers.add(menu);
 
+		Listener.listeners.clear();
 		Listener.listeners.add(menu);
 		Listener.listeners.add(world.avatar.avatar);
-		
-		core.coreLoop();
 	}
 	
 }

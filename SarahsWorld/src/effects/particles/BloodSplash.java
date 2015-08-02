@@ -7,7 +7,7 @@ import util.math.Vec;
 public class BloodSplash implements ParticleEffect{
 
 	
-	public static final ParticleType BLOOD_DROP = new ParticleType(new TexFile("res/particles/Blood_drop.png"));
+	public static final ParticleType BLOOD_DROP = new ParticleType(new TexFile("SarahsWorld/res/particles/Blood_drop.png"));
 	
 	public ParticleEmitter blood = new ParticleEmitter(30, 1, BLOOD_DROP, 1){
 

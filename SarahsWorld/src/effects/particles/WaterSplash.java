@@ -7,7 +7,7 @@ import world.WorldWindow;
 
 public class WaterSplash implements ParticleEffect{
 
-	public static final ParticleType WATER_DROP = new ParticleType(new TexFile("res/particles/Blood_drop.png"));
+	public static final ParticleType WATER_DROP = new ParticleType(new TexFile("SarahsWorld/res/particles/Blood_drop.png"));
 	
 	public ParticleEmitter drops = new ParticleEmitter(30, 1, WATER_DROP, 1){
 

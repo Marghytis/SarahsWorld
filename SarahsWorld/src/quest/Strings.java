@@ -11,7 +11,7 @@ public class Strings {
 	static Hashtable<String, String[]> strings = new Hashtable<>();
 	static {
 		try {
-			FileReader fileReader = new FileReader("res/quest/Strings.txt");
+			FileReader fileReader = new FileReader("SarahsWorld/res/quest/Strings.txt");
 			BufferedReader reader = new BufferedReader(fileReader);
 
 			String line = "";

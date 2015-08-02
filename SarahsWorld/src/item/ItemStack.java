@@ -8,7 +8,7 @@ import core.Window;
 
 
 public class ItemStack extends Rect{
-	public static final TexFile INVENTORY = new TexFile("res/items/Inventory.png", 1, 2);
+	public static final TexFile INVENTORY = new TexFile("SarahsWorld/res/items/Inventory.png", 1, 2);
 	public static final Texture NOT_SELECTED = INVENTORY.tex(0, 0);
 	public static final Texture SELECTED = INVENTORY.tex(0, 1);
 

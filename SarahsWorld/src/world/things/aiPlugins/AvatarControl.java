@@ -130,7 +130,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			if(Main.menu.open != Menus.INVENTORY){
 				Main.menu.setMenu(Menus.INVENTORY);
 			} else {
-				Main.menu.setLast();
+				Main.menu.setMenu(Menus.EMPTY);
 			}
 			break;
 		case Keyboard.KEY_ESCAPE:

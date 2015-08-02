@@ -8,7 +8,7 @@ import world.things.Thing;
 
 public class RainbowSpit implements ParticleEffect{
 	
-	public static final ParticleType RAINBOW = new ParticleType(new TexFile("res/particles/Spark.png"));
+	public static final ParticleType RAINBOW = new ParticleType(new TexFile("SarahsWorld/res/particles/Spark.png"));
 	
 	public ParticleEmitter rainbow = new ParticleEmitter(210, 200, RAINBOW, 1){
 		

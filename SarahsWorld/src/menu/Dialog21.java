@@ -22,12 +22,12 @@ import world.things.Thing;
 import core.Window;
 
 public class Dialog21 extends Element {
-	public static TexFile answersTex = new TexFile("res/menu/Answers.png", -0.5, -0.5);
-	public static TexFile tex = new TexFile("res/menu/Bar.png", 0, 3, 0, 0);
+	public static TexFile answersTex = new TexFile("SarahsWorld/res/menu/Answers.png", -0.5, -0.5);
+	public static TexFile tex = new TexFile("SarahsWorld/res/menu/Bar.png", 0, 3, 0, 0);
 	public static Texture upTex = tex.tex(0, 0), downTex = tex.tex(0, 1), tex1 = tex.tex(0, 2);
-	public static TexFile tex2 = new TexFile("res/menu/Bar2.png", 3, 3, 0, 0);
+	public static TexFile tex2 = new TexFile("SarahsWorld/res/menu/Bar2.png", 3, 3, 0, 0);
 	public static Texture upTex2_1 = tex2.tex(0, 0), upTex2_2 = tex2.tex(1, 0),upTex2_3 = tex2.tex(2, 0), downTex2_1 = tex2.tex(0, 1), downTex2_2 = tex2.tex(1, 1), downTex2_3 = tex2.tex(2, 1), tex12_1 = tex2.tex(0, 2), tex12_2 = tex2.tex(1, 2), tex12_3 = tex2.tex(2, 2);
-	public static TexFile connection = new TexFile("res/menu/Connector.png");
+	public static TexFile connection = new TexFile("SarahsWorld/res/menu/Connector.png");
 	public static int fontHeightHalf = Res.menuFont.getHeight()/2;
 	public static double rDefault = 150, animationTime = 2;
 

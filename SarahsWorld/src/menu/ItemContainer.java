@@ -13,7 +13,7 @@ import util.math.Vec;
 
 public class ItemContainer extends Element {
 	
-	public static TexFile inventoryButton = new TexFile("res/menu/Inventory.png", 1, 2, -0.5, -0.5);
+	public static TexFile inventoryButton = new TexFile("SarahsWorld/res/menu/Inventory.png", 1, 2, -0.5, -0.5);
 	static Texture t1 = inventoryButton.tex(0, 0), t2 = inventoryButton.tex(0, 1);
 	
 	public int ordinal;

@@ -8,7 +8,7 @@ import core.Listener;
 
 public abstract class Button extends TextField {
 	
-	public static TexFile button = new TexFile("res/menu/Button.png", 1, 2, -0.5, -0.5);
+	public static TexFile button = new TexFile("SarahsWorld/res/menu/Button.png", 1, 2, -0.5, -0.5);
 
 	public Color c1, c2;
 	public Texture t1, t2;

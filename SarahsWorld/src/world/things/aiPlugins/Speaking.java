@@ -77,9 +77,13 @@ public class Speaking extends AiPlugin {
 		if(tb.living){
 			tb.goAway();
 		}
+		if(Main.menu.open == Menus.DIALOG && ((Dialog21)Menus.DIALOG.elements[0]).other == t){
+			Main.menu.setMenu(Menus.EMPTY);
+			speaking = false;
+		}
 	}
-	public static TexFile bubble1 = new TexFile("res/particles/Bubble.png");
-	public static TexFile bubble2 = new TexFile("res/particles/ThoughtBubble.png", 1, 3, -0.5, -0.5);
+	public static TexFile bubble1 = new TexFile("SarahsWorld/res/particles/Bubble.png");
+	public static TexFile bubble2 = new TexFile("SarahsWorld/res/particles/ThoughtBubble.png", 1, 3, -0.5, -0.5);
 	public static double animationTime = 1.8;
 	public static double[] positions = {0.1, 0.01, 0.25, 0.0625, 0.45, 0.2025, 0.65, 0.44225};
 	public class ThoughtBubble implements Effect {
@@ -214,8 +218,8 @@ public class Speaking extends AiPlugin {
 	}
 	
 //	public static class SpeechBubble implements Effect {
-//		public static TexFile speechBubble = new TexFile("res/menu/SpeechBubble.png", -0.5, -0.5);
-//		public static TexFile connector = new TexFile("res/menu/SpeechBubble2.png", -0.5, -0.5);
+//		public static TexFile speechBubble = new TexFile("SarahsWorld/res/menu/SpeechBubble.png", -0.5, -0.5);
+//		public static TexFile connector = new TexFile("SarahsWorld/res/menu/SpeechBubble2.png", -0.5, -0.5);
 //		
 //		public Thing speaker;
 //		public boolean living;

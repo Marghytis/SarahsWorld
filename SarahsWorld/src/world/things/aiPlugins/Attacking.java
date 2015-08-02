@@ -44,7 +44,7 @@ public class Attacking extends AiPlugin {
 	 * @param targets
 	 */
 	public void attack(ItemType weapon, Thing... targets){
-		if(!attacking){
+		if(!attacking && (Settings.AGGRESSIVE_CREATURES || t.type == ThingType.SARAH)){
 			ItemType item = null;
 			if(weapon != null){
 				item = weapon;
@@ -77,7 +77,7 @@ public class Attacking extends AiPlugin {
 	}
 	
 	public int calculateDamage(Thing target, ItemType item, double strength){
-		if(t.type == ThingType.SARAH && target.type == ThingType.SARAH){
+		if((t.type == ThingType.SARAH && target.type == ThingType.SARAH) || target.pos.p.minus(t.pos.p).lengthSquare() > 10000){
 			return 0;
 		}
 		double crit = t.rand.nextDouble() > item.critProb + critProb ? 1 : item.crit;

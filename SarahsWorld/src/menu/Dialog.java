@@ -16,7 +16,7 @@ import world.things.Thing;
 import core.Window;
 
 public class Dialog extends Element {
-	public static TexFile tex = new TexFile("res/menu/Bar.png", 1, 3, 0, 0);
+	public static TexFile tex = new TexFile("SarahsWorld/res/menu/Bar.png", 1, 3, 0, 0);
 	public static Texture upTex = tex.tex(0, 0), downTex = tex.tex(0, 1), tex1 = tex.tex(0, 2);
 	public static int fontHeightHalf = Res.menuFont.getHeight()/2;
 

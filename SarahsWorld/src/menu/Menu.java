@@ -3,6 +3,7 @@ package menu;
 import java.awt.Font;
 
 import main.Main;
+import main.Settings;
 
 import org.lwjgl.opengl.GL11;
 
@@ -11,6 +12,7 @@ import util.Anim;
 import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
+import world.World;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
@@ -18,7 +20,7 @@ import core.Window;
 
 public class Menu implements Updater, Renderer, Listener {
 	
-	public static TexFile MONEYBAG = new TexFile("res/items/Moneybag.png", 1, 1, -0.5f, -0.5f);
+	public static TexFile MONEYBAG = new TexFile("SarahsWorld/res/items/Moneybag.png", 1, 1, -0.5f, -0.5f);
 	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 20), true);
 	public static Color fontColor = new Color(0.9f, 0.8f, 0.8f, 1);
 	public static Dialog21 dialog = new Dialog21();
@@ -93,9 +95,15 @@ public class Menu implements Updater, Renderer, Listener {
 		MAIN(false, false) {
 			public void setElements(){
 				elements = new Element[]{
-					new Button("Exit", 0.5, 0.5, 0.5, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+					new Button("Exit", 0.4, 0.5, 0.4, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 						public void released(int button) {
 							Window.closeRequested = true;
+						}
+					},
+					new Button("New World", 0.6, 0.5, 0.6, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						public void released(int button) {
+							Main.world = new World();
+							Main.resetCoreClasses();
 						}
 					}
 				};
@@ -125,7 +133,18 @@ public class Menu implements Updater, Renderer, Listener {
 		},
 		DEBUG(false, false){
 			public void setElements(){
-				elements = new Element[]{new Debugger()};
+				elements = new Element[]{new Debugger(),
+						new Button("Immortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+							public void released(int button) {
+								Main.world.avatar.life.immortal = !Main.world.avatar.life.immortal;
+							}
+						},
+						new Button("Disable agressive creatures", 0.7, 0.2, 0.7, 0.2, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+							public void released(int button) {
+								Settings.AGGRESSIVE_CREATURES = !Settings.AGGRESSIVE_CREATURES;
+							}
+						}
+				};
 			}
 		};
 

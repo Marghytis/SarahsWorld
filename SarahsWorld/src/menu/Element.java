@@ -1,5 +1,7 @@
 package menu;
 
+import org.lwjgl.opengl.GL11;
+
 import render.TexFile;
 import render.Texture;
 import util.Color;
@@ -44,6 +46,7 @@ public class Element {
 	
 	public void update(double delta){}
 	public void render(){
+		GL11.glLoadIdentity();
 		boolean noColor = color == null;
 		if(!noColor){
 			color.bind();
