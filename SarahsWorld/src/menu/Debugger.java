@@ -3,7 +3,6 @@ package menu;
 import java.awt.Font;
 
 import main.Main;
-import main.Settings;
 
 import org.lwjgl.opengl.GL11;
 

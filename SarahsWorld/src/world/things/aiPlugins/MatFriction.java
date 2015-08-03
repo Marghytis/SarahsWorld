@@ -2,7 +2,7 @@ package world.things.aiPlugins;
 
 import effects.particles.WaterSplash;
 import main.Main;
-import main.Settings;
+import menu.Settings;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.WorldData.Column;

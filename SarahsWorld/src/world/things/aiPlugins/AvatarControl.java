@@ -1,14 +1,14 @@
 package world.things.aiPlugins;
 
 import main.Main;
-import main.Settings;
 import menu.Menu.Menus;
+import menu.Settings;
+import menu.Settings.Key;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import util.math.Vec;
-import world.Save;
 import world.things.AiPlugin;
 import world.things.Thing;
 import core.Listener;
@@ -30,16 +30,16 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		if(t.ground.g){
 			float a = aWalking;
 			walkingDir = 0;
-			if(Keyboard.isKeyDown(Keyboard.KEY_D)){
+			if(Keyboard.isKeyDown(Key.RIGHT.key)){
 				walkingDir++;
 			}
-			if(Keyboard.isKeyDown(Keyboard.KEY_A)){
+			if(Keyboard.isKeyDown(Key.LEFT.key)){
 				walkingDir--;
 			}
 			if(walkingDir != 0){
-				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)){
+				if(Keyboard.isKeyDown(Key.SPRINT.key)){
 					walkingDir *= 2.5;
-					if(Keyboard.isKeyDown(Keyboard.KEY_TAB)){
+					if(Keyboard.isKeyDown(Key.SUPERSPRINT.key)){
 						walkingDir *= 4;
 					}
 				}
@@ -50,10 +50,10 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		} else if(t.friction.swimming){
 			float a = aSwimming;
 			walkingDir = 0;
-			if(Keyboard.isKeyDown(Keyboard.KEY_D)){
+			if(Keyboard.isKeyDown(Key.RIGHT.key)){
 				walkingDir++;
 			}
-			if(Keyboard.isKeyDown(Keyboard.KEY_A)){
+			if(Keyboard.isKeyDown(Key.LEFT.key)){
 				walkingDir--;
 			}
 			t.acc.a.shift(walkingDir*a, 0);
@@ -119,13 +119,12 @@ public  class AvatarControl extends AiPlugin implements Listener{
 	
 	public boolean keyPressed(int key) {
 		
-		switch(key){
-		case Keyboard.KEY_SPACE: if(t.ground.g) t.ground.jump(); break;
-		case Keyboard.KEY_E: if(t.riding.isRiding) t.riding.dismount(); break;
-		case Keyboard.KEY_S: if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
-			Save.saveWorld(Main.world);
-			break;
-		case Keyboard.KEY_Q:
+		Key bind = Key.getBinding(key);
+		
+		switch(bind){
+		case JUMP: if(t.ground.g) t.ground.jump(); break;
+		case DISMOUNT: if(t.riding.isRiding) t.riding.dismount(); break;
+		case INVENTORY:
 			if(Main.menu.open.stay) break;
 			if(Main.menu.open != Menus.INVENTORY){
 				Main.menu.setMenu(Menus.INVENTORY);
@@ -133,14 +132,14 @@ public  class AvatarControl extends AiPlugin implements Listener{
 				Main.menu.setMenu(Menus.EMPTY);
 			}
 			break;
-		case Keyboard.KEY_ESCAPE:
+		case MAIN_MENU:
 			if(Main.menu.open != Menus.MAIN){
 				Main.menu.setMenu(Menus.MAIN);
 			} else {
-				Main.menu.setLast();
+				Main.menu.setMenu(Menus.EMPTY);
 			}
 			break;
-		case Keyboard.KEY_F1:
+		case DEBUG:
 			if(Main.menu.open.stay) break;
 			if(Main.menu.open != Menus.DEBUG){
 				Settings.SHOW_BOUNDING_BOX = true;
@@ -150,9 +149,10 @@ public  class AvatarControl extends AiPlugin implements Listener{
 				Main.menu.setLast();
 			}
 			break;
-		case Keyboard.KEY_T:
+		case STOP_GRAPH:
 			Settings.STOP_GRAPH = !Settings.STOP_GRAPH;
 			break;
+		default:
 		}
 		return false;
 	}

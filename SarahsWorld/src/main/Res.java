@@ -80,7 +80,7 @@ public class Res {
 	public static final TexFile light1 = new TexFile("SarahsWorld/res/particles/Light1.png", -0.5, -0.5);
 	public static final TexFile light2 = new TexFile("SarahsWorld/res/particles/Light2.png", -0.5, -0.5);
 	
-	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 46), true);
+	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 40), true);
 	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);
 
 	public static final Sound music = new Sound("SarahsWorld/res/sound/Sarahs Welt Loop.wav", null);

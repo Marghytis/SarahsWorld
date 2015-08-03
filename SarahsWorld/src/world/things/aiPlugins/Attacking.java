@@ -1,7 +1,7 @@
 package world.things.aiPlugins;
 
 import item.ItemType;
-import main.Settings;
+import menu.Settings;
 import render.Texture;
 import util.Time;
 import world.things.AiPlugin;

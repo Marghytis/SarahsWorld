@@ -66,5 +66,5 @@ public class Element {
 	
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){return false;}
 	
-	public void keyPressed(int key){}
+	public boolean keyPressed(int key){return false;}
 }

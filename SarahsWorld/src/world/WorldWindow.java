@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 
 import main.Framebuffer;
 import main.Main;
-import main.Settings;
 import main.Shader20;
+import menu.Settings;
 
 import org.lwjgl.opengl.GL11;
 

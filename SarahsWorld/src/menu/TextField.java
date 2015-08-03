@@ -8,7 +8,7 @@ import util.TrueTypeFont;
 
 public class TextField extends Element {
 
-	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 47), true);
+	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 40), true);
 	public static Color fontColor = new Color(0.9f, 0.8f, 0.1f);
 	
 	public String text;

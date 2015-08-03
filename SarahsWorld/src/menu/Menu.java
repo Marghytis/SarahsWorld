@@ -3,7 +3,7 @@ package menu;
 import java.awt.Font;
 
 import main.Main;
-import main.Settings;
+import menu.Settings.Key;
 
 import org.lwjgl.opengl.GL11;
 
@@ -95,15 +95,22 @@ public class Menu implements Updater, Renderer, Listener {
 		MAIN(false, false) {
 			public void setElements(){
 				elements = new Element[]{
-					new Button("Exit", 0.4, 0.5, 0.4, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+					new Button("Exit", 0.3, 0.5, 0.3, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 						public void released(int button) {
 							Window.closeRequested = true;
 						}
 					},
-					new Button("New World", 0.6, 0.5, 0.6, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+					new Button("New world", 0.5, 0.5, 0.5, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 						public void released(int button) {
-							Main.world = new World();
-							Main.resetCoreClasses();
+							Main.core.doAfterTheRest = () -> {
+								Main.world = new World();
+								Main.resetCoreClasses();
+							};
+						}
+					},
+					new Button("Key bindings", 0.7, 0.5, 0.7, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						public void released(int button) {
+							Main.menu.setMenu(Menus.KEY_BINDINGS);
 						}
 					}
 				};
@@ -146,6 +153,23 @@ public class Menu implements Updater, Renderer, Listener {
 						}
 				};
 			}
+		},
+		KEY_BINDINGS(false, false){
+			public void setElements(){
+				Key[] values = Key.values();
+				elements = new Element[(values.length-1)*2];
+				double x = 0.7, y = 0.9;
+				int i = 0;
+				for (; i < values.length-1; i++, y -= 0.06) {
+					elements[i] = new KeyBinding(values[i], x, y, x, y, -100, -30, 100, 30, Color.GREEN, null);
+				}
+				x = 0.5;
+				y = 0.9;
+				for (; i < elements.length; i++, y -= 0.06) {
+					elements[i] = new TextField(values[i-(values.length-1)].name() + ":", x, y, x, y, -150, -30, 150, 30, new Color(0, 0, 0, 0.5f), null);
+				}
+			}
+			
 		};
 
 		public boolean blockWorld;
@@ -161,7 +185,13 @@ public class Menu implements Updater, Renderer, Listener {
 		
 		public abstract void setElements();
 		
-		public boolean keyPressed(int key){return false;}
+		public boolean keyPressed(int key){
+			boolean success = false;
+			for(Element e : elements){
+				if(e.keyPressed(key)) success = true;
+			}
+			return success;
+		}
 		
 		public void close(){
 			if(ani != null){

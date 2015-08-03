@@ -4,7 +4,7 @@ import world.things.AiPlugin;
 import world.things.Thing;
 import world.things.ThingType;
 import main.Main;
-import main.Settings;
+import menu.Settings;
 
 public class Following extends AiPlugin{
 
