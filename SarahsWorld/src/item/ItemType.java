@@ -35,12 +35,12 @@ public enum ItemType {
 	},
 	
 	//Item types below this line won't appear in traders inventories
+	MOUTH(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Mouth", 1, 0, WeaponType.BITE, ItemUsageType.EAT, BodyPos.HEAD, 1, 2, 0.03, true),
 	FIST(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Fist", 1, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
 		public boolean use(Thing src, Vec pos, Thing dest){
 			if(dest.fruits != null && src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 90000){
 				ItemType i = dest.fruits.dropItem();
-				System.out.println(i);
-				src.inv.addItem(i, 1);
+				if(i != null) src.inv.addItem(i, 1);
 			} else {
 				switch(dest.type){
 				case COW:
@@ -198,7 +198,7 @@ public enum ItemType {
 		return values[random.nextInt(values.length-1)];
 	}
 
-	public static enum ItemUsageType {FIST}
-	public static enum WeaponType {PUNCH, KICK, STRIKE, SPELL}
+	public static enum ItemUsageType {FIST, EAT}
+	public static enum WeaponType {PUNCH, KICK, STRIKE, SPELL, BITE}
 	public enum BodyPos {HAND, HEAD}
 }

@@ -83,7 +83,7 @@ public enum ThingType {
 			
 			t.life = new Life(t, 20, 0);
 			t.magic = new Magic(t, 20, 20);
-			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 5000, attacking_punch, attacking_kick, attacking_strike, attacking_spell);
+			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 500, attacking_punch, attacking_kick, attacking_strike, attacking_spell);
 			Animation[] cowAttack = {								attackingCow, attackingCow, attackingCow, attackingCow};//TODO
 			t.riding = new Riding(t, mountingCow, dismountingCow, t.ani.box, new Rect(Res.sarah_onCow.pixelCoords), new Animation[][]{t.ani.texs,	t.attack.texs,	t.ground.texs},
 																							  new Animation[][]{				cowAni		,cowAttack,		cowGrounding});
@@ -268,6 +268,11 @@ public enum ThingType {
 			return SuperTypes.TREE.create(world, field, pos, this);
 		}
 	},
+	TREE_JUNGLE(Res.tree_jungle){
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
+			return SuperTypes.TREE.create(world, field, pos, this);
+		}
+	},
 	GIANT_PLANT(Res.plant_giant) {
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
@@ -364,12 +369,6 @@ public enum ThingType {
 			t.ani = new Animating(t, tex,	file.createBox(), 0);
 			
 			t.ground = new Grounding(t, true, 0, false, field, tex,	 tex,	 tex,		tex,		tex,		tex);
-//			t.cont = new Controller(t, t.avatar){
-//				public boolean action(double delta){
-//					t.avatar.action(delta);
-//					return false;
-//				}
-//			};
 			
 			t.acc = new Acceleration(t);
 			t.collision = new Collision(t);
@@ -378,11 +377,127 @@ public enum ThingType {
 			
 			t.life = new Life(t, 10, 0);
 			t.magic = new Magic(t, 20, 20);
-			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 5000, tex, tex, tex, tex);
+			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 5000);
 			t.inv = new Inventory(t, ItemType.FIST, 20);
 			t.inv.coins = 20;
 			
 			t.speak = new Speaking(t);
+			
+			return create(t, field.parent);
+		}
+		
+	},
+	ZOMBIE(Res.zombie) {
+		
+		Animation standing = file.sfA(3, 0);
+		Animation walking = new Animation(file, 10, 0,/**/2, 1, 0, 1, 2, 3);
+		Animation sprinting = new Animation(file, 20, 0,/**/2, 1, 0, 1, 2, 3);
+		Animation attacking = new Animation(file, 30, 1,/**/0, 1, 2);
+
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
+			Thing t = new Thing(this, world.random);
+
+			t.pos = new Position(t, pos);
+			t.vel = new Velocity(t);
+			
+			t.ani = new Animating(t, standing,	file.createBox(), 0);
+			
+			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		standing,		standing,		standing);
+			
+			t.acc = new Acceleration(t);
+			t.collision = new Collision(t);
+			t.gravity = new Gravity(t);
+			t.friction = new MatFriction(t);
+			
+			t.life = new Life(t, 10, 0);
+			t.attack = new Attacking(t, ItemType.FIST, 4, 0.05, 5000, attacking);
+			
+			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
+			t.walkAround = new WalkAround(t, 400);
+			t.cont = new Controller(t, t.follow, t.walkAround){
+				public boolean action(double delta){
+					if(!t.follow.action(delta)) t.walkAround.action(delta);
+					return false;
+				}
+			};
+			
+			return create(t, field.parent);
+		}
+		
+	},
+	CAT_GIANT(Res.cat_giant) {
+		
+		Animation standing = file.sfA(0, 0);
+		Animation walking = new Animation(file, 10, 0,/**/1, 2, 3, 4);
+		Animation sprinting = new Animation(file, 20, 0,/**/1, 2, 3, 4);
+		Animation attacking = new Animation(file, 30, 1,/**/2, 0, 1, 2);
+
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
+			Thing t = new Thing(this, world.random);
+
+			t.pos = new Position(t, pos);
+			t.vel = new Velocity(t);
+			
+			t.ani = new Animating(t, standing,	file.createBox(), 0);
+			
+			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		standing,		standing,		standing);
+			
+			t.acc = new Acceleration(t);
+			t.collision = new Collision(t);
+			t.gravity = new Gravity(t);
+			t.friction = new MatFriction(t);
+			
+			t.life = new Life(t, 10, 0);
+			t.attack = new Attacking(t, ItemType.FIST, 10, 0.05, 5000, attacking);
+			
+			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
+			t.walkAround = new WalkAround(t, 400);
+			t.cont = new Controller(t, t.follow, t.walkAround){
+				public boolean action(double delta){
+					if(!t.follow.action(delta)) t.walkAround.action(delta);
+					return false;
+				}
+			};
+			
+			return create(t, field.parent);
+		}
+		
+	},
+	TREX(Res.trex) {
+		
+		Animation standing = file.sfA(0, 0);
+		Animation walking = new Animation(file, 10, 0,/**/1, 2, 3, 4, 5, 6, 7);
+		Animation sprinting = new Animation(file, 20, 0,/**/1, 2, 3, 4);
+		Animation attacking1 = new Animation(file, 30, 1,/**/1, 2, 3, 4, 3, 2, 1);
+		Animation attacking2 = new Animation(file, 30, 2,/**/1, 2, 3, 4, 5, 6, 7, 8);
+		Animation chew = new Animation(file, 30, 3,/**/0, 1, 2, 3);
+
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
+			Thing t = new Thing(this, world.random);
+
+			t.pos = new Position(t, pos);
+			t.vel = new Velocity(t);
+			
+			t.ani = new Animating(t, standing,	file.createBox(), 0);
+			
+			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		standing,		standing,		standing);
+			
+			t.acc = new Acceleration(t);
+			t.collision = new Collision(t);
+			t.gravity = new Gravity(t);
+			t.friction = new MatFriction(t);
+			
+			t.life = new Life(t, 10, 0);
+			t.attack = new Attacking(t, ItemType.FIST, 10, 0.05, 5000, attacking1, attacking2);
+			
+			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
+			t.walkAround = new WalkAround(t, 400);
+			t.cont = new Controller(t, t.follow, t.walkAround){
+				public boolean action(double delta){
+					if(!t.follow.action(delta)) t.walkAround.action(delta);
+					return false;
+				}
+			};
 			
 			return create(t, field.parent);
 		}
@@ -401,13 +516,28 @@ public enum ThingType {
 			return create(t, field.parent);
 		}
 	},
+	BIRD_NORMAL(Res.bird){
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
+			return SuperTypes.BIRD.create(world, field, pos, this, 0, 1);
+		}
+	},
+	BIRD_RAINBOW(Res.bird){
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
+			return SuperTypes.BIRD.create(world, field, pos, this, 2, 0);
+		}
+	},
+	BIRD_BLACK(Res.bird){
+		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
+			return SuperTypes.BIRD.create(world, field, pos, this, 3, 0);
+		}
+	},
 	FERN(Res.plant_jungle) {
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextBoolean() ? 1 : -1);
 
 			
 			

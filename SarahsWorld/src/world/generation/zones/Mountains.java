@@ -29,7 +29,7 @@ public class Mountains extends Zone {
 		double b = (2*h)/Math.pow(wH, 2);
 		f = (x) -> (a*Math.pow(x - wH, 4)) - (b*Math.pow(x - wH, 2)) + h;
 
-		subZone = new Hills(random, biome, 0, left, 0, 3, 1, width);
+		subZone = new Hills(random, biome, 0, left, 0, 3, 1, width, description);
 	}
 	
 	public double step(double x) {
@@ -48,7 +48,7 @@ public class Mountains extends Zone {
 		} else if(subZone.end){
 			offsetByLakes += x - subZone.originX;
 			width += x - subZone.originX;
-			subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2*amplifier + 3, 20*amplifier + 1, width - x);
+			subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2*amplifier + 3, 20*amplifier + 1, width - x, description);
 		}
 		
 		//return height

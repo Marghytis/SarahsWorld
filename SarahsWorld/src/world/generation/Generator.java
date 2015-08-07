@@ -12,6 +12,8 @@ import quest.QuestSpawner;
 import util.math.Vec;
 import world.WorldData;
 import world.WorldData.Column;
+import world.generation.zones.Jungle;
+import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
 
 
@@ -34,7 +36,7 @@ public class Generator {
 	public Generator(WorldData world){
 		this.world = world;
 		
-		Biome startBiome = Biome.FIR_FORREST;//TODO make it random
+		Biome startBiome = Biome.JUNGLE;//TODO make it random
 		
 		posL = new Vec();
 		posR = new Vec();
@@ -42,8 +44,8 @@ public class Generator {
 		biomeL = new BiomeManager(world, startBiome, true);
 		biomeR = new BiomeManager(world, startBiome, false);
 
-		zoneL = new Mountains(random, biomeL, 0, true);
-		zoneR = new Mountains(random, biomeR, 0, false);
+		zoneL = new Jungle(random, biomeL, 0, true);
+		zoneR = new Jungle(random, biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}
@@ -63,7 +65,11 @@ public class Generator {
 			posR.y = zoneR.y(posR.x - zoneR.originX);
 			
 			if(zoneR.end){
-				zoneR = new Mountains(random, biomeR, posR.x, false);
+				switch(random.nextInt(3)){
+					case 0 : zoneR = new Mountains(random, biomeR, posR.x, false);break;
+					case 1 : zoneR = new Meadow(random, biomeR, posR.x, false);break;
+					case 2 : zoneR = new Jungle(random, biomeR, posR.x, false);break;
+				}
 			}
 			
 			tryToStartQuests(zoneR);

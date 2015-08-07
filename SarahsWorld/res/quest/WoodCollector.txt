@@ -1,0 +1,68 @@
+Attributes{
+    TREES
+}
+Characters{
+    sarah = SARAH;
+    villy1 = VILLAGER
+}
+Start{
+    IF
+        daytime()==evening
+        &&
+        random(100)<=1
+    ~DO
+        spawn(villy1)
+    ~NEXT
+        WillYouDoIt?
+}
+WillYouDoIt?{
+    IF
+        distance(sarah, villy1) <= 300
+    ~DO
+        say(true, villy1, quests.firefighter.question1, accept.kind | reject.unkind)
+    ~NEXT
+        1: YesAnswer;
+        2: NoAnswer
+}
+YesAnswer{
+	DO
+        say(false, villy1, wait.friendly)
+    ~NEXT
+        Wait
+}
+NoAnswer{
+    DO
+        say(false, villy1, rejected)
+}
+Wait{
+    IF
+        distance(sarah, villy1) >> 0
+    ~NEXT
+        Ready?_Yes;
+        Ready?_NO
+}
+Ready?_Yes{
+    IF
+        has(sarah, STICK, 10) == false
+    ~DO
+        say(true, villy1, questions.ready, answers.notYet.kind)
+    ~NEXT
+        Wait
+}
+Ready?_NO{
+    IF
+        has(sarah, STICK, 10) == true
+    ~DO
+        say(true, villy1, questions.ready, answers.yes.kind | answers.notYet.kind)
+    ~NEXT
+        1: GiveWood;
+        2: Wait
+}
+GiveWood{
+    DO
+        give(villy1, STICK, 10);
+        give(sarah, STICK, -10);
+        give(villy1, COIN, -30);
+        give(sarah, COIN, 30);
+        say(false, villy1, thankYou.kind)
+}

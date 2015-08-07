@@ -23,8 +23,8 @@ public class Hills extends Zone {
 	Function curve;
 	boolean last;
 	
-	public Hills(Random random, BiomeManager biome, double originX, boolean left, double startHeight, double amplifierX, double amplifierY, double aimWidth) {
-		super(random, biome, originX, left, description);
+	public Hills(Random random, BiomeManager biome, double originX, boolean left, double startHeight, double amplifierX, double amplifierY, double aimWidth, boolean[] description) {
+		super(random, biome, originX, left, description != null ? description : Hills.description);
 		
 		this.aimWidth = aimWidth;
 

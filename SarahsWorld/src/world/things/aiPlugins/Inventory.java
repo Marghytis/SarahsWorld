@@ -79,6 +79,10 @@ public class Inventory extends AiPlugin{
 		for(int i = 0; i < stacks.length; i++){
 			if(stacks[i].item == item){
 				stacks[i].count += amount;
+				if(stacks[i].count <= 0){
+					stacks[i].item = defaultItem;
+					stacks[i].count = 0;
+				}
 				return true;
 			} else if (stacks[i].item == ItemType.FIST){
 				stacks[i].item = item;

@@ -18,9 +18,9 @@ public enum SuperTypes {
 			
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(type.file, 0, t.rand.nextInt(type.file.partsY), 0), type.file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			t.ani = new Animating(t, new Animation(type.file, 0, t.rand.nextInt(type.file.partsY), 0), type.file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(2) < 1 ? 1 : -1);
 
-			t.fruits = new Fruits(t, new ItemType[]{ItemType.STICK}, new int[]{t.rand.nextInt(6)});
+			t.fruits = new Fruits(t, new ItemType[]{ItemType.STICK}, new int[]{t.rand.nextInt(6)+3});
 			
 			
 			
@@ -38,7 +38,9 @@ public enum SuperTypes {
 			if(type == ThingType.BUSH_NORMAL && t.ani.animator.ani.y == 1){
 				t.fruits = new Fruits(t, new ItemType[]{ItemType.BERRY}, new int[]{1 + t.rand.nextInt(2)});
 			}
-
+			if(t.ani.box.size.y > 80){
+				t.ani.behind = -1;
+			}
 			
 			
 			return create(t, world, field.parent);
@@ -51,6 +53,15 @@ public enum SuperTypes {
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
 			t.ani = new Animating(t, new Animation(type.file, 0, t.rand.nextInt(type.file.partsY), 0), type.file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			
+			return create(t, world, field.parent);
+		}
+	},
+	BIRD(ThingType.BIRD_NORMAL, ThingType.BIRD_RAINBOW, ThingType.BIRD_BLACK){
+		public Thing create(WorldData world, Vertex field, Vec pos, ThingType type, Object... extraData){
+			Thing t = new Thing(type, world.random);
+			t.pos = new Position(t, pos);
+			t.ani = new Animating(t, new Animation(type.file, 0, ((int)extraData[0]) + t.rand.nextInt((int)extraData[1]+1), 0), type.file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 			
 			return create(t, world, field.parent);
 		}

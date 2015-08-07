@@ -11,11 +11,12 @@ import world.things.ThingType;
 
 public class Attacking extends AiPlugin {
 	
-	public boolean attacking;
 	public int strength;
 	public double critProb;
 	double radiusSq;
 	ItemType defaultWeapon;
+	
+	public boolean attacking;
 	
 	/**
 	 * 
@@ -77,7 +78,7 @@ public class Attacking extends AiPlugin {
 	}
 	
 	public int calculateDamage(Thing target, ItemType item, double strength){
-		if((t.type == ThingType.SARAH && target.type == ThingType.SARAH) || target.pos.p.minus(t.pos.p).lengthSquare() > 10000){
+		if((t.type == ThingType.SARAH && target.type == ThingType.SARAH)){// || target.pos.p.minus(t.pos.p).lengthSquare() > 10000
 			return 0;
 		}
 		double crit = t.rand.nextDouble() > item.critProb + critProb ? 1 : item.crit;

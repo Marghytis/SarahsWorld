@@ -75,19 +75,35 @@ public enum Biome {
 			,new ThingSpawner((w, p, f) -> ThingType.BUTTERFLY.create(w,p, f.copy().shift(0, 90)), 0.01)
 			,new ThingSpawner((w, p, f) -> ThingType.VILLAGER.create(w,p, f.copy()), 0.01)
 			),
-	NORMAL(new Stratum[]{
-			null,
-			new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
-			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
-			null,
-			null,
-			new Stratum(Material.STONE, 100000000.0, 200.0, 20, 40, 1, 5),
-			null
-			},
-			
-			new ThingSpawner((w, p, f) -> ThingType.PYRAMID.create(w,p, f.copy()), 0.03),
-			new ThingSpawner((w, p, f) -> ThingType.CACTUS.create(w,p, f.copy()), 0.05)),
-	LAKE(new Stratum[]{
+		NORMAL(new Stratum[]{
+				null,
+				new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
+				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
+				null,
+				null,
+				new Stratum(Material.STONE, 100000000.0, 200.0, 20, 40, 1, 5),
+				null
+				},
+				
+				new ThingSpawner((w, p, f) -> ThingType.PYRAMID.create(w,p, f.copy()), 0.03),
+				new ThingSpawner((w, p, f) -> ThingType.CACTUS.create(w,p, f.copy()), 0.05)
+		),
+		JUNGLE(new Stratum[]{
+				null,
+				new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
+				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
+				null,
+				null,
+				new Stratum(Material.STONE, 100000000.0, 200.0, 20, 40, 1, 5),
+				null
+				},
+
+				new ThingSpawner((w, p, f) -> ThingType.TREE_JUNGLE.create(w,p, f.copy()), 0.2),
+				new ThingSpawner((w, p, f) -> ThingType.BUSH_JUNGLE.create(w,p, f.copy()), 0.3),
+				new ThingSpawner((w, p, f) -> ThingType.FERN.create(w,p, f.copy()), 0.5),
+				new ThingSpawner((w, p, f) -> ThingType.BIRD_RAINBOW.create(w,p, f.copy()), 0.1)
+		),
+		LAKE(new Stratum[]{
 			new Stratum(Material.WATER, 200.0, 20.0, 10, 50, 0, 4),
 			new Stratum(Material.SAND, 20.0, 20.0, 5, 40, 2, 4),
 			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),

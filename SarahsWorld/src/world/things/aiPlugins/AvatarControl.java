@@ -56,6 +56,11 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			if(Keyboard.isKeyDown(Key.LEFT.key)){
 				walkingDir--;
 			}
+			if(walkingDir != 0){
+				if(Keyboard.isKeyDown(Key.SUPERSPRINT.key)){
+					walkingDir *= 10;
+				}
+			}
 			t.acc.a.shift(walkingDir*a, 0);
 			//TODO set swimming animation
 		}
