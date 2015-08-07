@@ -1,28 +1,22 @@
 package menu;
 
-import org.lwjgl.opengl.GL11;
-
 import item.ItemStack;
 import main.Main;
-import render.Animator;
+import render.TexAtlas;
 import render.TexFile;
 import render.Texture;
-import util.Color;
-import util.Render;
 import util.math.Vec;
 
 public class ItemContainer extends Element {
 	
-	public static TexFile inventoryButton = new TexFile("SarahsWorld/res/menu/Inventory.png", 1, 2, -0.5, -0.5);
+	public static TexAtlas inventoryButton = new TexAtlas("res/menu/Inventory.png", 1, 2, -0.5, -0.5);
 	static Texture t1 = inventoryButton.tex(0, 0), t2 = inventoryButton.tex(0, 1);
 	
 	public int ordinal;
-	Animator itemAnimator;
 
 	public ItemContainer(int ordinal, double relX1, double relY1) {
-		super(relX1, relY1, relX1, relY1, inventoryButton.pixelBox.pos.xInt(), inventoryButton.pixelBox.pos.yInt(), inventoryButton.pixelBox.pos.xInt() + inventoryButton.pixelBox.size.xInt(), inventoryButton.pixelBox.pos.yInt() + inventoryButton.pixelBox.size.yInt(), null, null);
+		super(relX1, relY1, relX1, relY1, inventoryButton.pixelCoords[0], inventoryButton.pixelCoords[1], inventoryButton.pixelCoords[2], inventoryButton.pixelCoords[3], null, null);
 		this.ordinal = ordinal;
-		this.itemAnimator = new Animator(null);
 	}
 	
 	public void render(){
@@ -35,9 +29,8 @@ public class ItemContainer extends Element {
 		
 		ItemStack stack = Main.world.avatar.inv.stacks[ordinal];
 		if(stack.item != null && stack.item.texInv != null){
-			itemAnimator.setAnimation(stack.item.texInv);
-			inventoryButton.bind();
-			itemAnimator.fill(x1, y1, w, h, 0);
+			stack.item.texInv.file.bind();
+			stack.item.texInv.fill(x1, y1, x2, y2, false);
 		}
 		TexFile.bindNone();
 		Menu.fontColor.bind();

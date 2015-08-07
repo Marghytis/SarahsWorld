@@ -1,7 +1,7 @@
 package world.things.aiPlugins;
 
 import main.Main;
-import render.Texture;
+import render.Animation;
 import util.math.Rect;
 import world.things.AiPlugin;
 import world.things.Thing;
@@ -9,14 +9,14 @@ import world.things.Thing;
 public class Riding extends AiPlugin {
 
 	Rect normalBox, ridingBox;
-	Texture mountCow, dismountCow;
+	Animation mountCow, dismountCow;
 	Thing mountedThing;
-	Texture[][] changingTexs;
-	Texture[][] normalTexs, ridingTexs;
+	Animation[][] changingTexs;
+	Animation[][] normalTexs, ridingTexs;
 	
 	public boolean isRiding;
 	
-	public Riding(Thing thing, Texture mount, Texture dismount, Rect normalBox, Rect ridingBox, Texture[][] changingTexs, Texture[][] ridingTexs) {
+	public Riding(Thing thing, Animation mount, Animation dismount, Rect normalBox, Rect ridingBox, Animation[][] changingTexs, Animation[][] ridingTexs) {
 		super(thing);
 		this.mountCow = mount;
 		this.dismountCow = dismount;
@@ -25,10 +25,10 @@ public class Riding extends AiPlugin {
 		this.changingTexs = changingTexs;
 		this.ridingTexs = ridingTexs;
 		
-		normalTexs = new Texture[changingTexs.length][];
+		normalTexs = new Animation[changingTexs.length][];
 		
 		for(int i = 0; i < changingTexs.length; i++){
-			this.normalTexs[i] = new Texture[changingTexs[i].length];
+			this.normalTexs[i] = new Animation[changingTexs[i].length];
 			for(int j = 0; j < changingTexs[i].length; j++){
 				this.normalTexs[i][j] = changingTexs[i][j];
 			}
@@ -40,7 +40,7 @@ public class Riding extends AiPlugin {
 		
 		isRiding = true;
 		
-		t.type.file = ridingTexs[0][0].file;
+		t.type.file = ridingTexs[0][0].atlas;
 
 		for(int i = 0; i < changingTexs.length; i++){
 			for(int j = 0; j < changingTexs[i].length; j++){
@@ -89,7 +89,7 @@ public class Riding extends AiPlugin {
 			t.ground.link.parent.add(mountedThing);
 			mountedThing = null;
 			t.ani.setTex(t.ani.texs[0]);
-			t.type.file = normalTexs[0][0].file;
+			t.type.file = normalTexs[0][0].atlas;
 		});
 	}
 

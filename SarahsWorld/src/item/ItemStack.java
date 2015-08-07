@@ -1,6 +1,6 @@
 package item;
 
-import render.TexFile;
+import render.TexAtlas;
 import render.Texture;
 import util.math.Rect;
 import world.things.aiPlugins.Inventory;
@@ -8,7 +8,7 @@ import core.Window;
 
 
 public class ItemStack extends Rect{
-	public static final TexFile INVENTORY = new TexFile("SarahsWorld/res/items/Inventory.png", 1, 2);
+	public static final TexAtlas INVENTORY = new TexAtlas("res/items/Inventory.png", 1, 2, 0, 0);
 	public static final Texture NOT_SELECTED = INVENTORY.tex(0, 0);
 	public static final Texture SELECTED = INVENTORY.tex(0, 1);
 

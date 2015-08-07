@@ -2,14 +2,14 @@ package effects.particles;
 
 import org.lwjgl.opengl.GL11;
 
-import render.TexFile;
+import render.Texture;
 import util.math.Vec;
 import core.Window;
 import effects.particles.Particle.ParticleType;
 
 public class FireEffect implements ParticleEffect{
 
-	public static final ParticleType SMOKE = new ParticleType(new TexFile("SarahsWorld/res/particles/Smoke.png"));
+	public static final ParticleType SMOKE = new ParticleType(new Texture("res/particles/Smoke.png", -0.5, -0.5));
 
 	public ParticleEmitter smoke = new ParticleEmitter(100, 50, SMOKE, 2){
 		
@@ -37,7 +37,7 @@ public class FireEffect implements ParticleEffect{
 		
 	};
 	
-	public static final ParticleType FLAME = new ParticleType(new TexFile("SarahsWorld/res/particles/Flame.png"));
+	public static final ParticleType FLAME = new ParticleType(new Texture("res/particles/Flame.png", -0.5, -0.5));
 	
 	public ParticleEmitter flame = new ParticleEmitter(50, 50, FLAME, 1){
 
@@ -98,7 +98,7 @@ public class FireEffect implements ParticleEffect{
 		
 	};
 	
-	public static final ParticleType SPARK = new ParticleType(new TexFile("SarahsWorld/res/particles/Spark.png"));
+	public static final ParticleType SPARK = new ParticleType(new Texture("res/particles/Spark.png", -0.5, -0.5));
 	
 	public ParticleEmitter spark = new ParticleEmitter(10, 5, SPARK, 2){
 
@@ -136,7 +136,7 @@ public class FireEffect implements ParticleEffect{
 		}
 	};
 	
-	public static final ParticleType LIGHT = new ParticleType(new TexFile("SarahsWorld/res/particles/Fire.png"));
+	public static final ParticleType LIGHT = new ParticleType(new Texture("res/particles/Fire.png", -0.5, -0.5));
 	
 	public ParticleEmitter light = new ParticleEmitter(5, 5, LIGHT, 1){
 		

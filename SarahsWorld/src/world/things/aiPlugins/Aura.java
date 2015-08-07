@@ -61,14 +61,12 @@ public class Aura extends AiPlugin {
 		double x, y;
 		{
 		GL11.glColor4f(color.r, color.g, color.b, color.a/2);
-		Res.light1.bind();
-		GL11.glBegin(GL11.GL_QUADS);
-			Rect box = Res.light1.pixelBox.copy().scale(0.5).shift(xOffset + centerOffsetX, yOffset + centerOffsetY);
-			GL11.glTexCoord2d(0, 	1);		GL11.glVertex2d(box.pos.x, 			box.pos.y);
-			GL11.glTexCoord2d(1, 	1);		GL11.glVertex2d(box.pos.x + box.size.x,	box.pos.y);
-			GL11.glTexCoord2d(1, 	0); 	GL11.glVertex2d(box.pos.x + box.size.x,	box.pos.y + box.size.y);
-			GL11.glTexCoord2d(0, 	0); 	GL11.glVertex2d(box.pos.x, 			box.pos.y + box.size.y);
-		GL11.glEnd();
+		Res.light1.file.bind();
+		GL11.glScaled(0.5, 0.5, 1);
+			GL11.glBegin(GL11.GL_QUADS);
+				Res.light1.drawBash(false, (int)(xOffset + centerOffsetX), (int)(yOffset + centerOffsetY));
+			GL11.glEnd();
+		GL11.glScaled(2, 2, 1);
 		}
 		GL11.glColor4f(color.r, color.g, color.b, color.a);
 		Res.light.bind();

@@ -30,7 +30,7 @@ public class Answers extends Element {
 	ActiveQuest quest;
 
 	public Answers(Texture upTex, Texture downTex) {
-		super(upTex, upTex.file.pixelBox, new Vec());
+		super(upTex, upTex.pixelCoords, new Vec());
 		this.upTex = upTex;
 		this.downTex = downTex;
 	}

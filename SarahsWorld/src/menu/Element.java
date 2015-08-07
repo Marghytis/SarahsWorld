@@ -55,7 +55,7 @@ public class Element {
 		}
 		if(tex != null){
 			tex.file.bind();
-			Render.quad(x1, y1, x2, y2, tex);
+			tex.fill(x1, y1, x2, y2, false);
 		} else if(!noColor){
 			TexFile.bindNone();
 			Render.quad(x1, y1, x2, y2);

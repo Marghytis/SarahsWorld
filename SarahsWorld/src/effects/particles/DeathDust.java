@@ -1,12 +1,12 @@
 package effects.particles;
 
-import effects.particles.Particle.ParticleType;
-import render.TexFile;
+import render.Texture;
 import util.math.Vec;
+import effects.particles.Particle.ParticleType;
 
 public class DeathDust implements ParticleEffect {
 	
-public static final ParticleType SMOKE = new ParticleType(new TexFile("SarahsWorld/res/particles/Smoke.png"));
+public static final ParticleType SMOKE = new ParticleType(new Texture("res/particles/Smoke.png", -0.5, -0.5));
 	
 	public ParticleEmitter smoke = new ParticleEmitter(40, 1, SMOKE, 3){
 

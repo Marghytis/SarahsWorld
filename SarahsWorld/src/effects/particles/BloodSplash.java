@@ -1,13 +1,13 @@
 package effects.particles;
 
-import effects.particles.Particle.ParticleType;
-import render.TexFile;
+import render.Texture;
 import util.math.Vec;
+import effects.particles.Particle.ParticleType;
 
 public class BloodSplash implements ParticleEffect{
 
 	
-	public static final ParticleType BLOOD_DROP = new ParticleType(new TexFile("SarahsWorld/res/particles/Blood_drop.png"));
+	public static final ParticleType BLOOD_DROP = new ParticleType(new Texture("res/particles/Blood_drop.png", -0.5, -0.5));
 	
 	public ParticleEmitter blood = new ParticleEmitter(30, 1, BLOOD_DROP, 1){
 

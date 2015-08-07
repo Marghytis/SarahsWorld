@@ -1,12 +1,12 @@
 package effects.particles;
 
-import effects.particles.Particle.ParticleType;
-import render.TexFile;
+import render.Texture;
 import util.math.Vec;
+import effects.particles.Particle.ParticleType;
 
 public class RainEffect implements ParticleEffect{
 	
-	public static final ParticleType RAINDROP = new ParticleType(new TexFile("SarahsWorld/res/particles/Raindrop.png"));
+	public static final ParticleType RAINDROP = new ParticleType(new Texture("res/particles/Raindrop.png", -0.5, -0.5));
 	
 	public ParticleEmitter drops = new ParticleEmitter(100, 50, RAINDROP, 1.5f){
 

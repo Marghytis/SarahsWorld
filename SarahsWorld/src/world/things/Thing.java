@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL11;
 import world.things.aiPlugins.Acceleration;
 import world.things.aiPlugins.Animating;
 import world.things.aiPlugins.Attacking;
-import world.things.aiPlugins.Aura;
 import world.things.aiPlugins.AvatarControl;
 import world.things.aiPlugins.Collision;
 import world.things.aiPlugins.Coloration;
@@ -49,7 +48,6 @@ public class Thing implements Savable{
 	public Inventory inv;
 	public ItemBeing item;
 	public Speaking speak;
-	public Aura aura;
 	
 	//set acceleration and animation
 	public Controller cont;//summarize all controlling plug-ins in one controller
@@ -89,7 +87,6 @@ public class Thing implements Savable{
 		inv,
 		life,
 		speak,
-		aura
 		};
 	}
 	

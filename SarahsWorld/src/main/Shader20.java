@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.lwjgl.opengl.GL20;
 
 public enum Shader20 {
-	AURA("SarahsWorld/res/shader/AuraShader.frag");
+	AURA("res/shader/AuraShader.frag");
 	
 	public void bind(){
 		GL20.glUseProgram(handle);

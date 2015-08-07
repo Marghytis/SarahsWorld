@@ -1,7 +1,7 @@
 package world.things.aiPlugins;
 
 import main.Main;
-import render.Texture;
+import render.Animation;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.WorldData.Column;
@@ -24,13 +24,13 @@ public class Grounding extends AiPlugin {
 	//standing	walking	sprinting	jumping	flying	landing
 	//0			1		2			3		4		5
 	
-	public Grounding(Thing t, boolean friction, double yOffset, Texture standing, Texture walking, Texture sprinting, Texture jumping, Texture flying, Texture landing){
+	public Grounding(Thing t, boolean friction, double yOffset, Animation standing, Animation walking, Animation sprinting, Animation jumping, Animation flying, Animation landing){
 		super(t, standing, walking, sprinting, jumping, flying, landing);
 		this.yOffset = yOffset;
 		this.friction = friction;
 	}
 
-	public Grounding(Thing t, boolean friction, double yOffset, boolean waterWalking, Vertex link, Texture standing, Texture walking, Texture sprinting, Texture jumping, Texture flying, Texture landing){
+	public Grounding(Thing t, boolean friction, double yOffset, boolean waterWalking, Vertex link, Animation standing, Animation walking, Animation sprinting, Animation jumping, Animation flying, Animation landing){
 		this(t, friction, yOffset, standing, walking, sprinting, jumping, flying, landing);
 		g = true;
 		this.link = link;
@@ -137,7 +137,7 @@ public class Grounding extends AiPlugin {
 	}
 
 	public void setAni(double acc) {
-		if(t.ani.animator.getAnimation().equals(texs[0]) || t.ani.animator.getAnimation().equals(texs[1]) || t.ani.animator.getAnimation().equals(texs[2])){
+		if(t.ani.animator.ani.equals(texs[0]) || t.ani.animator.ani.equals(texs[1]) || t.ani.animator.ani.equals(texs[2])){
 			if(acc != 0){
 				if(sprint){
 					t.ani.setTex(texs[2]);

@@ -2,7 +2,7 @@ package world.things.aiPlugins;
 
 import item.ItemType;
 import menu.Settings;
-import render.Texture;
+import render.Animation;
 import util.Time;
 import world.things.AiPlugin;
 import world.things.Thing;
@@ -26,7 +26,7 @@ public class Attacking extends AiPlugin {
 	 * @param radius
 	 * @param attacks one attack Animation for each WeaponType
 	 */
-	public Attacking(Thing t, ItemType defaultWeapon, int strength, double critProb, double radius, Texture... attacks){
+	public Attacking(Thing t, ItemType defaultWeapon, int strength, double critProb, double radius, Animation... attacks){
 		super(t, attacks);
 		this.strength = strength;
 		this.critProb = critProb;
@@ -64,14 +64,14 @@ public class Attacking extends AiPlugin {
 			final int weapontype = item.weaponType.ordinal();
 			
 			t.ani.setTex(texs[weapontype]);
-			Time.schedule(texs[weapontype].sequenceX.length*texs[weapontype].dt, () -> {
+			Time.schedule(texs[weapontype].x.length*texs[weapontype].frameTime, () -> {
 				for(int i = 0; i < targets.length; i++){
 					if(t.pos.p.minus(targets[i].pos.p).lengthSquare() <= radiusSq){
 						targets[i].life.getHit(t, damage[i]);
 					}
 				}
 				attacking = false;
-				if(t.ani.animator.getAnimation() == texs[weapontype]) t.ani.setTex(t.ani.texs[0]);
+				if(t.ani.animator.ani == texs[weapontype]) t.ani.setTex(t.ani.texs[0]);
 			});
 		}
 	}

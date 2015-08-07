@@ -14,7 +14,7 @@ import world.generation.Zone.Attribute;
 import world.things.ThingType;
 
 public enum Quest {
-	FIREFIGHTER("SarahsWorld/res/quest/Firefighter.txt");
+	FIREFIGHTER("res/quest/Firefighter.txt");
 
 	public static Quest[] values;
 	

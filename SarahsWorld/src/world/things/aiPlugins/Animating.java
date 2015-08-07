@@ -1,5 +1,6 @@
 package world.things.aiPlugins;
 
+import render.Animation;
 import render.Animator;
 import render.Texture;
 import util.math.Rect;
@@ -15,7 +16,7 @@ public class Animating extends AiPlugin{
 	
 	public boolean dir;
 	
-	public Animating(Thing t, Texture defaultTex, Rect box, int behind){
+	public Animating(Thing t, Animation defaultTex, Rect box, int behind){
 		super(t, defaultTex);
 		this.animator = new Animator(defaultTex);
 		this.box = box;
@@ -26,20 +27,27 @@ public class Animating extends AiPlugin{
 	public void partRender(){
 		//Scale x -1 is not possible sadly
 		if(dir){
-			animator.fillBash(box, t.pos.p.x, t.pos.p.y + yOffset, 1);
+			animator.fillBash(box, false, t.pos.p.x, t.pos.p.y + yOffset);
 		} else {
-			animator.fillBash(box, t.pos.p.x, t.pos.p.y + yOffset, 0);
+			animator.fillBash(box, true, t.pos.p.x, t.pos.p.y + yOffset);
 		}
 	}
 
-	public void setTex(Texture tex, Runnable task) {
+	public void setTex(Animation tex, Runnable task) {
 		if(tex == null) new Exception("ERROR!!! No Texture selected!!").printStackTrace();
 		animator.setAnimation(tex, task);
 	}
 
-	public void setTex(Texture tex) {
-		if(tex == null) new Exception("ERROR!!! No Texture selceted!!").printStackTrace();
-		animator.setAnimation(tex);
+	public void setTex(Animation tex) {
+		setTex(tex, null);
+	}
+	
+	public void setTex(Texture tex, Runnable task){
+		if(tex == null) new Exception("ERROR!!! No Texture selected!!").printStackTrace();
+		animator.setTexture(tex, task);
+	}
+	public void setTex(Texture tex){
+		setTex(tex, null);
 	}
 	
 	public boolean action(double delta) {

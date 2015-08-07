@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import main.Framebuffer;
 import main.Main;
-import main.Shader20;
 import menu.Settings;
 
 import org.lwjgl.opengl.GL11;
@@ -15,6 +14,7 @@ import quest.ActiveQuest;
 import render.TexFile;
 import render.Texture;
 import util.Color;
+import util.Render;
 import util.math.Vec;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
@@ -53,9 +53,9 @@ public class WorldWindow implements Updater, Renderer{
 	
 	public static VertexRenderer defaultRenderer = (cursor, i, matIndex, tex) -> {
 
-		double texX = cursor.xReal/tex.file.pixelBox.size.x + tex.file.sectorPos[tex.x][tex.y].x;
-		double texY1 = cursor.vertices[i].y/tex.file.pixelBox.size.y + tex.file.sectorPos[tex.x][tex.y].y;
-		double texY2 = cursor.vertices[i+1].y/tex.file.pixelBox.size.y + tex.file.sectorPos[tex.x][tex.y].y;
+		double texX = cursor.xReal/tex.w + tex.texCoords[0];
+		double texY1 = cursor.vertices[i].y/tex.h + tex.texCoords[1];
+		double texY2 = cursor.vertices[i+1].y/tex.h + tex.texCoords[1];
 
 		GL11.glColor4d(Color.boundR, Color.boundG, Color.boundB, Color.boundAlpha*cursor.vertices[i].alphas[matIndex]);
 			GL11.glTexCoord2d(texX, texY1);
@@ -66,9 +66,9 @@ public class WorldWindow implements Updater, Renderer{
 	},
 	blenderer = (cursor, i, matIndex, tex) -> {
 
-		double texX = cursor.xReal/tex.file.pixelBox.size.x + tex.file.sectorPos[tex.x][tex.y].x;
-		double texY1 = cursor.vertices[i+1].y/tex.file.pixelBox.size.y + tex.file.sectorPos[tex.x][tex.y].y;
-		double texY2 = (cursor.vertices[i+1].y - cursor.vertices[i].transitionHeight)/tex.file.pixelBox.size.y;
+		double texX = cursor.xReal/tex.w + tex.texCoords[0];
+		double texY1 = cursor.vertices[i+1].y/tex.h + tex.texCoords[1];
+		double texY2 = (cursor.vertices[i+1].y - cursor.vertices[i].transitionHeight)/tex.h;
 
 
 		GL11.glColor4d(Color.boundR, Color.boundG, Color.boundB, Color.boundAlpha*cursor.vertices[i].alphas[matIndex]);
@@ -238,11 +238,12 @@ public class WorldWindow implements Updater, Renderer{
 		}
 		water.clear();
 	}
-	
 	public interface Decider { public boolean decide(Thing t);}
 	public void renderThings(Decider d){
 		for(int i = 0; i < ThingType.values().length; i++) {
-			ThingType.values()[i].file.bind();
+			
+			//render Thing
+			ThingType.values()[i].file.file.bind();
 			GL11.glBegin(GL11.GL_QUADS);
 			//the pointer thing in the columns is always the dummy of its kind and is the one before the things of the next column
 			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
@@ -251,39 +252,41 @@ public class WorldWindow implements Updater, Renderer{
 				}
 			}
 			GL11.glEnd();
+			
+			//render the
 		}
 	}
 	
-	public void renderAuras(){
-		framebuffer.bind();
-		GL11.glClearColor(1, 1, 1, 0);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		Shader20.AURA.bind();
-//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
-		for(int i = 0; i < ThingType.values().length; i++) {
-			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
-				if(cursor.type != ThingType.DUMMY && cursor.aura != null){
-					cursor.aura.render(cursor.pos.p.x, cursor.pos.p.y);
-				}
-			}
-		}
-		Shader20.bindNone();
-		framebuffer.release();
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.texture);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2f(0, 0);	GL11.glVertex2i(0, 0);
-		GL11.glTexCoord2f(1, 0);	GL11.glVertex2i(Window.WIDTH, 0);
-		GL11.glTexCoord2f(1, 1);	GL11.glVertex2i(Window.WIDTH, Window.HEIGHT);
-		GL11.glTexCoord2f(0, 1);	GL11.glVertex2i(0, Window.HEIGHT);
-		GL11.glEnd();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-		GL11.glPopMatrix();
-	}
+//	public void renderAuras(){
+//		framebuffer.bind();
+//		GL11.glClearColor(1, 1, 1, 0);
+//		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+//		Shader20.AURA.bind();
+////		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
+//		for(int i = 0; i < ThingType.values().length; i++) {
+//			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
+//				if(cursor.type != ThingType.DUMMY && cursor.aura != null){
+//					cursor.aura.render(cursor.pos.p.x, cursor.pos.p.y);
+//				}
+//			}
+//		}
+//		Shader20.bindNone();
+//		framebuffer.release();
+//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+//
+//		GL11.glPushMatrix();
+//		GL11.glLoadIdentity();
+//		GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.texture);
+//		GL11.glBegin(GL11.GL_QUADS);
+//		GL11.glTexCoord2f(0, 0);	GL11.glVertex2i(0, 0);
+//		GL11.glTexCoord2f(1, 0);	GL11.glVertex2i(Window.WIDTH, 0);
+//		GL11.glTexCoord2f(1, 1);	GL11.glVertex2i(Window.WIDTH, Window.HEIGHT);
+//		GL11.glTexCoord2f(0, 1);	GL11.glVertex2i(0, Window.HEIGHT);
+//		GL11.glEnd();
+//		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+//		GL11.glPopMatrix();
+//	}
 	
 	public void renderDarkness(){
 		TexFile.bindNone();
@@ -312,7 +315,7 @@ public class WorldWindow implements Updater, Renderer{
 			//the pointer thing in the columns is always the dummy of its kind and is the one before the things of the next column
 			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
 				if(cursor.type != ThingType.DUMMY){
-					cursor.ani.animator.getAnimation().file.pixelBox.copy().shift(cursor.pos.p).outline();
+					Render.bounds(cursor.ani.animator.pixelCoords, cursor.pos.p.x, cursor.pos.p.y);
 					cursor.pos.p.drawPoint();
 					if(cursor.friction != null){
 						cursor.friction.lastBouyancy.copy().scale(0.1).drawAt(cursor.pos.p);

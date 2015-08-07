@@ -1,7 +1,7 @@
 package world.things;
 
 import item.ItemType;
-import render.Texture;
+import render.Animation;
 import util.math.Vec;
 import world.WorldData;
 import world.WorldData.Column;
@@ -18,8 +18,7 @@ public enum SuperTypes {
 			
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
-			Texture tex = type.file.tex(0, t.rand.nextInt(type.file.sectorPos[0].length));
-			t.ani = new Animating(t, tex, tex.file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			t.ani = new Animating(t, new Animation(type.file, 0, t.rand.nextInt(type.file.partsY), 0), type.file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
 			t.fruits = new Fruits(t, new ItemType[]{ItemType.STICK}, new int[]{t.rand.nextInt(6)});
 			
@@ -34,10 +33,9 @@ public enum SuperTypes {
 			
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
-			Texture tex = type.file.tex(0, t.rand.nextInt(type.file.sectorPos[0].length));
-			t.ani = new Animating(t, tex, tex.file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			t.ani = new Animating(t, new Animation(type.file, 0, t.rand.nextInt(type.file.partsY), 0), type.file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 			
-			if(type == ThingType.BUSH_NORMAL && tex.y == 1){
+			if(type == ThingType.BUSH_NORMAL && t.ani.animator.ani.y == 1){
 				t.fruits = new Fruits(t, new ItemType[]{ItemType.BERRY}, new int[]{1 + t.rand.nextInt(2)});
 			}
 
@@ -52,10 +50,7 @@ public enum SuperTypes {
 			
 			Thing t = new Thing(type, world.random);
 			t.pos = new Position(t, pos);
-			Texture tex = type.file.tex(0, t.rand.nextInt(type.file.sectorPos[0].length));
-			t.ani = new Animating(t, tex, tex.file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
-
-			
+			t.ani = new Animating(t, new Animation(type.file, 0, t.rand.nextInt(type.file.partsY), 0), type.file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 			
 			return create(t, world, field.parent);
 		}

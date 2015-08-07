@@ -5,7 +5,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 
-import render.TexFile;
+import render.Texture;
 import util.Color;
 import util.math.Vec;
 
@@ -20,19 +20,17 @@ public class Particle {
 	public boolean justSpawned = true;
 	
 	public static class ParticleType {
-		public TexFile tex;
+		public Texture tex;
 		public int vbo;
 		
-		public ParticleType(TexFile tex){
+		public ParticleType(Texture tex){
 			this.tex = tex;
 
-			float wH = (float)tex.size.x/2;
-			float hH = (float)tex.size.y/2;
 			float[] vertices = new float[]{
-					0, 1, - wH, - hH,
-					1, 1, + wH, - hH,
-					1, 0, + wH, + hH,
-					0, 0, - wH, + hH};
+					(float)tex.texCoords[0], (float)tex.texCoords[3], (float)tex.pixelCoords[0], (float)tex.pixelCoords[1],
+					(float)tex.texCoords[2], (float)tex.texCoords[3], (float)tex.pixelCoords[2], (float)tex.pixelCoords[1],
+					(float)tex.texCoords[2], (float)tex.texCoords[1], (float)tex.pixelCoords[2], (float)tex.pixelCoords[3],
+					(float)tex.texCoords[0], (float)tex.texCoords[1], (float)tex.pixelCoords[0], (float)tex.pixelCoords[3]};
 			
 			//create VBO
 			FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices.length);

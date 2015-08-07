@@ -1,6 +1,6 @@
 package world.things;
 
-import render.Texture;
+import render.Animation;
 
 
 public abstract class AiPlugin {
@@ -8,9 +8,9 @@ public abstract class AiPlugin {
 	public static final String s = ",";
 	
 	public Thing t;
-	public Texture[] texs;
+	public Animation[] texs;
 	
-	public AiPlugin(Thing thing, Texture... texs){
+	public AiPlugin(Thing thing, Animation... texs){
 		this.t = thing;
 		this.texs = texs;
 	}

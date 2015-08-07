@@ -2,9 +2,11 @@ package world.things;
 
 import item.ItemType;
 import main.Res;
-import render.TexFile;
+import render.Animation;
+import render.TexAtlas;
 import render.Texture;
 import util.Color;
+import util.math.Rect;
 import util.math.Vec;
 import world.WorldData;
 import world.WorldData.Column;
@@ -12,8 +14,6 @@ import world.WorldData.Vertex;
 import world.things.aiPlugins.Acceleration;
 import world.things.aiPlugins.Animating;
 import world.things.aiPlugins.Attacking;
-import world.things.aiPlugins.Aura;
-import world.things.aiPlugins.Aura.Mood;
 import world.things.aiPlugins.AvatarControl;
 import world.things.aiPlugins.Collision;
 import world.things.aiPlugins.Coloration;
@@ -37,37 +37,37 @@ public enum ThingType {
 	//LIVING THINGS
 	SARAH(Res.sarah) {
 		
-		Texture flying = new Texture(Res.sarah, 				6, 3);
-		Texture standing = new Texture(Res.sarah, 			0, 0);
-		Texture walking = new Texture(Res.sarah, 20,			1, /**/4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6);
-		Texture sprinting = new Texture(Res.sarah, 40,		2, /**/1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5);
-		Texture jumping = new Texture(Res.sarah, 30,			3, /**/1, 2, 3, 4, 5, 6);
-		Texture landing = new Texture(Res.sarah, 20,			3, /**/5, 4, 3, 2, 1);
-		Texture attacking_punch = new Texture(Res.sarah, 40,	4, /**/1, 2, 3, 4, 5, 6, 7, 8, 0);
-		Texture attacking_kick = new Texture(Res.sarah, 13,	6, /**/1, 2, 3, 4, 5);
-		Texture attacking_strike = new Texture(Res.sarah, 13,	8, /**/0, 1, 2, 3, 4);
-		Texture attacking_spell = new Texture(Res.sarah, 5,	9, /**/0, 1, 0);
+		Animation flying = file.sfA(6, 3);
+		Animation standing = file.sfA(0, 0);
+		Animation walking = new Animation(Res.sarah, 20,			1, /**/4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6);
+		Animation sprinting = new Animation(Res.sarah, 40,		2, /**/1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5);
+		Animation jumping = new Animation(Res.sarah, 30,			3, /**/1, 2, 3, 4, 5, 6);
+		Animation landing = new Animation(Res.sarah, 20,			3, /**/5, 4, 3, 2, 1);
+		Animation attacking_punch = new Animation(Res.sarah, 40,	4, /**/1, 2, 3, 4, 5, 6, 7, 8, 0);
+		Animation attacking_kick = new Animation(Res.sarah, 13,	6, /**/1, 2, 3, 4, 5);
+		Animation attacking_strike = new Animation(Res.sarah, 13,	8, /**/0, 1, 2, 3, 4);
+		Animation attacking_spell = new Animation(Res.sarah, 5,	9, /**/0, 1, 0);
 
-		Texture standingCow = new Texture(Res.sarah_onCow, 		6, 0);//has to be seperate, because of the terminal task
-		Texture jumpingCow = new Texture(Res.sarah_onCow, 		6, 0);//has to be seperate, because of the terminal task
-		Texture flyingCow = new Texture(Res.sarah_onCow, 		6, 2);//has to be seperate, because of the terminal task
-		Texture landingCow = new Texture(Res.sarah_onCow, 		6, 0);//has to be seperate, because of the terminal task
-		Texture attackingCow = new Texture(Res.sarah_onCow, 	6, 0);//has to be seperate, because of the terminal task
-		Texture mountingCow = new Texture(		Res.sarah_onCow,	20,	0, /**/0, 1, 2, 3, 4, 5, 6);
-		Texture dismountingCow = new Texture(	Res.sarah_onCow,	20,	0, /**/6, 5, 4, 3, 2, 1, 0);
-		Texture walkingCow = new Texture(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
-		Texture sprintingCow = new Texture(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
+		Animation standingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
+		Animation jumpingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
+		Animation flyingCow = Res.sarah_onCow.sfA(6, 2);//has to be seperate, because of the terminal task
+		Animation landingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
+		Animation attackingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
+		Animation mountingCow = new Animation(		Res.sarah_onCow,	20,	0, /**/0, 1, 2, 3, 4, 5, 6);
+		Animation dismountingCow = new Animation(	Res.sarah_onCow,	20,	0, /**/6, 5, 4, 3, 2, 1, 0);
+		Animation walkingCow = new Animation(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
+		Animation sprintingCow = new Animation(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
 			Thing t = new Thing(this, world.random);
 
 			t.pos = new Position(t, pos);
 			t.vel = new Velocity(t);
-			t.ani = new Animating(t,standing,	Res.sarah.pixelBox.copy(), 0);
-			Texture[] cowAni = {	standingCow};
+			t.ani = new Animating(t,standing,	new Rect(Res.sarah.pixelCoords), 0);
+			Animation[] cowAni = {	standingCow};
 			
 			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		jumping,		flying,		landing);
-			Texture[] cowGrounding = {			standingCow, walkingCow, sprintingCow,	jumpingCow,		flyingCow,	landingCow};
+			Animation[] cowGrounding = {			standingCow, walkingCow, sprintingCow,	jumpingCow,		flyingCow,	landingCow};
 			t.avatar = new AvatarControl(t);
 			t.cont = new Controller(t, t.avatar){
 				public boolean action(double delta){
@@ -84,29 +84,27 @@ public enum ThingType {
 			t.life = new Life(t, 20, 0);
 			t.magic = new Magic(t, 20, 20);
 			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 5000, attacking_punch, attacking_kick, attacking_strike, attacking_spell);
-			Texture[] cowAttack = {								attackingCow, attackingCow, attackingCow, attackingCow};//TODO
-			t.riding = new Riding(t, mountingCow, dismountingCow, t.ani.box, Res.sarah_onCow.pixelBox.copy(), new Texture[][]{t.ani.texs,	t.attack.texs,	t.ground.texs},
-																							  new Texture[][]{cowAni		,cowAttack,		cowGrounding});
+			Animation[] cowAttack = {								attackingCow, attackingCow, attackingCow, attackingCow};//TODO
+			t.riding = new Riding(t, mountingCow, dismountingCow, t.ani.box, new Rect(Res.sarah_onCow.pixelCoords), new Animation[][]{t.ani.texs,	t.attack.texs,	t.ground.texs},
+																							  new Animation[][]{				cowAni		,cowAttack,		cowGrounding});
 			t.inv = new Inventory(t, ItemType.FIST, 5);
 			t.inv.addItem(ItemType.SWORD, 1);
-			
-			t.aura = new Aura(t, Mood.SARAH, 0, 100);
 			
 			return create(t, field.parent);
 		}
 	},
 	SNAIL(Res.snail) {
-		Texture standing = new Texture(file);
-		Texture walking = new Texture(file, 10, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
-		Texture sprinting = new Texture(file, 20, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
-		Texture attacking = new Texture(file, 30, 1, /**/1, 2, 3, 4, 5, 6, 5);
+		Animation standing = file.sfA(0, 0);
+		Animation walking = new Animation(Res.snail, 10, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
+		Animation sprinting = new Animation(Res.snail, 20, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
+		Animation attacking = new Animation(Res.snail, 30, 1, /**/1, 2, 3, 4, 5, 6, 5);
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
 			Thing t = new Thing(this, world.random);
 
 			t.pos = new Position(t, pos);
 			t.vel = new Velocity(t);
-			t.ani = new Animating(t, standing, file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, standing, new Rect(file.pixelCoords), 0);
 			
 			t.life = new Life(t, 10, 10);
 			t.attack = new Attacking(t, ItemType.FIST, 2, 0.05, 50, attacking);
@@ -125,20 +123,18 @@ public enum ThingType {
 			t.collision = new Collision(t);
 			t.gravity = new Gravity(t);
 			
-			t.aura = new Aura(t, Mood.ANGRY, 0, 60);
-			
 			return create(t, field.parent);
 		}
 	},
 	COW(Res.cow) {
-		Texture chewing = new Texture(file, 10, 0, /**/0, 1, 2, 3, 4, 5, 6);
+		Animation chewing = new Animation(file, 10, 0, /**/0, 1, 2, 3, 4, 5, 6);
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
 			Thing t = new Thing(this, world.random);
 			
 			t.pos = new Position(t, pos);
 			t.vel = new Velocity(t);
-			t.ani = new Animating(t, chewing, file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, chewing, new Rect(file.pixelCoords), 0);
 			
 			t.life = new Life(t, 4, 3);
 			
@@ -155,9 +151,9 @@ public enum ThingType {
 	},
 	BUTTERFLY(Res.butterfly) {
 		
-		Texture[] sit =  {new Texture(file, 0, 0), new Texture(file, 0, 1)};
-		Texture[] flap = {new Texture(file, 10, 0, /**/0, 1, 2, 3, 2, 1),
-							new Texture(file, 10, 1, /**/0, 1, 2, 3, 2, 1)};
+		Animation[] sit =  {file.sfA(0, 0), file.sfA(0, 1)};
+		Animation[] flap = {new Animation(file, 10, 0, /**/0, 1, 2, 3, 2, 1),
+							new Animation(file, 10, 1, /**/0, 1, 2, 3, 2, 1)};
 		
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
@@ -168,8 +164,8 @@ public enum ThingType {
 			
 			t.pos = new Position(t, pos);
 			
-			t.ani = new Animating(t, flap[type], flap[type].file.pixelBox.copy(), 0);
-			t.ani.animator.pos = world.random.nextInt(this.flap[type].sequenceX.length);
+			t.ani = new Animating(t, flap[type], new Rect(flap[type].atlas.pixelCoords), 0);
+			t.ani.animator.pos = world.random.nextInt(this.flap[type].x.length);
 			t.life = new Life(t, 1, 1);
 			t.vel = new Velocity(t);
 			t.acc = new Acceleration(t);
@@ -190,7 +186,8 @@ public enum ThingType {
 	},
 	//DEAD THINGS
 	CLOUD(Res.cloud) {
-		Texture cloud = file.tex();
+		
+		Animation cloud = file.sfA(0, 0);
 
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
 			Color color = extraData.length > 0 ? (Color)extraData[0] : new Color(Color.WHITE);
@@ -203,7 +200,7 @@ public enum ThingType {
 			t.pos = new Position(t, pos.shift(0, height));
 			
 			t.color = new Coloration(t, color);
-			t.ani = new Animating(t, cloud, file.pixelBox.copy().scale(world.random.nextDouble() + 0.5), -1);
+			t.ani = new Animating(t, cloud, file.createBox().scale(world.random.nextDouble() + 0.5), -1);
 			t.vel = new Velocity(t);
 			t.ground = new Grounding(t, false, -height, true, field, cloud, cloud, cloud, cloud, cloud, cloud);
 			t.ground.speed = 10;
@@ -212,15 +209,15 @@ public enum ThingType {
 		}
 	},
 	GRASS(Res.grasstuft) {
-		Texture waving = new Texture(file, 5, 0, /**/0, 1, 2, 3, 2, 1);
+		Animation waving = new Animation(file, 5, 0, /**/0, 1, 2, 3, 2, 1);
 		
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
 			
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, waving, waving.file.pixelBox.copy(), 0);
-			t.ani.animator.pos = world.random.nextInt(waving.sequenceX.length);
+			t.ani = new Animating(t, waving, file.createBox(), 0);
+			t.ani.animator.pos = world.random.nextInt(waving.x.length);
 
 			
 			
@@ -233,8 +230,8 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
-			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
+			Animation texture = new Animation(file, 0, t.rand.nextInt(file.partsY), 0);
+			t.ani = new Animating(t, texture, file.createBox(), 0);
 
 			
 			
@@ -277,8 +274,8 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
-			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
+			Animation texture = new Animation(file, 0, t.rand.nextInt(file.partsY), 0);
+			t.ani = new Animating(t, texture, file.createBox(), 0);
 
 			
 			
@@ -321,7 +318,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, file.tex(0, t.rand.nextInt(file.sectorPos[0].length)), file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
 
 			
 			
@@ -334,8 +331,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
-			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
 
 			
 			
@@ -348,8 +344,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
-			t.ani = new Animating(t, texture, texture.file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
 
 			
 			
@@ -364,9 +359,9 @@ public enum ThingType {
 			t.pos = new Position(t, pos);
 			t.vel = new Velocity(t);
 			
-			Texture tex = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
+			Animation tex = new Animation(file, 0, t.rand.nextInt(file.partsY), 0);
 			
-			t.ani = new Animating(t, tex,	file.pixelBox, 0);
+			t.ani = new Animating(t, tex,	file.createBox(), 0);
 			
 			t.ground = new Grounding(t, true, 0, false, field, tex,	 tex,	 tex,		tex,		tex,		tex);
 //			t.cont = new Controller(t, t.avatar){
@@ -388,7 +383,6 @@ public enum ThingType {
 			t.inv.coins = 20;
 			
 			t.speak = new Speaking(t);
-			t.aura = new Aura(t, Mood.NEUTRAL, 0, 100);
 			
 			return create(t, field.parent);
 		}
@@ -400,8 +394,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
-			t.ani = new Animating(t, texture, file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
 			
 			
@@ -414,8 +407,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
-			t.ani = new Animating(t, texture, file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
 			
 			
@@ -428,8 +420,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			Texture texture = file.tex(0, t.rand.nextInt(file.sectorPos[0].length));
-			t.ani = new Animating(t, texture, file.pixelBox.copy().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
 
 			
 			
@@ -442,7 +433,7 @@ public enum ThingType {
 			
 			Thing t = new Thing(this, world.random);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, file.tex(0, t.rand.nextInt(file.sectorPos[0].length)), file.pixelBox.copy(), 0);
+			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
 
 			
 			
@@ -459,7 +450,7 @@ public enum ThingType {
 			
 			t.item = new ItemBeing(t, type);
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, type.texWorld, type.boxWorld, 0);
+			t.ani = new Animating(t, type.texWorld, new Rect(type.boxWorld), 0);
 			t.vel = new Velocity(t);
 			t.acc = new Acceleration(t);
 			t.gravity = new Gravity(t);
@@ -473,14 +464,14 @@ public enum ThingType {
 	},
 	COIN(Res.coin) {
 		
-		public Texture texture = Res.coin.tex();
+		public Animation texture = Res.coin.sfA(0, 0);
 		
 		public Thing create(WorldData world, Vertex field, Vec pos,	Object... extraData) {
 			
 			Thing t = new Thing(this, world.random);
 			
 			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, texture, Res.coin.pixelBox, 0);
+			t.ani = new Animating(t, texture, file.createBox(), 0);
 			t.vel = new Velocity(t); t.vel.v.set((Vec)extraData[0]);
 			t.acc = new Acceleration(t);
 			t.gravity = new Gravity(t);
@@ -490,7 +481,7 @@ public enum ThingType {
 			return create(t, field.parent);
 		}
 	},
-	DUMMY(TexFile.emptyTex.file){
+	DUMMY(Texture.empty){
 		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
 			Thing t = new Thing(this, world.random);
 			t.createAi();
@@ -498,13 +489,13 @@ public enum ThingType {
 		}
 	};
 	
-	public TexFile file;
+	public TexAtlas file;
 	
 	/**
 	 * Only if using a SuperType
 	 * @param file
 	 */
-	ThingType(TexFile file){
+	ThingType(TexAtlas file){
 		this.file = file;
 	}
 	

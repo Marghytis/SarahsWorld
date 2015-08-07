@@ -11,13 +11,13 @@ public class Strings {
 	static Hashtable<String, String[]> strings = new Hashtable<>();
 	static {
 		try {
-			FileReader fileReader = new FileReader("SarahsWorld/res/quest/Strings.txt");
+			FileReader fileReader = new FileReader("res/quest/Strings.txt");
 			BufferedReader reader = new BufferedReader(fileReader);
 
 			String line = "";
 			
 			while((line = reader.readLine()) != null){
-				String[] data = line.split("=");
+				String[] data = line.replace("\"", "").split("=");
 				strings.put(data[0], data[1].split(";"));
 			}
 			

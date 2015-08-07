@@ -67,13 +67,13 @@ public enum Biome {
 			null
 			}
 			
-			,
-			new ThingSpawner((w, p, f) -> ThingType.TREE_FIR.create(w,p, f.copy()), 0.3),
-			new ThingSpawner((w, p, f) -> ThingType.GRASS.create(w,p, f.copy()), 01.2),
-			new ThingSpawner((w, p, f) -> ThingType.CLOUD.create(w,p, f.copy()), 0.05),
-			new ThingSpawner((w, p, f) -> ThingType.SNAIL.create(w,p, f.copy()), 0.01),
-			new ThingSpawner((w, p, f) -> ThingType.BUTTERFLY.create(w,p, f.copy().shift(0, 90)), 0.01),
-			new ThingSpawner((w, p, f) -> ThingType.VILLAGER.create(w,p, f.copy()), 0.01)
+			
+			,new ThingSpawner((w, p, f) -> ThingType.TREE_FIR.create(w,p, f.copy()), 0.3)
+			,new ThingSpawner((w, p, f) -> ThingType.GRASS.create(w,p, f.copy()), 01.2)
+			,new ThingSpawner((w, p, f) -> ThingType.CLOUD.create(w,p, f.copy()), 0.05)
+			,new ThingSpawner((w, p, f) -> ThingType.SNAIL.create(w,p, f.copy()), 0.01)
+			,new ThingSpawner((w, p, f) -> ThingType.BUTTERFLY.create(w,p, f.copy().shift(0, 90)), 0.01)
+			,new ThingSpawner((w, p, f) -> ThingType.VILLAGER.create(w,p, f.copy()), 0.01)
 			),
 	NORMAL(new Stratum[]{
 			null,

@@ -108,7 +108,7 @@ public class ParticleEmitter{
 	}
 	
 	public void renderParticles(){
-		type.tex.bind();
+		type.tex.file.bind();
 			for(Particle p : particles){
 				if(p.lived < lifeSpan){
 					renderParticle(p);

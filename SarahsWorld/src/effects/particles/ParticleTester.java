@@ -18,7 +18,7 @@ public class ParticleTester {
 	
 	public static void main(String[] args){
 		Window.create("Particle", 1000, 700);
-		background = new TexFile("SarahsWorld/res/particles/Background.png");
+		background = new TexFile("res/particles/Background.png");
 		
 //		Lightmap lightmap = new Lightmap(new TexFile(Window.WIDTH/2, Window.HEIGHT));
 //		lightmap.resetDark( 0);

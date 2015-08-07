@@ -57,10 +57,13 @@ public class Inventory extends AiPlugin{
 	
 	public void partRender(){
 		ItemType selected = getSelectedItem();
-		if(selected.texHand != null && !selected.texHand.equals(itemAnimator.getAnimation())){
-			itemAnimator.setAnimation(selected.texHand);
+		if(selected.texHand != null && !selected.texHand.equals(itemAnimator.ani)){
+			itemAnimator.setTexture(selected.texHand);
 		}
 		GL11.glEnd();
+			//the right texture should already be bound - multiple Textures in one file for example
+			if(t.type == ThingType.SARAH)
+				itemAnimator.bindTex();
 			selected.renderHand(t, itemAnimator);
 		GL11.glBegin(GL11.GL_QUADS);
 	}

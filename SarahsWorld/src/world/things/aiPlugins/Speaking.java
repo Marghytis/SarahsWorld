@@ -1,19 +1,22 @@
 package world.things.aiPlugins;
 
 import main.Main;
-import menu.Dialog21;
+import menu.Dialog;
 import menu.Menu.Menus;
 
 import org.lwjgl.opengl.GL11;
 
 import quest.ActiveQuest;
 import quest.Strings;
+import render.TexAtlas;
 import render.TexFile;
+import render.Texture;
 import util.Anim;
 import util.Anim.AnimPart;
 import util.Anim.Func;
 import util.Anim.Value;
 import util.Color;
+import util.math.UsefulF;
 import util.math.Vec;
 import world.things.AiPlugin;
 import world.things.Thing;
@@ -43,22 +46,22 @@ public class Speaking extends AiPlugin {
 			for(int i = 0; i < answers.length; i++){
 				realAnswers[i] = Strings.get(answers[i], t.rand);
 			}
-			((Dialog21)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(what, t.rand), realAnswers);
-			Menus.DIALOG.ani = ((Dialog21)Menus.DIALOG.elements[0]).ani;
+			((Dialog)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(what, t.rand), realAnswers);
+			Menus.DIALOG.ani = ((Dialog)Menus.DIALOG.elements[0]).ani;
 			Main.menu.setMenu(Menus.DIALOG);
 		}
 	}
 
 	public boolean action(double delta) {
 		if(t.pos.p.minus(Main.world.avatar.pos.p).lengthSquare() < 90000 && !speaking && currentSpeech != ""){
-			if(Main.menu.open == Menus.DIALOG && ((Dialog21)Menus.DIALOG.elements[0]).other == t){
+			if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
 				Main.menu.setMenu(Menus.DIALOG);
 			} else {
 				tb.popUp();
 			}
 		} else if(t.pos.p.minus(Main.world.avatar.pos.p).lengthSquare() > 90000){
 			if(tb.living) tb.goAway();
-			if(Main.menu.open == Menus.DIALOG && ((Dialog21)Menus.DIALOG.elements[0]).other == t){
+			if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
 				Main.menu.setMenu(Menus.EMPTY);
 				speaking = false;
 			}
@@ -77,13 +80,14 @@ public class Speaking extends AiPlugin {
 		if(tb.living){
 			tb.goAway();
 		}
-		if(Main.menu.open == Menus.DIALOG && ((Dialog21)Menus.DIALOG.elements[0]).other == t){
+		if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
 			Main.menu.setMenu(Menus.EMPTY);
 			speaking = false;
 		}
 	}
-	public static TexFile bubble1 = new TexFile("SarahsWorld/res/particles/Bubble.png");
-	public static TexFile bubble2 = new TexFile("SarahsWorld/res/particles/ThoughtBubble.png", 1, 3, -0.5, -0.5);
+	public static Texture bubble1 = new Texture("res/particles/Bubble.png", 0, 0);
+	public static TexAtlas bubble2 = new TexAtlas("res/particles/ThoughtBubble.png", 1, 3, -0.5, -0.5);
+	public static Texture[] texs = {bubble2.tex(0, 0), bubble2.tex(0, 1), bubble2.tex(0, 2)};
 	public static double animationTime = 1.8;
 	public static double[] positions = {0.1, 0.01, 0.25, 0.0625, 0.45, 0.2025, 0.65, 0.44225};
 	public class ThoughtBubble implements Effect {
@@ -142,10 +146,9 @@ public class Speaking extends AiPlugin {
 			ani.dir = false;
 		}
 
-		@SuppressWarnings("deprecation")
 		public void render() {
 			Vec shift = pos.copy().shift(relPos).minus(speaker.pos.p);
-			bubble1.bind();
+			bubble1.file.bind();
 			Color.WHITE.bind();
 			GL11.glBegin(GL11.GL_QUADS);
 			for(int i = 0, s = 1; i < 8; i += 2, s += 3){
@@ -167,8 +170,11 @@ public class Speaking extends AiPlugin {
 			double bR = rs[4].v*(pressed ? 0.16 : 0.2);
 			if(bR >= 0){
 				bubbleR = bR;
-				bubble2.bind();
-				bubble2.tex(0, tex).fill(bubble2.pixelBox.copy().scale(bubbleR).shift(speaker.pos.p.x + shift.x, speaker.pos.p.y + shift.y+60), 0);
+				bubble2.file.bind();
+				texs[tex].resetMod();
+				texs[tex].scale(bubbleR, bubbleR);
+				texs[tex].translate(speaker.pos.p.x + shift.x, speaker.pos.p.y + shift.y+60);
+				texs[tex].drawMod(false);
 			}
 			TexFile.bindNone();
 		}
@@ -188,8 +194,8 @@ public class Speaking extends AiPlugin {
 				for(int i = 0; i < answers.length; i++){
 					realAnswers[i] = Strings.get(answers[i], t.rand);
 				}
-				((Dialog21)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(currentSpeech, t.rand), realAnswers);
-				Menus.DIALOG.ani = ((Dialog21)Menus.DIALOG.elements[0]).ani;
+				((Dialog)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(currentSpeech, t.rand), realAnswers);
+				Menus.DIALOG.ani = ((Dialog)Menus.DIALOG.elements[0]).ani;
 				Main.menu.setMenu(Menus.DIALOG);
 				return true;
 			}
@@ -200,7 +206,12 @@ public class Speaking extends AiPlugin {
 		
 		public boolean contains(Vec mousePos){
 			Vec shift = pos.copy().shift(relPos).minus(speaker.pos.p);
-			return bubble2.pixelBox.copy().scale(bubbleR).shift(speaker.pos.p.x + shift.x, speaker.pos.p.y + shift.y+60).contains(mousePos.copy().shift(Main.world.avatar.pos.p.x - Window.WIDTH_HALF, Main.world.avatar.pos.p.y - Window.HEIGHT_HALF));
+			return UsefulF.contains(
+					mousePos.x + Main.world.avatar.pos.p.x - Window.WIDTH_HALF, mousePos.y + Main.world.avatar.pos.p.y - Window.HEIGHT_HALF,
+					bubble2.pixelCoords[0]*bubbleR + speaker.pos.p.x + shift.x,
+					bubble2.pixelCoords[1]*bubbleR + speaker.pos.p.y + shift.y+60,
+					bubble2.pixelCoords[2]*bubbleR + speaker.pos.p.x + shift.x,
+					bubble2.pixelCoords[3]*bubbleR + speaker.pos.p.y + shift.y+60);
 		}
 
 		public boolean pressed(int button, Vec mousePos) {
@@ -218,8 +229,8 @@ public class Speaking extends AiPlugin {
 	}
 	
 //	public static class SpeechBubble implements Effect {
-//		public static TexFile speechBubble = new TexFile("SarahsWorld/res/menu/SpeechBubble.png", -0.5, -0.5);
-//		public static TexFile connector = new TexFile("SarahsWorld/res/menu/SpeechBubble2.png", -0.5, -0.5);
+//		public static TexFile speechBubble = new TexFile("res/menu/SpeechBubble.png", -0.5, -0.5);
+//		public static TexFile connector = new TexFile("res/menu/SpeechBubble2.png", -0.5, -0.5);
 //		
 //		public Thing speaker;
 //		public boolean living;

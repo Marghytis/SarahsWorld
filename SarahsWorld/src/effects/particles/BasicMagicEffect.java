@@ -11,7 +11,7 @@ import world.World;
 
 public class BasicMagicEffect extends MagicEffect{
 	
-	public static final ParticleType LIGHT = new ParticleType(new TexFile("SarahsWorld/res/particles/Fire.png", -0.5f, -0.5f));
+	public static final ParticleType LIGHT = new ParticleType(new TexFile("res/particles/Fire.png", -0.5f, -0.5f));
 	
 	public ParticleEmitter light = new ParticleEmitter(1, 0, LIGHT, 1000){
 			

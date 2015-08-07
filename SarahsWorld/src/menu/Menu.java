@@ -8,6 +8,7 @@ import menu.Settings.Key;
 import org.lwjgl.opengl.GL11;
 
 import render.TexFile;
+import render.Texture;
 import util.Anim;
 import util.Color;
 import util.TrueTypeFont;
@@ -20,10 +21,10 @@ import core.Window;
 
 public class Menu implements Updater, Renderer, Listener {
 	
-	public static TexFile MONEYBAG = new TexFile("SarahsWorld/res/items/Moneybag.png", 1, 1, -0.5f, -0.5f);
+	public static Texture MONEYBAG = new Texture("res/items/Moneybag.png", 0, 0);
 	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 20), true);
 	public static Color fontColor = new Color(0.9f, 0.8f, 0.8f, 1);
-	public static Dialog21 dialog = new Dialog21();
+	public static Dialog dialog = new Dialog();
 	
 	public Menus open = Menus.EMPTY, last = Menus.EMPTY, next = Menus.EMPTY;
 	public Element[] elements;
@@ -119,7 +120,7 @@ public class Menu implements Updater, Renderer, Listener {
 		INVENTORY(false, false){
 			public void setElements(){
 				elements = new Element[]{
-						new Element(7/8.0, 7/8.0, 7/8.0, 7/8.0, 0, 0, MONEYBAG.pixelBox.size.xInt(), MONEYBAG.pixelBox.size.yInt(), null, MONEYBAG.tex()),
+						new Element(7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0], MONEYBAG.pixelCoords[1], MONEYBAG.pixelCoords[2], MONEYBAG.pixelCoords[3], null, MONEYBAG),
 						new FlexibleTextField(() -> Main.world.avatar.inv.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
 						
 						new ItemContainer(0, 1/6.0, 1.0/8),
@@ -135,7 +136,7 @@ public class Menu implements Updater, Renderer, Listener {
 		},
 		DIALOG(false, true){
 			public void setElements(){
-				elements = new Element[]{new Dialog21()};
+				elements = new Element[]{new Dialog()};
 			}
 		},
 		DEBUG(false, false){

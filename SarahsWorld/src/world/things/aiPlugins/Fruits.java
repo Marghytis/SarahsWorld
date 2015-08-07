@@ -25,7 +25,10 @@ public class Fruits extends AiPlugin {
 	
 	public ItemType dropItem(){
 		if(fruits.size() > 0){
-			return fruits.get(t.rand.nextInt(fruits.size()));
+			int index = t.rand.nextInt(fruits.size());
+			ItemType type = fruits.get(index);
+			fruits.remove(index);
+			return type;
 		}
 		return null;
 	}
