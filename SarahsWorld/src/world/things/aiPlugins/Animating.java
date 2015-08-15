@@ -5,7 +5,7 @@ import render.Animator;
 import render.Texture;
 import util.math.Rect;
 import world.things.AiPlugin;
-import world.things.Thing;
+import world.things.ThingProps;
 
 public class Animating extends AiPlugin{
 
@@ -16,20 +16,19 @@ public class Animating extends AiPlugin{
 	
 	public boolean dir;
 	
-	public Animating(Thing t, Animation defaultTex, Rect box, int behind){
-		super(t, defaultTex);
+	public Animating(Animation defaultTex, Rect box, int behind){
+		super(null, defaultTex);
 		this.animator = new Animator(defaultTex);
 		this.box = box;
 		this.behind = behind;
-		dir = t.rand.nextBoolean();
 	}
 	
-	public void partRender(){
+	public void partRender(ThingProps t){
 		//Scale x -1 is not possible sadly
 		if(dir){
-			animator.fillBash(box, false, t.pos.p.x, t.pos.p.y + yOffset);
+			animator.fillBash(box, false, t.pos.x, t.pos.y + yOffset);
 		} else {
-			animator.fillBash(box, true, t.pos.p.x, t.pos.p.y + yOffset);
+			animator.fillBash(box, true, t.pos.x, t.pos.y + yOffset);
 		}
 	}
 

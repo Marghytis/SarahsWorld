@@ -51,19 +51,19 @@ public class Riding extends AiPlugin {
 		
 		if(mountedThing != null){
 			t.ani.setTex(dismountCow, () -> {
-				mountedThing.pos.p.set(t.pos.p);
+				mountedThing.pos.set(t.pos.p);
 				mountedThing.vel.v.set(t.vel.v);
 				mountedThing.ani.dir = t.ani.dir;
 				Main.world.add(mountedThing);
 				
 				mountedThing = horse;
-				t.pos.p.set(horse.pos.p);
+				t.pos.set(horse.pos.p);
 				Main.world.deletionRequested.add(horse);
 				this.t.ani.setTex(mountCow, () -> t.ani.setTex(t.ground.texs[0]));
 			});
 		} else {
 			mountedThing = horse;
-			t.pos.p.set(horse.pos.p);
+			t.pos.set(horse.pos.p);
 			t.ground.g = horse.ground.g;
 			Main.world.deletionRequested.add(horse);
 			t.ani.setTex(mountCow, () -> t.ani.setTex(t.ground.texs[0]));
@@ -81,7 +81,7 @@ public class Riding extends AiPlugin {
 		this.t.ani.setTex(dismountCow, () -> {
 			isRiding = false;
 			this.t.ani.box = normalBox;
-			mountedThing.pos.p.set(t.pos.p);
+			mountedThing.pos.set(t.pos.p);
 			mountedThing.vel.v.set(t.vel.v);
 			mountedThing.ani.dir = t.ani.dir;
 			mountedThing.ground.g = t.ground.g;

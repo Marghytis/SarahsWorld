@@ -10,6 +10,7 @@ import render.TexFile;
 import util.Color;
 import util.Time;
 import util.TrueTypeFont;
+import world.things.newPlugins.Physics.Where;
 import core.Window;
 
 public class Debugger extends Element {
@@ -55,7 +56,7 @@ public class Debugger extends Element {
 		} while (!helper.equals(data.head));
 		GL11.glEnd();
 		
-		if(Main.world.avatar.ground.g){
+		if(Main.world.avatar.where == Where.GROUND){
 			Color.GREEN.bind();
 		} else {
 			Color.RED.bind();

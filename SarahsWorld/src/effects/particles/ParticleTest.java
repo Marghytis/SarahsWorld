@@ -114,5 +114,11 @@ public class ParticleTest implements Listener, Renderer, Updater{
 		}
 		return false;
 	}
+
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

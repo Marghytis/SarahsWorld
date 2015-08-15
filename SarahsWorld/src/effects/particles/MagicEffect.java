@@ -54,4 +54,10 @@ public class MagicEffect implements ParticleEffect{
 		return false;
 	}
 
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

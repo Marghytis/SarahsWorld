@@ -54,17 +54,17 @@ public class ThingsWindow {
 		}
 		public void updateBorders(){
 			for(Thing cursor = leftEnd.right; cursor != rightEnd; cursor = cursor.right){
-				if(cursor.pos.p.x < xl){
+				if(cursor.pos.x < xl){
 					leftEnd = cursor;
 				}
-				if(cursor.pos.p.x > xr){
+				if(cursor.pos.x > xr){
 					rightEnd = cursor;
 				}
 			}
 		}
 		public void sort(){
 			for(Thing cursor = leftEnd.right; cursor != rightEnd; cursor = cursor.right){
-				if(cursor.pos.p.x < cursor.left.pos.p.x){
+				if(cursor.pos.x < cursor.left.pos.x){
 					Thing next = cursor.left;
 					//detach the current thing
 					cursor.right.left = cursor.left;
@@ -72,7 +72,7 @@ public class ThingsWindow {
 					//find location
 					for(Thing cursor2 = cursor.left.left; cursor2 != null; cursor2 = cursor2.left){
 						//plant in at new location
-						if(cursor.pos.p.x >= cursor2.pos.p.x){
+						if(cursor.pos.x >= cursor2.pos.x){
 							cursor.left = cursor2;
 							cursor.right = cursor2.right;
 							cursor2.right.left = cursor;
@@ -90,22 +90,22 @@ public class ThingsWindow {
 			xl = x - r;
 			xr = x + r;
 			//left border
-			for(;leftEnd.pos.p.x > xl; leftEnd = leftEnd.left);
-			for(;leftEnd.right.pos.p.x < xl; leftEnd = leftEnd.right);
+			for(;leftEnd.pos.x > xl; leftEnd = leftEnd.left);
+			for(;leftEnd.right.pos.x < xl; leftEnd = leftEnd.right);
 			//right border
-			for(;rightEnd.left.pos.p.x > xr; rightEnd = rightEnd.left);
-			for(;rightEnd.pos.p.x < xr; rightEnd = rightEnd.right);
+			for(;rightEnd.left.pos.x > xr; rightEnd = rightEnd.left);
+			for(;rightEnd.pos.x < xr; rightEnd = rightEnd.right);
 		}
 		public void setPos(double x){
 			xl = x - r;
 			xr = x + r;
 			
 			//rightward
-			for(;rightEnd.pos.p.x < xr; rightEnd = rightEnd.right);
-			for(;leftEnd.right.pos.p.x < xl; leftEnd = leftEnd.right);
+			for(;rightEnd.pos.x < xr; rightEnd = rightEnd.right);
+			for(;leftEnd.right.pos.x < xl; leftEnd = leftEnd.right);
 			//leftward
-			for(;leftEnd.pos.p.x > xl; leftEnd = leftEnd.left);
-			for(;rightEnd.left.pos.p.x > xr; rightEnd = rightEnd.left);
+			for(;leftEnd.pos.x > xl; leftEnd = leftEnd.left);
+			for(;rightEnd.left.pos.x > xr; rightEnd = rightEnd.left);
 		}
 	}
 }

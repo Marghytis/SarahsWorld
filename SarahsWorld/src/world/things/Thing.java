@@ -17,17 +17,18 @@ import world.things.aiPlugins.FlyAround;
 import world.things.aiPlugins.Following;
 import world.things.aiPlugins.Fruits;
 import world.things.aiPlugins.Gravity;
-import world.things.aiPlugins.Grounding;
 import world.things.aiPlugins.Inventory;
 import world.things.aiPlugins.ItemBeing;
 import world.things.aiPlugins.Life;
 import world.things.aiPlugins.Magic;
 import world.things.aiPlugins.MatFriction;
 import world.things.aiPlugins.Position;
+import world.things.aiPlugins.Position.Pos;
 import world.things.aiPlugins.Riding;
 import world.things.aiPlugins.Speaking;
 import world.things.aiPlugins.Velocity;
 import world.things.aiPlugins.WalkAround;
+import world.things.newPlugins.Grounding;
 
 public class Thing implements Savable{
 
@@ -65,7 +66,7 @@ public class Thing implements Savable{
 	public Acceleration acc;
 	public Collision collision;
 	public Velocity vel;
-	public Position pos;
+	public Position pos; public Pos pos2;
 	
 	//graphics
 	public Coloration color;
@@ -108,6 +109,12 @@ public class Thing implements Savable{
 		}
 		GL11.glPopMatrix();
 	}
+
+	public void remove() {
+		for(AiPlugin plugin : ai){
+			if(plugin != null) plugin.remove();
+		}
+	}
 	
 	public void disconnect(){
 		if(left != null) left.right = right;
@@ -136,11 +143,5 @@ public class Thing implements Savable{
 			t.ai[k].load(infos[k]);
 		}
 		return t;
-	}
-
-	public void remove() {
-		for(AiPlugin plugin : ai){
-			if(plugin != null) plugin.remove();
-		}
 	}
 }

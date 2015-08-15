@@ -123,11 +123,11 @@ public enum Quest {
 			case "daytime": leftSide = (q, w) -> WorldWindow.getDayTime();break;
 			case "random": leftSide = (q, w) -> w.random.nextInt(Integer.parseInt(args[0]));break;
 			case "distance": leftSide = (q, w) -> {
-				return q.characters.get(args[0]).pos.p.minus(q.characters.get(args[1]).pos.p).length();
+				return q.characters.get(args[0]).pos.minus(q.characters.get(args[1]).pos).length();
 			}; break;
 			case "timeDelta": leftSide = (q, w) -> System.currentTimeMillis()/1000.0 - q.lastEventTime;break;
 			case "has": leftSide = (q, w) -> {
-				ItemStack[] stacks = q.characters.get(args[0]).inv.stacks;
+				ItemStack[] stacks = q.characters.get(args[0]).itemStacks;
 				for(int i1 = 0; i1 < stacks.length; i1++){
 					if(stacks[i1].item == ItemType.valueOf(args[1])){
 						return (stacks[i1].count >= Integer.parseInt(args[2])) ? "true" : "false";
@@ -184,9 +184,9 @@ public enum Quest {
 			String[] args = method[1].split(",");
 			switch(method[0]){
 			case "spawn": realActions[i] = (q, w) -> w.world.generator.questThings.add(new QuestSpawner(characters.get(args[0]), q, args[0], true)); break;
-			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).speak.say(Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
+			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).type.speak.say(q.characters.get(args[1]), Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
 			//say(booblen thoughtBubble, villager, question, answers)break;
-			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).inv.addItem(ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
+			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).type.inv.addItem(q.characters.get(args[0]), ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
 			default: throw(new UnknownMethodException("action", method[0]));
 			}
 		}

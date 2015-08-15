@@ -1,27 +1,29 @@
 package world.things;
 
-import render.Animation;
 
 
 public abstract class AiPlugin {
 	
+	public String recon;
+	
 	public static final String s = ",";
 	
-	public Thing t;
-	public Animation[] texs;
+	public String name;
 	
-	public AiPlugin(Thing thing, Animation... texs){
-		this.t = thing;
-		this.texs = texs;
-	}
+	public void update(ThingProps t, double delta){}
 	
-	public abstract boolean action(double delta);
+	/**
+	 * that executes the specific action of the plugin (e.g. Following follows)
+	 * This is also used to make it possible to update each plugin in a for loop (without logical connections)
+	 * @param t
+	 * @param delta
+	 * @return if it succeeded
+	 */
+	public boolean action(ThingProps t, double delta){return false;};
 	
-	public void partRender(){}
+	public void setup(ThingProps t){};
 	
-	public abstract String save();
-	
-	public abstract void load(String save);
+	public void partRender(ThingProps t){}
 
-	public void remove() {}
+	public void remove(ThingProps t) {}
 }

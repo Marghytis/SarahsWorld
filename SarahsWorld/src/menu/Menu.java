@@ -121,7 +121,7 @@ public class Menu implements Updater, Renderer, Listener {
 			public void setElements(){
 				elements = new Element[]{
 						new Element(7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0], MONEYBAG.pixelCoords[1], MONEYBAG.pixelCoords[2], MONEYBAG.pixelCoords[3], null, MONEYBAG),
-						new FlexibleTextField(() -> Main.world.avatar.inv.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
+						new FlexibleTextField(() -> Main.world.avatar.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
 						
 						new ItemContainer(0, 1/6.0, 1.0/8),
 						new ItemContainer(1, 2/6.0, 1.0/8),
@@ -129,8 +129,8 @@ public class Menu implements Updater, Renderer, Listener {
 						new ItemContainer(3, 4/6.0, 1.0/8),
 						new ItemContainer(4, 5/6.0, 1.0/8),
 
-						new Bar(0.1, 6.0/16, 0.9, 6.0/16, 0, -16, 0, 16, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.life.health/(double)Main.world.avatar.life.maxHealth),//Health
-						new Bar(0.1, 5.0/16, 0.9, 5.0/16, 0, -16, 0, 16, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.magic.mana/(double)Main.world.avatar.magic.maxMana)//Mana
+						new Bar(0.1, 6.0/16, 0.9, 6.0/16, 0, -16, 0, 16, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.health/(double)Main.world.avatar.type.life.maxHealth),//Health
+						new Bar(0.1, 5.0/16, 0.9, 5.0/16, 0, -16, 0, 16, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
 				};
 			}
 		},
@@ -144,7 +144,7 @@ public class Menu implements Updater, Renderer, Listener {
 				elements = new Element[]{new Debugger(),
 						new Button("Immortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
-								Main.world.avatar.life.immortal = !Main.world.avatar.life.immortal;
+								Main.world.avatar.immortal = !Main.world.avatar.immortal;
 							}
 						},
 						new Button("Disable agressive creatures", 0.7, 0.2, 0.7, 0.2, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
@@ -223,5 +223,11 @@ public class Menu implements Updater, Renderer, Listener {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

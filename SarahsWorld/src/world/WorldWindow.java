@@ -18,7 +18,7 @@ import util.Render;
 import util.math.Vec;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
-import world.things.Thing;
+import world.things.ThingProps;
 import world.things.ThingType;
 import core.Renderer;
 import core.Updater;
@@ -30,7 +30,7 @@ public class WorldWindow implements Updater, Renderer{
 	public Column rightEnd, leftEnd;
 	public int xIndex, r;
 	
-	public List<Thing> deletionRequested = new ArrayList<>();
+	public List<ThingProps> deletionRequested = new ArrayList<>();
 	
 
 	public List<Effect> effects = new ArrayList<>();
@@ -98,35 +98,36 @@ public class WorldWindow implements Updater, Renderer{
 		}
 	}
 	
-	List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
+	List<ThingProps> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
 	
-	public Thing[] livingsAt(Vec loc){
+	public ThingProps[] livingsAt(Vec loc){
 		thingsAt.clear();
-		for(int type = 0; type < ThingType.values().length; type++)
-		for(Thing t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
-			if(t.life != null && !t.equals(Main.world.avatar) && loc.containedBy(t.ani.box.pos.x + t.pos.p.x, t.ani.box.pos.y + t.pos.p.y, t.ani.box.size.x, t.ani.box.size.y)){
+		for(int type = 0; type < ThingType.types.length; type++)
+		for(ThingProps t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
+			if(t.type.life != null && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y, t.box.size.x, t.box.size.y)){
 				thingsAt.add(t);
 			}
 		}
-		thingsAt.sort((t1, t2) -> t1.ani.behind > t2.ani.behind ? 1 : t1.ani.behind < t2.ani.behind ?  -1 : 0);
-		return thingsAt.toArray(new Thing[thingsAt.size()]);
+		thingsAt.sort((t1, t2) -> t1.behind > t2.behind ? 1 : t1.behind < t2.behind ?  -1 : 0);
+		return thingsAt.toArray(new ThingProps[thingsAt.size()]);
 	}
 	
-	public Thing[] objectsAt(Vec loc){
+	public ThingProps[] objectsAt(Vec loc){
 		objectsAt.clear();
-		for(int type = 0; type < ThingType.values().length; type++)
-		for(Thing t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
-			if(t.life == null && t.type != ThingType.DUMMY && !t.equals(Main.world.avatar) && loc.containedBy(t.ani.box.pos.x + t.pos.p.x, t.ani.box.pos.y + t.pos.p.y, t.ani.box.size.x, t.ani.box.size.y)){
+		for(int type = 0; type < ThingType.types.length; type++)
+		for(ThingProps t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
+			if(t.type.life == null && t.type != ThingType.DUMMY && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y, t.box.size.x, t.box.size.y)){
 				objectsAt.add(t);
 			}
 		}
-		objectsAt.sort((t1, t2) -> t1.ani.behind > t2.ani.behind ? 1 : t1.ani.behind < t2.ani.behind ?  -1 : 0);
-		return objectsAt.toArray(new Thing[objectsAt.size()]);
+		objectsAt.sort((t1, t2) -> t1.behind > t2.behind ? 1 : t1.behind < t2.behind ?  -1 : 0);
+		return objectsAt.toArray(new ThingProps[objectsAt.size()]);
 	}
 	
 	public boolean update(double delta){
+
 		//Delete dead things
-		for(Thing t : deletionRequested){
+		for(ThingProps t : deletionRequested){
 			if(t.type != ThingType.DUMMY){
 				t.disconnect();
 				t.remove();
@@ -136,19 +137,18 @@ public class WorldWindow implements Updater, Renderer{
 		
 		//generate terrain
 		int radius = (int)(Window.WIDTH_HALF/Column.step) + 2;
-		Main.world.generator.borders(Main.world.avatar.pos.p.x - (radius*Column.step), Main.world.avatar.pos.p.x + (radius*Column.step));
+		Main.world.generator.borders(Main.world.avatar.pos.x - (radius*Column.step), Main.world.avatar.pos.x + (radius*Column.step));
 		
 		//update window position
-		setPos((int)(Main.world.avatar.pos.p.x/Column.step));
+		setPos((int)(Main.world.avatar.pos.x/Column.step));
 		
 		//update all things
-		for(int type = 0; type < ThingType.values().length; type++)//cursor should never be null
-		for(Thing cursor = leftEnd.left.things[type]; cursor != null && cursor != rightEnd.things[type];cursor = cursor.right){//could go further to the left, but who cares? :D
+		for(int type = 0; type < ThingType.types.length; type++)//cursor should never be null
+		for(ThingProps cursor = leftEnd.left.things[type]; cursor != null && cursor != rightEnd.things[type];cursor = cursor.right){//could go further to the left, but who cares? :D
 			if(cursor.type != ThingType.DUMMY){
 				cursor.update(delta);
 			}
 		}
-		
 		effects.addAll(toAdd);
 		toAdd.clear();
 
@@ -167,13 +167,14 @@ public class WorldWindow implements Updater, Renderer{
 	}
 	
 	public void draw(){
+		GL11.glLoadIdentity();
 		GL11.glClearColor(0.7f, 0.7f, 0.9f, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.p.x, Window.HEIGHT_HALF - Main.world.avatar.pos.p.y, 0);
+		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.x, Window.HEIGHT_HALF - Main.world.avatar.pos.y, 0);
 
 		GL11.glColor4f(1, 1, 1, 1);
 		//things even behind the landscape
-		renderThings((t) -> t.ani.behind == -1);
+		renderThings((t) -> t.behind == -1);
 		
 		renderLandscape();
 		
@@ -182,18 +183,18 @@ public class WorldWindow implements Updater, Renderer{
 		
 		//Things
 		GL11.glColor4f(1, 1, 1, 1);
-		renderThings((t) -> t.ani.behind == 0);
+		renderThings((t) -> t.behind == 0);
 		
 		//draw water on top
 		renderWater();
 
 		GL11.glColor4f(1, 1, 1, 1);
 		//render things that are in front of everything else
-		renderThings((t) -> t.ani.behind == 1);
+		renderThings((t) -> t.behind == 1);
 		
 		//living things can be seen through other things
 		GL11.glColor4f(1, 1, 1, 0.1f);
-		renderThings((t) -> t.life != null);
+		renderThings((t) -> t.type.life != null);
 
 		//draw the darkness which is crouching out of the earth
 		if(Settings.DARKNESS){
@@ -238,15 +239,15 @@ public class WorldWindow implements Updater, Renderer{
 		}
 		water.clear();
 	}
-	public interface Decider { public boolean decide(Thing t);}
+	public interface Decider { public boolean decide(ThingProps t);}
 	public void renderThings(Decider d){
-		for(int i = 0; i < ThingType.values().length; i++) {
+		for(int i = 0; i < ThingType.types.length; i++) {
 			
 			//render Thing
-			ThingType.values()[i].file.file.bind();
+			ThingType.types[i].file.file.bind();
 			GL11.glBegin(GL11.GL_QUADS);
 			//the pointer thing in the columns is always the dummy of its kind and is the one before the things of the next column
-			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
+			for(ThingProps cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
 				if(cursor.type != ThingType.DUMMY && d.decide(cursor)){
 					cursor.render();
 				}
@@ -267,7 +268,7 @@ public class WorldWindow implements Updater, Renderer{
 //		for(int i = 0; i < ThingType.values().length; i++) {
 //			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
 //				if(cursor.type != ThingType.DUMMY && cursor.aura != null){
-//					cursor.aura.render(cursor.pos.p.x, cursor.pos.p.y);
+//					cursor.aura.render(cursor.pos.x, cursor.pos.y);
 //				}
 //			}
 //		}
@@ -311,16 +312,12 @@ public class WorldWindow implements Updater, Renderer{
 	public void renderBoundingBoxes(){
 		TexFile.bindNone();
 		Color.WHITE.bind();
-		for(int i = 0; i < ThingType.values().length; i++) {
+		for(int i = 0; i < ThingType.types.length; i++) {
 			//the pointer thing in the columns is always the dummy of its kind and is the one before the things of the next column
-			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
+			for(ThingProps cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
 				if(cursor.type != ThingType.DUMMY){
-					Render.bounds(cursor.ani.animator.pixelCoords, cursor.pos.p.x, cursor.pos.p.y);
-					cursor.pos.p.drawPoint();
-					if(cursor.friction != null){
-						cursor.friction.lastBouyancy.copy().scale(0.1).drawAt(cursor.pos.p);
-						cursor.gravity.grav.copy().scale(0.1).drawAt(cursor.pos.p);
-					}
+					Render.bounds(cursor.ani.pixelCoords, cursor.pos.x, cursor.pos.y);
+					cursor.pos.drawPoint();
 				}
 			}
 		}

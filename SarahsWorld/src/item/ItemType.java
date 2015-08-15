@@ -10,7 +10,9 @@ import render.TexAtlas;
 import render.Texture;
 import util.math.Rect;
 import util.math.Vec;
-import world.things.Thing;
+import world.World;
+import world.things.ThingProps;
+import world.things.ThingType;
 
 public enum ItemType {
 
@@ -23,10 +25,10 @@ public enum ItemType {
 	SHOVEL(		Res.items_world.sfA(4, 0),	Res.items_weapons,		Res.items_inv.tex(4, 0), new int[]{-25, -2, 50, 50}, new int[]{4, 0},	"Shovel",		700,			70, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.1,			false),
 //	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.items_inv.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
 	BERRY(		Res.items_inv.sfA(6, 0),	Res.items_inv,			Res.items_inv.tex(6, 0), new int[]{-25, -2, 50, 50}, new int[]{6, 0},						"Berry",		0,				8, 			WeaponType.PUNCH,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.3,			false){
-		public boolean use(Thing src, Vec pos){
-			src.inv.stacks[Main.world.avatar.inv.selectedItem].item = ItemType.FIST;
-			if(src.magic != null && src.magic.mana + 2 <= Main.world.avatar.magic.maxMana){
-				src.magic.mana += 2;
+		public boolean use(ThingProps src, Vec pos){
+			src.itemStacks[Main.world.avatar.selectedItem].item = ItemType.FIST;
+			if(src.mana + 2 <= Main.world.avatar.type.magic.maxMana){
+				src.mana += 2;
 //				WorldView.particleEffects.add(new BerryEat(new Vec(World.sarah.pos.x + (World.sarah.animator.box.size.x/2), World.sarah.pos.y + (World.sarah.animator.box.size.y/2))));TODO watch above
 				return true;
 			}
@@ -37,18 +39,20 @@ public enum ItemType {
 	//Item types below this line won't appear in traders inventories
 	MOUTH(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Mouth", 1, 0, WeaponType.BITE, ItemUsageType.EAT, BodyPos.HEAD, 1, 2, 0.03, true),
 	FIST(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Fist", 1, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
-		public boolean use(Thing src, Vec pos, Thing dest){
-			if(dest.fruits != null && src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 90000){
-				ItemType i = dest.fruits.dropItem();
-				if(i != null) src.inv.addItem(i, 1);
+		public boolean use(ThingProps src, Vec pos, ThingProps dest){
+			if(dest.fruits != null && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 90000){
+				int index = World.rand.nextInt(dest.fruits.size());
+				ItemType i = dest.fruits.get(index);
+				dest.fruits.remove(index);
+				if(i != null) src.type.inv.addItem(src, i, 1);
 			} else {
-				switch(dest.type){
-				case COW:
-					src.riding.mount(dest);
+				switch(dest.type.ordinal){
+				case ThingType.COW.ordinal:
+					src.type.ride.mount(src, dest);
 					break;
-				case ITEM:
-					if(src.inv != null && src.pos.p.minus(dest.pos.p).lengthSquare() < 25000){
-						src.inv.addItem(dest.item.type, 1);
+				case ThingType.ITEM.ordinal:
+					if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
+						src.type.inv.addItem(src, dest.itemBeing, 1);
 						Main.world.window.deletionRequested.add(dest);
 					}
 					break;
@@ -60,13 +64,9 @@ public enum ItemType {
 			return needsTarget;
 		}
 	},
-	COIN(new Animation(Res.coin, 0, 0, 0), Res.coin, Res.coin, Res.coin.pixelCoords, new int[]{0, 0}, "Coin", 0, 1, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 0, 0, 0, false);
+	COIN(new Animation("coin", Res.coin, 0, 0, 0), Res.coin, Res.coin, Res.coin.pixelCoords, new int[]{0, 0}, "Coin", 0, 1, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 0, 0, 0, false);
 	
-	public static ItemType[] values;
-	
-	static {
-		values = values();
-	}
+	public static ItemType[] values = values();
 	
 	public Animation texWorld;
 	public Texture texHand;
@@ -131,9 +131,9 @@ public enum ItemType {
 		this.needsTarget = needsTarget;
 	}
 	
-	public boolean specialUse(Thing src, Vec pos, Thing[] dest){
+	public boolean specialUse(ThingProps src, Vec pos, ThingProps[] dest){
 		if(needsTarget){
-			for(Thing t : dest){
+			for(ThingProps t : dest){
 				if(use(src, pos, t)){
 					return true;
 				}
@@ -144,8 +144,8 @@ public enum ItemType {
 		return false;
 	}
 
-	public boolean use(Thing src, Vec pos, Thing dest){return false;}
-	public boolean use(Thing src, Vec pos){return false;}
+	public boolean use(ThingProps src, Vec pos, ThingProps dest){return false;}
+	public boolean use(ThingProps src, Vec pos){return false;}
 	
 	/**
 	 * Translates and rotates the model matrix. Matrix origin should be at bottom left corner of the things texture.
@@ -153,10 +153,10 @@ public enum ItemType {
 	 * @param t
 	 * @param ani The animator which is used to render the item. Must have the correct texture set already.
 	 */
-	public void renderHand(Thing t, Animator ani){
+	public void renderHand(ThingProps t, Animator ani){
 		if(texHand == null) return;
-		Texture thingTex = t.ani.animator.ani == null ? t.ani.animator.tex : t.ani.animator.ani.atlas;
-		int[] info = thingTex.infos[bodyPos.ordinal()].getInfo(t.ani.animator);
+		Texture thingTex = t.ani.ani == null ? t.ani.tex : t.ani.ani.atlas;
+		int[] info = thingTex.infos[bodyPos.ordinal()].getInfo(t.ani);
 		
 		int handX = 0;
 		int handY = 0;
@@ -168,19 +168,19 @@ public enum ItemType {
 			handAngle = info[2]+270;
 		}
 		
-		if(t.ani.dir){
+		if(t.dir){
 			handX = thingTex.w - handX;
 			handAngle = -handAngle;
 		}
 		
 		ani.resetMod();
 		ani.rotate(defaultRotationHand + handAngle);
-		ani.translate(handX + t.pos.p.x + thingTex.pixelCoords[0], handY + t.pos.p.y + thingTex.pixelCoords[1]);
-		ani.drawMod(t.ani.dir);
-//		ani.draw((int)(handX + t.pos.p.x + thingTex.pixelCoords[0]), (int)(handY + t.pos.p.y + thingTex.pixelCoords[1]), 1, 1, Math.PI/4, false);
+		ani.translate(handX + t.pos.x + thingTex.pixelCoords[0], handY + t.pos.y + thingTex.pixelCoords[1]);
+		ani.drawMod(t.dir);
+//		ani.draw((int)(handX + t.pos.x + thingTex.pixelCoords[0]), (int)(handY + t.pos.y + thingTex.pixelCoords[1]), 1, 1, Math.PI/4, false);
 		
 //		GL11.glPushMatrix();
-//		GL11.glTranslated(handX + t.pos.p.x, handY + t.pos.p.y + thingTex.pixelCoords[1], 0);
+//		GL11.glTranslated(handX + t.pos.x, handY + t.pos.y + thingTex.pixelCoords[1], 0);
 //		GL11.glRotatef(defaultRotationHand + handAngle, 0, 0, 1);
 //		
 //		ani.file.bind();
@@ -199,6 +199,8 @@ public enum ItemType {
 	}
 
 	public static enum ItemUsageType {FIST, EAT}
-	public static enum WeaponType {PUNCH, KICK, STRIKE, SPELL, BITE}
+	public static enum WeaponType {
+		PUNCH, KICK, STRIKE, SPELL, BITE;
+	}
 	public enum BodyPos {HAND, HEAD}
 }

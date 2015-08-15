@@ -15,6 +15,7 @@ import world.WorldData.Column;
 import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
+import world.things.ThingProps;
 
 
 public class Generator {
@@ -77,7 +78,7 @@ public class Generator {
 			world.addRight(biomeR.biome, biomeR.createVertices(posR.y));
 			world.mostRight.biome.spawnThings(world, world.mostRight.left);
 			for(QuestSpawner qs : questThings){
-				qs.quest.characters.put(qs.name, qs.thingType.create(world, world.mostRight.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData));
+				qs.quest.characters.put(qs.name, new ThingProps(qs.thingType, world, world.mostRight.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData));
 			}
 			questThings.clear();
 		}
@@ -96,7 +97,7 @@ public class Generator {
 			world.addLeft(biomeL.biome, biomeL.createVertices(posL.y));
 			world.mostLeft.biome.spawnThings(world, world.mostLeft.right);
 			for(QuestSpawner qs : questThings){
-				qs.quest.characters.put(qs.name, qs.thingType.create(world, world.mostLeft.right.getRandomTopLocation(world.random, questPos), questPos, qs.extraData));
+				qs.quest.characters.put(qs.name, new ThingProps(qs.thingType, world, world.mostLeft.right.getRandomTopLocation(world.random, questPos), questPos, qs.extraData));
 			}
 			questThings.clear();
 		}

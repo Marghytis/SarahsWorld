@@ -4,7 +4,7 @@ import render.Texture;
 import util.math.Vec;
 import effects.particles.Particle.ParticleType;
 
-public class BloodSplash implements ParticleEffect{
+public class BloodSplash implements ParticleEffect {
 
 	
 	public static final ParticleType BLOOD_DROP = new ParticleType(new Texture("res/particles/Blood_drop.png", -0.5, -0.5));
@@ -78,6 +78,12 @@ public class BloodSplash implements ParticleEffect{
 
 	@Override
 	public boolean keyPressed(int key) {
+		return false;
+	}
+
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 }

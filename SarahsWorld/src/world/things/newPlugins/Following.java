@@ -1,4 +1,4 @@
-package world.things.aiPlugins;
+package world.things.newPlugins;
 
 import main.Main;
 import menu.Settings;
@@ -9,27 +9,25 @@ import world.things.ThingType;
 public class Following extends AiPlugin{
 
 	double maxDistanceSquare;
+	double rAimSq;
 	ThingType[] targetClasses;
-	DoWithThing onReached;
 	
 	@SafeVarargs
-	public Following(double maxDistance, DoWithThing onReached, ThingType... classes){
+	public Following(double maxDistance, double rAim, ThingType... classes){
 		this.maxDistanceSquare = maxDistance*maxDistance;
-		this.onReached = onReached;
+		this.rAimSq = rAim*rAim;
 		this.targetClasses = classes;
 	}
 
-	public void setup(ThingProps t) {}
-	
-	public boolean update(ThingProps t, double delta) {
+	public boolean action(ThingProps t, double delta) {
 		if(Settings.AGGRESSIVE_CREATURES){
 			findTarget(t);
 			double acc = 0;
 			if(t.target != null){
-				if(!onReached.doIt(t, t.target)) {
-					if(t.target.pos.x - (t.target.box.size.x/2) > t.pos.x){
+				if(t.target.pos.minus(t.pos).lengthSquare() > rAimSq) {
+					if(t.target.pos.x > t.pos.x){
 						acc += 2;
-					} else if(t.target.pos.x + (t.target.box.size.x/2) < t.pos.x){
+					} else if(t.target.pos.x < t.pos.x){
 						acc -= 2;
 					}
 				}
@@ -57,15 +55,5 @@ public class Following extends AiPlugin{
 			}
 			t.target = closest;
 		}
-	}
-
-	public interface DoWithThing {
-		/**
-		 * 
-		 * @param src
-		 * @param tgt
-		 * @return if it succeeded
-		 */
-		public abstract boolean doIt(ThingProps src, ThingProps tgt);//source thing, target thing
 	}
 }

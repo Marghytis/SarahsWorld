@@ -6,29 +6,32 @@ import world.things.Thing;
 
 
 public class Acceleration extends AiPlugin {
-
-	public Vec a;
 	
+	public static final String recon = "Acc";
+
 	public Acceleration(Thing thing){
 		super(thing);
-		a = new Vec();
+		super.recon = recon;
 	}
 	
-	public boolean action(double delta) {
-		if(!t.ground.g){
-			t.vel.v.shift(a, delta);
+	public class Acc extends AiPart {
+		
+		public Vec a = new Vec();
+		
+		public boolean action(double delta) {
+			if(!t.ground.g){
+				t.vel.v.shift(a, delta);
+			}
+			a.set(0, 0);
+			return false;
 		}
-		a.set(0, 0);
-		return false;
-	}
-
-	public String save() {
-		return a.x + s + a.y;
-	}
-
-	public void load(String data){
-		String[] infos = data.split(s);
-		a.x = Double.parseDouble(infos[0]);
-		a.y = Double.parseDouble(infos[1]);
+		public String save() {
+			return a.x + s + a.y;
+		}
+		public void load(String data){
+			String[] infos = data.split(s);
+			a.x = Double.parseDouble(infos[0]);
+			a.y = Double.parseDouble(infos[1]);
+		}
 	}
 }

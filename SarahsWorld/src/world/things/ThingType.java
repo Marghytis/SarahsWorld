@@ -1,6 +1,11 @@
 package world.things;
 
 import item.ItemType;
+import item.ItemType.WeaponType;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import main.Res;
 import render.Animation;
 import render.TexAtlas;
@@ -8,632 +13,614 @@ import render.Texture;
 import util.Color;
 import util.math.Rect;
 import util.math.Vec;
+import world.World;
 import world.WorldData;
-import world.WorldData.Column;
 import world.WorldData.Vertex;
-import world.things.aiPlugins.Acceleration;
-import world.things.aiPlugins.Animating;
-import world.things.aiPlugins.Attacking;
-import world.things.aiPlugins.AvatarControl;
-import world.things.aiPlugins.Collision;
-import world.things.aiPlugins.Coloration;
-import world.things.aiPlugins.Controller;
-import world.things.aiPlugins.FlyAround;
-import world.things.aiPlugins.Following;
-import world.things.aiPlugins.Gravity;
-import world.things.aiPlugins.Grounding;
-import world.things.aiPlugins.Inventory;
-import world.things.aiPlugins.ItemBeing;
-import world.things.aiPlugins.Life;
-import world.things.aiPlugins.Magic;
-import world.things.aiPlugins.MatFriction;
-import world.things.aiPlugins.Position;
-import world.things.aiPlugins.Riding;
-import world.things.aiPlugins.Speaking;
-import world.things.aiPlugins.Velocity;
-import world.things.aiPlugins.WalkAround;
+import world.things.newPlugins.Animating;
+import world.things.newPlugins.Attacking;
+import world.things.newPlugins.AvatarControl;
+import world.things.newPlugins.FlyAround;
+import world.things.newPlugins.Following;
+import world.things.newPlugins.Grounding;
+import world.things.newPlugins.Inventory;
+import world.things.newPlugins.Life;
+import world.things.newPlugins.Magic;
+import world.things.newPlugins.Physics;
+import world.things.newPlugins.Riding;
+import world.things.newPlugins.Speaking;
+import world.things.newPlugins.WalkAround;
 
-public enum ThingType {
+public class ThingType {
+	
+	static List<ThingType> tempList = new ArrayList<>();
+	static int index;
+	
 	//LIVING THINGS
-	SARAH(Res.sarah) {
+										static final Animation sarah_cow_rest = Res.sarah_onCow.sfA("rest", 6, 0);
+										static final Animation[][] sarah = {{
+											Res.sarah.sfA("stand", 0, 0),
+											Res.sarah.sfA("fly", 6, 3),
+											new Animation("walk", Res.sarah, 20,			1, /**/4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6),
+											new Animation("sprint", Res.sarah, 40,		2, /**/1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5),
+											new Animation("jump", Res.sarah, 30,			3, /**/1, 2, 3, 4, 5, 6),
+											new Animation("land", Res.sarah, 20,			3, /**/5, 4, 3, 2, 1),
+											new Animation("punch", Res.sarah, 40,	4, /**/1, 2, 3, 4, 5, 6, 7, 8, 0),
+											new Animation("kick", Res.sarah, 13,	6, /**/1, 2, 3, 4, 5),
+											new Animation("strike", Res.sarah, 13,	8, /**/0, 1, 2, 3, 4),
+											new Animation("spell", Res.sarah, 5,	9, /**/0, 1, 0)
+											},{
+									
+											sarah_cow_rest,//stand
+											Res.sarah_onCow.sfA("fly", 6, 2),
+											new Animation("walk", 		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4),
+											new Animation("sprint",		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4),
+											sarah_cow_rest,//jump
+											sarah_cow_rest,//land
+											sarah_cow_rest,//punch
+											sarah_cow_rest,//kick
+											sarah_cow_rest,//strike
+											sarah_cow_rest,//spell
+											
+											new Animation("mount",		Res.sarah_onCow,	20,	0, /**/0, 1, 2, 3, 4, 5, 6),
+											new Animation("dismount",	Res.sarah_onCow,	20,	0, /**/6, 5, 4, 3, 2, 1, 0)}};
+					
+	public static final ThingType SARAH = new ThingType("SARAH", Res.sarah,
+			new Animating(sarah[0][0], new Rect(Res.sarah.pixelCoords), 0, 0, 10, sarah),
+			new Grounding(),
+			new AvatarControl(),
+			new Life(20, 0, 1),
+			new Magic(20, 20),
+			new Attacking(4, 0.01, new AttackType[]{
+					 new AttackType("punch", 100, 50, 100, WeaponType.PUNCH, 1, 1)//punch
+					,new AttackType("kick", 200, -30, 50, WeaponType.KICK, 2, 1)//kick
+					,new AttackType("strike", 400, 100, 50, WeaponType.STRIKE, 5, 1)//strike
+					,new AttackType("spell", 1000, 1000, -1000, WeaponType.SPELL, 1, 1, (src, dam, tgt) -> tgt.type.life.getHit(tgt, src, dam))//spell TODO add Effect
+					}),
+			new Riding(new Rect(Res.sarah.pixelCoords), new Rect(Res.sarah_onCow.pixelCoords)),
+			new Inventory(ItemType.FIST, 5),
+			new Speaking()
+			,new Physics(50, 450)
+	){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			super.setup(t, world, field, pos);
+		}
+		public void update(ThingProps t, double delta){
+			avatar.action(t, delta);
+		}
+	};
+										static final Animation[] snail = {
+											Res.snail.sfA("stand", 0, 0),
+											new Animation("walk", Res.snail, 10, 0, /**/0, 1, 2, 3, 4, 3, 2, 1),
+											new Animation("sprint", Res.snail, 20, 0, /**/0, 1, 2, 3, 4, 3, 2, 1),
+											new Animation("punch", Res.snail, 30, 1, /**/1, 2, 3, 4, 5, 6, 5)};
+	public static final ThingType SNAIL = new ThingType("SNAIL", Res.snail
+			,new Animating(snail[0], new Rect(Res.snail.pixelCoords), 0, 0, 4, snail)
+			,new Life(10, 10, 2)
+			,new Grounding()
+			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2)})
+			,new Following(500.0, 300, ThingType.SARAH)
+			,new WalkAround()
+			,new Physics(50, 300)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+		}
+		public void update(ThingProps t, double delta){
+			if(follow.action(t, delta)){//follow
+				attack.attack(t, WeaponType.PUNCH, ItemType.FIST, "punch", t.target);//attack
+			} else if(t.target == null){
+				walkAround.action(t, delta);//walk around
+			}
+		}
+	};
+										static final Animation[] cow = {
+											new Animation("chew", Res.cow, 10, 0, /**/0, 1, 2, 3, 4, 5, 6)};
+	public static final ThingType COW = new ThingType("COW", Res.cow
+			,new Animating(cow[0], new Rect(Res.cow.pixelCoords), 0, 0, 1, cow)
+			,new Life(4, 3, 1)
+			,new Grounding()
+			,new Physics(200, 900));
+
+	
+										static final Animation[][] butterfly =  {{
+											Res.butterfly.sfA("sit", 0, 0),
+											new Animation("flap", Res.butterfly, 10, 0, /**/0, 1, 2, 3, 2, 1),
+											Res.butterfly.sfA("fly", 0, 0)},{
+											Res.butterfly.sfA("sit", 0, 1),
+											new Animation("flap", Res.butterfly, 10, 1, /**/0, 1, 2, 3, 2, 1),
+											Res.butterfly.sfA("fly", 0, 1)}};
+	public static final ThingType BUTTERFLY = new ThingType("BUTTERFLY", Res.butterfly
+			,new Animating(butterfly[0][1], new Rect(Res.butterfly.pixelCoords), 0, 0, 3, butterfly)
+			,new Life(1, 1, 0)
+			,new Physics(1, 36)
+			,new FlyAround()) {
 		
-		Animation flying = file.sfA(6, 3);
-		Animation standing = file.sfA(0, 0);
-		Animation walking = new Animation(Res.sarah, 20,			1, /**/4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6);
-		Animation sprinting = new Animation(Res.sarah, 40,		2, /**/1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5);
-		Animation jumping = new Animation(Res.sarah, 30,			3, /**/1, 2, 3, 4, 5, 6);
-		Animation landing = new Animation(Res.sarah, 20,			3, /**/5, 4, 3, 2, 1);
-		Animation attacking_punch = new Animation(Res.sarah, 40,	4, /**/1, 2, 3, 4, 5, 6, 7, 8, 0);
-		Animation attacking_kick = new Animation(Res.sarah, 13,	6, /**/1, 2, 3, 4, 5);
-		Animation attacking_strike = new Animation(Res.sarah, 13,	8, /**/0, 1, 2, 3, 4);
-		Animation attacking_spell = new Animation(Res.sarah, 5,	9, /**/0, 1, 0);
-
-		Animation standingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
-		Animation jumpingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
-		Animation flyingCow = Res.sarah_onCow.sfA(6, 2);//has to be seperate, because of the terminal task
-		Animation landingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
-		Animation attackingCow = Res.sarah_onCow.sfA(6, 0);//has to be seperate, because of the terminal task
-		Animation mountingCow = new Animation(		Res.sarah_onCow,	20,	0, /**/0, 1, 2, 3, 4, 5, 6);
-		Animation dismountingCow = new Animation(	Res.sarah_onCow,	20,	0, /**/6, 5, 4, 3, 2, 1, 0);
-		Animation walkingCow = new Animation(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
-		Animation sprintingCow = new Animation(		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4);
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(2);
+			ani.setAnimation(t, "flap");
+			t.ani.pos = World.rand.nextInt(t.ani.ani.x.length);
+		}
+		public void update(ThingProps t, double delta){
+			flyAround.action(t, delta);
+		}
+	};
+										static final Animation[] villager = {
+											Res.villager.sfA("stand", 0, 0),
+											Res.villager.sfA("stand", 0, 1),
+											Res.villager.sfA("stand", 0, 2),
+											Res.villager.sfA("stand", 0, 3)};
+	public static final ThingType VILLAGER = new ThingType("VILLAGER", Res.villager
+			,new Animating(villager[0], new Rect(Res.villager.pixelCoords), 0, 0, 4, villager)
+			,new Life(10, 20, 0)
+			,new Physics(1, 36)
+			,new Speaking()
+			,new Inventory(ItemType.FIST, 4)) {
 		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			Thing t = new Thing(this, world.random);
-
-			t.pos = new Position(t, pos);
-			t.vel = new Velocity(t);
-			t.ani = new Animating(t,standing,	new Rect(Res.sarah.pixelCoords), 0);
-			Animation[] cowAni = {	standingCow};
-			
-			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		jumping,		flying,		landing);
-			Animation[] cowGrounding = {			standingCow, walkingCow, sprintingCow,	jumpingCow,		flyingCow,	landingCow};
-			t.avatar = new AvatarControl(t);
-			t.cont = new Controller(t, t.avatar){
-				public boolean action(double delta){
-					t.avatar.action(delta);
-					return false;
-				}
-			};
-			
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.gravity = new Gravity(t);
-			t.friction = new MatFriction(t);
-			
-			t.life = new Life(t, 20, 0);
-			t.magic = new Magic(t, 20, 20);
-			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 500, attacking_punch, attacking_kick, attacking_strike, attacking_spell);
-			Animation[] cowAttack = {								attackingCow, attackingCow, attackingCow, attackingCow};//TODO
-			t.riding = new Riding(t, mountingCow, dismountingCow, t.ani.box, new Rect(Res.sarah_onCow.pixelCoords), new Animation[][]{t.ani.texs,	t.attack.texs,	t.ground.texs},
-																							  new Animation[][]{				cowAni		,cowAttack,		cowGrounding});
-			t.inv = new Inventory(t, ItemType.FIST, 5);
-			t.inv.addItem(ItemType.SWORD, 1);
-			
-			return create(t, field.parent);
-		}
-	},
-	SNAIL(Res.snail) {
-		Animation standing = file.sfA(0, 0);
-		Animation walking = new Animation(Res.snail, 10, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
-		Animation sprinting = new Animation(Res.snail, 20, 0, /**/0, 1, 2, 3, 4, 3, 2, 1);
-		Animation attacking = new Animation(Res.snail, 30, 1, /**/1, 2, 3, 4, 5, 6, 5);
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			Thing t = new Thing(this, world.random);
-
-			t.pos = new Position(t, pos);
-			t.vel = new Velocity(t);
-			t.ani = new Animating(t, standing, new Rect(file.pixelCoords), 0);
-			
-			t.life = new Life(t, 10, 10);
-			t.attack = new Attacking(t, ItemType.FIST, 2, 0.05, 50, attacking);
-			
-			t.ground = new Grounding(t, true, 0, false, field, standing, walking, sprinting, standing, standing, standing);
-			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
-			t.walkAround = new WalkAround(t, 400);
-			t.cont = new Controller(t, t.follow, t.walkAround){
-				public boolean action(double delta){
-					if(!t.follow.action(delta)) t.walkAround.action(delta);
-					return false;
-				}
-			};
-			
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.gravity = new Gravity(t);
-			
-			return create(t, field.parent);
-		}
-	},
-	COW(Res.cow) {
-		Animation chewing = new Animation(file, 10, 0, /**/0, 1, 2, 3, 4, 5, 6);
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			Thing t = new Thing(this, world.random);
-			
-			t.pos = new Position(t, pos);
-			t.vel = new Velocity(t);
-			t.ani = new Animating(t, chewing, new Rect(file.pixelCoords), 0);
-			
-			t.life = new Life(t, 4, 3);
-			
-			t.ground = new Grounding(t, true, 0, false, field, chewing, chewing, chewing, chewing, chewing, chewing);
-			
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.gravity = new Gravity(t);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	BUTTERFLY(Res.butterfly) {
-		
-		Animation[] sit =  {file.sfA(0, 0), file.sfA(0, 1)};
-		Animation[] flap = {new Animation(file, 10, 0, /**/0, 1, 2, 3, 2, 1),
-							new Animation(file, 10, 1, /**/0, 1, 2, 3, 2, 1)};
-		
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-
-			int type = world.random.nextInt(2);
-			
-			Thing t = new Thing(this, world.random);
-			
-			t.pos = new Position(t, pos);
-			
-			t.ani = new Animating(t, flap[type], new Rect(flap[type].atlas.pixelCoords), 0);
-			t.ani.animator.pos = world.random.nextInt(this.flap[type].x.length);
-			t.life = new Life(t, 1, 1);
-			t.vel = new Velocity(t);
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.ground = new Grounding(t, false, 0, sit[type], flap[type], flap[type], flap[type], flap[type], flap[type]);
-			t.flyAround = new FlyAround(t);
-			t.cont = new Controller(t, t.flyAround){
-				public boolean action(double delta){
-					t.flyAround.action(delta);
-					return false;
-				}
-			};
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	//DEAD THINGS
-	CLOUD(Res.cloud) {
-		
-		Animation cloud = file.sfA(0, 0);
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			Color color = extraData.length > 0 ? (Color)extraData[0] : new Color(Color.WHITE);
-			
-			Thing t = new Thing(this, world.random);
-			
-			
-			double height = 200 + t.rand.nextInt(100);
-			
-			t.pos = new Position(t, pos.shift(0, height));
-			
-			t.color = new Coloration(t, color);
-			t.ani = new Animating(t, cloud, file.createBox().scale(world.random.nextDouble() + 0.5), -1);
-			t.vel = new Velocity(t);
-			t.ground = new Grounding(t, false, -height, true, field, cloud, cloud, cloud, cloud, cloud, cloud);
-			t.ground.speed = 10;
-			
-			return create(t, field.parent);
-		}
-	},
-	GRASS(Res.grasstuft) {
-		Animation waving = new Animation(file, 5, 0, /**/0, 1, 2, 3, 2, 1);
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, waving, file.createBox(), 0);
-			t.ani.animator.pos = world.random.nextInt(waving.x.length);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	GIANT_GRASS(Res.grass_giant) {
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			Animation texture = new Animation(file, 0, t.rand.nextInt(file.partsY), 0);
-			t.ani = new Animating(t, texture, file.createBox(), 0);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	TREE_NORMAL(Res.tree){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.TREE.create(world, field, pos, this);
-		}
-	},
-	TREE_FIR(Res.tree_fir){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.TREE.create(world, field, pos, this);
-		}
-	},
-	TREE_FIR_SNOW(Res.tree_firSnow){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.TREE.create(world, field, pos, this);
-		}
-	},
-	TREE_CANDY(Res.tree_candy){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.TREE.create(world, field, pos, this);
-		}
-	},
-	TREE_GRAVE(Res.tree_grave){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.TREE.create(world, field, pos, this);
-		}
-	},
-	TREE_PALM(Res.tree_palm){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.TREE.create(world, field, pos, this);
-		}
-	},
-	TREE_JUNGLE(Res.tree_jungle){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.TREE.create(world, field, pos, this);
-		}
-	},
-	GIANT_PLANT(Res.plant_giant) {
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			Animation texture = new Animation(file, 0, t.rand.nextInt(file.partsY), 0);
-			t.ani = new Animating(t, texture, file.createBox(), 0);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	BUSH_NORMAL(Res.bush_normal){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.BUSH.create(world, field, pos, this);
-		}
-	},
-	BUSH_JUNGLE(Res.bush_jungle){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.BUSH.create(world, field, pos, this);
-		}
-	},
-	BUSH_CANDY(Res.bush_candy){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.BUSH.create(world, field, pos, this);
-		}
-	},
-	FLOWER_NORMAL(Res.flower_normal){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.FLOWER.create(world, field, pos, this);
-		}
-	},
-	FLOWER_CANDY(Res.flower_candy){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.FLOWER.create(world, field, pos, this);
-		}
-	},
-	FLOWER_JUNGLE(Res.flower_jungle){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			return SuperTypes.FLOWER.create(world, field, pos, this);
-		}
-	},
-	PYRAMID(Res.pyramide) {
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	HOUSE(Res.house) {
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	TOWN_OBJECT(Res.townobject) {
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	VILLAGER(Res.villager) {
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			Thing t = new Thing(this, world.random);
-
-			t.pos = new Position(t, pos);
-			t.vel = new Velocity(t);
-			
-			Animation tex = new Animation(file, 0, t.rand.nextInt(file.partsY), 0);
-			
-			t.ani = new Animating(t, tex,	file.createBox(), 0);
-			
-			t.ground = new Grounding(t, true, 0, false, field, tex,	 tex,	 tex,		tex,		tex,		tex);
-			
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.gravity = new Gravity(t);
-			t.friction = new MatFriction(t);
-			
-			t.life = new Life(t, 10, 0);
-			t.magic = new Magic(t, 20, 20);
-			t.attack = new Attacking(t, ItemType.FIST, 4, 0.01, 5000);
-			t.inv = new Inventory(t, ItemType.FIST, 20);
-			t.inv.coins = 20;
-			
-			t.speak = new Speaking(t);
-			
-			return create(t, field.parent);
-		}
-		
-	},
-	ZOMBIE(Res.zombie) {
-		
-		Animation standing = file.sfA(3, 0);
-		Animation walking = new Animation(file, 10, 0,/**/2, 1, 0, 1, 2, 3);
-		Animation sprinting = new Animation(file, 20, 0,/**/2, 1, 0, 1, 2, 3);
-		Animation attacking = new Animation(file, 30, 1,/**/0, 1, 2);
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			Thing t = new Thing(this, world.random);
-
-			t.pos = new Position(t, pos);
-			t.vel = new Velocity(t);
-			
-			t.ani = new Animating(t, standing,	file.createBox(), 0);
-			
-			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		standing,		standing,		standing);
-			
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.gravity = new Gravity(t);
-			t.friction = new MatFriction(t);
-			
-			t.life = new Life(t, 10, 0);
-			t.attack = new Attacking(t, ItemType.FIST, 4, 0.05, 5000, attacking);
-			
-			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
-			t.walkAround = new WalkAround(t, 400);
-			t.cont = new Controller(t, t.follow, t.walkAround){
-				public boolean action(double delta){
-					if(!t.follow.action(delta)) t.walkAround.action(delta);
-					return false;
-				}
-			};
-			
-			return create(t, field.parent);
-		}
-		
-	},
-	CAT_GIANT(Res.cat_giant) {
-		
-		Animation standing = file.sfA(0, 0);
-		Animation walking = new Animation(file, 10, 0,/**/1, 2, 3, 4);
-		Animation sprinting = new Animation(file, 20, 0,/**/1, 2, 3, 4);
-		Animation attacking = new Animation(file, 30, 1,/**/2, 0, 1, 2);
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			Thing t = new Thing(this, world.random);
-
-			t.pos = new Position(t, pos);
-			t.vel = new Velocity(t);
-			
-			t.ani = new Animating(t, standing,	file.createBox(), 0);
-			
-			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		standing,		standing,		standing);
-			
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.gravity = new Gravity(t);
-			t.friction = new MatFriction(t);
-			
-			t.life = new Life(t, 10, 0);
-			t.attack = new Attacking(t, ItemType.FIST, 10, 0.05, 5000, attacking);
-			
-			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
-			t.walkAround = new WalkAround(t, 400);
-			t.cont = new Controller(t, t.follow, t.walkAround){
-				public boolean action(double delta){
-					if(!t.follow.action(delta)) t.walkAround.action(delta);
-					return false;
-				}
-			};
-			
-			return create(t, field.parent);
-		}
-		
-	},
-	TREX(Res.trex) {
-		
-		Animation standing = file.sfA(0, 0);
-		Animation walking = new Animation(file, 10, 0,/**/1, 2, 3, 4, 5, 6, 7);
-		Animation sprinting = new Animation(file, 20, 0,/**/1, 2, 3, 4);
-		Animation attacking1 = new Animation(file, 30, 1,/**/1, 2, 3, 4, 3, 2, 1);
-		Animation attacking2 = new Animation(file, 30, 2,/**/1, 2, 3, 4, 5, 6, 7, 8);
-		Animation chew = new Animation(file, 30, 3,/**/0, 1, 2, 3);
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			Thing t = new Thing(this, world.random);
-
-			t.pos = new Position(t, pos);
-			t.vel = new Velocity(t);
-			
-			t.ani = new Animating(t, standing,	file.createBox(), 0);
-			
-			t.ground = new Grounding(t, true, 0, false, field, standing,	 walking,	 sprinting,		standing,		standing,		standing);
-			
-			t.acc = new Acceleration(t);
-			t.collision = new Collision(t);
-			t.gravity = new Gravity(t);
-			t.friction = new MatFriction(t);
-			
-			t.life = new Life(t, 10, 0);
-			t.attack = new Attacking(t, ItemType.FIST, 10, 0.05, 5000, attacking1, attacking2);
-			
-			t.follow = new Following(t, 750*(0.5*t.rand.nextDouble()+0.75), 500.0, (target) -> t.attack.attack(null, target), ThingType.SARAH);
-			t.walkAround = new WalkAround(t, 400);
-			t.cont = new Controller(t, t.follow, t.walkAround){
-				public boolean action(double delta){
-					if(!t.follow.action(delta)) t.walkAround.action(delta);
-					return false;
-				}
-			};
-			
-			return create(t, field.parent);
-		}
-		
-	},
-	BAMBOO(Res.bamboo) {
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	BIRD_NORMAL(Res.bird){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			return SuperTypes.BIRD.create(world, field, pos, this, 0, 1);
-		}
-	},
-	BIRD_RAINBOW(Res.bird){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			return SuperTypes.BIRD.create(world, field, pos, this, 2, 0);
-		}
-	},
-	BIRD_BLACK(Res.bird){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			return SuperTypes.BIRD.create(world, field, pos, this, 3, 0);
-		}
-	},
-	FERN(Res.plant_jungle) {
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextBoolean() ? 1 : -1);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	CACTUS(Res.cactus) {
-		
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox().scale(0.5 + world.random.nextDouble()), t.rand.nextInt(100) < 30 ? 1 : -1);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	GRAVE(Res.grave) {
-
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
-			
-			Thing t = new Thing(this, world.random);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, new Animation(file, 0, t.rand.nextInt(file.partsY), 0), file.createBox(), 0);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	//OTHER THINGS
-	ITEM(Res.items_world) {
-		public Thing create(WorldData world, Vertex field, Vec pos,	Object... extraData) {
-			
-			ItemType type = (ItemType)extraData[0];
-			
-			Thing t = new Thing(this, world.random);
-			
-			t.item = new ItemBeing(t, type);
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, type.texWorld, new Rect(type.boxWorld), 0);
-			t.vel = new Velocity(t);
-			t.acc = new Acceleration(t);
-			t.gravity = new Gravity(t);
-			t.collision = new Collision(t);
-			t.ground = new Grounding(t, true, 0, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld, type.texWorld);
-
-			
-			
-			return create(t, field.parent);
-		}
-	},
-	COIN(Res.coin) {
-		
-		public Animation texture = Res.coin.sfA(0, 0);
-		
-		public Thing create(WorldData world, Vertex field, Vec pos,	Object... extraData) {
-			
-			Thing t = new Thing(this, world.random);
-			
-			t.pos = new Position(t, pos);
-			t.ani = new Animating(t, texture, file.createBox(), 0);
-			t.vel = new Velocity(t); t.vel.v.set((Vec)extraData[0]);
-			t.acc = new Acceleration(t);
-			t.gravity = new Gravity(t);
-			t.collision = new Collision(t);
-			t.ground = new Grounding(t, true, 0, texture, texture, texture, texture, texture, texture);
-			
-			return create(t, field.parent);
-		}
-	},
-	DUMMY(Texture.empty){
-		public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData) {
-			Thing t = new Thing(this, world.random);
-			t.createAi();
-			return t;
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(4);
 		}
 	};
 	
-	public TexAtlas file;
+										static final Animation[] zombie = {
+											Res.zombie.sfA("stand", 3, 0),
+											new Animation("walk", Res.zombie, 10, 0,/**/2, 1, 0, 1, 2, 3),
+											new Animation("sprint", Res.zombie, 20, 0,/**/2, 1, 0, 1, 2, 3),
+											new Animation("attack", Res.zombie, 30, 1,/**/0, 1, 2)};
+	public static final ThingType ZOMBIE = new ThingType("ZOMBIE", Res.zombie
+			,new Animating(zombie[0], new Rect(Res.zombie.pixelCoords), 0, 0, 4, zombie)
+			,new Life(10, 10, 2)
+			,new Grounding()
+			,new Attacking(4, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2)})
+			,new Following(500.0, 300, ThingType.SARAH)
+			,new WalkAround()
+			,new Physics(50, 300)) {
+
+		public void update(ThingProps t, double delta){
+			if(follow.action(t, delta)){//follow
+				attack.attack(t, WeaponType.PUNCH, ItemType.FIST, "punch", t.target);//attack
+			} else if(t.target == null){
+				walkAround.action(t, delta);//walk around
+			}
+		}
+	};
 	
-	/**
-	 * Only if using a SuperType
-	 * @param file
-	 */
-	ThingType(TexAtlas file){
+										static final Animation[] cat_giant = {
+												Res.cat_giant.sfA("stand", 0, 0),
+												new Animation("walk", Res.cat_giant, 10, 0,/**/1, 2, 3, 4),
+												new Animation("sprint", Res.cat_giant, 20, 0,/**/1, 2, 3, 4),
+												new Animation("attack", Res.cat_giant, 30, 1,/**/2, 0, 1, 2)};
+	public static final ThingType CAT_GIANT = new ThingType("CAT_GIANT", Res.cat_giant
+			,new Animating(cat_giant[0], new Rect(Res.cat_giant.pixelCoords), 0, 0, 4, cat_giant)
+			,new Life(10, 10, 2)
+			,new Grounding()
+			,new Attacking(10, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2)})
+			,new Following(500.0, 300, ThingType.SARAH)
+			,new WalkAround()
+			,new Physics(50, 300)) {
+
+		public void update(ThingProps t, double delta){
+			if(follow.action(t, delta)){//follow
+				attack.attack(t, WeaponType.PUNCH, ItemType.FIST, "punch", t.target);//attack
+			} else if(t.target == null){
+				walkAround.action(t, delta);//walk around
+			}
+		}
+	};
+	
+										static final Animation[] trex = {
+											Res.trex.sfA("stand", 0, 0),
+											new Animation("walk", Res.trex, 10, 0,/**/1, 2, 3, 4, 5, 6, 7),
+											new Animation("sprint", Res.trex, 20, 0,/**/1, 2, 3, 4),
+											new Animation("tailhit", Res.trex, 30, 1,/**/1, 2, 3, 4, 3, 2, 1),
+											new Animation("eat", Res.trex, 30, 2,/**/1, 2, 3, 4, 5, 6, 7, 8),
+											new Animation("chew", Res.trex, 30, 3,/**/0, 1, 2, 3)};
+	public static final ThingType TREX = new ThingType("TREX", Res.trex
+			,new Animating(trex[0], new Rect(Res.trex.pixelCoords), 0, 0, 6, trex)
+			,new Life(10, 10, 2)
+			,new Grounding()
+			,new Attacking(10, 0.05, new AttackType[]{
+					new AttackType("eat", 300, -300, 300, WeaponType.BITE, 2, 1),
+					new AttackType("tailhit", 300, -300, 300, WeaponType.KICK, 2, 2)})
+			,new Following(500.0, 300, ThingType.SARAH)
+			,new WalkAround()
+			,new Physics(50, 300)) {
+
+		public void update(ThingProps t, double delta){
+			if(t.lastAttack != null && "eat".equals(t.lastAttack.name)){
+				if(!t.attacking){
+					t.type.ani.setAnimation(t, "chew", () -> {
+						t.type.ani.setAnimation(t, "stand");
+						t.lastAttack = null;
+					});
+				}
+			} else if(follow.action(t, delta)){//follow
+				if(World.rand.nextInt(100) < 70){//attack
+					attack.attack(t, WeaponType.KICK, null, "", t.target);
+				} else {
+					attack.attack(t, WeaponType.BITE, null, "", t.target);
+				}
+			} else if(t.target == null){
+				walkAround.action(t, delta);//walk around
+			}
+		}
+	};
+//	public static final ThingType BIRD_NORMAL = new ThingType(Res.bird){
+//	public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
+//		return SuperTypes.BIRD.create(world, field, pos, this, 0, 1);
+//	}
+//};
+//public static final ThingType BIRD_RAINBOW = new ThingType(Res.bird){
+//	public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
+//		return SuperTypes.BIRD.create(world, field, pos, this, 2, 0);
+//	}
+//};
+//public static final ThingType BIRD_BLACK = new ThingType(Res.bird){
+//	public Thing create(WorldData world, Vertex field, Vec pos, Object... extraData){
+//		return SuperTypes.BIRD.create(world, field, pos, this, 3, 0);
+//	}
+//};
+	
+	//DEAD THINGS
+										static final Animation[] cloud = {Res.cloud.sfA(0, 0)};
+	public static final ThingType CLOUD = new ThingType("CLOUD", Res.cloud
+			,new Animating(cloud[0], new Rect(Res.cloud.pixelCoords), -1, 0, 1, cloud)
+			,new Physics(1, 1000, true, false, true, false)){
+
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.box = file.createBox().scale(world.random.nextDouble() + 0.5);
+			t.yOffset = 200 + World.rand.nextInt(100);
+
+			if(extraData.length > 0){
+				t.color.set((Color)extraData[0]);
+			}
+		}
+		public void update(ThingProps t, double delta){
+			t.walkingForce = 100;
+		}
+	};
+	
+										static final Animation[] grass = {new Animation("waving", Res.grasstuft, 5, 0, /**/0, 1, 2, 3, 2, 1)};
+	public static final ThingType GRASS = new ThingType("GRASS", Res.grasstuft
+			,new Animating(grass[0], new Rect(Res.grasstuft.pixelCoords), 0, 0, 1, grass)) {
+
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.ani.pos = World.rand.nextInt(t.ani.ani.x.length);
+		}
+	};
+	
+										static final Animation[][] grass_giant = {
+											{Res.grass_giant.sfA(0, 0)},
+											{Res.grass_giant.sfA(0, 1)},
+											{Res.grass_giant.sfA(0, 2)}};
+	public static final ThingType GIANT_GRASS = new ThingType("GIANT_GRASS", Res.grass_giant
+			,new Animating(grass_giant[0][0], new Rect(Res.grass_giant.pixelCoords), 0, 0, 1, grass_giant)) {
+		
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(3);
+		}
+	};
+	
+										static final Animation[][] tree_normal = {
+											{Res.tree.sfA(0, 0)},
+											{Res.tree.sfA(0, 1)},
+											{Res.tree.sfA(0, 2)}};
+										static final Animation[][] tree_fir = {
+											{Res.tree_fir.sfA(0, 0)},
+											{Res.tree_fir.sfA(0, 1)},
+											{Res.tree_fir.sfA(0, 2)}};
+										static final Animation[][] tree_firSnow = {
+											{Res.tree_firSnow.sfA(0, 0)},
+											{Res.tree_firSnow.sfA(0, 1)},
+											{Res.tree_firSnow.sfA(0, 2)}};
+										static final Animation[][] tree_candy = {
+											{Res.tree_candy.sfA(0, 0)}};
+										static final Animation[][] tree_grave = {
+											{Res.tree_grave.sfA(0, 0)},
+											{Res.tree_grave.sfA(0, 1)}};
+										static final Animation[][] tree_palm = {
+											{Res.tree_palm.sfA(0, 0)},
+											{Res.tree_palm.sfA(0, 1)},
+											{Res.tree_palm.sfA(0, 2)}};
+										static final Animation[][] tree_jungle = {
+											{Res.tree_jungle.sfA(0, 0)},
+											{Res.tree_jungle.sfA(0, 1)},
+											{Res.tree_jungle.sfA(0, 2)},
+											{Res.tree_jungle.sfA(0, 3)}};
+	public static final ThingType TREE_NORMAL = new ThingType("TREE_NORMAL", Res.tree
+			,new Animating(tree_normal[0][0], new Rect(Res.tree.pixelCoords), 0, 1, 1, tree_normal)) {
+		
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+			t.box.set(file.createBox().scale(0.5 + world.random.nextDouble()));
+			if(t.behind == 0) t.behind = -1;
+			int stickAmount = World.rand.nextInt(6);
+			for(int i = 0; i < stickAmount; i++)
+				t.fruits.add(ItemType.STICK);
+		}};
+	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.tree_fir ,new Animating(tree_fir[0][0], new Rect(Res.tree_fir.pixelCoords), 0, 1, 1, tree_fir)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+	public static final ThingType TREE_FIR_SNOW = new ThingType("TREE_FIR_SNOW", Res.tree_firSnow ,new Animating(tree_firSnow[0][0], new Rect(Res.tree_firSnow.pixelCoords), 0, 1, 1, tree_firSnow)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+	public static final ThingType TREE_CANDY = new ThingType("TREE_CANDY", Res.tree_candy ,new Animating(tree_candy[0][0], new Rect(Res.tree_candy.pixelCoords), 0, 1, 1, tree_candy)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+	public static final ThingType TREE_GRAVE = new ThingType("TREE_GRAVE", Res.tree_grave ,new Animating(tree_grave[0][0], new Rect(Res.tree_grave.pixelCoords), 0, 1, 1, tree_grave)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.tree_palm ,new Animating(tree_palm[0][0], new Rect(Res.tree_palm.pixelCoords), 0, 1, 1, tree_palm)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.tree_jungle ,new Animating(tree_jungle[0][0], new Rect(Res.tree_jungle.pixelCoords), 0, 1, 1, tree_jungle)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+		
+		
+
+										static final Animation[][] plant_giant = {
+											{Res.plant_giant.sfA(0, 0)},
+											{Res.plant_giant.sfA(0, 1)},
+											{Res.plant_giant.sfA(0, 2)},
+											{Res.plant_giant.sfA(0, 3)}};
+	public static final ThingType GIANT_PLANT = new ThingType("GIANT_PLANT", Res.plant_giant
+			,new Animating(plant_giant[0][0], new Rect(Res.plant_giant.pixelCoords), 0, 0, 1, plant_giant)) {
+		
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+		}
+	};
+
+										static final Animation[][] bush_normal = {
+											{Res.bush_normal.sfA(0, 0)},
+											{Res.bush_normal.sfA(0, 1)},
+											{Res.bush_normal.sfA(0, 2)}};
+										static final Animation[][] bush_jungle = {
+											{Res.bush_jungle.sfA(0, 0)},
+											{Res.bush_jungle.sfA(0, 1)},
+											{Res.bush_jungle.sfA(0, 2)}};
+										static final Animation[][] bush_candy = {
+											{Res.bush_candy.sfA(0, 0)},
+											{Res.bush_candy.sfA(0, 1)},
+											{Res.bush_candy.sfA(0, 2)}};
+	public static final ThingType BUSH_NORMAL = new ThingType("BUSH_NORMAL", Res.bush_normal
+			,new Animating(bush_normal[0][0], new Rect(Res.bush_normal.pixelCoords), 0, 0, 1, bush_normal)) {
+		
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+			t.box.set(file.createBox().scale(0.5 + world.random.nextDouble()));
+			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+			if(t.box.size.y > 80){
+				t.behind = -1;
+			}
+			if(t.type == this && t.ani.ani.y == 1){//not necessary, because the other bushes use this too
+				int berryAmount = 1 + World.rand.nextInt(3);
+				for(int i = 0; i < berryAmount; i++)
+					t.fruits.add(ItemType.BERRY);
+			}
+		}};
+	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.bush_jungle ,new Animating(bush_jungle[0][0], new Rect(Res.bush_jungle.pixelCoords), 0, 0, 1, bush_jungle)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+	public static final ThingType BUSH_CANDY = new ThingType("BUSH_CANDY", Res.bush_candy ,new Animating(bush_candy[0][0], new Rect(Res.bush_candy.pixelCoords), 0, 0, 1, bush_candy)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+		
+
+										static final Animation[][] flower_normal = {
+											{Res.flower_normal.sfA(0, 0)},
+											{Res.flower_normal.sfA(0, 1)},
+											{Res.flower_normal.sfA(0, 2)}};
+										static final Animation[][] flower_candy = {
+											{Res.flower_candy.sfA(0, 0)},
+											{Res.flower_candy.sfA(0, 1)},
+											{Res.flower_candy.sfA(0, 2)},
+											{Res.flower_candy.sfA(0, 3)},
+											{Res.flower_candy.sfA(0, 4)},
+											{Res.flower_candy.sfA(0, 5)}};
+										static final Animation[][] flower_jungle = {
+											{Res.flower_jungle.sfA(0, 0)},
+											{Res.flower_jungle.sfA(0, 1)},
+											{Res.flower_jungle.sfA(0, 2)},
+											{Res.flower_jungle.sfA(0, 3)},
+											{Res.flower_jungle.sfA(0, 4)}};
+	public static final ThingType FLOWER_NORMAL = new ThingType("FLOWER_NORMAL", Res.flower_normal
+			,new Animating(flower_normal[0][0], new Rect(Res.flower_normal.pixelCoords), 0, 0, 1, flower_normal)) {
+
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+		}};
+	public static final ThingType FLOWER_CANDY = new ThingType("FLOWER_CANDY", Res.flower_candy ,new Animating(flower_candy[0][0], new Rect(Res.flower_candy.pixelCoords), 0, 0, 1, flower_candy)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+	public static final ThingType FLOWER_JUNGLE = new ThingType("FLOWER_JUNGLE", Res.flower_jungle ,new Animating(flower_jungle[0][0], new Rect(Res.flower_jungle.pixelCoords), 0, 0, 1, flower_jungle)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+			
+
+
+										static final Animation[][] pyramide = {
+											{Res.pyramide.sfA(0, 0)},
+											{Res.pyramide.sfA(0, 1)},
+											{Res.pyramide.sfA(0, 2)},
+											{Res.pyramide.sfA(0, 3)}};
+	public static final ThingType PYRAMID = new ThingType("PYRAMID", Res.pyramide ,new Animating(pyramide[0][0], new Rect(Res.pyramide.pixelCoords), -1, 0, 1, pyramide)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+		}};
+		
+										static final Animation[][] house = {
+											{Res.house.sfA(0, 0)},
+											{Res.house.sfA(0, 1)},
+											{Res.house.sfA(0, 2)},
+											{Res.house.sfA(0, 3)},
+											{Res.house.sfA(0, 4)},
+											{Res.house.sfA(0, 5)}};
+	public static final ThingType HOUSE = new ThingType("HOUSE", Res.house ,new Animating(house[0][0], new Rect(Res.house.pixelCoords), -1, 0, 1, house)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+		}};
+										static final Animation[][] townobject = {
+											{Res.townobject.sfA(0, 0)},
+											{Res.townobject.sfA(0, 1)},
+											{Res.townobject.sfA(0, 2)},
+											{Res.townobject.sfA(0, 3)},
+											{Res.townobject.sfA(0, 4)}};
+	public static final ThingType TOWN_OBJECT = new ThingType("TOWN_OBJECT", Res.townobject ,new Animating(townobject[0][0], new Rect(Res.townobject.pixelCoords), -1, 0, 1, townobject)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+		}};
+										static final Animation[][] bamboo = {
+											{Res.bamboo.sfA(0, 0)},
+											{Res.bamboo.sfA(0, 1)},
+											{Res.bamboo.sfA(0, 2)},
+											{Res.bamboo.sfA(0, 3)}};
+	public static final ThingType BAMBOO = new ThingType("BAMBOO", Res.bamboo ,new Animating(bamboo[0][0], new Rect(Res.bamboo.pixelCoords), 0, 0, 1, bamboo)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+			t.box.set(file.createBox().scale(0.5 + world.random.nextDouble()));
+			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+		}};
+										static final Animation[][] plant_jungle = {
+											{Res.plant_jungle.sfA(0, 0)},
+											{Res.plant_jungle.sfA(0, 1)},
+											{Res.plant_jungle.sfA(0, 2)},
+											{Res.plant_jungle.sfA(0, 3)},
+											{Res.plant_jungle.sfA(0, 4)}};
+	public static final ThingType FERN = new ThingType("FERN", Res.plant_jungle ,new Animating(plant_jungle[0][0], new Rect(Res.plant_jungle.pixelCoords), 0, 0, 1, plant_jungle)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+			t.box.set(file.createBox().scale(0.5 + world.random.nextDouble()));
+			t.behind = World.rand.nextBoolean() ? 1 : -1;
+		}};
+										static final Animation[][] cactus = {
+											{Res.cactus.sfA(0, 0)},
+											{Res.cactus.sfA(0, 1)},
+											{Res.cactus.sfA(0, 2)}};
+	public static final ThingType CACTUS = new ThingType("CACTUS", Res.cactus ,new Animating(cactus[0][0], new Rect(Res.cactus.pixelCoords), 0, 0, 1, cactus)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+			t.box.set(file.createBox().scale(0.5 + world.random.nextDouble()));
+			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+		}};
+										static final Animation[][] grave = {
+											{Res.grave.sfA(0, 0)},
+											{Res.grave.sfA(0, 1)},
+											{Res.grave.sfA(0, 2)},
+											{Res.grave.sfA(0, 3)},
+											{Res.grave.sfA(0, 4)},
+											{Res.grave.sfA(0, 5)},
+											{Res.grave.sfA(0, 6)}};
+	public static final ThingType GRAVE = new ThingType("GRAVE", Res.grave ,new Animating(grave[0][0], new Rect(Res.grave.pixelCoords), 0, 0, 1, grave)){
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+		}};
+		
+	//OTHER THINGS
+										static final Animation[] item = {Res.items_world.sfA(0, 0)};
+	public static final ThingType ITEM = new ThingType("ITEM", Res.items_world
+			,new Animating(item[0], Res.items_world.createBox(), 0, 0, 1, item)
+			,new Physics(1, 1)
+			,new Grounding()) {
+		public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){
+			ItemType type = (ItemType)extraData[0];
+			t.itemBeing = type;
+			t.aniSet = World.rand.nextInt(ani.aniCount);
+		}};
+										static final Animation[] coin = {Res.coin.sfA(0, 0)};
+	public static final ThingType COIN = new ThingType("COIN", Res.coin,
+			new Animating(coin[0], Res.coin.createBox(), 0, 0, 1, coin),
+			new Physics(1, 1),
+			new Grounding());
+	public static final ThingType DUMMY = new ThingType("DUMMY", Texture.empty,
+			new Animating(Texture.empty.sfA(0, 0), new Rect(), 0, 0, 0));
+	
+	public static ThingType[] types = tempList.toArray(new ThingType[tempList.size()]);
+	
+	public String name;
+	public int ordinal;
+	
+	public TexAtlas file;//1
+	public Animating ani;//2
+	public Physics physics;//3
+	public Attacking attack;//4
+	public Grounding ground;//5
+	public Life life;//6
+	public Inventory inv;//7
+	public Magic magic;//8
+	public Riding ride;//9
+	public Following follow;//10
+	public Speaking speak;//11
+	public AvatarControl avatar;//12
+	public FlyAround flyAround;//13
+	public WalkAround walkAround;//14
+	
+	AiPlugin[] plugins;
+	
+	ThingType(String name, TexAtlas file, AiPlugin... plugins){
+		this.name = name;
 		this.file = file;
+		this.plugins = new AiPlugin[14];
+		this.ordinal = index++;
+		tempList.add(this);
+		
+		for(AiPlugin plugin : plugins){
+			if(plugin instanceof Animating){
+				ani = (Animating)plugin;
+			} else if(plugin instanceof Physics){
+				physics = (Physics)plugin;
+			} else if(plugin instanceof Grounding){
+				ground = (Grounding)plugin;
+			} else if(plugin instanceof Life){
+				life = (Life)plugin;
+			} else if(plugin instanceof FlyAround){
+				flyAround = (FlyAround)plugin;
+			} else if(plugin instanceof WalkAround){
+				walkAround = (WalkAround)plugin;
+			} else if(plugin instanceof Attacking){
+				attack = (Attacking)plugin;
+			} else if(plugin instanceof Inventory){
+				inv = (Inventory)plugin;
+			} else if(plugin instanceof Magic){
+				magic = (Magic)plugin;
+			} else if(plugin instanceof Riding){
+				ride = (Riding)plugin;
+			} else if(plugin instanceof Following){
+				follow = (Following)plugin;
+			} else if(plugin instanceof Speaking){
+				speak = (Speaking)plugin;
+			} else if(plugin instanceof AvatarControl){
+				avatar = (AvatarControl)plugin;
+			}
+			//...
+		}
+		int i = 0;
+		
+		this.plugins[i++] = physics;//update position and velocity and "where"
+		this.plugins[i++] = ani;//update the animator
+		this.plugins[i++] = inv;//collect coins and do item coolDown
+		this.plugins[i++] = speak;//updates the thoughbubble's position
+		this.plugins[i++] = life;//removes the thing, if live is below zero
+		this.plugins[i++] = attack;//attack cooldown
+		
+		//no update
+		this.plugins[i++] = ride;
+		this.plugins[i++] = avatar;
+		this.plugins[i++] = follow;
+		this.plugins[i++] = flyAround;
+		this.plugins[i++] = walkAround;
+		this.plugins[i++] = ground;
+		this.plugins[i++] = magic;
+		//TODO go on
 	}
 	
-	public abstract Thing create(WorldData world, Vertex field, Vec pos, Object... extraData);
+	public void update(ThingProps t, double delta){}
 	
-	public Thing create(Thing t, Column c){
-		t.createAi();
-		c.add(t);
-		return t;
+	/**
+	 * Set all the instance properties of the thing
+	 * @param t
+	 * @param world
+	 * @param field
+	 * @param pos
+	 */
+	public void setup(ThingProps t, WorldData world, Vertex field, Vec pos, Object... extraData){}
+	
+	public static ThingType valueOf(String name){
+		for(ThingType type : types){
+			if(type.name.equals(name)){
+				return type;
+			}
+		}
+		return null;
 	}
 }

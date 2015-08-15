@@ -1,4 +1,4 @@
-package world.things.aiPlugins;
+package world.things.newPlugins;
 
 import main.Main;
 import menu.Menu.Menus;
@@ -18,10 +18,7 @@ import effects.Effect;
 
 public  class AvatarControl extends AiPlugin implements Listener{
 
-	public static final float aWalking = 1000;
-	public static final float aSwimming = 500;
-	
-	public void update(ThingProps t, double delta) {
+	public boolean action(ThingProps t, double delta) {
 		double a = 0;
 		switch(t.where){
 			case GROUND: a = t.accWalking; break;
@@ -52,6 +49,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			t.selectedItem += t.itemStacks.length;
 		}
 		t.selectedItem %= t.itemStacks.length;
+		return true;
 	}
 
 	public boolean pressed(int button, Vec mousePos) {
@@ -141,10 +139,6 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		}
 		return false;
 	}
-
-	public String save() {return "";}
-	public void load(String data){}
-
 	public boolean keyReleased(int key) {
 		return false;
 	}

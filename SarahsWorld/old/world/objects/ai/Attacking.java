@@ -61,7 +61,7 @@ public class Attacking extends AiPlugin {
 			
 			t.ani.setTex(texs[item.weaponType.ordinal()], () -> {
 				for(int i = 0; i < targets.length; i++){
-					if(t.pos.p.minus(targets[i].pos.p).lengthSquare() <= radiusSq){
+					if(t.pos.minus(targets[i].pos.p).lengthSquare() <= radiusSq){
 						targets[i].life.getHit(t, damage[i]);
 					}
 				}

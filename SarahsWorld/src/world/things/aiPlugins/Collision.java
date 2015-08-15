@@ -26,7 +26,7 @@ public class Collision extends AiPlugin{
 					lastVec.set(c.xReal, c.vertices[c.collisionVec].y);
 					currentVec = lastVec.copy();
 				} else {
-					boolean collision = UsefulF.intersectionLines(t.pos.p, t.pos.p.copy().shift(t.vel.v.copy().shift(t.acc.a, delta), delta), lastVec, currentVec.set(c.xReal, c.vertices[c.collisionVec].y), intersection);
+					boolean collision = UsefulF.intersectionLines(t.pos.p, t.pos.copy().shift(t.vel.v.copy().shift(t.acc.a, delta), delta), lastVec, currentVec.set(c.xReal, c.vertices[c.collisionVec].y), intersection);
 					
 					if(collision && intersection.y > finalIntersection.y){
 						finalIntersection.set(intersection);
@@ -36,7 +36,7 @@ public class Collision extends AiPlugin{
 				}
 			};
 			if(f != null){
-				t.pos.p.set(finalIntersection);
+				t.pos.set(finalIntersection);
 
 				if(t.friction != null && !t.friction.swimming){
 					t.ground.land();

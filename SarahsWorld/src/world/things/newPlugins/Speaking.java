@@ -1,4 +1,4 @@
-package world.things.aiPlugins;
+package world.things.newPlugins;
 
 import main.Main;
 import menu.Dialog;
@@ -18,71 +18,57 @@ import util.Anim.Value;
 import util.Color;
 import util.math.UsefulF;
 import util.math.Vec;
+import world.World;
 import world.things.AiPlugin;
-import world.things.Thing;
+import world.things.ThingProps;
 import core.Window;
 import effects.Effect;
 
 public class Speaking extends AiPlugin {
 	
-	public String currentSpeech = "";
-	public String[] answers;
-	public ThoughtBubble tb;
-	boolean speaking;
-	public ActiveQuest quest;
-
-	public Speaking(Thing thing) {
-		super(thing);
-		this.tb = new ThoughtBubble(thing);
+	public void setup(ThingProps t){
+		t.tb = new ThoughtBubble(t);
 	}
 	
-	public void say(boolean thoughtBubble, ActiveQuest quest, String what, String[] answers){
-		this.quest = quest;
-		this.currentSpeech = what;
-		this.answers = answers;
-		if(!thoughtBubble && t.pos.minus(Main.world.avatar.pos.p).lengthSquare() < 90000){
-			speaking = true;
+	public void say(ThingProps t, boolean thoughtBubble, ActiveQuest quest, String what, String[] answers){
+		t.quest = quest;
+		t.currentSpeech = what;
+		t.answers = answers;
+		if(!thoughtBubble && t.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000){
+			t.speaking = true;
 			String[] realAnswers = new String[answers.length];
 			for(int i = 0; i < answers.length; i++){
-				realAnswers[i] = Strings.get(answers[i], t.rand);
+				realAnswers[i] = Strings.get(answers[i], World.rand);
 			}
-			((Dialog)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(what, t.rand), realAnswers);
+			((Dialog)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(what, World.rand), realAnswers);
 			Menus.DIALOG.ani = ((Dialog)Menus.DIALOG.elements[0]).ani;
 			Main.menu.setMenu(Menus.DIALOG);
 		}
 	}
 
-	public boolean action(double delta) {
-		if(t.pos.minus(Main.world.avatar.pos.p).lengthSquare() < 90000 && !speaking && currentSpeech != ""){
+	public void update(ThingProps t, double delta) {
+		if(t.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000 && !t.speaking && "".equals(t.currentSpeech)){
 			if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
 				Main.menu.setMenu(Menus.DIALOG);
 			} else {
-				tb.popUp();
+				t.tb.popUp();
 			}
-		} else if(t.pos.minus(Main.world.avatar.pos.p).lengthSquare() > 90000){
-			if(tb.living) tb.goAway();
+		} else if(t.pos.minus(Main.world.avatar.pos).lengthSquare() > 90000){
+			if(t.tb.living) t.tb.goAway();
 			if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
 				Main.menu.setMenu(Menus.EMPTY);
-				speaking = false;
+				t.speaking = false;
 			}
 		}
-		return false;
 	}
 
-	public String save() {
-		return null;
-	}
-
-	public void load(String save) {
-		
-	}
-	public void remove(){
-		if(tb.living){
-			tb.goAway();
+	public void remove(ThingProps t){
+		if(t.tb.living){
+			t.tb.goAway();
 		}
 		if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
 			Main.menu.setMenu(Menus.EMPTY);
-			speaking = false;
+			t.speaking = false;
 		}
 	}
 	public static Texture bubble1 = new Texture("res/particles/Bubble.png", 0, 0);
@@ -92,17 +78,17 @@ public class Speaking extends AiPlugin {
 	public static double[] positions = {0.1, 0.01, 0.25, 0.0625, 0.45, 0.2025, 0.65, 0.44225};
 	public class ThoughtBubble implements Effect {
 		public int tex;
-		public Thing speaker;
+		public ThingProps speaker;
 		public Anim ani;
 		public Vec relPos, pos, vel = new Vec();
 		double rWobble = 0.8;
 		Value[] rs = {new Value(), new Value(), new Value(), new Value(), new Value()};
 		
-		public ThoughtBubble(Thing speaker){
+		public ThoughtBubble(ThingProps speaker){
 			this.speaker = speaker;
 			relPos = new Vec(50, 75);
 			pos = speaker.pos.copy();
-			tex = speaker.rand.nextInt(3);
+			tex = World.rand.nextInt(3);
 			Func f = (t) -> {
 				if(t > 0) return Math.sin(Math.PI*t)*rWobble + t;
 				else return -1;
@@ -147,7 +133,7 @@ public class Speaking extends AiPlugin {
 		}
 
 		public void render() {
-			Vec shift = pos.copy().shift(relPos).minus(speaker.pos.p);
+			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
 			bubble1.file.bind();
 			Color.WHITE.bind();
 			GL11.glBegin(GL11.GL_QUADS);
@@ -189,12 +175,12 @@ public class Speaking extends AiPlugin {
 			if(pressed && contains(mousePos)){
 				pressed = false;
 				goAway();
-				speaker.speak.speaking = true;
-				String[] realAnswers = new String[answers.length];
-				for(int i = 0; i < answers.length; i++){
-					realAnswers[i] = Strings.get(answers[i], t.rand);
+				speaker.speaking = true;
+				String[] realAnswers = new String[speaker.answers.length];
+				for(int i = 0; i < speaker.answers.length; i++){
+					realAnswers[i] = Strings.get(speaker.answers[i], World.rand);
 				}
-				((Dialog)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(currentSpeech, t.rand), realAnswers);
+				((Dialog)Menus.DIALOG.elements[0]).setup(speaker.quest, speaker, Strings.get(speaker.currentSpeech, World.rand), realAnswers);
 				Menus.DIALOG.ani = ((Dialog)Menus.DIALOG.elements[0]).ani;
 				Main.menu.setMenu(Menus.DIALOG);
 				return true;
@@ -205,7 +191,7 @@ public class Speaking extends AiPlugin {
 		boolean pressed;
 		
 		public boolean contains(Vec mousePos){
-			Vec shift = pos.copy().shift(relPos).minus(speaker.pos.p);
+			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
 			return UsefulF.contains(
 					mousePos.x + Main.world.avatar.pos.x - Window.WIDTH_HALF, mousePos.y + Main.world.avatar.pos.y - Window.HEIGHT_HALF,
 					bubble2.pixelCoords[0]*bubbleR + speaker.pos.x + shift.x,
@@ -223,6 +209,10 @@ public class Speaking extends AiPlugin {
 		}
 
 		public boolean keyPressed(int key) {
+			return false;
+		}
+
+		public boolean keyReleased(int key) {
 			return false;
 		}
 		

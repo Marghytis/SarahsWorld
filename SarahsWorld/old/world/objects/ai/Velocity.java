@@ -17,7 +17,7 @@ public class Velocity extends AiPlugin{
 	}
 	
 	public boolean action(double delta) {
-		t.pos.p.shift(v, delta);
+		t.pos.shift(v, delta);
 		return false;
 	}
 

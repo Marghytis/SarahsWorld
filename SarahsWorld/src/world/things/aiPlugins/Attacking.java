@@ -67,7 +67,7 @@ public class Attacking extends AiPlugin {
 			t.ani.setTex(texs[weapontype]);
 			Time.schedule(texs[weapontype].x.length*texs[weapontype].frameTime, () -> {
 				for(int i = 0; i < targets.length; i++){
-					if(t.pos.p.minus(targets[i].pos.p).lengthSquare() <= radiusSq){
+					if(t.pos.minus(targets[i].pos.p).lengthSquare() <= radiusSq){
 						targets[i].life.getHit(t, damage[i]);
 					}
 				}
@@ -78,7 +78,7 @@ public class Attacking extends AiPlugin {
 	}
 	
 	public int calculateDamage(Thing target, ItemType item, double strength){
-		if((t.type == ThingType.SARAH && target.type == ThingType.SARAH)){// || target.pos.p.minus(t.pos.p).lengthSquare() > 10000
+		if((t.type == ThingType.SARAH && target.type == ThingType.SARAH)){// || target.pos.minus(t.pos.p).lengthSquare() > 10000
 			return 0;
 		}
 		double crit = t.rand.nextDouble() > item.critProb + critProb ? 1 : item.crit;

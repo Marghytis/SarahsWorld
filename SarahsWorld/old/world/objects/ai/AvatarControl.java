@@ -87,7 +87,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 //		int hitThingLoc = -3;
 //		Thing[] hitThing = new Thing[1];
 //		for(List<Thing> list : Main.world.objects) for(Thing t : list){
-//			if(t.ani.behind > hitThingLoc && t.life != null && !t.equals(this) && worldPos.containedBy(t.ani.box.pos.x + t.pos.p.x, t.ani.box.pos.y + t.pos.p.y, t.ani.box.size.x, t.ani.box.size.y)){
+//			if(t.ani.behind > hitThingLoc && t.life != null && !t.equals(this) && worldPos.containedBy(t.ani.box.pos.x + t.pos.x, t.ani.box.pos.y + t.pos.y, t.ani.box.size.x, t.ani.box.size.y)){
 //				hitThing[0] = t;
 //				hitThingLoc = t.ani.behind;
 //			}

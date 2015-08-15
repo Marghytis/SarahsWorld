@@ -29,9 +29,9 @@ public class Following extends AiPlugin{
 				double acc = 0;
 				if(target != null){
 					t.ground.sprint = true;
-					if(target.pos.p.x - (target.ani.box.size.x/2) > t.pos.p.x){
+					if(target.pos.x - (target.ani.box.size.x/2) > t.pos.x){
 						acc += a;
-					} else if(target.pos.p.x + (target.ani.box.size.x/2) < t.pos.p.x){
+					} else if(target.pos.x + (target.ani.box.size.x/2) < t.pos.x){
 						acc -= a;
 					} else {
 						t.ground.sprint = false;
@@ -48,12 +48,12 @@ public class Following extends AiPlugin{
 	}
 	
 	public void findTarget(){
-		if(target == null || target.pos.p.minus(t.pos.p).lengthSquare() > maxDistanceSquare){
+		if(target == null || target.pos.minus(t.pos.p).lengthSquare() > maxDistanceSquare){
 			Thing closest = null;
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
 				for(Thing t : Main.world.objects[targetClasses[type].ordinal()]){
-					double distSqu = this.t.pos.p.minus(t.pos.p).lengthSquare();
+					double distSqu = this.t.pos.minus(t.pos.p).lengthSquare();
 					if(distSqu < distanceSquare){
 						closest = t;
 						distanceSquare = distSqu;

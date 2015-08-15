@@ -1,11 +1,10 @@
-package world.things.aiPlugins;
+package world.things.newPlugins;
 
 import item.ItemStack;
 import main.Main;
 import util.math.Vec;
 import world.World;
 import world.things.AiPlugin;
-import world.things.Thing;
 import world.things.ThingProps;
 import world.things.ThingType;
 import world.things.newPlugins.Physics.Where;
@@ -19,34 +18,37 @@ public class Life extends AiPlugin {
 	
 	static double coolDownStart = 0.5;
 	
-	public int coins; //:P
+	public int startCoins; //:P
 	public int maxHealth;
 	public int armor;
 	
-	public Life(int health, int coins){
+	public Life(int health, int coins, int armor){
 		this.maxHealth = health;
-		this.coins = coins;
+		this.startCoins = coins;
+		this.armor = armor;
+	}
+	
+	public void setup(ThingProps t){
+		t.health = maxHealth;
+		t.coins = startCoins;
+		t.armor = armor;
 	}
 
-	public boolean update(ThingProps t, double delta) {
+	public void update(ThingProps t, double delta) {
 		if(t.health < 0 && !t.immortal){
 			if(t.itemStacks != null){
 				for(ItemStack item : t.itemStacks){
 					for(int i = 0; i < item.count; i++){
-						ThingType.ITEM.create(Main.world.data, t.link, t.pos.copy(), item.item);
+						new ThingProps(ThingType.ITEM, Main.world.data, t.link, t.pos.copy(), item.item);
 					}
 				}
-				for(int i = 0; i < t.coins; i++){
-					ThingType.COIN.create(Main.world.data, t.link, t.pos.copy(), new Vec(World.rand.nextInt(401)-200, 400));
-				}
 			}
-			for(int i = 0; i < coins; i++){
-				ThingType.COIN.create(Main.world.data, t.link, t.pos.copy(), new Vec(World.rand.nextInt(401)-200, 400));
+			for(int i = 0; i < t.coins; i++){
+				new ThingProps(ThingType.COIN, Main.world.data, t.link, t.pos.copy(), new Vec(World.rand.nextInt(401)-200, 400));
 			}
 			Main.world.window.deletionRequested.add(t);
 			Main.world.window.effects.add(new DeathDust(t.pos));
 		}
-		return false;
 	}
 	
 	public boolean getHit(ThingProps tgt, ThingProps src, int damage){
@@ -60,13 +62,4 @@ public class Life extends AiPlugin {
 		}
 		return false;
 	}
-
-	public String save() {
-		return null;
-	}
-
-	public void load(String save) {
-		
-	}
-
 }

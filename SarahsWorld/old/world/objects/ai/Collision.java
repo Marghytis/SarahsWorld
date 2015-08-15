@@ -19,7 +19,7 @@ public class Collision extends AiPlugin{
 			Vec finalIntersection = new Vec(Integer.MIN_VALUE, Integer.MIN_VALUE);
 			Main.world.columns.forEach((c) -> {
 				Vec intersection = new Vec();
-				boolean collision = UsefulF.intersectionLines(t.pos.p, t.pos.p.copy().shift(t.vel.v, delta), c.topLeft.p, c.topRight.p, intersection);
+				boolean collision = UsefulF.intersectionLines(t.pos.p, t.pos.copy().shift(t.vel.v, delta), c.topLeft.p, c.topRight.p, intersection);
 				
 				if(collision && intersection.y > finalIntersection.y){
 					finalIntersection.set(intersection);
@@ -28,7 +28,7 @@ public class Collision extends AiPlugin{
 			});
 			if(f[0] != null){
 				
-				t.pos.p.set(finalIntersection);
+				t.pos.set(finalIntersection);
 				
 				t.ground.speed = -t.vel.v.dot(f[0].getTopLine().size)/f[0].getTopLine().size.length();
 				t.vel.v.set(0, 0);

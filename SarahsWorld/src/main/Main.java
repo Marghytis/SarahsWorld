@@ -53,7 +53,7 @@ public class Main {
 
 		Listener.listeners.clear();
 		Listener.listeners.add(menu);
-		Listener.listeners.add(world.avatar.avatar);
+		Listener.listeners.add(world.avatar.type.avatar);
 	}
 	
 }

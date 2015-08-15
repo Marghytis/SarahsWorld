@@ -26,7 +26,7 @@ public class Life extends AiPlugin {
 	public boolean getHit(Thing src, int damage){
 		if(cooldown <= 0 && damage > 0){
 			if(t.ground != null && t.ground.g){
-				t.ground.leaveGround(t.pos.p.x > src.pos.p.x ? 200 : -200, 300);
+				t.ground.leaveGround(t.pos.x > src.pos.x ? 200 : -200, 300);
 			}
 			health -= damage;
 			cooldown = coolDownStart;

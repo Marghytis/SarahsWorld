@@ -74,7 +74,7 @@ public class World implements Updater, Renderer {
 
 	public boolean update(double delta) {
 		//WORLD
-		int avatarPosIndex = (int)avatar.pos.p.x/WorldField.width;
+		int avatarPosIndex = (int)avatar.pos.x/WorldField.width;
 		
 		container.expandTo(avatarPosIndex - (columns.count/2));
 		container.expandTo(avatarPosIndex + (columns.count/2));
@@ -88,7 +88,7 @@ public class World implements Updater, Renderer {
 		deletionRequested.forEach((o) -> remove(o));
 		deletionRequested.clear();
 		forEach((t) -> {
-			if(t.pos.p.x < xR && t.pos.p.x > xL) t.update(delta);
+			if(t.pos.x < xR && t.pos.x > xL) t.update(delta);
 		});
 		return false;
 	}
@@ -98,7 +98,7 @@ public class World implements Updater, Renderer {
 		GL11.glLoadIdentity();
 		GL11.glClearColor(clear.r, clear.g, clear.b, clear.a);
 		
-		GL11.glTranslated(Window.WIDTH/2-avatar.pos.p.x, Window.HEIGHT/2-avatar.pos.p.y, 0);
+		GL11.glTranslated(Window.WIDTH/2-avatar.pos.x, Window.HEIGHT/2-avatar.pos.y, 0);
 		
 		//Things in the back
 		draw((t) -> t.ani.behind == -1);
@@ -156,7 +156,7 @@ public class World implements Updater, Renderer {
 	public Thing[] livingsAt(Vec loc){
 		List<Thing> things = new ArrayList<>();
 		for(List<Thing> list : Main.world.objects) for(Thing t : list){
-			if(t.life != null && !t.equals(this) && loc.containedBy(t.ani.box.pos.x + t.pos.p.x, t.ani.box.pos.y + t.pos.p.y, t.ani.box.size.x, t.ani.box.size.y)){
+			if(t.life != null && !t.equals(this) && loc.containedBy(t.ani.box.pos.x + t.pos.x, t.ani.box.pos.y + t.pos.y, t.ani.box.size.x, t.ani.box.size.y)){
 				things.add(t);
 			}
 		}

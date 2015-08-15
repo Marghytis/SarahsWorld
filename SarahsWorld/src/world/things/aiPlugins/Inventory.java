@@ -46,7 +46,7 @@ public class Inventory extends AiPlugin{
 		}
 		for(Thing t = Main.world.window.leftEnd.things[ThingType.COIN.ordinal()]; t != null && t !=  Main.world.window.rightEnd.things[ThingType.COIN.ordinal()]; t = t.right){
 			//TODO endless loop
-			if(t.type != ThingType.DUMMY && t.pos.p.minus(this.t.pos.p).lengthSquare() < 1000){
+			if(t.type != ThingType.DUMMY && t.pos.minus(this.t.pos.p).lengthSquare() < 1000){
 				Main.world.window.deletionRequested.add(t);
 				coins++;
 				Res.coinSound.play();

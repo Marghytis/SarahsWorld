@@ -22,7 +22,7 @@ import util.TrueTypeFont2;
 import util.math.Graph;
 import util.math.UsefulF;
 import util.math.Vec;
-import world.things.Thing;
+import world.things.ThingProps;
 import core.Window;
 
 public class Dialog extends Element {
@@ -38,7 +38,7 @@ public class Dialog extends Element {
 	public static double rDefault = 150, animationTime = 2;
 
 	public ActiveQuest quest;
-	public Thing other;
+	public ThingProps other;
 	public String[] text1;
 	public String[] answers;
 	
@@ -53,7 +53,7 @@ public class Dialog extends Element {
 		super(0, 0, 1, 1, 0, 0, 0, 0, null, null);
 	}
 	
-	public void setup(ActiveQuest quest, Thing other, String text1, String[] answers){
+	public void setup(ActiveQuest quest, ThingProps other, String text1, String[] answers){
 		this.quest = quest;
 		this.other = other;
 		this.text1 = text1.split("\\|");
@@ -75,7 +75,7 @@ public class Dialog extends Element {
 		}
 		bubbleWidth += 40;
 		relPos = new Vec(rDefault, rDefault);
-		pos = other.pos.p.copy();
+		pos = other.pos.copy();
 		
 		//Animation
 		drawAngle = new Value();
@@ -101,7 +101,7 @@ public class Dialog extends Element {
 	
 	public void update(double delta){
 		
-		Vec shift = other.pos.p.minus(pos);
+		Vec shift = other.pos.minus(pos);
 		double speakerMovement = shift.lengthSquare();
 		if(speakerMovement > 0.1){
 			vel.shift(shift.setLength(speakerMovement*delta/10));
@@ -115,21 +115,21 @@ public class Dialog extends Element {
 	Texture corner = new Texture("res/menu/SpeechBubbleCorner.png", 0, 0);
 	public void render(){
 		GL11.glPushMatrix();
-		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.p.x, Window.HEIGHT_HALF - Main.world.avatar.pos.p.y, 0);
+		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.x, Window.HEIGHT_HALF - Main.world.avatar.pos.y, 0);
 		
 		//Speech bubble
-		Vec shift = pos.copy().shift(relPos).minus(other.pos.p);
+		Vec shift = pos.copy().shift(relPos).minus(other.pos);
 		if(bubbleHeightR.v > 0){
 			corner.file.bind();
-			double x = other.pos.p.x + shift.x*1;
-			double y = other.pos.p.y + shift.y*1 + 60;
+			double x = other.pos.x + shift.x*1;
+			double y = other.pos.y + shift.y*1 + 60;
 			render(x - (bubbleWidth/2), y, x + (bubbleWidth/2), y + bubbleHeightR.v*bubbleHeight, corner);
 		}
 		if(bubbleHeightR.v > 0.9){
 			TexFile.bindNone();
 			double y = bubbleHeight/2 + (text1.length/2*line);
 			for(int i = 0; i < text1.length; i++){
-				font.drawString((int)(other.pos.p.x + shift.x - (width1[i]/2)), (float)(other.pos.p.y + shift.y + y - fontHeightHalf + 60), text1[i], Color.WHITE);
+				font.drawString((int)(other.pos.x + shift.x - (width1[i]/2)), (float)(other.pos.y + shift.y + y - fontHeightHalf + 60), text1[i], Color.WHITE);
 				y -= line;
 			}
 		}
@@ -141,8 +141,8 @@ public class Dialog extends Element {
 		double rT = connection.w/2, maxAngle = -Math.PI*0.5, startAngle = maxAngle*drawAngle.v;
 		for(double angle = startAngle, texY = drawAngle.v; angle >= maxAngle; angle -= Math.PI/100, texY += 0.02){
 			Graph.unitCircle2.xy(graph, angle);
-			double xM = other.pos.p.x + shift.x*graph.x;
-			double yM = other.pos.p.y + shift.y*graph.y + 60;
+			double xM = other.pos.x + shift.x*graph.x;
+			double yM = other.pos.y + shift.y*graph.y + 60;
 			double dx = rT*Math.cos(angle);
 			double dy = rT*Math.sin(angle);
 
@@ -206,7 +206,7 @@ public class Dialog extends Element {
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){
 		for(int i = 0; i < answers.length; i++){
 			if(UsefulF.contains(mousePos.xInt(), mousePos.yInt(), Window.WIDTH_HALF + answersTex.pixelCoords[0], ys[i], Window.WIDTH_HALF + answersTex.pixelCoords[2], ys[i] + Res.menuFont.getHeight())){
-				other.speak.currentSpeech = "";
+				other.currentSpeech = "";
 				quest.onAnswer(i);
 				Main.menu.setLast();
 			}

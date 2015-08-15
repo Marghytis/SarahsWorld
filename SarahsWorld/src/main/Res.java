@@ -86,6 +86,6 @@ public class Res {
 	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 35), true);
 	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);
 
-	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);
+//	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);
 	public static final Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.wav", null);
 }

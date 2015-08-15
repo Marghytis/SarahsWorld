@@ -5,26 +5,33 @@ import world.things.AiPlugin;
 import world.things.Thing;
 
 public class Position extends AiPlugin {
-
-	public Vec p;
+	
+	public static final String recon = "Pos";
 	
 	public Position(Thing t, Vec pos){
 		super(t);
-		this.p = pos;
+		super.recon = recon;
 	}
 	
-	public boolean action(double delta) {
-		return false;
-	}
+	public class Pos extends AiPart {
+		public Vec p;
+		
+		public Pos(Vec pos){
+			this.p = pos;
+		}
 
-	public String save() {
-		return p.x + s + p.y;
-	}
+		public boolean action(double delta) {
+			return false;
+		}
 
-	public void load(String data) {
-		String[] coords = data.split(s);
-		p.x = Double.parseDouble(coords[0]);
-		p.y = Double.parseDouble(coords[1]);
-	}
+		public String save() {
+			return p.x + s + p.y;
+		}
 
+		public void load(String data) {
+			String[] coords = data.split(s);
+			p.x = Double.parseDouble(coords[0]);
+			p.y = Double.parseDouble(coords[1]);
+		}
+	}
 }

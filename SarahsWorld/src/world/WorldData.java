@@ -9,13 +9,13 @@ import java.util.Random;
 import quest.ActiveQuest;
 import util.math.Vec;
 import world.generation.Biome;
-import world.things.Thing;
+import world.things.ThingProps;
 import world.things.ThingType;
 import data.IndexBuffer;
 
 
 public class WorldData {
-	public Random random = new Random();
+	public Random random = World.rand;
 	public Column mostRight, mostLeft;
 	public World world;
 	
@@ -28,8 +28,8 @@ public class WorldData {
 		this.world = world;
 	}
 	@Deprecated //too expensive
-	public void add(Thing t){
-		int xIndex = t.pos.p.xInt()/(int)Column.step;//I know, the middle one has the things of two areas
+	public void add(ThingProps t){
+		int xIndex = t.pos.xInt()/(int)Column.step;//I know, the middle one has the things of two areas
 		get(xIndex).add(t);
 	}
 	
@@ -44,7 +44,7 @@ public class WorldData {
 		mostLeft.left = l;
 		mostLeft = l;
 		for(int i = 0; i < l.things.length; i++){
-			Thing mostleftThing = l.right.things[i];
+			ThingProps mostleftThing = l.right.things[i];
 			while(mostleftThing.left != null) mostleftThing = mostleftThing.left;
 			mostleftThing.left = l.things[i];
 			l.things[i].right = mostleftThing;
@@ -75,7 +75,7 @@ public class WorldData {
 		public static final double step = 20;
 		public Column left, right;
 		public Vertex[] vertices;
-		public Thing[] things;//just dummies
+		public ThingProps[] things;//just dummies
 		public int xIndex;
 		public double xReal;
 		public int collisionVec;
@@ -92,9 +92,9 @@ public class WorldData {
 			}
 			collisionVec = getCollisionVec();
 			collisionVecWater = getCollisionVecWater();
-			this.things = new Thing[ThingType.values().length];
+			this.things = new ThingProps[ThingType.types.length];
 			for(int i = 0; i < things.length; i++){
-				things[i] = ThingType.DUMMY.create(WorldData.this, vertices[0], null, i);
+				things[i] = new ThingProps(ThingType.DUMMY, WorldData.this, vertices[0], null, i);
 			}
 		}
 		
@@ -127,9 +127,9 @@ public class WorldData {
 		 * Adds it to the left of the dummy
 		 * @param t
 		 */
-		public void add(Thing t){
+		public void add(ThingProps t){
 			t.disconnect();
-			int o = t.type.ordinal();
+			int o = t.type.ordinal;
 			t.left = things[o].left;
 			things[o].left = t;
 			t.right = things[o];

@@ -20,26 +20,26 @@ public class ItemContainer extends Element {
 	}
 	
 	public void render(){
-		if(Main.world.avatar.inv.selectedItem == ordinal){
+		if(Main.world.avatar.selectedItem == ordinal){
 			tex = t2;
 		} else {
 			tex = t1;
 		}
 		super.render();
 		
-		ItemStack stack = Main.world.avatar.inv.stacks[ordinal];
+		ItemStack stack = Main.world.avatar.itemStacks[ordinal];
 		if(stack.item != null && stack.item.texInv != null){
 			stack.item.texInv.file.bind();
 			stack.item.texInv.fill(x1, y1, x2, y2, false);
 		}
 		TexFile.bindNone();
 		Menu.fontColor.bind();
-		Menu.font.drawString(x2 - 30, y2 - 30, Main.world.avatar.inv.stacks[ordinal].count + "", 1, 1);
+		Menu.font.drawString(x2 - 30, y2 - 30, Main.world.avatar.itemStacks[ordinal].count + "", 1, 1);
 	}
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){
 		if(contains(mousePos)){
-			Main.world.avatar.inv.selectedItem = ordinal;
+			Main.world.avatar.selectedItem = ordinal;
 			return true;
 		}
 		return false;

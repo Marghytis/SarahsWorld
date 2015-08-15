@@ -27,9 +27,9 @@ public class Animating extends AiPlugin{
 	public void partRender(){
 		//Scale x -1 is not possible sadly
 		if(dir){
-			animator.fillBash(box, t.pos.p.x, t.pos.p.y, 1);
+			animator.fillBash(box, t.pos.x, t.pos.y, 1);
 		} else {
-			animator.fillBash(box, t.pos.p.x, t.pos.p.y, 0);
+			animator.fillBash(box, t.pos.x, t.pos.y, 0);
 		}
 		if(Settings.SHOW_BOUNDING_BOX){
 			TexFile.bindNone();

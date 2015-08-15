@@ -4,11 +4,11 @@ import java.util.Hashtable;
 
 import main.Main;
 import world.World;
-import world.things.Thing;
+import world.things.ThingProps;
 
 public class ActiveQuest {
 	
-	public Hashtable<String, Thing> characters = new Hashtable<>();
+	public Hashtable<String, ThingProps> characters = new Hashtable<>();
 	public double lastEventTime;
 	public Event currentEvent;
 	public int answer;

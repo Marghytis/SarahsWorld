@@ -92,5 +92,11 @@ public class RainEffect implements ParticleEffect{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

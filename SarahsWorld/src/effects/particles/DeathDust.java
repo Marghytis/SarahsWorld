@@ -98,4 +98,10 @@ public static final ParticleType SMOKE = new ParticleType(new Texture("res/parti
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -36,7 +36,7 @@ public class Grounding extends AiPlugin {
 	
 	public boolean action(double delta) {
 		if(g){
-			Vec pos = t.pos.p.copy().shift(0, yOffset);
+			Vec pos = t.pos.copy().shift(0, yOffset);
 			if(friction){
 				double friction = link.mat.deceleration*speed*delta;
 				if(acc == 0 && UsefulF.abs(friction*delta) > UsefulF.abs(speed)){
@@ -95,7 +95,7 @@ public class Grounding extends AiPlugin {
 	
 	public void leaveGround(double vx, double vy){
 		g = false;
-		t.pos.p.y++;
+		t.pos.y++;
 		t.vel.v.set(vx, vy);
 		speed = 0;
 	}

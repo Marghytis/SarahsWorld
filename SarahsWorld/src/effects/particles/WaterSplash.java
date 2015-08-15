@@ -73,4 +73,10 @@ public class WaterSplash implements ParticleEffect{
 	public boolean keyPressed(int key) {
 		return false;
 	}
+
+	@Override
+	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
