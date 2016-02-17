@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Random;
 
 import quest.ActiveQuest;
+import things.Thing;
+import things.ThingType;
 import util.math.Vec;
 import world.generation.Biome;
-import world.things.ThingProps;
-import world.things.ThingType;
 import data.IndexBuffer;
 
 
@@ -28,7 +28,7 @@ public class WorldData {
 		this.world = world;
 	}
 	@Deprecated //too expensive
-	public void add(ThingProps t){
+	public void add(Thing t){
 		int xIndex = t.pos.xInt()/(int)Column.step;//I know, the middle one has the things of two areas
 		get(xIndex).add(t);
 	}
@@ -44,7 +44,7 @@ public class WorldData {
 		mostLeft.left = l;
 		mostLeft = l;
 		for(int i = 0; i < l.things.length; i++){
-			ThingProps mostleftThing = l.right.things[i];
+			Thing mostleftThing = l.right.things[i];
 			while(mostleftThing.left != null) mostleftThing = mostleftThing.left;
 			mostleftThing.left = l.things[i];
 			l.things[i].right = mostleftThing;
@@ -75,7 +75,7 @@ public class WorldData {
 		public static final double step = 20;
 		public Column left, right;
 		public Vertex[] vertices;
-		public ThingProps[] things;//just dummies
+		public Thing[] things;//just dummies
 		public int xIndex;
 		public double xReal;
 		public int collisionVec;
@@ -92,16 +92,15 @@ public class WorldData {
 			}
 			collisionVec = getCollisionVec();
 			collisionVecWater = getCollisionVecWater();
-			this.things = new ThingProps[ThingType.types.length];
+			this.things = new Thing[ThingType.types.length];
 			for(int i = 0; i < things.length; i++){
-				things[i] = new ThingProps(ThingType.DUMMY, WorldData.this, vertices[0], null, i);
+				things[i] = new Thing(ThingType.DUMMY, WorldData.this, this, new Vec(xReal, vertices[collisionVec].y), i);
 			}
 		}
 		
 		public int getCollisionVec(){
-			int i = 0;
-				while(i < World.layerCount - 1 && (vertices[i].mats.empty() || vertices[i].mats.write.previous.data.solidity <= 1))
-					i++;
+			int i = 0; while(i < World.layerCount - 1 && (vertices[i].mats.empty() || vertices[i].mats.write.previous.data.solidity <= 1))
+				i++;
 			if(i == World.layerCount - 1) i = -1;
 			return i;
 		}
@@ -114,12 +113,13 @@ public class WorldData {
 			return i;
 		}
 		
-		public Vertex getRandomTopLocation(Random random, Vec posField){
+		public Column getRandomTopLocation(Random random, Vec posField){
 			collisionVec = getCollisionVec();
 			double fac = random.nextDouble();
-			posField.set(xReal + (fac*(right.xReal - xReal)),
+			posField.set(
+					xReal + (fac*(right.xReal - xReal)),
 					vertices[collisionVec].y + (fac*(right.vertices[collisionVec].y - vertices[collisionVec].y)));
-			return vertices[collisionVec];
+			return this;
 		}
 		
 		/**
@@ -127,7 +127,7 @@ public class WorldData {
 		 * Adds it to the left of the dummy
 		 * @param t
 		 */
-		public void add(ThingProps t){
+		public void add(Thing t){
 			t.disconnect();
 			int o = t.type.ordinal;
 			t.left = things[o].left;
@@ -137,7 +137,7 @@ public class WorldData {
 		}
 		
 		public Vec getTopLine(Vec topLine){
-			return topLine.set(xReal - left.xReal, vertices[collisionVec].y - left.vertices[collisionVec].y);
+			return topLine.set(right.xReal - xReal, right.vertices[collisionVec].y - vertices[collisionVec].y);
 		}
 	}
 	public class Vertex {

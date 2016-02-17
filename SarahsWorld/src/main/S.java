@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.List;
 
+import things.Thing;
 import world.World;
 import world.WorldContainer;
 import world.WorldContainer.WorldColumn;
@@ -14,7 +15,6 @@ import world.WorldContainer.WorldPoint;
 import world.generation.Layer;
 import world.generation.WorldGenerator;
 import world.objects.ai.AiPlugin;
-import world.things.Thing;
 
 public class S {
 	

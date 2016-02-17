@@ -9,13 +9,14 @@ import java.util.Random;
 import quest.ActiveQuest;
 import quest.Quest;
 import quest.QuestSpawner;
+import things.Thing;
 import util.math.Vec;
 import world.WorldData;
 import world.WorldData.Column;
+import world.generation.zones.Desert;
 import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
-import world.things.ThingProps;
 
 
 public class Generator {
@@ -37,7 +38,7 @@ public class Generator {
 	public Generator(WorldData world){
 		this.world = world;
 		
-		Biome startBiome = Biome.JUNGLE;//TODO make it random
+		Biome startBiome = Biome.DESERT;//TODO make it random
 		
 		posL = new Vec();
 		posR = new Vec();
@@ -45,8 +46,8 @@ public class Generator {
 		biomeL = new BiomeManager(world, startBiome, true);
 		biomeR = new BiomeManager(world, startBiome, false);
 
-		zoneL = new Jungle(random, biomeL, 0, true);
-		zoneR = new Jungle(random, biomeR, 0, false);
+		zoneL = new Desert(random, biomeL, 0, true);
+		zoneR = new Desert(random, biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}
@@ -57,6 +58,7 @@ public class Generator {
 	}
 	
 	Vec questPos = new Vec();
+	int columnCount;
 	
 	public void borders(double d, double e) {
 		while(posR.x < e){
@@ -73,14 +75,27 @@ public class Generator {
 				}
 			}
 			
+			world.addRight(biomeR.biome, biomeR.createVertices(posR.y));
+			
+			if(columnCount < 3){
+				columnCount++;
+				continue;
+			}
+			
 			tryToStartQuests(zoneR);
 			
-			world.addRight(biomeR.biome, biomeR.createVertices(posR.y));
-			world.mostRight.biome.spawnThings(world, world.mostRight.left);
-			for(QuestSpawner qs : questThings){
-				qs.quest.characters.put(qs.name, new ThingProps(qs.thingType, world, world.mostRight.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData));
+//			world.mostRight.left.biome.spawnThings(world, world.mostRight.left.left);
+			biomeR.spawnThings(world.mostRight.left);
+			for(int i = 0; i < questThings.size(); i++){
+				QuestSpawner qs = questThings.get(i);
+				Thing t = qs.thingType.defaultSpawner.spawn(world, world.mostRight.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
+				if(t != null) {
+					qs.quest.characters.put(qs.name, t);
+					qs.quest.eventFinished = true;
+					questThings.remove(i);
+					i--;
+				}
 			}
-			questThings.clear();
 		}
 		while(posL.x > d){
 			biomeL.step(world.mostLeft);
@@ -92,14 +107,26 @@ public class Generator {
 				zoneL = new Mountains(random, biomeL, -posL.x, true);
 			}
 			
-			tryToStartQuests(zoneL);
-			
 			world.addLeft(biomeL.biome, biomeL.createVertices(posL.y));
-			world.mostLeft.biome.spawnThings(world, world.mostLeft.right);
-			for(QuestSpawner qs : questThings){
-				qs.quest.characters.put(qs.name, new ThingProps(qs.thingType, world, world.mostLeft.right.getRandomTopLocation(world.random, questPos), questPos, qs.extraData));
+
+			if(columnCount < 3){
+				columnCount++;
+				continue;
 			}
-			questThings.clear();
+			
+			tryToStartQuests(zoneL);
+//			world.mostLeft.right.biome.spawnThings(world, world.mostLeft.right.right);
+			biomeL.spawnThings(world.mostLeft);
+			for(int i = 0; i < questThings.size(); i++){
+				QuestSpawner qs = questThings.get(i);
+				Thing t = qs.thingType.defaultSpawner.spawn(world, world.mostLeft.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
+				if(t != null) {
+					qs.quest.characters.put(qs.name, t);
+					qs.quest.eventFinished = true;
+					questThings.remove(i);
+					i--;
+				}
+			}
 		}
 	}
 	

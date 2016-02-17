@@ -3,15 +3,16 @@ package quest;
 import java.util.Hashtable;
 
 import main.Main;
+import things.Thing;
 import world.World;
-import world.things.ThingProps;
 
 public class ActiveQuest {
 	
-	public Hashtable<String, ThingProps> characters = new Hashtable<>();
+	public Hashtable<String, Thing> characters = new Hashtable<>();
 	public double lastEventTime;
 	public Event currentEvent;
 	public int answer;
+	public boolean eventFinished = true;
 	
 	public ActiveQuest(World world, Quest quest){
 		this.currentEvent = quest.start;
@@ -23,12 +24,14 @@ public class ActiveQuest {
 	}
 
 	public boolean update(double delta){
-		for(int i = 0; i < currentEvent.next.length; i++){
-			if((currentEvent.answerCondition[i] == 0 || currentEvent.answerCondition[i] == answer) && currentEvent.next[i].condition.isMet(this, Main.world.data)){
-				answer = 0;
-				currentEvent = currentEvent.next[i];
-				currentEvent.action.run(this, Main.world.data);
-				break;
+		if(eventFinished){
+			for(int i = 0; i < currentEvent.next.length; i++){
+				if((currentEvent.answerCondition[i] == 0 || currentEvent.answerCondition[i] == answer) && currentEvent.next[i].condition.isMet(this, Main.world.data)){
+					answer = 0;
+					currentEvent = currentEvent.next[i];
+					currentEvent.action.run(this, Main.world.data);
+					break;
+				}
 			}
 		}
 		return false;

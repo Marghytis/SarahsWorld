@@ -1,7 +1,7 @@
 package effects.particles;
 
+import things.Thing;
 import util.math.Vec;
-import world.things.Thing;
 
 public class MagicEffect implements ParticleEffect{
 

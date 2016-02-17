@@ -13,13 +13,13 @@ import org.lwjgl.opengl.GL11;
 import quest.ActiveQuest;
 import render.TexFile;
 import render.Texture;
+import things.Thing;
+import things.ThingType;
 import util.Color;
 import util.Render;
 import util.math.Vec;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
-import world.things.ThingProps;
-import world.things.ThingType;
 import core.Renderer;
 import core.Updater;
 import core.Window;
@@ -30,7 +30,7 @@ public class WorldWindow implements Updater, Renderer{
 	public Column rightEnd, leftEnd;
 	public int xIndex, r;
 	
-	public List<ThingProps> deletionRequested = new ArrayList<>();
+	public List<Thing> deletionRequested = new ArrayList<>();
 	
 
 	public List<Effect> effects = new ArrayList<>();
@@ -98,36 +98,37 @@ public class WorldWindow implements Updater, Renderer{
 		}
 	}
 	
-	List<ThingProps> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
+	List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
 	
-	public ThingProps[] livingsAt(Vec loc){
+	public Thing[] livingsAt(Vec loc){
 		thingsAt.clear();
 		for(int type = 0; type < ThingType.types.length; type++)
-		for(ThingProps t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
+		for(Thing t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
 			if(t.type.life != null && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y, t.box.size.x, t.box.size.y)){
 				thingsAt.add(t);
 			}
 		}
 		thingsAt.sort((t1, t2) -> t1.behind > t2.behind ? 1 : t1.behind < t2.behind ?  -1 : 0);
-		return thingsAt.toArray(new ThingProps[thingsAt.size()]);
+		return thingsAt.toArray(new Thing[thingsAt.size()]);
 	}
 	
-	public ThingProps[] objectsAt(Vec loc){
+	public Thing[] objectsAt(Vec loc){
 		objectsAt.clear();
 		for(int type = 0; type < ThingType.types.length; type++)
-		for(ThingProps t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
+		for(Thing t = leftEnd.left.things[type]; t != rightEnd.things[type];t = t.right){
 			if(t.type.life == null && t.type != ThingType.DUMMY && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y, t.box.size.x, t.box.size.y)){
 				objectsAt.add(t);
 			}
 		}
 		objectsAt.sort((t1, t2) -> t1.behind > t2.behind ? 1 : t1.behind < t2.behind ?  -1 : 0);
-		return objectsAt.toArray(new ThingProps[objectsAt.size()]);
+		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 	
 	public boolean update(double delta){
+		delta *= Settings.timeScale;
 
 		//Delete dead things
-		for(ThingProps t : deletionRequested){
+		for(Thing t : deletionRequested){
 			if(t.type != ThingType.DUMMY){
 				t.disconnect();
 				t.remove();
@@ -144,7 +145,7 @@ public class WorldWindow implements Updater, Renderer{
 		
 		//update all things
 		for(int type = 0; type < ThingType.types.length; type++)//cursor should never be null
-		for(ThingProps cursor = leftEnd.left.things[type]; cursor != null && cursor != rightEnd.things[type];cursor = cursor.right){//could go further to the left, but who cares? :D
+		for(Thing cursor = leftEnd.right.things[type]; cursor != null && cursor != rightEnd.left.things[type]; cursor = cursor.right){//could go further to the left, but who cares? :D
 			if(cursor.type != ThingType.DUMMY){
 				cursor.update(delta);
 			}
@@ -169,6 +170,7 @@ public class WorldWindow implements Updater, Renderer{
 	public void draw(){
 		GL11.glLoadIdentity();
 		GL11.glClearColor(0.7f, 0.7f, 0.9f, 1);
+		if(Settings.DRAW == GL11.GL_LINE_STRIP) GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.x, Window.HEIGHT_HALF - Main.world.avatar.pos.y, 0);
 
@@ -239,7 +241,7 @@ public class WorldWindow implements Updater, Renderer{
 		}
 		water.clear();
 	}
-	public interface Decider { public boolean decide(ThingProps t);}
+	public interface Decider { public boolean decide(Thing t);}
 	public void renderThings(Decider d){
 		for(int i = 0; i < ThingType.types.length; i++) {
 			
@@ -247,7 +249,7 @@ public class WorldWindow implements Updater, Renderer{
 			ThingType.types[i].file.file.bind();
 			GL11.glBegin(GL11.GL_QUADS);
 			//the pointer thing in the columns is always the dummy of its kind and is the one before the things of the next column
-			for(ThingProps cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
+			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
 				if(cursor.type != ThingType.DUMMY && d.decide(cursor)){
 					cursor.render();
 				}
@@ -314,9 +316,9 @@ public class WorldWindow implements Updater, Renderer{
 		Color.WHITE.bind();
 		for(int i = 0; i < ThingType.types.length; i++) {
 			//the pointer thing in the columns is always the dummy of its kind and is the one before the things of the next column
-			for(ThingProps cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
+			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
 				if(cursor.type != ThingType.DUMMY){
-					Render.bounds(cursor.ani.pixelCoords, cursor.pos.x, cursor.pos.y);
+					Render.bounds(cursor.ani.pixelCoords, cursor.pos.x, cursor.pos.y + cursor.yOffset);
 					cursor.pos.drawPoint();
 				}
 			}
@@ -324,7 +326,7 @@ public class WorldWindow implements Updater, Renderer{
 	}
 	
 	public void renderLayers(boolean left, Column start, Column end){
-		//normal layers
+		//normal layers (horizontal transitions already included)
 		for(int i = 0; i < World.layerCount-1; i++){
 			renderLayer(i, defaultRenderer, left, start, end, true);
 		}

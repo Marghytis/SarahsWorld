@@ -26,6 +26,7 @@ public class Menu implements Updater, Renderer, Listener {
 	public static Color fontColor = new Color(0.9f, 0.8f, 0.8f, 1);
 	public static Dialog dialog = new Dialog();
 	
+	public Settings settings = new Settings();
 	public Menus open = Menus.EMPTY, last = Menus.EMPTY, next = Menus.EMPTY;
 	public Element[] elements;
 	
@@ -84,13 +85,17 @@ public class Menu implements Updater, Renderer, Listener {
 	}
 
 	public boolean keyPressed(int key) {
+		settings.keyPressed(key);
 		return open.keyPressed(key);
 	}
 	
 	public enum Menus {
 		EMPTY(false, false) {
 			public void setElements(){
-				elements = new Element[0];
+				elements = new Element[]{
+//						new FlexibleTextField(() -> "Gravity: " + Main.world.avatar.where.g + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
+//						new FlexibleTextField(() -> "Water: " + Main.world.avatar.where.water + "", 7/8.0f, 6/8.0f, 7/8.0f, 6/8.0f, -35, -5, -5, 5, null, null)
+				};
 			}
 		},
 		MAIN(false, false) {
@@ -120,7 +125,7 @@ public class Menu implements Updater, Renderer, Listener {
 		INVENTORY(false, false){
 			public void setElements(){
 				elements = new Element[]{
-						new Element(7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0], MONEYBAG.pixelCoords[1], MONEYBAG.pixelCoords[2], MONEYBAG.pixelCoords[3], null, MONEYBAG),
+						new Element(7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0]*2, MONEYBAG.pixelCoords[1]*2 - 30, MONEYBAG.pixelCoords[2]*2, MONEYBAG.pixelCoords[3]*2 - 30, null, MONEYBAG),
 						new FlexibleTextField(() -> Main.world.avatar.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
 						
 						new ItemContainer(0, 1/6.0, 1.0/8),
@@ -150,6 +155,15 @@ public class Menu implements Updater, Renderer, Listener {
 						new Button("Disable agressive creatures", 0.7, 0.2, 0.7, 0.2, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								Settings.AGGRESSIVE_CREATURES = !Settings.AGGRESSIVE_CREATURES;
+							}
+						},
+						new Button("Switch render mode", 0.7, 0.3, 0.7, 0.3, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+							public void released(int button) {
+								if(Settings.DRAW == GL11.GL_LINE_STRIP){
+									Settings.DRAW = GL11.GL_QUAD_STRIP;
+								} else {
+									Settings.DRAW = GL11.GL_LINE_STRIP;
+								}
 							}
 						}
 				};
@@ -225,9 +239,7 @@ public class Menu implements Updater, Renderer, Listener {
 		}
 	}
 
-	@Override
 	public boolean keyReleased(int key) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

@@ -1,6 +1,7 @@
 package menu;
 
 import item.ItemStack;
+import item.ItemType;
 import main.Main;
 import render.TexAtlas;
 import render.TexFile;
@@ -15,7 +16,7 @@ public class ItemContainer extends Element {
 	public int ordinal;
 
 	public ItemContainer(int ordinal, double relX1, double relY1) {
-		super(relX1, relY1, relX1, relY1, inventoryButton.pixelCoords[0], inventoryButton.pixelCoords[1], inventoryButton.pixelCoords[2], inventoryButton.pixelCoords[3], null, null);
+		super(relX1, relY1, relX1, relY1, inventoryButton.pixelCoords[0], inventoryButton.pixelCoords[1], inventoryButton.pixelCoords[2], inventoryButton.pixelCoords[3], null, t1);
 		this.ordinal = ordinal;
 	}
 	
@@ -28,7 +29,7 @@ public class ItemContainer extends Element {
 		super.render();
 		
 		ItemStack stack = Main.world.avatar.itemStacks[ordinal];
-		if(stack.item != null && stack.item.texInv != null){
+		if(stack.item != null && stack.item != ItemType.NOTHING && stack.item.texInv != null){
 			stack.item.texInv.file.bind();
 			stack.item.texInv.fill(x1, y1, x2, y2, false);
 		}

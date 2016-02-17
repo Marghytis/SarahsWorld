@@ -1,9 +1,9 @@
 package effects.particles;
 
 import render.Texture;
+import things.Thing;
 import util.Color;
 import util.math.Vec;
-import world.things.Thing;
 import effects.particles.Particle.ParticleType;
 
 public class RainbowSpit implements ParticleEffect{

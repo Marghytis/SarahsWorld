@@ -1,6 +1,6 @@
 package quest;
 
-import world.things.ThingType;
+import things.ThingType;
 
 public class QuestSpawner {
 

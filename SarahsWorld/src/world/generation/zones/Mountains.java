@@ -38,7 +38,7 @@ public class Mountains extends Zone {
 		
 		if(subZone instanceof Hills && ((Hills)subZone).reachedP2){
 			if(random.nextInt(100) < 50){
-				subZone = new Lake(random, biome, x, 500, subZone.ownHeight, left);//It's p1, because it has already shifted by now
+				subZone = new Lake(random, biome, x, 500, subZone.ownHeight, left);
 			}
 		}
 		

@@ -1,13 +1,18 @@
 package world.generation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import util.math.Function;
 import util.math.UsefulF;
+import util.math.Vec;
 import world.Material;
 import world.Stratum;
 import world.World;
 import world.WorldData;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
+import world.generation.ThingSpawner.Spawner;
 import data.IndexBuffer;
 
 public class BiomeManager {
@@ -30,17 +35,35 @@ public class BiomeManager {
 		}
 		this.biome = normal;
 	}
+	public List<Spawner> extraSpawns = new ArrayList<>();
+	Vec posField = new Vec();
+	/**
+	 * This should be called from the Generator with an offset of two steps (because the things may only be spawned after the World is there (don't know exaclty why :D))
+	 * @param c
+	 */
+	public void spawnThings(Column c){
+		c.biome.spawnThings(world, c);
+		for(Spawner sp : extraSpawns){
+			sp.spawn(world, c.getRandomTopLocation(world.random, posField), posField.copy());
+		}
+		extraSpawns.clear();
+	}
 	
 	boolean first = true;
 	//Idea of the day: Just go back the Line, if the biome has to change!!! TODO
+	/**
+	 * If the stratum in an ant stays the same, it does nothing there
+	 * @param newBiome
+	 */
 	public void switchToBiome(Biome newBiome){
 		if(!first){
 			this.biome = newBiome;
 	//		each new stratum gets attached
 			int yIndex = 0;
 			for(Stratum stratum : newBiome.stratums){
-				
-				ants[yIndex].switchTo(stratum, yIndex);
+				if(ants[yIndex].stratum != stratum){
+					ants[yIndex].switchTo(stratum, yIndex);
+				}
 				yIndex++;
 			}
 		} else {
@@ -58,7 +81,7 @@ public class BiomeManager {
 			double transitionHeight = ants[i].stratum == null ? 0 : ants[i].transitionHeight*(ants[i].thickness/ants[i].stratum.thickness);
 			
 			//to prevent stripes and invisible connections between patches (lakes)
-			boolean make0 = ants[i].thickness == 0;
+			boolean make0 = ants[i].thickness == 0 && ants[i].reachedSize;
 			
 			//put water a bit deeper so the lake is not filled to the rim
 			double apparentY = y;
@@ -106,6 +129,7 @@ public class BiomeManager {
 				this.thickness = stratum.thickness;
 				this.transitionHeight = stratum.transitionHeight;
 				this.stratum = stratum;
+				this.sizingSpeed = stratum.sizingSpeed;
 			}
 			//ants get created only once per generator and layer and then they should be already full size
 			this.reachedSize = true;
@@ -152,7 +176,7 @@ public class BiomeManager {
 				
 				this.transitionHeight = stratum.transitionHeight;
 				
-				//If its the same material there is no need to change it..
+				//If the material changes, apply the new material to this ant and the old vertices
 				if(stratum.material != mats.write.previous.data){
 					int transition = stratum.transitionWidth;
 					if(transitions.empty()) transition = 0;//New layer starts in between others
@@ -177,11 +201,13 @@ public class BiomeManager {
 						}
 					}
 				}
-				
 			} else {//just get smaller until its at 0 size
 				resize(0, sizingSpeed);
+				//don't make the stratum null without thinking, because in createVertices() stratum == null? is used
+				disappear = true;
 			}
 		}
+		boolean disappear;
 		
 		public void resize(double aimThickness, double speed){
 			this.aimThickness = aimThickness;
@@ -190,19 +216,25 @@ public class BiomeManager {
 			double start = thickness;
 			x = 0;
 			final double dy = aimThickness - start;
-			final double dx = UsefulF.abs(dy/sizingSpeed);
-			resizer = (x) -> start + (UsefulF.cubicUnit.f(x/dx)*dy);
+			final double dx = Math.abs(dy/sizingSpeed);
+			resizer = (x) -> {
+				if(x > dx){
+					return aimThickness;//there were problems with the generation steps jumping over the maximum of the cubic function
+				} else {
+					return start + (UsefulF.cubicUnit.f(x/dx)*dy);
+				}
+			};
 		}
 		
 		int x;
 		Function resizer;//old: f(x) = startThickness + x*sizingSpeed
 
 		public void step(){
-			x++;
 			for(IndexBuffer<Transitioner>.Node cursor = transitions.read; cursor != transitions.write; cursor = cursor.next){
 				cursor.data.step();
 			}
 			removeInvisibleMats();
+			
 			if(!reachedSize){
 				if(thickness > aimThickness){
 					
@@ -210,17 +242,25 @@ public class BiomeManager {
 					
 					if(thickness <= aimThickness){
 						reachedSize = true;
+						thickness = aimThickness;//Just to be sure...
 					}
-				}
-				if(thickness < aimThickness){
+				} else if(thickness < aimThickness){
 
 					thickness = resizer.f(x);
 					
 					if(thickness >= aimThickness){
 						reachedSize = true;
+						thickness = aimThickness;
 					}
+				} else if(thickness == aimThickness){//happens at zero for example
+					reachedSize = true;
+				}
+				if(reachedSize && disappear){
+					stratum = null;
+					disappear = false;
 				}
 			}
+			x++;
 		}
 	}
 	public class Transitioner {//only lets the alpha rise

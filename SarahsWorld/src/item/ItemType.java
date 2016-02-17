@@ -8,11 +8,11 @@ import render.Animation;
 import render.Animator;
 import render.TexAtlas;
 import render.Texture;
+import things.Thing;
+import things.ThingType;
 import util.math.Rect;
 import util.math.Vec;
 import world.World;
-import world.things.ThingProps;
-import world.things.ThingType;
 
 public enum ItemType {
 
@@ -25,8 +25,8 @@ public enum ItemType {
 	SHOVEL(		Res.items_world.sfA(4, 0),	Res.items_weapons,		Res.items_inv.tex(4, 0), new int[]{-25, -2, 50, 50}, new int[]{4, 0},	"Shovel",		700,			70, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.1,			false),
 //	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.items_inv.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
 	BERRY(		Res.items_inv.sfA(6, 0),	Res.items_inv,			Res.items_inv.tex(6, 0), new int[]{-25, -2, 50, 50}, new int[]{6, 0},						"Berry",		0,				8, 			WeaponType.PUNCH,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.3,			false){
-		public boolean use(ThingProps src, Vec pos){
-			src.itemStacks[Main.world.avatar.selectedItem].item = ItemType.FIST;
+		public boolean use(Thing src, Vec pos){
+			src.itemStacks[Main.world.avatar.selectedItem].item = ItemType.NOTHING;
 			if(src.mana + 2 <= Main.world.avatar.type.magic.maxMana){
 				src.mana += 2;
 //				WorldView.particleEffects.add(new BerryEat(new Vec(World.sarah.pos.x + (World.sarah.animator.box.size.x/2), World.sarah.pos.y + (World.sarah.animator.box.size.y/2))));TODO watch above
@@ -38,30 +38,30 @@ public enum ItemType {
 	
 	//Item types below this line won't appear in traders inventories
 	MOUTH(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Mouth", 1, 0, WeaponType.BITE, ItemUsageType.EAT, BodyPos.HEAD, 1, 2, 0.03, true),
-	FIST(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Fist", 1, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
-		public boolean use(ThingProps src, Vec pos, ThingProps dest){
-			if(dest.fruits != null && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 90000){
+	NOTHING(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Fist", 1, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
+		public boolean use(Thing src, Vec pos, Thing dest){
+			boolean success = false;
+			if(dest.fruits != null && !dest.fruits.isEmpty() && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
 				int index = World.rand.nextInt(dest.fruits.size());
 				ItemType i = dest.fruits.get(index);
 				dest.fruits.remove(index);
 				if(i != null) src.type.inv.addItem(src, i, 1);
+				success = true;
 			} else {
-				switch(dest.type.ordinal){
-				case ThingType.COW.ordinal:
+				if(dest.type == ThingType.COW){
 					src.type.ride.mount(src, dest);
-					break;
-				case ThingType.ITEM.ordinal:
+					success = true;
+				} else if(dest.type == ThingType.ITEM){
 					if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
 						src.type.inv.addItem(src, dest.itemBeing, 1);
 						Main.world.window.deletionRequested.add(dest);
+						success = true;
 					}
-					break;
+				}
 	//			case BUSH:
 	//				break;
-				default: break;
-				}
 			}
-			return needsTarget;
+			return success;
 		}
 	},
 	COIN(new Animation("coin", Res.coin, 0, 0, 0), Res.coin, Res.coin, Res.coin.pixelCoords, new int[]{0, 0}, "Coin", 0, 1, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 0, 0, 0, false);
@@ -131,9 +131,9 @@ public enum ItemType {
 		this.needsTarget = needsTarget;
 	}
 	
-	public boolean specialUse(ThingProps src, Vec pos, ThingProps[] dest){
+	public boolean specialUse(Thing src, Vec pos, Thing[] dest){
 		if(needsTarget){
-			for(ThingProps t : dest){
+			for(Thing t : dest){
 				if(use(src, pos, t)){
 					return true;
 				}
@@ -144,8 +144,8 @@ public enum ItemType {
 		return false;
 	}
 
-	public boolean use(ThingProps src, Vec pos, ThingProps dest){return false;}
-	public boolean use(ThingProps src, Vec pos){return false;}
+	public boolean use(Thing src, Vec pos, Thing dest){return false;}
+	public boolean use(Thing src, Vec pos){return false;}
 	
 	/**
 	 * Translates and rotates the model matrix. Matrix origin should be at bottom left corner of the things texture.
@@ -153,7 +153,7 @@ public enum ItemType {
 	 * @param t
 	 * @param ani The animator which is used to render the item. Must have the correct texture set already.
 	 */
-	public void renderHand(ThingProps t, Animator ani){
+	public void renderHand(Thing t, Animator ani){
 		if(texHand == null) return;
 		Texture thingTex = t.ani.ani == null ? t.ani.tex : t.ani.ani.atlas;
 		int[] info = thingTex.infos[bodyPos.ordinal()].getInfo(t.ani);
@@ -172,7 +172,7 @@ public enum ItemType {
 			handX = thingTex.w - handX;
 			handAngle = -handAngle;
 		}
-		
+
 		ani.resetMod();
 		ani.rotate(defaultRotationHand + handAngle);
 		ani.translate(handX + t.pos.x + thingTex.pixelCoords[0], handY + t.pos.y + thingTex.pixelCoords[1]);

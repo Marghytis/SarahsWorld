@@ -5,24 +5,24 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import things.Thing;
+import things.ThingType;
 import util.math.Vec;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
 import world.generation.Generator;
-import world.things.ThingProps;
-import world.things.ThingType;
 import core.Window;
 
 public class World {
 
-	public static int layerCount = 7;
+	public static int layerCount = 8;
 	
 	public static Random rand = new Random();
 	
 	public WorldData data;
 	public Generator generator;
 	public WorldWindow window;
-	public ThingProps avatar;
+	public Thing avatar;
 	
 	public World(){
 		
@@ -39,7 +39,7 @@ public class World {
 
 		Vertex v = data.mostRight.vertices[data.mostRight.collisionVec];
 		Vec pos = new Vec(0, v.y + 1000);
-		avatar = new ThingProps(ThingType.SARAH, data, v, pos);
+		avatar = new Thing(ThingType.SARAH, data, v.parent, pos);
 		
 		init();
 	}

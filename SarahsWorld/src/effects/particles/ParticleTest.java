@@ -28,8 +28,8 @@ public class ParticleTest implements Listener, Renderer, Updater{
 	public List<ParticleEffect> effects = new ArrayList<>();
 	
 	public ParticleTest(){
-//		RainEffect rain = new RainEffect(new Vec(1000, 500), 50, 100);
-//		effects.add(rain);
+		RainEffect rain = new RainEffect(new Vec(1000, 500), 50, 100);
+		effects.add(rain);
 	}
 
 	public boolean update(double delta) {

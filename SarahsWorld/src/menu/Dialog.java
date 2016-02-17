@@ -12,6 +12,7 @@ import quest.ActiveQuest;
 import render.TexAtlas;
 import render.TexFile;
 import render.Texture;
+import things.Thing;
 import util.Anim;
 import util.Anim.AnimPart;
 import util.Anim.Func;
@@ -22,7 +23,6 @@ import util.TrueTypeFont2;
 import util.math.Graph;
 import util.math.UsefulF;
 import util.math.Vec;
-import world.things.ThingProps;
 import core.Window;
 
 public class Dialog extends Element {
@@ -38,7 +38,7 @@ public class Dialog extends Element {
 	public static double rDefault = 150, animationTime = 2;
 
 	public ActiveQuest quest;
-	public ThingProps other;
+	public Thing other;
 	public String[] text1;
 	public String[] answers;
 	
@@ -53,7 +53,7 @@ public class Dialog extends Element {
 		super(0, 0, 1, 1, 0, 0, 0, 0, null, null);
 	}
 	
-	public void setup(ActiveQuest quest, ThingProps other, String text1, String[] answers){
+	public void setup(ActiveQuest quest, Thing other, String text1, String[] answers){
 		this.quest = quest;
 		this.other = other;
 		this.text1 = text1.split("\\|");

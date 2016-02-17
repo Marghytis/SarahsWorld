@@ -8,10 +8,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import things.ThingType;
 import world.WorldData;
 import world.WorldWindow;
 import world.generation.Zone.Attribute;
-import world.things.ThingType;
 
 public enum Quest {
 	FIREFIGHTER("res/quest/Firefighter.txt");
@@ -183,7 +183,7 @@ public enum Quest {
 			String[] method = actions[i].substring(0, actions[i].length()-1).split("\\(");
 			String[] args = method[1].split(",");
 			switch(method[0]){
-			case "spawn": realActions[i] = (q, w) -> w.world.generator.questThings.add(new QuestSpawner(characters.get(args[0]), q, args[0], true)); break;
+			case "spawn": realActions[i] = (q, w) -> {w.world.generator.questThings.add(new QuestSpawner(characters.get(args[0]), q, args[0], true)); q.eventFinished = false;}; break;
 			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).type.speak.say(q.characters.get(args[1]), Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
 			//say(booblen thoughtBubble, villager, question, answers)break;
 			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).type.inv.addItem(q.characters.get(args[0]), ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;

@@ -30,7 +30,7 @@ public class Res {
 	public static final TexAtlas tree_palm = new TexAtlas("res/objects/PalmTree.png", 1, 3, -0.5f, -0.03f);
 	public static final TexAtlas tree_candy = new TexAtlas("res/objects/CandyTree.png", 1, 1, -0.5f, -0.2f);
 	public static final TexAtlas bamboo = new TexAtlas("res/objects/Bamboo.png", 1, 4, -0.5f, -0.02f);
-	public static final TexAtlas bush_normal = new TexAtlas("res/objects/Bush.png", 1, 2, -0.5f, -0.02f);
+	public static final TexAtlas bush_normal = new TexAtlas("res/objects/Bush.png", 1, 2, -0.5f, -0.1f);
 	public static final TexAtlas bush_candy = new TexAtlas("res/objects/CandyBush.png", 1, 2, -0.5f, -0.2f);
 	public static final TexAtlas cactus = new TexAtlas("res/objects/Cactus.png", 1, 3, -0.5f, -0.05f);
 	public static final TexAtlas grasstuft = new TexAtlas("res/objects/Grass_tuft.png", 4, 1, -0.5f, -0.2f);
@@ -49,10 +49,16 @@ public class Res {
 	public static final TexInfo sloth_onTreePos = new TexInfo("res/objects/Sloth_JungleTree.txt");
 	public static final TexInfo sarah_HandPos = new TexInfo("res/creatures/Sarah.txt");
 	public static final TexInfo sarah_HandPos_onCow = new TexInfo("res/creatures/Sarah_riding_cow.txt");
+	public static final TexInfo sarah_HandPos_dive = new TexInfo("res/creatures/Sarah_dive_hand.txt");
+	public static final TexInfo sarah_HandPos_swim = new TexInfo("res/creatures/Sarah_dive_hand.txt");
 	public static final TexInfo sarah_HeadPos = new TexInfo("res/creatures/Sarah_HORN.txt");
 	public static final TexInfo sarah_HeadPos_onCow = new TexInfo("res/creatures/Sarah_riding_cow_horn.txt");
+	public static final TexInfo sarah_HeadPos_dive = new TexInfo("res/creatures/Sarah_dive_hand.txt");
+	public static final TexInfo sarah_HeadPos_swim = new TexInfo("res/creatures/Sarah_dive_hand.txt");
 	public static final TexInfo villager_HandPos = new TexInfo("res/creatures/NPC.txt");
 	public static final TexAtlas sarah = new TexAtlas("res/creatures/Sarah.png", 11, 10, -0.5, -0.1);static {sarah.addInfo(sarah_HandPos, sarah_HeadPos);}
+	public static final TexAtlas sarah_dive = new TexAtlas(sarah.file, 50, 0, 400, 75, 5, 1, -0.5, -0.1);static {sarah_dive.addInfo(sarah_HandPos_dive, sarah_HeadPos_dive);}
+	public static final TexAtlas sarah_swim = new TexAtlas(sarah.file, 150, 675, 350, 75, 5, 1, -0.5, -0.5);static {sarah_swim.addInfo(sarah_HandPos_swim, sarah_HeadPos_swim);}
 	public static final TexAtlas sarah_onCow = new TexAtlas("res/creatures/Sarah_riding_cow.png", 7, 2, -0.5, -0.1);static {sarah_onCow.addInfo(sarah_HandPos_onCow, sarah_HeadPos_onCow);}
 	public static final TexAtlas sarah_death = new TexAtlas("res/creatures/Sarah_death.png", 14, 1, -0.5f, -0.5f);
 	public static final TexAtlas snail  = new TexAtlas("res/creatures/Snail.png", 7, 3, -0.5f, -0.1f);
@@ -75,7 +81,7 @@ public class Res {
 	public static final TexAtlas coin  = new TexAtlas("res/Items/Coin.png", 1, 1, -0.5f, -0.2f);
 	public static final TexAtlas inventory = new TexAtlas("res/items/Inventory.png", 1, 2, 0, 0);
 	public static final TexAtlas items_world = new TexAtlas("res/items/ItemsWorld.png", 5, 1, -0.5f, -0.5f);
-	public static final TexAtlas items_inv = new TexAtlas("res/items/ItemsInv.png", 20, 1, -0.5f, -0.5f);
+	public static final TexAtlas items_inv = new TexAtlas("res/items/ItemsInv.png", 20, 2, -0.5f, -0.5f);
 	public static final TexAtlas items_weapons = new TexAtlas(NPC_plus_Handheld_Items, 45, 0, 175, 280, 5, 4, -0.5f, -0.5f);static {items_weapons.addInfo(items_handheld_gripPos);}
 	public static final Texture moneybag = new Texture("res/items/Moneybag.png", -0.5f, -0.5f);
 	

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import things.Thing;
 import util.geom.Vec;
 import world.Material;
 import world.World;
@@ -15,7 +16,6 @@ import world.WorldContainer.WorldField;
 import world.generation.Layer;
 import world.generation.WorldGenerator;
 import world.generation.BiomeOld.AimLayer;
-import world.things.Thing;
 
 public class L {
 	
