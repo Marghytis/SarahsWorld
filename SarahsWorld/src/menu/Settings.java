@@ -12,6 +12,7 @@ public class Settings{
 	public static boolean FRICTION = true;
 	public static boolean DARKNESS = true;
 	public static int DRAW = GL11.GL_QUAD_STRIP;//GL_QUAD_STRIP
+	public static boolean SHOW_NAME_TAGS = true;
 	public static boolean STOP_GRAPH = false;
 	public static boolean printSarahPhysics = true;
 	public static double timeScale = 1;

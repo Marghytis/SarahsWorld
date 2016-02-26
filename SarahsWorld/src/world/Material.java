@@ -8,6 +8,7 @@ public enum Material {
 	GRASS(Color.GREEN, Physics.grassFriction, new Texture("res/materials/Grass.png", 0, 0), 2, 0, 0),
 	EARTH(Color.BROWN, Physics.grassFriction, new Texture("res/materials/Earth.png", 0, 0), 2, 0, 0),
 	STONE(Color.GRAY, Physics.grassFriction, new Texture("res/materials/Stone.png", 0, 0), 2, 0, 0),
+	STONE2(Color.GRAY, Physics.grassFriction, new Texture("res/materials/Stone2.png", 0, 0), 2, 0, 0),
 	SANDSTONE(Color.YELLOW, Physics.grassFriction, new Texture("res/materials/Sandstone3.png", 0, 0), 2, 0, 0),
 	SANDSTONE2(Color.YELLOW, Physics.grassFriction, new Texture("res/materials/Sandstone2.png", 0, 0), 2, 0, 0),
 	SAND(Color.YELLOW, Physics.grassFriction, new Texture("res/materials/Sand.png", 0, 0), 2, 0, 0),

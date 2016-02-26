@@ -18,8 +18,10 @@ import things.aiPlugins.Following;
 import things.aiPlugins.Inventory;
 import things.aiPlugins.Life;
 import things.aiPlugins.Magic;
+import things.aiPlugins.MidgeAround;
 import things.aiPlugins.Movement;
 import things.aiPlugins.Physics;
+import things.aiPlugins.PhysicsExtension;
 import things.aiPlugins.Riding;
 import things.aiPlugins.Speaking;
 import things.aiPlugins.WalkAround;
@@ -29,7 +31,7 @@ import util.math.Vec;
 import world.World;
 import world.WorldData;
 import world.WorldData.Column;
-import world.generation.ThingSpawner.Spawner;
+import world.generation.Biome.ThingSpawner.Spawner;
 
 public class ThingType {
 	
@@ -89,6 +91,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			super.setup(t, world, field, pos);
 			t.ani.fresh = true;
+			inv.addItem(t, ItemType.STICK, 1);
 		}
 		public void update(Thing t, double delta){
 			avatar.action(t, delta);
@@ -106,7 +109,7 @@ public class ThingType {
 				else return null;
 			}
 			,new Animating(snail[0], new Rect(Res.snail.pixelCoords), 0, 0, 4, false, snail)
-			,new Life(10, 10, 2)
+			,new Life(10, 10, 2, new ItemType[]{ItemType.SNAIL_SHELL, ItemType.SNAILS_EYE}, 0.05, 2)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring")
 			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 5, 0.5)})
 			,new Following(500.0, 50, ThingType.SARAH)
@@ -118,6 +121,40 @@ public class ThingType {
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
 				attack.attack(t, WeaponType.PUNCH, ItemType.NOTHING, "punch", t.target);//attack
+			} else if(t.target == null){
+				walkAround.action(t, delta);//walk around
+			}
+		}
+	};
+									static final Animation[][] rabbit = {{
+											Res.rabbit.sfA("boring", 0, 0),
+											new Animation("walk", Res.rabbit, 10, 0, /**/0, 1, 2, 3, 4),
+											new Animation("sprint", Res.rabbit, 20, 0, /**/0, 1, 2, 3, 4),
+											new Animation("bite", Res.rabbit, 30, 1, /**/1, 2, 3, 4, 1)},
+											{
+											Res.rabbit.sfA("boring", 0, 3),
+											new Animation("walk", Res.rabbit, 10, 3, /**/0, 1, 2, 3, 4),
+											new Animation("sprint", Res.rabbit, 20, 3, /**/0, 1, 2, 3, 4),
+											new Animation("bite", Res.rabbit, 30, 4, /**/1, 2, 3, 4, 1)}};
+	public static final ThingType RABBIT = new ThingType("RABBIT", Res.rabbit,
+			(w, c, p, ed) -> {
+				if(c.vertices[c.collisionVecWater].mats.read.data.solidity == 2)
+					return new Thing(ThingType.RABBIT, w, c, p.shift(0, 100));
+				else return null;
+			}
+			,new Animating(rabbit[0][0], new Rect(Res.rabbit.pixelCoords), 0, 0, 4, false, rabbit)
+			,new Life(10, 10, 2, new ItemType[]{ItemType.RABBITS_FOOT}, 0.01)
+			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring")
+			,new Attacking(2, 0.05, new AttackType[]{new AttackType("bite", 300, -300, 300, WeaponType.BITE, 2, 5, 0.5)})
+			,new Following(500.0, 50, ThingType.SARAH)
+			,new WalkAround()
+			,new Physics(1, 1)){
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
+			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+		}
+		public void update(Thing t, double delta){
+			if(follow.action(t, delta)){//follow
+				attack.attack(t, WeaponType.BITE, ItemType.NOTHING, "bite", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -135,7 +172,7 @@ public class ThingType {
 				else return null;
 			}
 			,new Animating(scorpion[0], new Rect(Res.scorpion.pixelCoords), 0, 0, 4, false, scorpion)
-			,new Life(10, 10, 2)
+			,new Life(10, 10, 2, new ItemType[]{ItemType.SCORPION_CLAW, ItemType.SCORPION_STING}, 0.05, 0.05)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring")
 			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 1)})
 			,new Following(500.0, 50, ThingType.SARAH)
@@ -156,7 +193,7 @@ public class ThingType {
 											new Animation("chew", Res.cow, 10, 0, /**/0, 1, 2, 3, 4, 5, 6)};
 	public static final ThingType COW = new ThingType("COW", Res.cow
 			,new Animating(cow[0], new Rect(Res.cow.pixelCoords), 0, 0, 1, false, cow)
-			,new Life(4, 3, 1)
+			,new Life(4, 3, 1, new ItemType[]{ItemType.COWHIDE, ItemType.COW_LEG}, 0.4, 0.4)
 			,new Movement("chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew")
 			,new Physics(200, 900));
 
@@ -181,6 +218,18 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta){
 			flyAround.action(t, delta);
+		}
+	};
+										static final Animation[][] midge =  {{
+											Res.midge.sfA("stand", 0, 0)}};
+	public static final ThingType MIDGE = new ThingType("MIDGE", Res.midge, (w, p, f, ed) -> new Thing(ThingType.MIDGE, w,p, f.shift(0, 90))
+	,new Animating(midge[0][0], new Rect(Res.midge.pixelCoords), 0, 1, 1, false, midge)
+	,new Life(1, 1, 0)
+	,new Movement("stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand")
+	,new Physics(0.001, 1, true, false, true, true, false)
+	,new MidgeAround()) {
+		public void update(Thing t, double delta){
+			midgeAround.action(t, delta);
 		}
 	};
 										static final Animation[][] villager = {{
@@ -213,7 +262,7 @@ public class ThingType {
 											new Animation("attack", Res.zombie, 30, 1,/**/0, 1, 2)};
 	public static final ThingType ZOMBIE = new ThingType("ZOMBIE", Res.zombie
 			,new Animating(zombie[0], new Rect(Res.zombie.pixelCoords), 0, 0, 4, false, zombie)
-			,new Life(10, 10, 2)
+			,new Life(10, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH}, 0.5, 0.5, 0.5)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand")
 			,new Attacking(4, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 0.5)})
 			,new Following(500.0, 300, ThingType.SARAH)
@@ -261,7 +310,7 @@ public class ThingType {
 											new Animation("chew", Res.trex, 30, 3,/**/0, 1, 2, 3)};
 	public static final ThingType TREX = new ThingType("TREX", Res.trex
 			,new Animating(trex[0], new Rect(Res.trex.pixelCoords), 0, 0, 6, false, trex)
-			,new Life(10, 10, 2)
+			,new Life(10, 10, 2, new ItemType[]{ItemType.TREX_TOOTH}, 0.9)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand")
 			,new Attacking(10, 0.05, new AttackType[]{
 					new AttackType("eat", 300, -300, 300, WeaponType.BITE, 2, 1, 5),
@@ -309,7 +358,7 @@ public class ThingType {
 										static final Animation[] cloud = {Res.cloud.sfA(0, 0)};
 	public static final ThingType CLOUD = new ThingType("CLOUD", Res.cloud
 			,new Animating(cloud[0], new Rect(Res.cloud.pixelCoords), -1, 0, 1, false, cloud)
-			,new Physics(1, 1000, true, false, true, false)){
+			,new Physics(1, 1000, true, false, true, false, true)){
 
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.box = file.createBox().scale(world.random.nextDouble() + 0.5);
@@ -376,11 +425,12 @@ public class ThingType {
 			,new Animating(tree_normal[0][0], new Rect(Res.tree.pixelCoords), 0, 1, 1, false, tree_normal)) {
 		
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
-			ani.setAnimation(t, "");
+			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
+			t.type.ani.setAnimation(t, "");
 			t.box.scale(0.5 + world.random.nextDouble());
 //			t.box.set(t.ani.createBox());//
 			if(t.behind == 0) t.behind = -1;
+			else if(t.behind == 1) t.behind = 2;
 			int stickAmount = World.rand.nextInt(6);
 			for(int i = 0; i < stickAmount; i++)
 				t.fruits.add(ItemType.STICK);
@@ -395,7 +445,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.tree_palm ,new Animating(tree_palm[0][0], new Rect(Res.tree_palm.pixelCoords), 0, 1, 1, false, tree_palm)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
-	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.tree_jungle ,new Animating(tree_jungle[0][0], new Rect(Res.tree_jungle.pixelCoords), 0, 1, 1, false, tree_jungle)){
+	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.tree_jungle ,new Animating(tree_jungle[0][0], new Rect(Res.tree_jungle.pixelCoords), 0, 2, 1, 1, false, tree_jungle)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 		
 		
@@ -430,12 +480,16 @@ public class ThingType {
 			,new Animating(bush_normal[0][0], new Rect(Res.bush_normal.pixelCoords), 0, 0, 1, false, bush_normal)) {
 		
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
-			ani.setAnimation(t, "");
-			t.box.set(file.createBox().scale(0.5 + world.random.nextDouble()));
-			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
+			t.type.ani.setAnimation(t, "");
+			t.box.scale(world.random.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5);
 			if(t.box.size.y > 80){
 				t.behind = -1;
+			}
+			if(extraData.length >= 2){
+				t.behind = (int) extraData[1];
+			} else {
+				t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
 			}
 			if(t.type == this && t.ani.ani.y == 1){//not necessary, because the other bushes use this too
 				int berryAmount = 1 + World.rand.nextInt(3);
@@ -444,9 +498,9 @@ public class ThingType {
 			}
 		}};
 	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.bush_jungle ,new Animating(bush_jungle[0][0], new Rect(Res.bush_jungle.pixelCoords), 0, 0, 1, false, bush_jungle)){
-		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType BUSH_CANDY = new ThingType("BUSH_CANDY", Res.bush_candy ,new Animating(bush_candy[0][0], new Rect(Res.bush_candy.pixelCoords), 0, 0, 1, false, bush_candy)){
-		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, world, field, pos, extraData);}};
 		
 
 										static final Animation[][] flower_normal = {
@@ -470,14 +524,14 @@ public class ThingType {
 			,new Animating(flower_normal[0][0], new Rect(Res.flower_normal.pixelCoords), 0, 0, 1, false, flower_normal)) {
 
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
-			ani.setAnimation(t, "");
+			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
+			t.type.ani.setAnimation(t, "");
 			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
 		}};
 	public static final ThingType FLOWER_CANDY = new ThingType("FLOWER_CANDY", Res.flower_candy ,new Animating(flower_candy[0][0], new Rect(Res.flower_candy.pixelCoords), 0, 0, 1, false, flower_candy)){
-		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ FLOWER_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType FLOWER_JUNGLE = new ThingType("FLOWER_JUNGLE", Res.flower_jungle ,new Animating(flower_jungle[0][0], new Rect(Res.flower_jungle.pixelCoords), 0, 0, 1, false, flower_jungle)){
-		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ FLOWER_NORMAL.setup(t, world, field, pos, extraData);}};
 			
 
 
@@ -563,23 +617,52 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
+			t.fruits.add(ItemType.ZOMBIE_FLESH);
 		}};
+		static final Animation[][] crack = {
+			{Res.crack.sfA(0, 0)},
+			{Res.crack.sfA(0, 1)},
+			{Res.crack.sfA(0, 2)},
+			{Res.crack.sfA(0, 3)}};
+		public static final ThingType CRACK = new ThingType("CRACK", Res.crack ,new Animating(crack[0][0], new Rect(Res.crack.pixelCoords), 0, 0, 1, false, crack)){
+			public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
+				t.aniSet = World.rand.nextInt(ani.animations.length);
+				ani.setAnimation(t, "");
+			}};
+		static final Animation[][] fossil = {
+			{Res.fossil.sfA(0, 0)},
+			{Res.fossil.sfA(0, 1)},
+			{Res.fossil.sfA(0, 2)}};
+		public static final ThingType FOSSIL = new ThingType("FOSSIL", Res.fossil ,new Animating(fossil[0][0], new Rect(Res.fossil.pixelCoords), 0, 0, 1, false, fossil)){
+			public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
+				t.aniSet = World.rand.nextInt(ani.animations.length);
+				ani.setAnimation(t, "");
+			}};
 		
 	//OTHER THINGS
 										static final Animation[] item = {Res.items_world.sfA(0, 0)};
-	public static final ThingType ITEM = new ThingType("ITEM", Res.items_world
+	public static final ThingType ITEM = new ThingType("ITEM", Res.items_inv
 			,new Animating(item[0], Res.items_world.createBox(), 0, 0, 1, false, item)
-			,new Physics(1, 1)
-			,new Movement("", "", "", "", "", "", "", "", "", "")) {
+			,new Physics(1, 1)) {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			ItemType type = (ItemType)extraData[0];
+			t.ani.setAnimation(type.texWorld);
+			
+			t.box.set(type.texWorld.atlas.pixelCoords);
 			t.itemBeing = type;
 		}};
 										static final Animation[] coin = {Res.coin.sfA(0, 0)};
 	public static final ThingType COIN = new ThingType("COIN", Res.coin,
 			new Animating(coin[0], Res.coin.createBox(), 0, 0, 1, false, coin),
 			new Physics(1, 1),
-			new Movement("", "", "", "", "", "", "", "", "", ""));
+			new PhysicsExtension()){
+		{
+			physEx.typesToRepell = new ThingType[]{this};
+		}
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
+			if(extraData.length > 0) t.vel.set((Vec) extraData[0]);
+		}
+	};
 	public static final ThingType DUMMY = new ThingType("DUMMY", Texture.empty,
 			new Animating(Texture.empty.sfA(0, 0), new Rect(), 0, 0, 0, false));
 	
@@ -602,6 +685,8 @@ public class ThingType {
 	public AvatarControl avatar;//12
 	public FlyAround flyAround;//13
 	public WalkAround walkAround;//14
+	public MidgeAround midgeAround;//15
+	public PhysicsExtension physEx;//16
 	
 	AiPlugin[] plugins;
 	public Spawner defaultSpawner;
@@ -613,7 +698,7 @@ public class ThingType {
 	ThingType(String name, TexAtlas file, Spawner defaultSpawner, AiPlugin... plugins){
 		this.name = name;
 		this.file = file;
-		this.plugins = new AiPlugin[14];
+		this.plugins = new AiPlugin[15];
 		this.ordinal = index++;
 		tempList.add(this);
 		
@@ -644,6 +729,10 @@ public class ThingType {
 				speak = (Speaking)plugin;
 			} else if(plugin instanceof AvatarControl){
 				avatar = (AvatarControl)plugin;
+			} else if(plugin instanceof MidgeAround){
+				midgeAround = (MidgeAround)plugin;
+			} else if(plugin instanceof PhysicsExtension){
+				physEx = (PhysicsExtension)plugin;
 			}
 			//...
 		}
@@ -655,6 +744,7 @@ public class ThingType {
 		this.plugins[i++] = speak;//updates the thoughbubble's position
 		this.plugins[i++] = life;//removes the thing, if live is below zero
 		this.plugins[i++] = attack;//attack cooldown
+		this.plugins[i++] = physEx;//repelling other things
 		
 		//no update
 		this.plugins[i++] = ride;
@@ -664,8 +754,9 @@ public class ThingType {
 		this.plugins[i++] = walkAround;
 		this.plugins[i++] = movement;
 		this.plugins[i++] = magic;
+		this.plugins[i++] = midgeAround;
 		//TODO go on
-		if(defaultSpawner == null) this.defaultSpawner = (w, p, f, ed) -> new Thing(this, w, p, f);
+		if(defaultSpawner == null) this.defaultSpawner = (w, p, f, ed) -> new Thing(this, w, p, f, ed);
 		else this.defaultSpawner = defaultSpawner;
 	}
 	

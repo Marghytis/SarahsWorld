@@ -8,11 +8,10 @@ import util.math.UsefulF;
 import util.math.Vec;
 import world.Material;
 import world.Stratum;
-import world.World;
 import world.WorldData;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
-import world.generation.ThingSpawner.Spawner;
+import world.generation.Biome.ThingSpawner.Spawner;
 import data.IndexBuffer;
 
 public class BiomeManager {
@@ -29,7 +28,7 @@ public class BiomeManager {
 	public BiomeManager(WorldData world, Biome normal, boolean left){
 		this.left = left;
 		this.world = world;
-		ants = new Ant[World.layerCount];
+		ants = new Ant[Biome.layerCount];
 		for(int yIndx = 0; yIndx < ants.length; yIndx++){
 			ants[yIndx] = new Ant(normal.stratums[yIndx]);
 		}
@@ -73,7 +72,7 @@ public class BiomeManager {
 	
 	public Vertex[] createVertices(double yTop){
 		
-		Vertex[] out = new Vertex[World.layerCount];
+		Vertex[] out = new Vertex[Biome.layerCount];
 		
 		double y = yTop;
 		for(int i = 0; i < out.length; i++){

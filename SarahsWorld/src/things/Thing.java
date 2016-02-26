@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 
 import quest.ActiveQuest;
 import render.Animator;
-import things.aiPlugins.Physics;
 import things.aiPlugins.Physics.Where;
 import things.aiPlugins.Speaking.ThoughtBubble;
 import util.Color;
@@ -27,14 +26,16 @@ public class Thing {
 	public Color color = null;
 	public ItemType itemBeing;
 	public double yOffset;
-	public double accWalking = Physics.walk, accSwimming = Physics.walk/4, accFlying;//accWalking is different from snail to snail for example
+	public double accWalking = 1000, accSwimming = 250, accFlying;//accWalking is different from snail to snail for example
 	public int behind;
 	public Rect box = new Rect();
 
-	public Thing right, left;
+	public Thing right, left, leftTemp, rightTemp;
 	public Vec pos = new Vec(), nextPos = new Vec();
-	public Vec vel = new Vec(), velAv = new Vec();
+	public Vec vel = new Vec(), nextVelAvDelta = new Vec(), nextVel = new Vec();
 	public Vec force = new Vec(), noFricForce = new Vec(), flyForce = new Vec();//flyForce is mainly for butterflies
+	public Column collisionC = null;
+	public double airTime;
 	public boolean reallyAir, willLandInWater;
 	public double walkingForce, speed, maxWalkingSpeed;
 	public Animator ani;
@@ -72,7 +73,7 @@ public class Thing {
 	public ActiveQuest quest;
 
 	public double xDestMin, xDestMax;//for walking around
-	public double splashCooldown1, splashCooldown2;
+	public double splashCooldown1, splashCooldown2, otherCooldown;
 	
 	public Thing(ThingType type, WorldData world, Column field, Vec pos, Object... extraData){
 		this.type = type;
@@ -106,7 +107,7 @@ public class Thing {
 	
 	public void setup(WorldData world, Column field, Vec pos, Object... extraData){
 		for(AiPlugin plugin : type.plugins){
-			if(plugin != null) plugin.setup(this);
+			if(plugin != null) plugin.setup(this, world);
 		}
 		type.setup(this, world, field, pos, extraData);
 	}

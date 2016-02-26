@@ -1,14 +1,16 @@
 package things.aiPlugins;
 
+import main.Main;
 import things.AiPlugin;
 import things.Thing;
 import world.World;
+import world.WorldData;
 
 
 
 public class WalkAround extends AiPlugin{
 	
-	public void setup(Thing t){
+	public void setup(Thing t, WorldData world){
 		t.xDestMin = t.pos.x + World.rand.nextInt(500) - 250;
 		t.xDestMax = t.xDestMin + 50;
 	}
@@ -26,7 +28,7 @@ public class WalkAround extends AiPlugin{
 				if(World.rand.nextBoolean()){
 					t.waitTime = World.rand.nextInt(9)+1;
 				} else {
-					setup(t);
+					setup(t, Main.world.data);
 				}
 			}
 			t.type.movement.setAni(t, acc);

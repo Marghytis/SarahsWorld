@@ -8,7 +8,8 @@ import java.io.IOException;
 import org.lwjgl.opengl.GL20;
 
 public enum Shader20 {
-	AURA("res/shader/AuraShader.frag");
+	AURA("res/shader/AuraShader.frag"),
+	OUTLINE("res/shader/OutlineShader.frag");
 	
 	public void bind(){
 		GL20.glUseProgram(handle);
@@ -23,19 +24,31 @@ public enum Shader20 {
 	}
 	
 	public int handle;
-	
+
 	Shader20(String srcName){
+		this(srcName, null);
+	}
+	Shader20(String srcName, String vertex){
 		//create program
 		int program = GL20.glCreateProgram();
 		
 		//create shader
 		int fShader = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
+		int vShader = -1;
+		if(vertex != null)
+			 vShader = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
 		
 		//add Source and compile shader
 		try {
 			GL20.glShaderSource(fShader, readFile(srcName));
 			GL20.glCompileShader(fShader);
 			System.out.println(GL20.glGetShaderInfoLog(fShader, 1000));
+			
+			if(vShader != -1){
+				GL20.glShaderSource(vShader, readFile(vertex));
+				GL20.glCompileShader(vShader);
+				System.out.println(GL20.glGetShaderInfoLog(vShader, 1000));
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -43,6 +56,11 @@ public enum Shader20 {
 		//add shader to program and delete the object
 		GL20.glAttachShader(program, fShader);
 		GL20.glDeleteShader(fShader);
+		
+		if(vShader != -1){
+			GL20.glAttachShader(program, vShader);
+			GL20.glDeleteShader(vShader);
+		}
 		
 		//link program
 		GL20.glLinkProgram(program);

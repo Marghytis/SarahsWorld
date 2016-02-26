@@ -15,8 +15,6 @@ import core.Window;
 
 public class World {
 
-	public static int layerCount = 8;
-	
 	public static Random rand = new Random();
 	
 	public WorldData data;
@@ -38,7 +36,7 @@ public class World {
 		
 
 		Vertex v = data.mostRight.vertices[data.mostRight.collisionVec];
-		Vec pos = new Vec(0, v.y + 1000);
+		Vec pos = new Vec(0, v.y + 200);
 		avatar = new Thing(ThingType.SARAH, data, v.parent, pos);
 		
 		init();

@@ -1,5 +1,7 @@
 package things;
 
+import world.WorldData;
+
 
 
 public abstract class AiPlugin {
@@ -10,6 +12,11 @@ public abstract class AiPlugin {
 	
 	public String name;
 	
+	/**
+	 * You may NOT move things from one column to another (see coins)
+	 * @param t
+	 * @param delta
+	 */
 	public void update(Thing t, double delta){}
 	
 	/**
@@ -21,7 +28,7 @@ public abstract class AiPlugin {
 	 */
 	public boolean action(Thing t, double delta){return false;};
 	
-	public void setup(Thing t){};
+	public void setup(Thing t, WorldData world){};
 	
 	public void partRender(Thing t){}
 

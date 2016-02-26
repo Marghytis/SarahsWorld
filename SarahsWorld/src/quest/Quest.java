@@ -14,7 +14,8 @@ import world.WorldWindow;
 import world.generation.Zone.Attribute;
 
 public enum Quest {
-	FIREFIGHTER("res/quest/Firefighter.txt");
+	FIREFIGHTER("res/quest/Firefighter.txt"),
+	TEST("res/quest/Test.txt");
 
 	public static Quest[] values;
 	

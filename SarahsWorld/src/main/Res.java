@@ -21,12 +21,12 @@ public class Res {
 	public static final TexAtlas tree_fir = new TexAtlas("res/objects/Fir.png", 1, 3, -0.5, -0.1);
 	public static final TexAtlas tree_firSnow = new TexAtlas("res/objects/Fir_Snow.png", 1, 3, -0.5, -0.2);
 	public static final TexAtlas tree_grave = new TexAtlas("res/objects/GraveTree.png", 1, 2, -0.5f, -0.2f);
-	public static final TexAtlas tree_jungle	= new TexAtlas("res/objects/JungleTree.png", 1, 4, -0.5f, -0.2f);
-	public static final TexAtlas plant_jungle = new TexAtlas("res/objects/Fern.png", 1, 5, -0.5f, -0.02f);
+	public static final TexAtlas tree_jungle	= new TexAtlas("res/objects/JungleTree.png", 1, 4, -0.5f, -0.1f);
+	public static final TexAtlas plant_jungle = new TexAtlas("res/objects/Fern.png", 1, 5, -0.5f, -0.1f);
 	public static final TexAtlas flower_jungle = new TexAtlas("res/objects/JungleFlower.png", 1, 5, -0.5f, -0.05f);
 	public static final TexAtlas bush_jungle = new TexAtlas("res/objects/JungleBush.png", 1, 1, -0.5f, -0.2f);
 	public static final TexAtlas plant_giant = new TexAtlas("res/objects/GiantPlant.png", 1, 4, -0.5f, -0.2f);
-	public static final TexAtlas grass_giant = new TexAtlas("res/objects/GiantGras.png", 1, 3, -0.5f, -0.2f);
+	public static final TexAtlas grass_giant = new TexAtlas("res/objects/GiantGras.png", 1, 3, -0.5f, -0.1f);
 	public static final TexAtlas tree_palm = new TexAtlas("res/objects/PalmTree.png", 1, 3, -0.5f, -0.03f);
 	public static final TexAtlas tree_candy = new TexAtlas("res/objects/CandyTree.png", 1, 1, -0.5f, -0.2f);
 	public static final TexAtlas bamboo = new TexAtlas("res/objects/Bamboo.png", 1, 4, -0.5f, -0.02f);
@@ -63,6 +63,7 @@ public class Res {
 	public static final TexAtlas sarah_death = new TexAtlas("res/creatures/Sarah_death.png", 14, 1, -0.5f, -0.5f);
 	public static final TexAtlas snail  = new TexAtlas("res/creatures/Snail.png", 7, 3, -0.5f, -0.1f);
 	public static final TexAtlas butterfly  = new TexAtlas("res/creatures/Butterfly.png", 5, 2, -0.5f, -0.5f);
+	public static final TexAtlas midge  = new TexAtlas("res/creatures/Midge.png", 1, 1, -0.5f, -0.5f);
 	public static final TexAtlas heart = new TexAtlas("res/creatures/Heart.png", 4, 2, -0.5f, -0.2f);
 	public static final TexAtlas rabbit  = new TexAtlas("res/creatures/Rabbit.png", 5, 3, -0.5f, -0.2f);
 	public static final TexAtlas bird  = new TexAtlas("res/creatures/Bird.png", 5, 4, -0.5f, -0.2f);
@@ -82,7 +83,7 @@ public class Res {
 	public static final TexAtlas inventory = new TexAtlas("res/items/Inventory.png", 1, 2, 0, 0);
 	public static final TexAtlas items_world = new TexAtlas("res/items/ItemsWorld.png", 5, 1, -0.5f, -0.5f);
 	public static final TexAtlas items_inv = new TexAtlas("res/items/ItemsInv.png", 20, 2, -0.5f, -0.5f);
-	public static final TexAtlas items_weapons = new TexAtlas(NPC_plus_Handheld_Items, 45, 0, 175, 280, 5, 4, -0.5f, -0.5f);static {items_weapons.addInfo(items_handheld_gripPos);}
+	public static final TexAtlas items_weapons = new TexAtlas("res/items/ItemsHandheld.png", 5, 7, -0.5f, -0.5f);static {items_weapons.addInfo(items_handheld_gripPos);}
 	public static final Texture moneybag = new Texture("res/items/Moneybag.png", -0.5f, -0.5f);
 	
 	public static final Texture light = new Texture("res/particles/Light.png", -0.5, -0.5);

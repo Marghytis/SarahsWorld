@@ -1,5 +1,6 @@
 package world.generation;
 
+import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.Material;
@@ -15,6 +16,7 @@ public enum Biome {
 			new Stratum(Material.SANDSTONE, 50, 20.0, 20, 40, 2, 4),
 			new Stratum(Material.SANDSTONE2, 100, 20.0, 20, 40, 2, 4),
 			new Stratum(Material.SANDSTONE, 100, 20.0, 20, 40, 2, 4),
+			null,
 			new Stratum(Material.SANDSTONE2, 1000000.0, 200.0, 20, 40, 5, 5),
 			null
 			},
@@ -31,6 +33,7 @@ public enum Biome {
 			new Stratum(Material.SANDSTONE, 50, 20.0, 20, 40, 2, 4),
 			new Stratum(Material.SANDSTONE2, 100, 20.0, 20, 40, 2, 4),
 			new Stratum(Material.SANDSTONE, 100, 20.0, 20, 40, 2, 4),
+			null,
 			new Stratum(Material.SANDSTONE2, 1000000.0, 200.0, 20, 40, 5, 5),
 			null
 			},
@@ -48,7 +51,8 @@ public enum Biome {
 			OASIS.stratums[4],
 			OASIS.stratums[5],
 			OASIS.stratums[6],
-			null
+			OASIS.stratums[7],
+			OASIS.stratums[8],
 			}),
 	CANDY(new Stratum[]{
 			null,
@@ -56,8 +60,9 @@ public enum Biome {
 			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
 			null,
 			null,
-			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 			null,
+			null,
+			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 			null
 			},
 			
@@ -69,8 +74,9 @@ public enum Biome {
 			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
 			null,
 			null,
-			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 			null,
+			null,
+			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 			null
 			},
 			
@@ -82,17 +88,20 @@ public enum Biome {
 			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
 			null,
 			null,
-			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 			null,
+			null,
+			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 			null
 			},
 			
 			new ThingSpawner(ThingType.PYRAMID.defaultSpawner, 0.03),
-			new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05)),
+			new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05),
+			new ThingSpawner(ThingType.GRASS.defaultSpawner, 0.5)),
 	FIR_FORREST(new Stratum[]{
 			null,
 			new Stratum(Material.GRASS, 20.0, 20.0, 5, 40, 2, 4),
 			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 5, 4),
+			null,
 			null,
 			null,
 			null,
@@ -112,41 +121,39 @@ public enum Biome {
 				new Stratum(Material.WATER, 200.0, 20.0, 10, 50, 0, 4),
 				new Stratum(Material.SAND, 20.0, 20.0, 5, 40, 2, 4),
 				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 2, 4),
-				null,
-				null,
-				null,
-				new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 4, 5),
+				new Stratum(Material.STONE, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE, 100.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 100.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 				null
 				}),
-		NORMAL(new Stratum[]{
-				null,
-				new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
-				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
-				null,
-				null,
-				new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
-				null,
-				null
-				},
-				
-				new ThingSpawner(ThingType.PYRAMID.defaultSpawner, 0.03),
-				new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05)
-		),
 		JUNGLE(new Stratum[]{
 				null,
-				new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
+				new Stratum(Material.GRASS, 40.0, 20.0, 20, 40, 20, 4),
 				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
-				null,
-				null,
+				new Stratum(Material.STONE, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE, 100.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 100.0, 20.0, 20, 40, 1, 5),
 				new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
-				null,
 				null
 				}
-
-//				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.TREE_JUNGLE, w,p, f), 0.2)
-//				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.BUSH_JUNGLE, w,p, f), 0.3)
-//				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.FERN, w,p, f), 0.5)
-//				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.BIRD_RAINBOW, w,p, f), 0.1)
+				,new ThingSpawner(ThingType.VILLAGER.defaultSpawner, 1)
+//				,new ThingSpawner(ThingType.TREE_JUNGLE.defaultSpawner, 0.5)
+//				,new ThingSpawner(ThingType.FERN.defaultSpawner, 0.5)
+//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BAMBOO, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
+//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BUSH_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
+//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.GIANT_GRASS, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
+//				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CRACK, w, c, pos.shift(0, -100 - w.random.nextInt(1000))), 0.3)
+//				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.FOSSIL, w, c, pos.shift(0, -200 - w.random.nextInt(1000))), 0.1)
+//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.FLOWER_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
+//				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 1.5, -4), 0.5)
+//				,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
+//				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
+//				,new ThingSpawner(ThingType.SNAIL.defaultSpawner, 0.01)
+//				,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.05)
+//				,new ThingSpawner(ThingType.MIDGE.defaultSpawner, 2)
 		),
 	EMPTY(new Stratum[]{
 			null,
@@ -155,6 +162,7 @@ public enum Biome {
 			null,
 			null,
 			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
+			null,
 			null,
 			null
 			}),
@@ -165,6 +173,7 @@ public enum Biome {
 			null,
 			null,
 			new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
+			null,
 			null,
 			null
 			}
@@ -177,6 +186,7 @@ public enum Biome {
 				);
 	
 	ThingSpawner[] spawners;
+	public static int layerCount = 9;
 	public final Stratum[] stratums;
 	
 	Biome(Stratum[] stratums, ThingSpawner... spawners){
@@ -200,5 +210,19 @@ public enum Biome {
 				ts.spawner.spawn(world, c.getRandomTopLocation(world.random, posField), posField.copy());
 			}
 		}
+	}
+	
+	public static class ThingSpawner {
+		
+		Spawner spawner;
+		double probabilityOnFieldWidth;
+		
+		public ThingSpawner(Spawner spawner, double probabilityOnFieldWidth){
+			this.spawner = spawner;
+			this.probabilityOnFieldWidth = probabilityOnFieldWidth;
+		}
+		
+		public interface Spawner { public Thing spawn(WorldData world, Column field, Vec pos, Object... extraData); }
+		//default: (w, c, pos, ed) -> new Thing(ThingType.EXAMPLE, w, c, pos.copy(), ed);
 	}
 }

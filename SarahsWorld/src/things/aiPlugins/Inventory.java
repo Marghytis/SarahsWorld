@@ -12,6 +12,7 @@ import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
 import util.math.Vec;
+import world.WorldData;
 
 public class Inventory extends AiPlugin{
 
@@ -26,7 +27,7 @@ public class Inventory extends AiPlugin{
 		itemAnimator = new Animator(defaultItem.texHand);
 	}
 	
-	public void setup(Thing t){
+	public void setup(Thing t, WorldData world){
 		t.itemStacks = new ItemStack[itemAmount];
 		for(int i = 0; i < itemAmount; i++){
 			t.itemStacks[i] = new ItemStack(i, this);

@@ -13,9 +13,9 @@ import world.WorldData.Vertex;
 
 public class Physics extends AiPlugin{
 	
+	static double dt = 0.010;
 	public static double lowestSpeed = 0.1;
 	
-	public static double walk = 1000;
 	public static double jump = 500;
 	public static float grassFriction = 1;
 	public static Vec gravity = new Vec(0, -981);
@@ -24,37 +24,27 @@ public class Physics extends AiPlugin{
 	public double mass = 1;
 	public double airea = 1;//for air friction
 	public double friction = 0.5, stiction = 0.01;
-	public boolean frict, grav, coll, water;
+	public boolean frict, grav, coll, water, walk;
 
 	/**
 	 * Should generally be one of the last plugins to update, so that other forces can come to effect
 	 * @param mass
 	 * @param airea
 	 */
-	public Physics(double mass, double airea, boolean frict, boolean grav, boolean coll, boolean water) {
+	public Physics(double mass, double airea, boolean frict, boolean grav, boolean coll, boolean water, boolean walk) {
 		this.mass = mass;
 		this.airea = airea;
 		this.frict = frict;
 		this.grav = grav;
 		this.coll = coll;
 		this.water = water;
+		this.walk = walk;
 	}
 	
 	public Physics(double mass, double airea){
-		this(mass, airea, true, true, true, true);
+		this(mass, airea, true, true, true, true, true);
 	}
-	Vec approxNextVel = new Vec();
-	Vec approxNextAvVel = new Vec();
-	Vec approxNextPos = new Vec();
-	Vec approxNextForce = new Vec();
-	Vec averageForce = new Vec();
-	Vec nextVel = new Vec();
-	Vec nextVelAvDelta = new Vec();
-	Vec nextPos = new Vec();
 	
-	boolean collision, collisionTotal;
-	
-	static double dt = 0.010;
 	public void update(Thing t, double delta){
 		if(ThingType.SARAH.avatar.freeze){
 			return;
@@ -72,7 +62,7 @@ public class Physics extends AiPlugin{
 				double time = step;
 				if(!t.where.g)
 					time = freeFallOrCollision(t, constantForce, time);
-				if(t.where.g)
+				if(t.where.g && walk)
 					walkOrLiftOf(t, constantForce, time);
 			}
 				
@@ -90,40 +80,37 @@ public class Physics extends AiPlugin{
 		
 		{//UPDATE WHERE------------------------------------------------O
 			if(t.where.g){
-				if(airTime > 0.5 && t.type.movement != null)
+				if(t.airTime > 0.5 && t.type.movement != null)
 					t.type.movement.land(t);
 				t.reallyAir = false;
-				airTime = 0;
+				t.airTime = 0;
 			} else {
-				airTime += delta;
-				if(!t.reallyAir && airTime > 0.4 && t.type.movement != null){
+				t.airTime += delta;
+				if(!t.reallyAir && t.airTime > 0.4 && t.type.movement != null){
 					t.type.ani.setAnimation(t, t.type.movement.fly);
 					t.reallyAir = true;
 				}
 			}
 		}
 		
-		
 		//UPDATE WORLD LINK
 		t.link = Main.world.window.get((int)Math.floor(t.pos.x/Column.step));
-		t.link.add(t);
 	}
 	
-	Vec circleCollision = new Vec(), walkingForce = new Vec();
-	
+	Vec circleCollision = new Vec();
 	public double freeFallOrCollision(Thing t, Vec constantForce, double delta){
 		//constant Force minus air friction, nextVel and nextPos get set
 		updateForceNextVelAndNextPos(t, constantForce, null, delta, true);
-		if(collision(t.pos, nextVelAvDelta)){
+		if(collision(t, t.pos, t.nextVelAvDelta)){
 //			if(t.type == ThingType.SARAH) System.out.println("Collision! " + collisionVec);
 			double t1 = calculateCollisionTime(collisionVec.minus(t.pos).length(), t.force.length()/mass, t.vel.length());
-			Vec topLine = collisionC.getTopLine(new Vec()).normalize();
+			Vec topLine = t.collisionC.getTopLine(new Vec()).normalize();
 			updateForceNextVelAndNextPos(t, constantForce, null, t1, true);
 			t.pos.set(collisionVec);
-			t.link = collisionC;
+			t.link = t.collisionC;
 			t.willLandInWater = false;
 			
-			t.speed = nextVel.dot(topLine);
+			t.speed = t.nextVel.dot(topLine);
 			t.vel.set(topLine).scale(t.speed);
 			
 			t.where.g = true;
@@ -137,6 +124,7 @@ public class Physics extends AiPlugin{
 			return 0;
 		}
 	}
+	
 	public void walkOrLiftOf(Thing t, Vec constantForce, double delta){
 		
 		Vec topLine = t.link.getTopLine(new Vec()).normalize();
@@ -149,15 +137,15 @@ public class Physics extends AiPlugin{
 		calculateSpeed(topLine, ortho, t, delta);
 		
 		//test if the thing stays on the ground, or if it lifts of
-		if(( t.speed == 0 && /*topLine.y >= nextVel.y*/ortho.dot(nextVel) <= 0) ||/*circleCollision.minus(t.pos).y >= nextVel.y*///ortho dot nextVel is <= 0, if nextVel points in the ground
-			(t.speed != 0 && circleCollision(t.pos, Math.abs(t.speed*delta), t.speed > 0) && circleCollision.minus(t.pos).ortho(t.speed > 0).dot(nextVel) <= 0 )
+		if(( t.speed == 0 && /*topLine.y >= nextVel.y*/ortho.dot(t.nextVel) <= 0) ||/*circleCollision.minus(t.pos).y >= nextVel.y*///ortho dot nextVel is <= 0, if nextVel points in the ground
+			(t.speed != 0 && circleCollision(t, t.pos, Math.abs(t.speed*delta), t.speed > 0) && circleCollision.minus(t.pos).ortho(t.speed > 0).dot(t.nextVel) <= 0 )
 		   ){
 			if(t.speed == 0){
 				t.vel.set(0, 0);
 			} else {
 				t.pos.set(circleCollision);
-				t.vel.set(collisionC.getTopLine(topLine)).setLength(t.speed);
-				t.link = collisionC;
+				t.vel.set(t.collisionC.getTopLine(topLine)).setLength(t.speed);
+				t.link = t.collisionC;
 			}
 			t.where.g = true;
 		} else {
@@ -175,22 +163,22 @@ public class Physics extends AiPlugin{
 		else if(t.where.g)
 			t.force.shift(topLine, t.walkingForce);
 		
-		nextVel.set(t.vel).shift(t.force, delta/mass);
-		applyDynamicFriction(t, nextVel, delta);
-		nextVelAvDelta.set((t.vel.x + nextVel.x)/2, (t.vel.y + nextVel.y)/2).scale(delta);
-		nextPos.set(t.pos).shift(nextVelAvDelta);
+		t.nextVel.set(t.vel).shift(t.force, delta/mass);
+		applyDynamicFriction(t, t.nextVel, delta);
+		t.nextVelAvDelta.set((t.vel.x + t.nextVel.x)/2, (t.vel.y + t.nextVel.y)/2).scale(delta);
+		t.nextPos.set(t.pos).shift(t.nextVelAvDelta);
 	}
 	
 	public void updatePosAndVel(Thing t){
-		t.pos.set(nextPos);
-		t.vel.set(nextVel);		
+		t.pos.set(t.nextPos);
+		t.vel.set(t.nextVel);		
 	}
 	
 	public void calculateSpeed(Vec topLine, Vec ortho, Thing t, double delta){
 		//forces
 		double normal = t.force.dot(ortho);
 		double downhill = t.force.dot(topLine);//walking force already included from before
-		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*collisionC.vertices[collisionC.collisionVec].mats.read.data.deceleration
+		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.vertices[t.collisionC.collisionVec].mats.read.data.deceleration
 //							+ (Settings.airFriction ? 1 : 0)*t.speed*t.speed*airFriction*airea
 							;
 
@@ -214,7 +202,7 @@ public class Physics extends AiPlugin{
 		return solution1 >= 0 ? solution1/acc : (s1 + s2)/acc;
 	}
 	
-	public boolean circleCollision(Vec pos1, double r, boolean right){
+	public boolean circleCollision(Thing t, Vec pos1, double r, boolean right){
 		Vec vec1 = new Vec(), vec2 = new Vec();
 		for(Column c = Main.world.window.leftEnd; c != Main.world.window.rightEnd && c != null; c = c.right){
 			Vec[] output = UsefulF.circleIntersection(
@@ -223,11 +211,11 @@ public class Physics extends AiPlugin{
 					pos1,
 					r);
 			if(right && output[1] != null){
-				collisionC = c;
+				t.collisionC = c;
 				circleCollision.set(output[1]);
 				return true;
 			} else if(!right && output[0] != null){
-				collisionC = c;
+				t.collisionC = c;
 				circleCollision.set(output[0]);
 				return true;
 			}
@@ -236,8 +224,7 @@ public class Physics extends AiPlugin{
 	}
 	
 	Vec collisionVec = new Vec();
-	Column collisionC = null;
-	public boolean collision(Vec pos1, Vec velt){
+	public boolean collision(Thing t, Vec pos1, Vec velt){
 		if(coll){
 			Vec vec1 = new Vec(), vec2 = new Vec();
 			for(Column c = Main.world.window.leftEnd; c != Main.world.window.rightEnd && c != null; c = c.right){
@@ -246,7 +233,7 @@ public class Physics extends AiPlugin{
 						velt,
 						vec1.set(c.xReal, c.vertices[c.collisionVec].y),
 						vec2.set(c.right.xReal, c.right.vertices[c.right.collisionVec].y), collisionVec)){
-					collisionC = c;
+					t.collisionC = c;
 					return true;//can only collide with one vertex
 				}
 			}
@@ -263,8 +250,6 @@ public class Physics extends AiPlugin{
 			}
 		}
 	}
-
-	double airTime = 0;
 //	
 //	public Vertex findWater(Column c, double yMin, double yMax){
 //		boolean empty = true;

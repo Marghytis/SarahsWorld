@@ -1,4 +1,5 @@
 quests.firefighter.question1="Hello, could you maybe help me out a bit?|My sense of direction is very bad,|and I don't have any firewood left...|If you could bring some to me I would be very grateful!"
+quests.test.question1="Test dies ist ein Test!!11!!1"
 accept.kind="O.K."; "Yes, sure."; "Yeah, I'll do it."; "No problem!"; "Deal!"; "Great man!"
 reject.kind="No, sorry, I don't have time now."; "I'm sorry, I can't do that now."
 reject.unkind="I'm not your slave, man!"; "Shut up, fucking asshole!"; "I'm not going to do that."; "What do you wan't from me?!?"

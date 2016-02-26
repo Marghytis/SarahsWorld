@@ -18,11 +18,11 @@ public enum ItemType {
 
 //				Texture texWorld,			Texture texHand,		Texture texinv,			Rect boxWorld,				Rect boxHand,		String name, int coolDownStart, int value, WeaponType weaponType,	ItemUsageType useType, 	BodyPos bodyPos,int attackStrength, double crit,double critProb, boolean needsTarget
 //				Texture World           	|Texture on creature	|Texture inventory	 	|Box world					|Box on creature	|Name			|Cooldown						
-	SWORD(		Res.items_world.sfA(0, 0),	Res.items_weapons,		Res.items_inv.tex(0, 0), new int[]{-25, -2, 50, 50}, new int[]{0, 0},	"Sword",		500,			20, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	4, 					6, 			0.1,			false),
-	AXE(		Res.items_world.sfA(1, 0),	Res.items_weapons,		Res.items_inv.tex(1, 0), new int[]{-25, -2, 50, 50}, new int[]{1, 0},	"Axe",			1000,			100, 		WeaponType.STRIKE,		ItemUsageType.FIST,		BodyPos.HAND, 	10, 				14,			0.1,			false),
-	STICK(		Res.items_world.sfA(2, 0),	Res.items_weapons,		Res.items_inv.tex(3, 0), new int[]{-25, -2, 50, 50}, new int[]{2, 0},	"Stick",		500,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2, 					2, 			0,				false),
-	CANDY_CANE(	Res.items_world.sfA(3, 0),	Res.items_weapons,		Res.items_inv.tex(5, 0), new int[]{-25, -2, 50, 50}, new int[]{3, 0},	"Candy cane",	1000,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2,					2,			0,				false),
-	SHOVEL(		Res.items_world.sfA(4, 0),	Res.items_weapons,		Res.items_inv.tex(4, 0), new int[]{-25, -2, 50, 50}, new int[]{4, 0},	"Shovel",		700,			70, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.1,			false),
+	SWORD(		Res.items_inv.sfA(0, 0),	Res.items_weapons,		Res.items_inv.tex(0, 0), new int[]{-25, -2, 50, 50}, new int[]{0, 0},	"Sword",		500,			20, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	4, 					6, 			0.1,			false),
+	AXE(		Res.items_inv.sfA(1, 0),	Res.items_weapons,		Res.items_inv.tex(1, 0), new int[]{-25, -2, 50, 50}, new int[]{1, 0},	"Axe",			1000,			100, 		WeaponType.STRIKE,		ItemUsageType.FIST,		BodyPos.HAND, 	10, 				14,			0.1,			false),
+	STICK(		Res.items_inv.sfA(2, 0),	Res.items_weapons,		Res.items_inv.tex(3, 0), new int[]{-25, -2, 50, 50}, new int[]{2, 0},	"Stick",		500,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2, 					2, 			0,				false),
+	CANDY_CANE(	Res.items_inv.sfA(3, 0),	Res.items_weapons,		Res.items_inv.tex(5, 0), new int[]{-25, -2, 50, 50}, new int[]{3, 0},	"Candy cane",	1000,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2,					2,			0,				false),
+	SHOVEL(		Res.items_inv.sfA(4, 0),	Res.items_weapons,		Res.items_inv.tex(4, 0), new int[]{-25, -2, 50, 50}, new int[]{4, 0},	"Shovel",		700,			70, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.1,			false),
 //	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.items_inv.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
 	BERRY(		Res.items_inv.sfA(6, 0),	Res.items_inv,			Res.items_inv.tex(6, 0), new int[]{-25, -2, 50, 50}, new int[]{6, 0},						"Berry",		0,				8, 			WeaponType.PUNCH,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.3,			false){
 		public boolean use(Thing src, Vec pos){
@@ -35,10 +35,33 @@ public enum ItemType {
 			return false;
 		}
 	},
+	SNAILS_EYE(	Res.items_inv.sfA(0, 1),	Res.items_weapons,		Res.items_inv.tex(0, 1), new int[]{-25, -2, 50, 50}, new int[]{0, 4},	"Snails eye",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.EAT,		BodyPos.HAND,	1,					2,			0.03,			false),
+	SNAIL_SHELL(Res.items_inv.sfA(1, 1),	Res.items_weapons,		Res.items_inv.tex(1, 1), new int[]{-25, -2, 50, 50}, new int[]{1, 4},	"Snail shell",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	RABBITS_FOOT(Res.items_inv.sfA(2, 1),	Res.items_weapons,		Res.items_inv.tex(2, 1), new int[]{-25, -2, 50, 50}, new int[]{2, 4},	"Trex tooth",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	TREX_TOOTH(	Res.items_inv.sfA(3, 1),	Res.items_weapons,		Res.items_inv.tex(3, 1), new int[]{-25, -2, 50, 50}, new int[]{3, 4},	"TRex tooth",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	COW_LEG(	Res.items_inv.sfA(4, 1),	Res.items_weapons,		Res.items_inv.tex(4, 1), new int[]{-25, -2, 50, 50}, new int[]{4, 4},	"Cow leg",		1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	COWHIDE(	Res.items_inv.sfA(5, 1),	Res.items_weapons,		Res.items_inv.tex(5, 1), new int[]{-25, -2, 50, 50}, new int[]{0, 5},	"Cowhide",		1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	WITCH_HAT(	Res.items_inv.sfA(6, 1),	Res.items_weapons,		Res.items_inv.tex(6, 1), new int[]{-25, -2, 50, 50}, new int[]{1, 5},	"Witch hat",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	SCORPION_STING(Res.items_inv.sfA(7, 1),	Res.items_weapons,		Res.items_inv.tex(7, 1), new int[]{-25, -2, 50, 50}, new int[]{2, 5},	"Scorpion sting",1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	SCORPION_CLAW(Res.items_inv.sfA(8, 1),	Res.items_weapons,		Res.items_inv.tex(8, 1), new int[]{-25, -2, 50, 50}, new int[]{3, 5},	"Scorpion claw",1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	RAINBOW_HAIR(Res.items_inv.sfA(9, 1),	Res.items_weapons,		Res.items_inv.tex(9, 1), new int[]{-25, -2, 50, 50}, new int[]{4, 5},	"Rainbow hair",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	ZOMBIE_EYE(	Res.items_inv.sfA(10, 1),	Res.items_weapons,		Res.items_inv.tex(10, 1),new int[]{-25, -2, 50, 50}, new int[]{0, 6},	"Zombie eye",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	ZOMBIE_BRAIN(Res.items_inv.sfA(11, 1),	Res.items_weapons,		Res.items_inv.tex(11, 1),new int[]{-25, -2, 50, 50}, new int[]{1, 6},	"Zombie brain",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	ZOMBIE_FLESH(Res.items_inv.sfA(12, 1),	Res.items_weapons,		Res.items_inv.tex(12, 1),new int[]{-25, -2, 50, 50}, new int[]{2, 6},	"Zombie flesh",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
 	
 	//Item types below this line won't appear in traders inventories
 	MOUTH(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Mouth", 1, 0, WeaponType.BITE, ItemUsageType.EAT, BodyPos.HEAD, 1, 2, 0.03, true),
 	NOTHING(null, Texture.empty, Texture.empty, new int[4], new int[]{0, 0}, "Fist", 1, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true){
+		public boolean specialUse(Thing src, Vec pos, Thing[] dest){
+			for (int i = 0; i < dest.length; i++) {
+				if(dest[i].type == ThingType.ITEM){
+					if(use(src, pos, dest[i])){
+						return true;
+					}
+				}
+			}
+			return super.specialUse(src, pos, dest);
+		}
 		public boolean use(Thing src, Vec pos, Thing dest){
 			boolean success = false;
 			if(dest.fruits != null && !dest.fruits.isEmpty() && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
