@@ -147,7 +147,7 @@ public class WorldWindow implements Updater, Renderer{
 		deletionRequested.clear();
 		
 		//generate terrain
-		int radius = (int)(Window.WIDTH_HALF/Column.step) + 15;
+		int radius = (int)(Window.WIDTH_HALF/Column.step) + 8;
 		Main.world.generator.borders(Main.world.avatar.pos.x - (radius*Column.step), Main.world.avatar.pos.x + (radius*Column.step));
 		
 		//update window position

@@ -129,7 +129,7 @@ public class Dialog extends Element {
 			TexFile.bindNone();
 			double y = bubbleHeight/2 + (text1.length/2*line);
 			for(int i = 0; i < text1.length; i++){
-				font.drawString((int)(other.pos.x + shift.x - (width1[i]/2)), (float)(other.pos.y + shift.y + y - fontHeightHalf + 60), text1[i], Color.WHITE);
+				font.drawString((int)(other.pos.x + shift.x - (width1[i]/2)), (float)(other.pos.y + shift.y + y - fontHeightHalf + 60), text1[i], Color.WHITE, 1);
 				y -= line;
 			}
 		}
@@ -178,7 +178,7 @@ public class Dialog extends Element {
 					TexFile.bindNone();
 				}
 				String string = answers[i].substring(0, (int)(answers[i].length()*answerWidths[i].v));
-				font.drawString((int)(Window.WIDTH_HALF - widthsH[i]+50), (float)ys[i], string, Color.WHITE);
+				font.drawString((int)(Window.WIDTH_HALF - widthsH[i]+50), (float)ys[i], string, Color.WHITE, 1);
 			}
 		}
 		
