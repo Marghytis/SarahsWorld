@@ -139,21 +139,21 @@ public enum Biome {
 				new Stratum(Material.STONE, 1000000.0, 200.0, 20, 40, 1, 5),
 				null
 				}
-				,new ThingSpawner(ThingType.VILLAGER.defaultSpawner, 1)
-//				,new ThingSpawner(ThingType.TREE_JUNGLE.defaultSpawner, 0.5)
-//				,new ThingSpawner(ThingType.FERN.defaultSpawner, 0.5)
-//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BAMBOO, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
-//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BUSH_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
-//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.GIANT_GRASS, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
-//				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CRACK, w, c, pos.shift(0, -100 - w.random.nextInt(1000))), 0.3)
-//				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.FOSSIL, w, c, pos.shift(0, -200 - w.random.nextInt(1000))), 0.1)
-//				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.FLOWER_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
-//				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 1.5, -4), 0.5)
-//				,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
-//				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
-//				,new ThingSpawner(ThingType.SNAIL.defaultSpawner, 0.01)
-//				,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.05)
-//				,new ThingSpawner(ThingType.MIDGE.defaultSpawner, 2)
+		
+				,new ThingSpawner(ThingType.TREE_JUNGLE.defaultSpawner, 0.5)
+				,new ThingSpawner(ThingType.FERN.defaultSpawner, 0.5)
+				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BAMBOO, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
+				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BUSH_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
+				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.GIANT_GRASS, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
+				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CRACK, w, c, pos.shift(0, -100 - w.random.nextInt(1000))), 0.3)
+				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.FOSSIL, w, c, pos.shift(0, -200 - w.random.nextInt(1000))), 0.1)
+				,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.FLOWER_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
+				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 1.5, -4), 0.5)
+				,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
+				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
+				,new ThingSpawner(ThingType.SNAIL.defaultSpawner, 0.01)
+				,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.05)
+				,new ThingSpawner(ThingType.MIDGE.defaultSpawner, 2)
 		),
 	EMPTY(new Stratum[]{
 			null,

@@ -132,6 +132,8 @@ public class WorldWindow implements Updater, Renderer{
 		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 	
+	List<Thing> thingsChange = new ArrayList<>();
+	Column link;
 	public boolean update(final double delta){
 //		delta *= Settings.timeScale;
 
@@ -145,23 +147,27 @@ public class WorldWindow implements Updater, Renderer{
 		deletionRequested.clear();
 		
 		//generate terrain
-		int radius = (int)(Window.WIDTH_HALF/Column.step) + 2;
+		int radius = (int)(Window.WIDTH_HALF/Column.step) + 15;
 		Main.world.generator.borders(Main.world.avatar.pos.x - (radius*Column.step), Main.world.avatar.pos.x + (radius*Column.step));
 		
 		//update window position
 		setPos((int)(Main.world.avatar.pos.x/Column.step));
 		
 		//update all things
-		forEachThing((t) -> t.link.copyReal(t));
-		forEachThing((t) -> {
-			t.update(delta);
-			t.link.add2(t);//only the temp neighbors get set, so that in this loop the order doesn't change
-		});//loop the things via temporary connections, to repair the connections which only got set in the left direction before (hope this doesn't create problems
-		for(int i = 0; i < ThingType.types.length; i++) {
-			for(Thing cursor = leftEnd.right.things[i]; cursor != null && cursor != rightEnd.left.things[i]; cursor = cursor.rightTemp){
-				if(cursor.type != ThingType.DUMMY) cursor.link.copyTemp(cursor);
+		for(int i = 0; i < ThingType.types.length; i++)
+		for(Thing cursor = leftEnd.right.things[i]; cursor != null && cursor != rightEnd.left.things[i]; cursor = cursor.right){
+			if(cursor.type != ThingType.DUMMY){
+				link = cursor.link;
+				cursor.update(delta);
+				if(link != cursor.link){
+					thingsChange.add(cursor);
+				}
 			}
 		}
+		thingsChange.forEach((t)->{
+			t.link.add(t);
+		});
+		thingsChange.clear();
 		
 		effects.addAll(toAdd);
 		toAdd.clear();
@@ -505,7 +511,7 @@ public class WorldWindow implements Updater, Renderer{
 	
 	public void forEachThing(Consumer<Thing> cons){
 		for(int i = 0; i < ThingType.types.length; i++) {
-			for(Thing cursor = leftEnd.right.things[i]; cursor != rightEnd.left.things[i]; cursor = cursor.right){
+			for(Thing cursor = leftEnd.right.things[i]; cursor != null && cursor != rightEnd.left.things[i]; cursor = cursor.right){
 				if(cursor.type != ThingType.DUMMY) cons.accept(cursor);
 			}
 		}

@@ -136,63 +136,6 @@ public class WorldData {
 			if(t.left != null) t.left.right = t;
 		}
 		
-		public void add2(Thing t){
-			if(t.rightTemp != null) t.rightTemp.leftTemp = t.leftTemp;
-			if(t.leftTemp != null) t.leftTemp.rightTemp = t.rightTemp;
-			int o = t.type.ordinal;
-			t.leftTemp = things[o].leftTemp;
-			things[o].leftTemp = t;
-			t.rightTemp = things[o];
-			if(t.leftTemp != null) t.leftTemp.rightTemp = t;
-		}
-		
-		public void copyReal(Thing t){
-			t.rightTemp = t.right;
-			t.leftTemp = t.left;
-			if(t.type == ThingType.SARAH) System.out.println("test1");
-		}
-		
-		public void copyTemp(Thing t){
-			t.right = t.rightTemp;
-			t.left = t.leftTemp;
-			if(t.type == ThingType.SARAH) System.out.println("test2");
-		}
-		
-		public void addTemp(Thing t){
-			if(t.rightTemp != null) t.rightTemp.leftTemp = t.leftTemp;
-			if(t.leftTemp != null) t.leftTemp.rightTemp = t.rightTemp;
-			int o = t.type.ordinal;
-			if(things[o].leftTemp != null) t.leftTemp = things[o].leftTemp;
-			else t.leftTemp = things[o].left;
-			things[o].leftTemp = t;
-			t.rightTemp = things[o];
-			if(t.leftTemp != null) t.leftTemp.rightTemp = t;
-			if(t.type == ThingType.SARAH) System.out.println("test1");
-		}
-		
-		public void solveTemp(Thing t){
-			//t.leftTemp and t.rightTemp always are set by the first update loop
-			t.left = t.leftTemp;
-			if(t.left != null) t.left.right = t;
-			t.leftTemp = null;
-			
-			t.right = t.rightTemp;
-			if(t.right != null) t.right.left = t;
-			t.rightTemp = null;
-			if(t.type == ThingType.SARAH) System.out.println("test2");
-		}
-//		public void addLeft(Thing t){
-//			if(t.right != null) t.right.left = t.left;
-//			int o = t.type.ordinal;
-//			t.left = things[o].left;
-//			things[o].left = t;
-//		}
-//		
-//		public void repairLeftsRight(Thing t){
-//			if(t.left != null)
-//				t.left.right = t;
-//		}
-		
 		public Vec getTopLine(Vec topLine){
 			return topLine.set(right.xReal - xReal, right.vertices[collisionVec].y - vertices[collisionVec].y);
 		}

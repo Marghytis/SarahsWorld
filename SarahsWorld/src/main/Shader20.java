@@ -42,11 +42,13 @@ public enum Shader20 {
 		try {
 			GL20.glShaderSource(fShader, readFile(srcName));
 			GL20.glCompileShader(fShader);
+			System.out.println("SHADER INFO LOG: " + srcName);
 			System.out.println(GL20.glGetShaderInfoLog(fShader, 1000));
 			
 			if(vShader != -1){
 				GL20.glShaderSource(vShader, readFile(vertex));
 				GL20.glCompileShader(vShader);
+				System.out.println("SHADER INFO LOG: " + srcName);
 				System.out.println(GL20.glGetShaderInfoLog(vShader, 1000));
 			}
 		} catch (IOException e) {

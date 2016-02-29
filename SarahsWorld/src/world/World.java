@@ -50,7 +50,7 @@ public class World {
 	}
 	
 	public void init(){
-		int radius = (int)(Window.WIDTH_HALF/Column.step) + 4;
+		int radius = (int)(Window.WIDTH_HALF/Column.step) + 15;
 		generator.borders(avatar.pos.x - (radius*Column.step), avatar.pos.x + (radius*Column.step));
 		
 		window = new WorldWindow(data, (int)(avatar.pos.x/Column.step), radius-2);

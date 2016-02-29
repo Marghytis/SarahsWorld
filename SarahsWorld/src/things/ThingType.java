@@ -655,10 +655,7 @@ public class ThingType {
 	public static final ThingType COIN = new ThingType("COIN", Res.coin,
 			new Animating(coin[0], Res.coin.createBox(), 0, 0, 1, false, coin),
 			new Physics(1, 1),
-			new PhysicsExtension()){
-		{
-			physEx.typesToRepell = new ThingType[]{this};
-		}
+			new Movement("","","","","","","","","","")){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			if(extraData.length > 0) t.vel.set((Vec) extraData[0]);
 		}

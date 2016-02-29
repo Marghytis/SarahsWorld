@@ -1,16 +1,16 @@
 package main;
 
-import menu.Menu;
-
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
-import world.Save;
-import world.World;
 import core.Core;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
 import core.Window;
+import menu.Menu;
+import world.Save;
+import world.World;
 
 public class Main {
 	
@@ -20,7 +20,7 @@ public class Main {
 
 	public static void main(String[] args){
 		String worldName = "Sarahs World";
-		core = new Core(worldName);
+		core = new Core(worldName);System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		if(Window.WIDTH == 0){
 			System.out.println("ERROR AT START!!! Try again.");
 			Window.destroy();
