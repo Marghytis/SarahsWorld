@@ -44,7 +44,7 @@ public class ThingType {
 											Res.sarah.sfA("fly", 6, 3),
 											new Animation("walk", Res.sarah, 20,			1, /**/4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6),
 											new Animation("sprint", Res.sarah, 40,		2, /**/1, 2, 3, 4, 5, 6, 7, 8, 7, 6, 5),
-											new Animation("jump", Res.sarah, 30,			3, /**/1, 2, 3, 4, 5, 6),
+											new Animation("jump", Res.sarah, 15,			3, /**/1, 2, 3, 4, 5, 6),
 											new Animation("land", Res.sarah, 20,			3, /**/5, 4, 3, 2, 1),
 											new Animation("punch", Res.sarah, 40,	4, /**/1, 2, 3, 4, 5, 6, 7, 8, 0),
 											new Animation("kick", Res.sarah, 13,	6, /**/1, 2, 3, 4, 5),
@@ -91,7 +91,6 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			super.setup(t, world, field, pos);
 			t.ani.fresh = true;
-			inv.addItem(t, ItemType.STICK, 1);
 		}
 		public void update(Thing t, double delta){
 			avatar.action(t, delta);

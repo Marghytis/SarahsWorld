@@ -80,6 +80,7 @@ public class Movement extends AiPlugin {
 			t.type.ani.setAnimation(t,  dive, () -> {
 				t.reallyAir = true;
 				t.type.ani.setAnimation(t, plunge);
+				t.where.g = false;
 			});
 		} else 
 		t.type.ani.setAnimation(t,  liftOf, () -> {
@@ -87,6 +88,7 @@ public class Movement extends AiPlugin {
 //			t.type.phys.leaveGround(Math.cos(Math.atan(t.link.parent.getTopLine(topLine).slope()))*t.vel.length(), 400.0);
 			t.reallyAir = true;
 			t.type.ani.setAnimation(t, fly);
+			t.where.g = false;
 		});
 	}
 	

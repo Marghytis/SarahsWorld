@@ -2,22 +2,23 @@ package menu;
 
 import java.awt.Font;
 
-import main.Main;
-import menu.Settings.Key;
-
 import org.lwjgl.opengl.GL11;
 
+import core.Listener;
+import core.Renderer;
+import core.Updater;
+import core.Window;
+import item.ItemType;
+import main.Main;
+import menu.Settings.Key;
 import render.TexFile;
 import render.Texture;
+import things.ThingType;
 import util.Anim;
 import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
 import world.World;
-import core.Listener;
-import core.Renderer;
-import core.Updater;
-import core.Window;
 
 public class Menu implements Updater, Renderer, Listener {
 	
@@ -165,6 +166,11 @@ public class Menu implements Updater, Renderer, Listener {
 									Settings.DRAW = GL11.GL_LINE_STRIP;
 								}
 							}
+						},
+						new Button("Spawn Things", 0.7, 0.4, 0.7, 0.4, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+							public void released(int button) {
+								Main.menu.setMenu(Menus.DEBUG_SPAWNER);
+							}
 						}
 				};
 			}
@@ -182,6 +188,43 @@ public class Menu implements Updater, Renderer, Listener {
 				y = 0.9;
 				for (; i < elements.length; i++, y -= 0.06) {
 					elements[i] = new TextField(values[i-(values.length-1)].name() + ":", x, y, x, y, -150, -30, 150, 30, new Color(0, 0, 0, 0.5f), null);
+				}
+			}
+			
+		},
+		DEBUG_SPAWNER(false, false){
+			public void setElements(){
+				ThingType[] values = ThingType.types;
+				elements = new Element[(values.length)*2-3];
+				double x = 0.25, y = 0.9;
+				int i = 0, columns = 0;
+				for (; i < values.length-1; i++, y -= 0.06) {
+					if(i/15 > columns){
+						columns++;
+						x += 0.3;
+						y = 0.9;
+					}
+					elements[i] = new TextInput("Hallo! :)", x, y, x, y, -80, -30, 80, 30, new Color(0, 0, 0, 0.5f), Color.BLACK, null);
+				}
+				x = 0.1;
+				y = 0.9;columns = 0;
+				for (; i < elements.length; i++, y -= 0.06) {
+					int j = i - values.length+1;
+					if(j/15 > columns){
+						columns++;
+						x += 0.3;
+						y = 0.9;
+					}
+					elements[i] = new Button(values[j].name, x, y, x, y, -170, -30, 170, 30, Color.BROWN, Color.GRAY, null, null){
+						public void released(int button) {
+							if(values[j] == ThingType.ITEM){
+								values[j].defaultSpawner.spawn(Main.world.data, Main.world.avatar.link, Main.world.avatar.pos.copy().shift(0, 1), ItemType.valueOf(((TextField)elements[j]).text));
+							} else {
+								values[j].defaultSpawner.spawn(Main.world.data, Main.world.avatar.link, Main.world.avatar.pos.copy());
+							}
+							((TextInput)DEBUG_SPAWNER.elements[j]).selected = false;
+						}
+					};
 				}
 			}
 			
