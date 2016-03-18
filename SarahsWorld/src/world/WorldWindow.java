@@ -194,71 +194,71 @@ public class WorldWindow implements Updater, Renderer{
 		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.x, Window.HEIGHT_HALF - Main.world.avatar.pos.y, 0);
 
 		GL11.glColor4f(1, 1, 1, 1);
-		//things even behind the landscape
-		for(int i = -5; i < 0; i++){
-			int i2 = i;//effectively final...
-			renderThings((t) -> t.behind == i2);
-		}
-		
-		renderLandscape();
-		
-		//auras
-//		renderAuras();
-		
-		//Things
-		GL11.glColor4f(1, 1, 1, 1);
+//		//things even behind the landscape
+//		for(int i = -5; i < 0; i++){
+//			int i2 = i;//effectively final...
+//			renderThings((t) -> t.behind == i2);
+//		}
+//		
+//		renderLandscape();
+//		
+//		//auras
+////		renderAuras();
+//		
+//		//Things
+//		GL11.glColor4f(1, 1, 1, 1);
 		renderThings((t) -> t.behind == 0);
-		
-		//draw water on top
-		renderWater();
-
-		framebuffer.bind();
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			GL11.glColor4f(1, 1, 1, 1);
-			//render things that are in front of everything else
-			for(int i = 1; i <= 5; i++){
-				int i2 = i;//effectively final...
-				renderThings((t) -> t.behind == i2);
-			}
-			//living things can be seen through other things
-			GL11.glBlendFunc(GL11.GL_DST_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			Shader20.OUTLINE.bind();
-			GL20.glUniform4f(GL20.glGetUniformLocation(Shader20.OUTLINE.handle, "color"), 0, 0f, 0.3f, 0.5f);
-			renderThings((t) -> t.type == ThingType.SARAH);
-			Shader20.bindNone();
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		framebuffer.release();
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.texture);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glTexCoord2d(0, 0);
-		GL11.glVertex2d(0, 0);
-		GL11.glTexCoord2d(1, 0);
-		GL11.glVertex2d(Window.WIDTH, 0);
-		GL11.glTexCoord2d(1, 1);
-		GL11.glVertex2d(Window.WIDTH, Window.HEIGHT);
-		GL11.glTexCoord2d(0, 1);
-		GL11.glVertex2d(0, Window.HEIGHT);
-		GL11.glEnd();
-		GL11.glPopMatrix();
-
-		//draw the darkness which is crouching out of the earth
-		if(Settings.DARKNESS){
-			renderDarkness();
-		}
-
-		//draw bounding boxes of all things and their anchor points
-		if(Settings.SHOW_BOUNDING_BOX){
-			renderBoundingBoxes();
-		}
-		for(Effect effect : effects){
-			effect.render();
-		}
-
-		for(ActiveQuest aq : world.quests){
-			aq.render();
-		}
+//		
+//		//draw water on top
+//		renderWater();
+//
+//		framebuffer.bind();
+//		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+//			GL11.glColor4f(1, 1, 1, 1);
+//			//render things that are in front of everything else
+//			for(int i = 1; i <= 5; i++){
+//				int i2 = i;//effectively final...
+//				renderThings((t) -> t.behind == i2);
+//			}
+//			//living things can be seen through other things
+//			GL11.glBlendFunc(GL11.GL_DST_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+//			Shader20.OUTLINE.bind();
+//			GL20.glUniform4f(GL20.glGetUniformLocation(Shader20.OUTLINE.handle, "color"), 0, 0f, 0.3f, 0.5f);
+//			renderThings((t) -> t.type == ThingType.SARAH);
+//			Shader20.bindNone();
+//        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+//		framebuffer.release();
+//		GL11.glPushMatrix();
+//		GL11.glLoadIdentity();
+//		GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.texture);
+//		GL11.glBegin(GL11.GL_QUADS);
+//		GL11.glTexCoord2d(0, 0);
+//		GL11.glVertex2d(0, 0);
+//		GL11.glTexCoord2d(1, 0);
+//		GL11.glVertex2d(Window.WIDTH, 0);
+//		GL11.glTexCoord2d(1, 1);
+//		GL11.glVertex2d(Window.WIDTH, Window.HEIGHT);
+//		GL11.glTexCoord2d(0, 1);
+//		GL11.glVertex2d(0, Window.HEIGHT);
+//		GL11.glEnd();
+//		GL11.glPopMatrix();
+//
+//		//draw the darkness which is crouching out of the earth
+//		if(Settings.DARKNESS){
+//			renderDarkness();
+//		}
+//
+//		//draw bounding boxes of all things and their anchor points
+//		if(Settings.SHOW_BOUNDING_BOX){
+//			renderBoundingBoxes();
+//		}
+//		for(Effect effect : effects){
+//			effect.render();
+//		}
+//
+//		for(ActiveQuest aq : world.quests){
+//			aq.render();
+//		}
 	}
 	
 	public void renderLandscape(){
@@ -302,6 +302,13 @@ public class WorldWindow implements Updater, Renderer{
 			GL11.glEnd();
 			
 			//render the
+		}
+	}
+	
+	public void renderThings2(Decider d){
+		for(int i = 0; i < ThingType.types.length; i++) {
+			ThingType.types[i].file.file.bind();
+			
 		}
 	}
 	
