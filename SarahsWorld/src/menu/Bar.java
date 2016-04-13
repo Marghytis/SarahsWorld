@@ -1,9 +1,9 @@
 package menu;
 
+import render.Render;
 import render.TexFile;
 import render.Texture;
 import util.Color;
-import util.Render;
 
 public class Bar extends Element {
 

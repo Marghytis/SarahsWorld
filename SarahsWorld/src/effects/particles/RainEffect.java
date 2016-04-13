@@ -1,12 +1,12 @@
 package effects.particles;
 
-import render.Texture;
-import util.math.Vec;
 import effects.particles.Particle.ParticleType;
+import main.Res;
+import util.math.Vec;
 
 public class RainEffect implements ParticleEffect{
 	
-	public static final ParticleType RAINDROP = new ParticleType(new Texture("res/particles/Raindrop.png", -0.5, -0.5));
+	public static final ParticleType RAINDROP = new ParticleType(Res.rainParticle);
 	
 	public ParticleEmitter drops = new ParticleEmitter(100, 50, RAINDROP, 1.5f){
 
@@ -19,6 +19,7 @@ public class RainEffect implements ParticleEffect{
 
 		public void velocityInterpolator(Particle p, float delta) {
 			p.vel.y -= 1000f*delta;
+			p.vel.shift(ParticleEffect.wind, 5*delta);
 			collision(p, delta);
 		}
 

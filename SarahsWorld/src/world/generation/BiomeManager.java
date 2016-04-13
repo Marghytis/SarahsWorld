@@ -1,6 +1,7 @@
 package world.generation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import util.math.Function;
@@ -12,7 +13,6 @@ import world.WorldData;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
 import world.generation.Biome.ThingSpawner.Spawner;
-import data.IndexBuffer;
 
 public class BiomeManager {
 
@@ -77,144 +77,238 @@ public class BiomeManager {
 		double y = yTop;
 		for(int i = 0; i < out.length; i++){
 			//otherwise there are ugly borders at the end of a layer
-			double transitionHeight = ants[i].stratum == null ? 0 : ants[i].transitionHeight*(ants[i].thickness/ants[i].stratum.thickness);
+//			double transitionHeight = ants[i].stratum == null ? 0 : ants[i].transitionHeight*(ants[i].thickness/ants[i].stratum.thickness);
 			
 			//to prevent stripes and invisible connections between patches (lakes)
-			boolean make0 = ants[i].thickness == 0 && ants[i].reachedSize;
+//			boolean make0 = ants[i].thickness == 0 && ants[i].reachedSize;
 			
 			//put water a bit deeper so the lake is not filled to the rim
 			double apparentY = y;
-			if(ants[i].mats.read.data == Material.WATER){
+			if(ants[i].mats[ants[i].last] == Material.WATER){
 				if(y - 5 > y - ants[i].thickness){
 					apparentY = y - 5;
 				} else {
 					apparentY = y - ants[i].thickness;
-					make0 = true;
+//					make0 = true;
 				}
 			}
-			out[i] = world.new Vertex(i, make0 ? new IndexBuffer<Material>(Vertex.maxMatCount) : ants[i].mats.copy(), ants[i].getAlphas(), transitionHeight, apparentY);
+			Material[] outMat = new Material[ants[i].mats.length];
+			double[] outAlpha = new double[ants[i].transitions.length];
+			System.arraycopy(ants[i].mats, 0, outMat, 0, ants[i].mats.length);
+			System.arraycopy(ants[i].realAlphas, 0, outAlpha, 0, ants[i].realAlphas.length);//if(!make0)
+			out[i] = world.new Vertex(i, outMat, outAlpha, ants[i].index, ants[i].transitionHeight, apparentY);
 			
 			y -= ants[i].thickness;
 		}
 		return out;
 	}
 	
-	public void step(Column lastColumn){
-		this.lastColumn = lastColumn;
+	/**
+	 * Update the lastColumn later!!!
+	 */
+	public void step(){
 		for(Ant a : ants){
 			a.step();
 		}
 	}
 	
 	public class Ant {
-		public IndexBuffer<Material> mats;//all the mats active in this layer
-		public IndexBuffer<Transitioner> transitions;//parallel index buffer to the mats with the transitions for each material
+		State state;
+		public Material[] mats; int index, last;//all the mats active in this layer
+		public boolean[] matDisappeared;
+		public double[] realAlphas;//these have to add up to 1
+		AlphaFunc transitions[];
 		
 		public double thickness;//thickness of the layer
 		public double aimThickness;//aim thickness of the layer
+		public double transitionHeight;//transition height downwards of the layer
+		public double aimTransitionHeight;//the transition height has to transition too. (linked to thickness transition)
 		public double sizingSpeed;//speed with which the layer gets to the aim thickness
 		public boolean reachedSize;//if the layer has reached the aim thickness
 		public Stratum stratum;
 		
-		public double transitionHeight;
+		int x;
+		int iX;
+		Function resizer;//old: f(x) = startThickness + x*sizingSpeed
+		Function transitionHeightResizer;
+//		ThicknessFunc thicknessF;
 		
 		public Ant(Stratum stratum){
-			mats = new IndexBuffer<>(Vertex.maxMatCount);
-			transitions = new IndexBuffer<>(Vertex.maxMatCount);
-			if(stratum != null){
-				Transitioner alpha = new Transitioner(stratum.transitionWidth);
-				alpha.finished = true;
-				enqueueMat(stratum.material, alpha);
+			this.mats = new Material[Vertex.maxMatCount];
+			Arrays.fill(mats, Material.AIR);
+			matDisappeared = new boolean[mats.length];
+			this.transitions = new AlphaFunc[Vertex.maxMatCount];
+			for(int i = 0; i < Vertex.maxMatCount; i++) transitions[i] = new AlphaFunc();
+			this.realAlphas = new double[Vertex.maxMatCount];
+			if(stratum != null && stratum.material != Material.AIR){
+				transitionToMaterialInSteps(stratum.material, 0);
+				
+				//ants get created only once per generator and layer and then they should be already full size
+				this.stratum = stratum;
 				this.thickness = stratum.thickness;
 				this.transitionHeight = stratum.transitionHeight;
-				this.stratum = stratum;
 				this.sizingSpeed = stratum.sizingSpeed;
+//				thicknessF.stayAt(stratum.thickness, stratum.transitionHeight, stratum.sizingSpeed);
+				this.state = State.VISIBLE;
+			} else {
+				this.state = State.NOTHING;
 			}
-			//ants get created only once per generator and layer and then they should be already full size
+//			thicknessF.stayAt(0, 0, 0);
 			this.reachedSize = true;
+			this.iX = 0;
+			for(int i = 0; i < Vertex.maxMatCount; i++){
+				transitions[i].updateAlpha(iX);
+			}
+			setRealAlphas();
 		}
 		
-		public void enqueueMat(Material mat, Transitioner trans){
-			mats.enqueue(mat);
-			transitions.enqueue(trans);
-		}
-		
-		public void dequeueMat(){
-			mats.dequeue();
-			transitions.dequeue();
+		public void transitionToMaterialInSteps(Material mat, int stepCountHalf){
+			if(stepCountHalf != 0){
+				transitions[index].appearInFrom(stepCountHalf, 0.5f);
+				mats[index] = mat;
+				last = index;
+				index = (index+1)%Vertex.maxMatCount;
+			} else if(mat != Material.AIR){//fully visible instantly
+				transitions[index].stayAt(1);
+				mats[index] = mat;
+				last = index;
+				index = (index+1)%Vertex.maxMatCount;
+			}
+			setRealAlphas();
 		}
 
-		public double[] getAlphas() {
-			double[] alphas = new double[Vertex.maxMatCount];
-			//for each active material its alpha value gets determined. Also a single material is safe
-			for(IndexBuffer<Transitioner>.Node cursor = transitions.read; cursor != transitions.write; cursor = cursor.next){
-				alphas[cursor.index] = cursor.data.getAlpha();
+		public void step(){
+			iX++;
+			if(state == State.VISIBLE){
+				//HORIZONTAL ALPHA TRANSITION  |||| REMOVE INVISIBLE MATS (that should've been rendered once with alpha=0
+				for(int i = 0; i < Vertex.maxMatCount; i++){
+					transitions[i].updateAlpha(iX);
+				}
+				//for each active material its real alpha value gets determined.
+				setRealAlphas();
+				
+				//HOZONTAL THICKNESS TRANSITION
+//				thicknessF.updateThicknessAndTransHeight(iX);
+				if(!reachedSize){
+					if(thickness > aimThickness){
+						
+						thickness = resizer.f(x);
+						transitionHeight = transitionHeightResizer.f(x);
+						
+						if(thickness <= aimThickness){
+							reachedSize = true;
+							thickness = aimThickness;//Just to be sure...
+							transitionHeight = aimTransitionHeight;
+						}
+					} else if(thickness < aimThickness){
+	
+						thickness = resizer.f(x);
+						transitionHeight = transitionHeightResizer.f(x);
+						
+						if(thickness >= aimThickness){
+							reachedSize = true;
+							thickness = aimThickness;
+							transitionHeight = aimTransitionHeight;
+						}
+					} else if(thickness == aimThickness){//happens at zero for example
+						reachedSize = true;
+					}
+					if(reachedSize && disappear){//This means the layer is not visible anymore
+						state = State.ZERO_SIZE;
+						stratum = null;
+						disappear = false;
+					}
+				}
+				x++;
+			} else {//Patch shrunk to zero.
+				for(int i = 0; i < Vertex.maxMatCount; i++){
+					transitions[i].stayAt(0);
+					realAlphas[i] = 0;
+					mats[i] = Material.AIR;
+				}
+				state = State.NOTHING;
 			}
-			return alphas;
 		}
 		
-		public void removeInvisibleMats(){
-			for(IndexBuffer<Transitioner>.Node cursor = transitions.write.previous; cursor != transitions.read.previous; cursor = cursor.previous){
-				//if you wouldn't see the other mats either, you can safely remove them
-				if(cursor.data.finished){
-					while(transitions.read != cursor){
-						dequeueMat();
+		public void setRealAlphas(){
+			double alphaLeft = 1;
+			int i = last;
+			do {
+				if(alphaLeft <= 0){//remove invisible materials from the list.
+					if(matDisappeared[i]){
+						mats[i] = Material.AIR;
+						matDisappeared[i] = false;
+					} else {
+						realAlphas[i] = 0;
+						transitions[i].stayAt(0);
+						matDisappeared[i] = true;
 					}
-					break;
+				} else {
+					realAlphas[i] = transitions[i].alpha*alphaLeft;
+					alphaLeft -= realAlphas[i];
 				}
-			}
+				i = (i+Vertex.maxMatCount-1)%Vertex.maxMatCount;
+			} while(i != last);
 		}
 		
 		public void switchTo(Stratum stratum, int yIndex){
-			if(stratum != null){
+			if(stratum != null && stratum.material != Material.AIR){
 				
-				this.stratum = stratum;
-				//add another material to the vertex
-				//add the smallest transition width to the vertex for this material
-				resize(stratum.thickness, stratum.sizingSpeed);
-				
-				this.transitionHeight = stratum.transitionHeight;
-				
-				//If the material changes, apply the new material to this ant and the old vertices
-				if(stratum.material != mats.write.previous.data){
-					int transition = stratum.transitionWidth;
-					if(transitions.empty()) transition = 0;//New layer starts in between others
-					else if(transitions.write.previous.data.width < transition) transition = transitions.write.previous.data.width;
-					if(transition <= 0){//This means, the new material will be fully visible instantly,
-						//so we can firstly clear the buffers
-						mats.clear();
-						transitions.clear();
+				//IF MATERIAL CHANGES -> ALPHA TRANSITION
+				if(stratum.material != mats[last]){//If the material changes, apply the new material to this ant and the old vertices
+					int transition;
+					if(state == State.NOTHING){//empty: new layer starts in between others/width = 0: instant appearing
+						transition = 0;
+					} else {
+						transition = Math.min(this.stratum.transitionWidth, stratum.transitionWidth);//choose the faster transition
 					}
+					transitionToMaterialInSteps(stratum.material, transition);
 					
-					enqueueMat(stratum.material, new Transitioner(transition));
 					//TODO change old vertices here (left in your thinking)
+//					Column c = lastColumn;
+//					for(double x = 1, a = 0.5; x <= transition; x++, a -= transitionSteps[last]){//but if right, it goes to the left!!
+//						if(c != null){
+//							c.vertices[yIndex].enqueueMat(stratum.material, a);
+//							
+//							c = left ? c.right : c.left;
+//						}
+//					}
 					Column c = lastColumn;
-					for(int x = 1; x <= transition; x++){//but if right, it goes to the left!!
-						if(c != null){
-							double alpha = alpha(-(double)x/transition);
-							
-							c.vertices[yIndex].mats.enqueue(stratum.material);
-							c.vertices[yIndex].alphas[mats.write.previous.index] = alpha;
-							
-							c = left ? c.right : c.left;//
-						}
+					for(int x = -1; x >= -transition; x--){
+						float alpha = transitions[last].get(x + iX), oneMinusAlpha = 1 - alpha;
+						c.vertices[yIndex].enqueueMat(stratum.material, alpha);
+						c = left ? c.right : c.left;
 					}
 				}
-			} else {//just get smaller until its at 0 size
-				resize(0, sizingSpeed);
+				//THICKNESS TRANSITION
+				resize(stratum.thickness, stratum.transitionHeight, stratum.sizingSpeed);
+				//PATCH APPEARS FROM NOTHINGNESS
+				if(state == State.NOTHING || state == State.ZERO_SIZE)
+					state = State.VISIBLE;
+
+				this.stratum = stratum;
+			} else {//just get smaller until its at 0 size and becomes ZERO_SIZE and then NOTHING
+				resize(0, 0, sizingSpeed);
 				//don't make the stratum null without thinking, because in createVertices() stratum == null? is used
 				disappear = true;
 			}
 		}
 		boolean disappear;
 		
-		public void resize(double aimThickness, double speed){
+		public void resize(Stratum aimStratum, double speed){
+			resize(aimStratum.thickness, aimStratum.transitionHeight, speed);
+		}
+		
+		public void resize(double aimThickness, double aimTransitionHeight, double speed){
 			this.aimThickness = aimThickness;
+			this.aimTransitionHeight = aimTransitionHeight;
 			this.sizingSpeed = speed;
 			this.reachedSize = false;
 			double start = thickness;
-			x = 0;
+			double startTransitionHeight = transitionHeight;
+			x = 1;
 			final double dy = aimThickness - start;
+			final double transitionDy = aimTransitionHeight - startTransitionHeight;
 			final double dx = Math.abs(dy/sizingSpeed);
 			resizer = (x) -> {
 				if(x > dx){
@@ -223,72 +317,118 @@ public class BiomeManager {
 					return start + (UsefulF.cubicUnit.f(x/dx)*dy);
 				}
 			};
+			transitionHeightResizer = (x) -> {
+				if(x > dx){
+					return aimTransitionHeight;
+				} else {
+					return startTransitionHeight + (x/dx)*transitionDy;
+				}
+			};
 		}
 		
-		int x;
-		Function resizer;//old: f(x) = startThickness + x*sizingSpeed
-
-		public void step(){
-			for(IndexBuffer<Transitioner>.Node cursor = transitions.read; cursor != transitions.write; cursor = cursor.next){
-				cursor.data.step();
-			}
-			removeInvisibleMats();
+//		public class ThicknessFunc {
+//			int start;
+//			double thickness0,
+//				transHeight0,
+//				dX,
+//				dY,
+//				transSlope;
+//			
+//			public double thickness, transHeight;
+//			
+//			public void resize(double aimThickness, double aimTransitionHeight, double sizingSpeed){
+//				thickness0 = thickness;
+//				transHeight0 = transHeight;
+//			}
+//			
+//			public void stay(){
+//				thickness0 = thickness;
+//				transHeight0 = transHeight;
+//				dY = 0;
+//				transSlope = 0;
+//				start = iX;
+//			}
+//			
+//			public void stayAt(double thickness, double transHeight, double sizingSpeed){
+//				this.thickness = thickness;
+//				this.transHeight = transHeight;
+//				stay();
+//			}
+//			
+//			public void updateThicknessAndTransHeight(int x){
+//				x -= start;
+//				
+//				if(x > dX){
+//					thickness = thickness0 + dY;
+//					transHeight = transHeight0 + dX*transSlope;
+//				} else if(x >= 0){
+//					thickness = thickness0 + UsefulF.cubicUnit.f(x/dX)*dY;
+//					transHeight = transHeight0 + x*(transSlope);
+//				} else {
+//					thickness = thickness0;
+//					transHeight = transHeight0;
+//				}
+//			}
+//		}
+	
+		public class AlphaFunc {
+			float aPerX;
+			int start;
+			float alpha0;
 			
-			if(!reachedSize){
-				if(thickness > aimThickness){
-					
-					thickness = resizer.f(x);
-					
-					if(thickness <= aimThickness){
-						reachedSize = true;
-						thickness = aimThickness;//Just to be sure...
-					}
-				} else if(thickness < aimThickness){
-
-					thickness = resizer.f(x);
-					
-					if(thickness >= aimThickness){
-						reachedSize = true;
-						thickness = aimThickness;
-					}
-				} else if(thickness == aimThickness){//happens at zero for example
-					reachedSize = true;
-				}
-				if(reachedSize && disappear){
-					stratum = null;
-					disappear = false;
+			public float alpha;
+			
+			public void disappearIn(int dx){
+				alpha0 = alpha;
+				aPerX = -alpha0/dx;
+				start = iX;
+			}
+			public void appearIn(int dx){
+				alpha0 = alpha;
+				aPerX = (1-alpha0)/dx;
+				start = iX;
+			}
+			public void stay(){
+				alpha0 = alpha;
+				aPerX = 0;
+				start = iX;
+			}
+			public void stayAt(float alpha){
+				this.alpha = alpha;
+				stay();
+			}
+			public void disappearInFrom(int dx, float alpha){
+				this.alpha = alpha;
+				disappearIn(dx);
+			}
+			public void appearInFrom(int dx, float alpha){
+				this.alpha = alpha;
+				appearIn(dx);
+			}
+			public float get(int x){
+				//calculate alpha
+				float alpha = aPerX*(x-start) + alpha0;
+				if(alpha >= 1) alpha = 1;
+				else if(alpha <= 0) alpha = 0;
+				return alpha;
+			}
+			public void updateAlpha(int x){
+				alpha = get(x);
+				//detect if it has finished
+				if(aPerX > 0 && alpha == 1){
+					stay();
+				} else if(aPerX < 0 && alpha == 0){
+					alpha = 0;
+					stay();
 				}
 			}
-			x++;
-		}
-	}
-	public class Transitioner {//only lets the alpha rise
-		public int width;
-		public int x;
-		public boolean finished;
-		
-		public Transitioner(int width){
-			this.width = width;
-			if(width == 0) finished = true;
-		}
-		
-		public double getAlpha(){
-			return finished ? 1 : alpha(((double)x)/width);
-		}
-		
-		public void step(){
-			if(!finished){
-				x++;
-				finished = finished();
-			}
-		}
-		
-		public boolean finished(){
-			return x >= width;
 		}
 	}
 	
-	public static double alpha(double xQuotient){
-		return 0.5*(1 + xQuotient);
+	public enum State {//A patch of material may not blend into AIR!!
+		VISIBLE,   //MATERIAL, ALPHA, SIZE:	It has at least one material with a positive alpha value and the size is positive too;
+//		ZERO_ALPHA,//MATERIAL, SIZE:		It still has a material (for the renderer to track it) and a positive size, but its alpha is 0.(is contained in VISIBLE)
+		ZERO_SIZE, //MATERIAL, ALPHA:		It still has a visible material, but the size is zero. It should go to NOTHING next, if it doesn't grow again.
+		NOTHING    //:						It is neither at the beginning, the end nor in the middle of a patch of any material.
 	}
 }

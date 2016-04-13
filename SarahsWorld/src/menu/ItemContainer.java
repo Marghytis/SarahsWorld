@@ -3,6 +3,7 @@ package menu;
 import item.ItemStack;
 import item.ItemType;
 import main.Main;
+import main.Res;
 import render.TexAtlas;
 import render.TexFile;
 import render.Texture;
@@ -10,7 +11,7 @@ import util.math.Vec;
 
 public class ItemContainer extends Element {
 	
-	public static TexAtlas inventoryButton = new TexAtlas("res/menu/Inventory.png", 1, 2, -0.5, -0.5);
+	public static TexAtlas inventoryButton = Res.inventoryDifferentOffset;
 	static Texture t1 = inventoryButton.tex(0, 0), t2 = inventoryButton.tex(0, 1);
 	
 	public int ordinal;

@@ -11,12 +11,15 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.generation.Biome;
-import data.IndexBuffer;
 
 
 public class WorldData {
 	public Random random = World.rand;
-	public Column mostRight, mostLeft;
+	public int mostLeft, mostRight;
+	public Column rightColumn, leftColumn;
+	public int first;
+//	public Chunk rightChunk, leftChunk;
+//	public ChunkBank allChunks = new ChunkBank(100);
 	public World world;
 	
 	public List<ActiveQuest> quests = new ArrayList<>();
@@ -27,55 +30,64 @@ public class WorldData {
 	public WorldData(World world) {
 		this.world = world;
 	}
-	@Deprecated //too expensive
-	public void add(Thing t){
-		int xIndex = t.pos.xInt()/(int)Column.step;//I know, the middle one has the things of two areas
-		get(xIndex).add(t);
-	}
 	
 	public void addFirst(Biome biome, Vertex... vertices){
-		Column l = new Column(0, biome, vertices);
-		mostRight = l;
-		mostLeft = l;
+		Column f = new Column(0, biome, vertices);
+		leftColumn = f;
+		rightColumn = f;
+		first = f.xIndex;
+		
+//		leftChunk = new Chunk(-1, f);
+//		rightChunk = new Chunk(0, f);
+//		allChunks.put(leftChunk);
+//		allChunks.put(rightChunk);
+//		leftChunk.right = rightChunk;
+//		rightChunk.left = leftChunk;
 	}
-	public void addLeft(Biome biome, Vertex... vertices){
-		Column l = new Column(mostLeft.xIndex-1, biome, vertices);
-		l.right = mostLeft;
-		mostLeft.left = l;
-		mostLeft = l;
-		for(int i = 0; i < l.things.length; i++){
-			Thing mostleftThing = l.right.things[i];
-			while(mostleftThing.left != null) mostleftThing = mostleftThing.left;
-			mostleftThing.left = l.things[i];
-			l.things[i].right = mostleftThing;
-		}
+	
+	public Column addLeft(Biome biome, Vertex... vertices){
+		Column l = new Column(leftColumn.xIndex-1, biome, vertices);
+		l.right = leftColumn;
+		leftColumn.left = l;
+		leftColumn = l;
+		mostLeft--;
+		
+//		leftChunk.add(l);
+//		if(leftChunk.ready){
+//			
+//			Chunk newChunk = new Chunk(leftChunk.xIndex-1, l);
+//			leftChunk.left = newChunk;
+//			newChunk.right = leftChunk;
+//			leftChunk = newChunk;
+//			allChunks.put(newChunk);
+//			mostLeftLoaded--;
+//		}
+		return l;
 	}
-	public void addRight(Biome biome, Vertex... vertices){
-		Column r = new Column(mostRight.xIndex+1, biome, vertices);
-		r.left = mostRight;
-		mostRight.right = r;
-		mostRight = r;
-		for(int i = 0; i < r.things.length; i++){
-			r.left.things[i].right = r.things[i];
-			r.things[i].left = r.left.things[i];
-		}
+	public Column addRight(Biome biome, Vertex... vertices){
+		Column r = new Column(rightColumn.xIndex+1, biome, vertices);
+		r.left = rightColumn;
+		rightColumn.right = r;
+		rightColumn = r;
+		mostRight++;
+		
+//		rightChunk.add(r);
+//		if(rightChunk.ready){
+//			Chunk newChunk = new Chunk(rightChunk.xIndex + 1, r);
+//			rightChunk.right = newChunk;
+//			newChunk.left = rightChunk;
+//			rightChunk = newChunk;
+//			allChunks.put(newChunk);
+//			mostRightLoaded++;
+//		}
+		return r;
 	}
-	public Column get(int x){
-		if(x < (mostRight.xIndex + mostLeft.xIndex)/2){
-			Column cursor = mostLeft;
-			for(; cursor.xIndex < x; cursor = cursor.right);
-			return cursor;
-		} else {
-			Column cursor = mostRight;
-			for(; cursor.xIndex > x; cursor = cursor.left);
-			return cursor;
-		}
-	}
+
 	public class Column {
 		public static final double step = 20;
 		public Column left, right;
 		public Vertex[] vertices;
-		public Thing[] things;//just dummies
+		public Thing[] things;//these are the anchors. may be null
 		public int xIndex;
 		public double xReal;
 		public int collisionVec;
@@ -93,13 +105,10 @@ public class WorldData {
 			collisionVec = getCollisionVec();
 			collisionVecWater = getCollisionVecWater();
 			this.things = new Thing[ThingType.types.length];
-			for(int i = 0; i < things.length; i++){
-				things[i] = new Thing(ThingType.DUMMY, WorldData.this, this, new Vec(xReal, vertices[collisionVec].y), i);
-			}
 		}
 		
 		public int getCollisionVec(){
-			int i = 0; while(i < Biome.layerCount - 1 && (vertices[i].mats.empty() || vertices[i].mats.write.previous.data.solidity <= 1))
+			int i = 0; while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity <= 1))
 				i++;
 			if(i == Biome.layerCount - 1) i = -1;
 			return i;
@@ -107,7 +116,7 @@ public class WorldData {
 		
 		public int getCollisionVecWater(){
 			int i = 0;
-				while(i < Biome.layerCount - 1 && (vertices[i].mats.empty() || vertices[i].mats.write.previous.data.solidity < 1))
+				while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity < 1))
 					i++;
 			if(i == Biome.layerCount - 1) i = -1;
 			return i;
@@ -124,16 +133,17 @@ public class WorldData {
 		
 		/**
 		 * Disconnects the thing by itself
-		 * Adds it to the left of the dummy
 		 * @param t
 		 */
 		public void add(Thing t){
-			t.disconnect();
+			t.disconnectFrom(t.oldLink);
 			int o = t.type.ordinal;
-			t.left = things[o].left;
-			things[o].left = t;
-			t.right = things[o];
-			if(t.left != null) t.left.right = t;
+			t.prev = null;
+			t.next = things[o];
+			if(things[o] != null) things[o].prev = t;
+			things[o] = t;
+			t.link = this;
+			t.oldLink = this;
 		}
 		
 		public Vec getTopLine(Vec topLine){
@@ -141,19 +151,60 @@ public class WorldData {
 		}
 	}
 	public class Vertex {
-		public static final int maxMatCount = 5;
+		public static final int maxMatCount = 4;
 		public double y;
-		public IndexBuffer<Material> mats;
+		Material[] mats;
+		public double averageSolidity;
+		public int nextMatIndex, lastMatIndex;
 		public double transitionHeight;
 		public double[] alphas;
 		public Column parent;
 		public int yIndex;
-		public Vertex(int yIndex, IndexBuffer<Material> copy, double[] alphas, double transitionHeight, double y) {
+		
+		public boolean prepared;
+		public float[] texCoordsPrepared = new float[4];
+		
+		public Vertex(int yIndex, Material[] copy, double[] alphas, int nextMatIndex, double transitionHeight, double y) {
 			this.yIndex = yIndex;
-			mats = copy;
+			this.nextMatIndex = nextMatIndex;
+			this.lastMatIndex = (nextMatIndex + maxMatCount - 1)%maxMatCount;
 			this.alphas = alphas;
+			setMats(copy);
 			this.transitionHeight = transitionHeight;
 			this.y = y;
+		}
+		public Material[] mats(){return mats;}
+		public void enqueueMat(Material mat, double alpha){
+			mats[nextMatIndex] = mat;
+			alphas[nextMatIndex] = alpha;
+			
+			alpha = 1 - alpha;
+			for(int i = 0; i < maxMatCount; i++){
+				if(i != nextMatIndex){
+					alphas[i] *= alpha;
+				}
+			}
+			lastMatIndex = nextMatIndex;
+			nextMatIndex = (nextMatIndex+1)%maxMatCount;
+		}
+		public void setMats(Material[] copy){
+			mats = copy;
+			averageSolidity = 0;
+			double weight = 0;
+			for(int i = 0; i < maxMatCount; i++){
+				if(mats[i] != Material.AIR){
+					weight += alphas[i];
+					averageSolidity += alphas[i]*mats[i].solidity;
+				}
+			}
+			if(weight != 0)
+				averageSolidity /= weight;
+		}
+		public boolean empty(){
+			for(int i = 0; i < maxMatCount; i++)
+				if(alphas[i] != 0)
+					return false;
+			return true;
 		}
 	}
 	public void save(DataOutputStream output) {

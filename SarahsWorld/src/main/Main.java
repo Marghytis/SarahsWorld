@@ -1,7 +1,9 @@
 package main;
 
+import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.PixelFormat;
 
 import core.Core;
 import core.Listener;
@@ -9,6 +11,7 @@ import core.Renderer;
 import core.Updater;
 import core.Window;
 import menu.Menu;
+import newStuff.StaticInit;
 import world.Save;
 import world.World;
 
@@ -17,9 +20,14 @@ public class Main {
 	public static Menu menu;
 	public static World world;
 	public static Core core;
+	public static StaticInit test;
 
 	public static void main(String[] args){
 		String worldName = "Sarahs World";
+		Window.pixelFormat = new PixelFormat();
+		Window.contextAttribs = new ContextAttribs(3, 3)
+		    .withForwardCompatible(true)
+		    .withProfileCore(true);
 		core = new Core(worldName);System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		if(Window.WIDTH == 0){
 			System.out.println("ERROR AT START!!! Try again.");
@@ -27,7 +35,8 @@ public class Main {
 			System.exit(0);
 			return;
 		}
-		Display.setVSyncEnabled(true);
+		StaticInit.checkGLErrors(true);
+		Display.setVSyncEnabled(false);
 
 		menu = new Menu();
 		if(Save.worldSaved()){
@@ -35,9 +44,10 @@ public class Main {
 		} else {
 			world = new World();
 		}
-
-		resetCoreClasses();
+//		test = new StaticInit(world.data.rightChunk.left.left);
 		
+		resetCoreClasses();
+
 		core.coreLoop();
 	}
 	
@@ -50,6 +60,7 @@ public class Main {
 		Renderer.renderers.clear();
 		Renderer.renderers.add(world.window);
 		Renderer.renderers.add(menu);
+//		Renderer.renderers.add(test);
 
 		Listener.listeners.clear();
 		Listener.listeners.add(menu);

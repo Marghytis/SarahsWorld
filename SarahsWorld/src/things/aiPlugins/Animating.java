@@ -2,16 +2,19 @@ package things.aiPlugins;
 
 import java.util.HashMap;
 
+import main.Main;
 import render.Animation;
 import render.Animator;
 import things.AiPlugin;
 import things.Thing;
-import things.ThingType;
+import util.Color;
 import util.math.Rect;
 import world.World;
 import world.WorldData;
 
-public class Animating extends AiPlugin{
+public class Animating extends AiPlugin {
+	
+	public static boolean transformOnce;
 
 	public HashMap<String, Integer> hashmap;
 	public int aniCount;
@@ -53,26 +56,30 @@ public class Animating extends AiPlugin{
 		t.behind = behindMin + World.rand.nextInt(frontRange+1) - World.rand.nextInt(backRange + 1);
 		t.dir = World.rand.nextBoolean();
 		t.ani = new Animator(defaultAni);
-		t.box = defaultBox != null ? defaultBox.copy() : new Rect(t.ani.pixelCoords);
+		t.box = defaultBox != null ? defaultBox.copy() : new Rect(t.ani.tex.pixelCoords);
 	}
 	
 	public void update(Thing t, double delta) {
 		t.ani.update(delta);
-		if(useTexBox){
-			t.box.set(t.ani.pixelCoords);
+		if(useTexBox && !t.box.equals(t.ani.tex.pixelCoords)){
+			t.box.set(t.ani.tex.pixelCoords);
 		}
 	}
 	
-	public void partRender(Thing t){
-		if(t.color != null) t.color.bind();
-		if(t.rotation != 0){
-			t.ani.resetMod();
-			t.ani.rotate(t.rotation);
-			t.ani.translate(t.pos.x, t.pos.y + t.yOffset);
-			t.ani.bashMod(!t.dir);
-		} else {
-			if(t.type == ThingType.ITEM) System.out.println(t.ani.createBox() + "  " + t.box);
-			t.ani.fillBash(t.box, !t.dir, t.pos.x, t.pos.y + t.yOffset);
+	public void prepareRender(Thing t){
+		if(t.type.alwaysUpdateVBO || t.needsRenderUpdate || t.switchedSelected){
+			Main.world.window.vaos[t.type.ordinal].changeUsual(t);
+			if(t.switchedSelected){
+				if(t.selected){
+					t.color = new Color(1, 0, 0, 1);
+					Main.world.window.vaos[t.type.ordinal].changeUnusual(t);
+					System.out.println("test");
+				} else {
+					t.color = new Color(1, 1, 1, 1);
+					Main.world.window.vaos[t.type.ordinal].changeUnusual(t);
+				}
+				t.switchedSelected = false;
+			}
 		}
 	}
 	

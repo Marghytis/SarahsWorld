@@ -1,19 +1,19 @@
 package things.aiPlugins;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import core.Listener;
+import core.Window;
+import effects.Effect;
 import main.Main;
 import menu.Menu.Menus;
 import menu.Settings;
 import menu.Settings.Key;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import things.AiPlugin;
 import things.Thing;
 import util.math.Vec;
-import core.Listener;
-import core.Window;
-import effects.Effect;
+import world.World;
 
 public  class AvatarControl extends AiPlugin implements Listener{
 
@@ -49,7 +49,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		}
 		t.type.movement.setAni(t, walkingDir);
 		t.walkingForce = walkingDir*a;
-		if(Keyboard.isKeyDown(Keyboard.KEY_F)){
+		if(Keyboard.isKeyDown(Keyboard.KEY_R)){
 			t.force.shift(0, 10000);
 		}
 		
@@ -84,6 +84,13 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		case 1://USE
 			Thing[] objectsClickedOn = Main.world.window.objectsAt(worldPos);
 			Main.world.avatar.type.inv.useSelectedItem(Main.world.avatar, worldPos, objectsClickedOn);
+			break;
+		case 2:
+			objectsClickedOn = Main.world.window.objectsAt(worldPos);
+			for(Thing t : objectsClickedOn){
+				t.selected = !t.selected;
+				t.switchedSelected = true;
+			}
 			break;
 		}
 		
@@ -153,16 +160,17 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		case SLOWER:
 			Settings.timeScale *= 0.9;
 			break;
+		case FREEZE:
+			Settings.FREEZE = !Settings.FREEZE;
+			break;
+		case JUMPDOWN:
+			World.world.avatar.pos.y -= 200;
+			World.world.avatar.where.g = false;
 		default:
 		}
-		if(key == Keyboard.KEY_L){
-			Main.menu.setMenu(Menus.DIALOG);
-		} else if(key == Keyboard.KEY_J){
-			freeze = !freeze;
-		}
+		//No, don't add if-clauses here!! Add the keys legally!!
 		return false;
 	}
-	public boolean freeze;
 	public boolean keyReleased(int key) {
 		return false;
 	}

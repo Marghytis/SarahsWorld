@@ -13,7 +13,7 @@ import things.Thing;
 import util.math.Vec;
 import world.WorldData;
 import world.WorldData.Column;
-import world.generation.zones.Desert;
+import world.generation.zones.Graveyard;
 import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
@@ -34,11 +34,13 @@ public class Generator {
 	public Zone zoneR;
 
 	public List<QuestSpawner> questThings = new ArrayList<>();
+	public double genRadius;
 	
-	public Generator(WorldData world){
+	public Generator(WorldData world, double radius){
 		this.world = world;
+		this.genRadius = radius;
 		
-		Biome startBiome = Biome.DESERT;//TODO make it random
+		Biome startBiome = Biome.GRAVEYARD;//TODO make it random
 		
 		posL = new Vec();
 		posR = new Vec();
@@ -46,8 +48,8 @@ public class Generator {
 		biomeL = new BiomeManager(world, startBiome, true);
 		biomeR = new BiomeManager(world, startBiome, false);
 
-		zoneL = new Desert(random, biomeL, 0, true);
-		zoneR = new Desert(random, biomeR, 0, false);
+		zoneL = new Graveyard(random, biomeL, 0, true);
+		zoneR = new Graveyard(random, biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}
@@ -62,7 +64,7 @@ public class Generator {
 	
 	public void borders(double d, double e) {
 		while(posR.x < e){
-			biomeR.step(world.mostRight);
+			biomeR.step();
 			posR.x += Column.step;
 			
 			posR.y = zoneR.y(posR.x - zoneR.originX);
@@ -74,8 +76,8 @@ public class Generator {
 					case 2 : zoneR = new Jungle(random, biomeR, posR.x, false);break;
 				}
 			}
-			
-			world.addRight(biomeR.biome, biomeR.createVertices(posR.y));
+			Column newColumn = world.addRight(biomeR.biome, biomeR.createVertices(posR.y));
+			biomeR.lastColumn = newColumn;
 			
 			if(columnCount < 3){
 				columnCount++;
@@ -85,10 +87,10 @@ public class Generator {
 			tryToStartQuests(zoneR);
 			
 //			world.mostRight.left.biome.spawnThings(world, world.mostRight.left.left);
-			biomeR.spawnThings(world.mostRight.left);
+			biomeR.spawnThings(newColumn.left);
 			for(int i = 0; i < questThings.size(); i++){
 				QuestSpawner qs = questThings.get(i);
-				Thing t = qs.thingType.defaultSpawner.spawn(world, world.mostRight.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
+				Thing t = qs.thingType.defaultSpawner.spawn(world, newColumn.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
 				if(t != null) {
 					qs.quest.characters.put(qs.name, t);
 					qs.quest.eventFinished = true;
@@ -98,7 +100,7 @@ public class Generator {
 			}
 		}
 		while(posL.x > d){
-			biomeL.step(world.mostLeft);
+			biomeL.step();
 			posL.x -= Column.step;
 			
 			posL.y = zoneL.y(-posL.x - zoneL.originX);
@@ -107,7 +109,8 @@ public class Generator {
 				zoneL = new Mountains(random, biomeL, -posL.x, true);
 			}
 			
-			world.addLeft(biomeL.biome, biomeL.createVertices(posL.y));
+			Column newColumn = world.addLeft(biomeL.biome, biomeL.createVertices(posL.y));
+			biomeL.lastColumn = newColumn;
 
 			if(columnCount < 3){
 				columnCount++;
@@ -116,10 +119,10 @@ public class Generator {
 			
 			tryToStartQuests(zoneL);
 //			world.mostLeft.right.biome.spawnThings(world, world.mostLeft.right.right);
-			biomeL.spawnThings(world.mostLeft);
+			biomeL.spawnThings(newColumn);
 			for(int i = 0; i < questThings.size(); i++){
-				QuestSpawner qs = questThings.get(i);
-				Thing t = qs.thingType.defaultSpawner.spawn(world, world.mostLeft.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
+				QuestSpawner qs = questThings.get(i);//Yes left below!! change it later to last and next
+				Thing t = qs.thingType.defaultSpawner.spawn(world, newColumn.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
 				if(t != null) {
 					qs.quest.characters.put(qs.name, t);
 					qs.quest.eventFinished = true;
@@ -128,6 +131,9 @@ public class Generator {
 				}
 			}
 		}
+	}
+	//TODO!!!!!
+	public void step(boolean left){
 	}
 	
 	public void tryToStartQuests(Zone zone){

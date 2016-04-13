@@ -1,14 +1,14 @@
 package effects.particles;
 
-import render.Texture;
+import effects.particles.Particle.ParticleType;
+import main.Res;
 import things.Thing;
 import util.Color;
 import util.math.Vec;
-import effects.particles.Particle.ParticleType;
 
 public class RainbowSpit implements ParticleEffect{
 	
-	public static final ParticleType RAINBOW = new ParticleType(new Texture("res/particles/Spark.png", -0.5, -0.5));
+	public static final ParticleType RAINBOW = new ParticleType(Res.sparkParticle);
 	
 	public ParticleEmitter rainbow = new ParticleEmitter(210, 200, RAINBOW, 1){
 		

@@ -44,8 +44,8 @@ public class Oasis extends Zone {
 			}
 		} else if(part == 1){//LAKE
 			if(startingPart){
-				biome.ants[1].resize(0, 2);
-				biome.ants[2].resize(0, 5);
+				biome.ants[1].resize(0, 0, 2);
+				biome.ants[2].resize(0, 0, 5);
 				startingPart = false;
 			}
 			if(subZone == null){
@@ -53,10 +53,10 @@ public class Oasis extends Zone {
 				ownHeight = 0;
 			} else if(!endingPart1 && x - subZone.originX > 725){
 				endingPart1 = true;
-				biome.ants[2].resize(Biome.OASIS.stratums[2].thickness, 5);
+				biome.ants[2].resize(Biome.OASIS.stratums[2], 5);
 			} else if(!endingPart2 && x - subZone.originX > 800){
 				endingPart2 = true;
-				biome.ants[1].resize(Biome.OASIS.stratums[1].thickness, 2);
+				biome.ants[1].resize(Biome.OASIS.stratums[1], 2);
 			}
 			if(subZone.end){
 				xEnd = x + 1000;
@@ -64,7 +64,7 @@ public class Oasis extends Zone {
 				curve = (x1) -> UsefulF.cubicUnit.f(x1/1000)*100;
 				xStart = x;
 				part = 2;
-				biome.ants[1].resize(0, Biome.OASIS.stratums[1].sizingSpeed);
+				biome.ants[1].resize(0, 0, Biome.OASIS.stratums[1].sizingSpeed);
 			}
 		} else {//SLOPE UP
 			ownHeight = curve.f(x - xStart) + yStart - 100;

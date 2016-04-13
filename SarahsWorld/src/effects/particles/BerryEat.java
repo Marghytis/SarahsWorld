@@ -1,13 +1,13 @@
 package effects.particles;
 
-import render.Texture;
-import util.math.Vec;
 import effects.particles.Particle.ParticleType;
+import main.Res;
+import util.math.Vec;
 
 public class BerryEat implements ParticleEffect{
 
 	
-	public static final ParticleType STAR = new ParticleType(new Texture("res/particles/RainbowParticle.png", -0.5, -0.5));
+	public static final ParticleType STAR = new ParticleType(Res.rainbowParticle);
 	
 	public ParticleEmitter stars = new ParticleEmitter(30, 1, STAR, 1){
 
@@ -39,7 +39,7 @@ public class BerryEat implements ParticleEffect{
 		}
 	};
 	
-	public static final ParticleType SPARKLE = new ParticleType(new Texture("res/particles/Sparkle.png", -0.5, -0.5));
+	public static final ParticleType SPARKLE = new ParticleType(Res.sparkleParticle);
 	
 	public ParticleEmitter sparkle = new ParticleEmitter(stars.particles.length, 1, SPARKLE, 1){
 

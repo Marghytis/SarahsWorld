@@ -11,7 +11,8 @@ public class Settings{
 	public static boolean SPLIT_STRENGTH_ON_MULTIPLE_TARGETS = true;
 	public static boolean FRICTION = true;
 	public static boolean DARKNESS = true;
-	public static int DRAW = GL11.GL_QUAD_STRIP;//GL_QUAD_STRIP
+	public static boolean FREEZE = false;//freeze all movement
+	public static int DRAW = GL11.GL_TRIANGLES;//GL_TRIANGLES
 	public static boolean SHOW_NAME_TAGS = true;
 	public static boolean STOP_GRAPH = false;
 	public static boolean printSarahPhysics = true;
@@ -31,6 +32,8 @@ public class Settings{
 		DISMOUNT(Keyboard.KEY_E),
 		FASTER(Keyboard.KEY_ADD),
 		SLOWER(Keyboard.KEY_MINUS),
+		FREEZE(Keyboard.KEY_F),
+		JUMPDOWN(Keyboard.KEY_J),
 		NONE(0);
 		
 		public int key;

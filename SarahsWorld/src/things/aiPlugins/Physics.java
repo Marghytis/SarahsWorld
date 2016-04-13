@@ -4,7 +4,6 @@ import main.Main;
 import menu.Settings;
 import things.AiPlugin;
 import things.Thing;
-import things.ThingType;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.Material;
@@ -46,7 +45,7 @@ public class Physics extends AiPlugin{
 	}
 	
 	public void update(Thing t, double delta){
-		if(ThingType.SARAH.avatar.freeze){
+		if(Settings.FREEZE){
 			return;
 		}
 		
@@ -94,7 +93,10 @@ public class Physics extends AiPlugin{
 		}
 		
 		//UPDATE WORLD LINK
-		t.link = Main.world.window.get((int)Math.floor(t.pos.x/Column.step));
+
+		int column = (int)Math.floor(t.pos.x/Column.step);
+		while(t.link.xIndex < column) t.link = t.link.right;
+		while(t.link.xIndex > column) t.link = t.link.left;
 	}
 	
 	Vec circleCollision = new Vec();
@@ -178,7 +180,7 @@ public class Physics extends AiPlugin{
 		//forces
 		double normal = t.force.dot(ortho);
 		double downhill = t.force.dot(topLine);//walking force already included from before
-		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.vertices[t.collisionC.collisionVec].mats.read.data.deceleration
+		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.vertices[t.collisionC.collisionVec].mats()[t.collisionC.vertices[t.collisionC.collisionVec].lastMatIndex].deceleration
 //							+ (Settings.airFriction ? 1 : 0)*t.speed*t.speed*airFriction*airea
 							;
 
@@ -204,18 +206,19 @@ public class Physics extends AiPlugin{
 	
 	public boolean circleCollision(Thing t, Vec pos1, double r, boolean right){
 		Vec vec1 = new Vec(), vec2 = new Vec();
-		for(Column c = Main.world.window.leftEnd; c != Main.world.window.rightEnd && c != null; c = c.right){
+		Column[] array = Main.world.window.landscape.columns;
+		for(int c = 0; c < Main.world.window.landscape.columns.length; c++){
 			Vec[] output = UsefulF.circleIntersection(
-					vec1.set(c.xReal, c.vertices[c.collisionVec].y),
-					vec2.set(c.right.xReal, c.right.vertices[c.right.collisionVec].y),
+					vec1.set(array[c].xReal, array[c].vertices[array[c].collisionVec].y),
+					vec2.set(array[c].right.xReal, array[c].right.vertices[array[c].right.collisionVec].y),
 					pos1,
 					r);
 			if(right && output[1] != null){
-				t.collisionC = c;
+				t.collisionC = array[c];
 				circleCollision.set(output[1]);
 				return true;
 			} else if(!right && output[0] != null){
-				t.collisionC = c;
+				t.collisionC = array[c];
 				circleCollision.set(output[0]);
 				return true;
 			}
@@ -227,7 +230,7 @@ public class Physics extends AiPlugin{
 	public boolean collision(Thing t, Vec pos1, Vec velt){
 		if(coll){
 			Vec vec1 = new Vec(), vec2 = new Vec();
-			for(Column c = Main.world.window.leftEnd; c != Main.world.window.rightEnd && c != null; c = c.right){
+			for(Column c : Main.world.window.landscape.columns){
 				if(UsefulF.intersectionLines2(
 						pos1,
 						velt,
@@ -246,7 +249,7 @@ public class Physics extends AiPlugin{
 			Vertex waterVertex = t.link.vertices[t.link.collisionVecWater];
 			if(waterVertex.y > pos.y + t.box.pos.y){
 				t.where.water = Math.min((waterVertex.y - (pos.y + t.box.pos.y))/t.box.size.y, 1);//+20
-				force.shift(new Vec(0, waterVertex.mats.read.data.bouyancy*t.where.water*(t.type.physics.airea + (Math.abs(t.walkingForce)/1000))));
+				force.shift(new Vec(0, waterVertex.mats()[waterVertex.lastMatIndex].bouyancy*t.where.water*(t.type.physics.airea + (Math.abs(t.walkingForce)/1000))));
 			}
 		}
 	}
@@ -267,7 +270,7 @@ public class Physics extends AiPlugin{
 			//get the material the thing is located in
 			while(c.vertices[yIndex+1].y > y) yIndex++;
 			
-			if(yIndex != -1 && !c.vertices[yIndex].mats.empty()) vert = c.vertices[yIndex];
+			if(yIndex != -1 && !c.vertices[yIndex].empty()) vert = c.vertices[yIndex];
 		} catch(IndexOutOfBoundsException e){
 			//not being in any material
 		}

@@ -2,12 +2,14 @@ package menu;
 
 import org.lwjgl.opengl.GL11;
 
+import core.Window;
+import render.Render;
+import render.Shader;
 import render.TexFile;
 import render.Texture;
+import render.VAO;
 import util.Color;
-import util.Render;
 import util.math.Vec;
-import core.Window;
 
 public class Element {
 
@@ -16,6 +18,7 @@ public class Element {
 	public int x1, y1, x2, y2, w, h;
 	public Color color;
 	public Texture tex;
+	public VAO vao;
 	
 	public Element(double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex){
 		this.relX1 = relX1;
@@ -29,6 +32,7 @@ public class Element {
 		this.color = color;
 		this.tex = tex;
 		setCoords();
+		this.vao = Render.quadInScreen((short)(this.x1-Window.WIDTH_HALF), (short)(this.y1-Window.HEIGHT_HALF), (short)(this.x2-Window.WIDTH_HALF), (short)(this.y2-Window.HEIGHT_HALF));
 	}
 	
 	public void setCoords(){
@@ -46,20 +50,22 @@ public class Element {
 	
 	public void update(double delta){}
 	public void render(){
-		GL11.glLoadIdentity();
-		boolean noColor = color == null;
-		if(!noColor){
-			color.bind();
-		} else {
-			Color.WHITE.bind();
-		}
-		if(tex != null){
-			tex.file.bind();
-			tex.fill(x1, y1, x2, y2, false);
-		} else if(!noColor){
-			TexFile.bindNone();
-			Render.quad(x1, y1, x2, y2);
-		}
+		Shader.singleQuad.bind();
+			if(color != null) color.bind();
+			else Color.WHITE.bind();
+			if(tex != null){
+				tex.file.bind();
+				Shader.singleQuad.set("texCoords", tex.texCoords[0], tex.texCoords[1], tex.texCoords[2] - tex.texCoords[0], tex.texCoords[3] - tex.texCoords[1]);
+			}
+			Shader.singleQuad.set("texture", tex != null);
+			Shader.singleQuad.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+			
+			vao.bindStuff();
+				GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
+			vao.unbindStuff();
+		
+		TexFile.bindNone();
+		Shader.bindNone();
 	}
 	
 	public void pressed(int button, Vec mousePos){}

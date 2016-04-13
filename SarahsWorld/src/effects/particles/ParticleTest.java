@@ -5,17 +5,19 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
-import util.math.Vec;
 import core.Core;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
+import core.Window;
+import util.math.Vec;
 
 public class ParticleTest implements Listener, Renderer, Updater{
 
 	public static void main(String[] args){
 		
-		Core core = new Core("Particle Tester", new Vec(1500, 1000));
+//		Core core = new Core("Particle Tester", new Vec(1500, 1000));
+		Core core = new Core("Particle Tester");
 		ParticleTest test = new ParticleTest();
 		
 		Updater.updaters.add(test);
@@ -28,12 +30,15 @@ public class ParticleTest implements Listener, Renderer, Updater{
 	public List<ParticleEffect> effects = new ArrayList<>();
 	
 	public ParticleTest(){
-		RainEffect rain = new RainEffect(new Vec(1000, 500), 50, 100);
-		effects.add(rain);
+//		RainEffect rain = new RainEffect(new Vec(1000, 500), 50, 100);
+		Fog fog = new Fog(Window.WIDTH_HALF, Window.HEIGHT_HALF, 300, 2, 100);
+//		effects.add(rain);
+		effects.add(fog);
 	}
 
 	public boolean update(double delta) {
 		float d = (float) delta;
+		ParticleEffect.wind.set((Listener.getMousePos().x - Window.WIDTH_HALF)*60f/Window.WIDTH_HALF, 0);
 		effects.forEach((e) -> e.update(d));
 		return false;
 	}
@@ -80,8 +85,10 @@ public class ParticleTest implements Listener, Renderer, Updater{
 			effects.add(new RainbowSpit(mousePos, null));
 			break;
 		case Keyboard.KEY_6:
+			effects.add(new FireEffect(mousePos));
 			break;
 		case Keyboard.KEY_7:
+			effects.add(new RainEffect(mousePos, 100, 20));
 			break;
 		case Keyboard.KEY_8:
 			break;
@@ -90,10 +97,8 @@ public class ParticleTest implements Listener, Renderer, Updater{
 		case Keyboard.KEY_0:
 			break;
 		case Keyboard.KEY_NUMPAD0:
-			effects.add(new FireEffect(mousePos));
 			break;
 		case Keyboard.KEY_NUMPAD1:
-			effects.add(new RainEffect(mousePos, 100, 20));
 			break;
 		case Keyboard.KEY_NUMPAD2:
 			break;

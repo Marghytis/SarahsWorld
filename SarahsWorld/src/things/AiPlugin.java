@@ -30,7 +30,5 @@ public abstract class AiPlugin {
 	
 	public void setup(Thing t, WorldData world){};
 	
-	public void partRender(Thing t){}
-
 	public void remove(Thing t) {}
 }

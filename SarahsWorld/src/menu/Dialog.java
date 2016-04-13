@@ -1,13 +1,11 @@
 package menu;
 
-import java.awt.Font;
-
-import main.Main;
-import main.Res;
-
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import core.Window;
+import main.Main;
+import main.Res;
 import quest.ActiveQuest;
 import render.TexAtlas;
 import render.TexFile;
@@ -23,18 +21,15 @@ import util.TrueTypeFont2;
 import util.math.Graph;
 import util.math.UsefulF;
 import util.math.Vec;
-import core.Window;
 
 public class Dialog extends Element {
-	public static Texture answersTex = new Texture("res/menu/Answers.png", -0.5, -0.5);
-	public static TexAtlas tex = new TexAtlas("res/menu/Bar.png", 1, 3, 0, 0);
-	public static Texture upTex = tex.tex(0, 0), downTex = tex.tex(0, 1), tex1 = tex.tex(0, 2);
-	public static TexAtlas tex2 = new TexAtlas("res/menu/Bar2.png", 3, 3, 0, 0);
+	public static Texture answersTex = Res.answers;
+	public static TexAtlas tex2 = Res.dialogBar2;
 	public static Texture upTex2_1 = tex2.tex(0, 0), upTex2_2 = tex2.tex(1, 0),upTex2_3 = tex2.tex(2, 0), downTex2_1 = tex2.tex(0, 1), downTex2_2 = tex2.tex(1, 1), downTex2_3 = tex2.tex(2, 1), tex12_1 = tex2.tex(2, 2), tex12_2 = tex2.tex(1, 2), tex12_3 = tex2.tex(0, 2);
-	public static Texture connection = new Texture("res/menu/Connector.png", 0, 0);
+	public static Texture connection = Res.speechBubbleConnector;
 	public static TrueTypeFont fontOld = Res.menuFont;
-	public static TrueTypeFont2 font = new TrueTypeFont2(new Font("Times New Roman", 0, 40), true);
-	public static int fontHeightHalf = Res.menuFont.getHeight()/2;
+	public static TrueTypeFont2 font = /*new TrueTypeFont2(new Font("Times New Roman", 0, 40), true)*/null;
+	public static int fontHeightHalf = /*Res.menuFont.getHeight()/2*/0;
 	public static double rDefault = 150, animationTime = 2;
 
 	public ActiveQuest quest;

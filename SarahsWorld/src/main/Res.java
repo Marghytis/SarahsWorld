@@ -1,7 +1,6 @@
 package main;
 
-import java.awt.Font;
-
+import render.Shader;
 import render.TexAtlas;
 import render.TexFile;
 import render.TexInfo;
@@ -81,18 +80,49 @@ public class Res {
 	public static final TexInfo items_handheld_gripPos = new TexInfo("res/items/ItemsHandheld.txt");
 	public static final TexAtlas coin  = new TexAtlas("res/Items/Coin.png", 1, 1, -0.5f, -0.2f);
 	public static final TexAtlas inventory = new TexAtlas("res/items/Inventory.png", 1, 2, 0, 0);
+	public static final TexAtlas inventoryDifferentOffset = new TexAtlas("res/menu/Inventory.png", 1, 2, -0.5, -0.5);
 	public static final TexAtlas items_world = new TexAtlas("res/items/ItemsWorld.png", 5, 1, -0.5f, -0.5f);
 	public static final TexAtlas items_inv = new TexAtlas("res/items/ItemsInv.png", 20, 2, -0.5f, -0.5f);
 	public static final TexAtlas items_weapons = new TexAtlas("res/items/ItemsHandheld.png", 5, 7, -0.5f, -0.5f);static {items_weapons.addInfo(items_handheld_gripPos);}
-	public static final Texture moneybag = new Texture("res/items/Moneybag.png", -0.5f, -0.5f);
+	public static final Texture moneybag = new Texture("res/items/Moneybag.png", 0, 0);
+	public static final Texture answers = new Texture("res/menu/Answers.png", -0.5, -0.5);
+	public static final Texture speechBubbleConnector = new Texture("res/menu/Connector.png", 0, 0);
+	public static final Texture speechBubble = new Texture("res/particles/Bubble.png", 0, 0);
+	public static final TexAtlas thoughtBubble = new TexAtlas("res/particles/ThoughtBubble.png", 1, 3, -0.5, -0.5);
+	public static final TexAtlas dialogBar2 = new TexAtlas("res/menu/Bar2.png", 3, 3, 0, 0);
+	public static final TexAtlas button = new TexAtlas("res/menu/Button.png", 1, 2, -0.5, -0.5);
 	
 	public static final Texture light = new Texture("res/particles/Light.png", -0.5, -0.5);
 	public static final Texture light1 = new Texture("res/particles/Light1.png", -0.5, -0.5);
 	public static final Texture light2 = new Texture("res/particles/Light2.png", -0.5, -0.5);
+	public static final Texture rainbowParticle = new Texture("res/particles/RainbowParticle.png", -0.5, -0.5);
+	public static final Texture sparkleParticle = new Texture("res/particles/Sparkle.png", -0.5, -0.5);
+	public static final Texture bloodParticle = new Texture("res/particles/Blood_drop.png", -0.5, -0.5);
+	public static final Texture smokeParticle = new Texture("res/particles/Smoke.png", -0.5, -0.5);
+	public static final Texture flameParticle = new Texture("res/particles/Flame.png", -0.5, -0.5);
+	public static final Texture sparkParticle = new Texture("res/particles/Spark.png", -0.5, -0.5);
+	public static final Texture fireParticle = new Texture("res/particles/Fire.png", -0.5, -0.5);
+	public static final Texture heartParticle = new Texture("res/particles/Heart.png", -0.5, -0.5);
+	public static final Texture rainParticle = new Texture("res/particles/Raindrop.png", -0.5, -0.5);
+	public static final Texture fogParticle = new Texture("res/particles/Fog.png", -0.5, -0.5);
+
+	public static final Texture grass = new Texture("res/materials/Grass.png", 0, 0);
+	public static final Texture earth = new Texture("res/materials/Clay.png", 0, 0);
+	public static final Texture stone = new Texture("res/materials/Stone.png", 0, 0);
+	public static final Texture stone2 = new Texture("res/materials/Stone2.png", 0, 0);
+	public static final Texture sandstone3 = new Texture("res/materials/Sandstone3.png", 0, 0);
+	public static final Texture sandstone2 = new Texture("res/materials/Sandstone2.png", 0, 0);
+	public static final Texture sand = new Texture("res/materials/Sand.png", 0, 0);
+	public static final Texture candy = new Texture("res/materials/Candy.png", 0, 0);
+	public static final Texture soil = new Texture("res/materials/Soil.png", 0, 0);
 	
-	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 35), true);
+	public static TrueTypeFont menuFont = /*new TrueTypeFont(new Font("Times New Roman", 0, 35), true)*/null;
 	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);
 
 //	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);
 	public static final Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.wav", null);
+
+	public static Shader landscapeShader = Shader.create("res/shader/material.vert", "res/shader/material.frag", "in_Position", "in_TextureCoords", "in_Alphas", "in_TransAlpha");
+	public static Shader thingShader = Shader.withGeometry("res/shader/thing.vert", "res/shader/thing.geom", "res/shader/thing.frag", "in_position", "in_rotation", "in_texCoords", "in_mirror", "in_color", "in_z", "in_size");
+	public static Shader darknessShader = Shader.create("res/shader/color.vert", "res/shader/color.frag", "in_Position", "in_Color");
 }

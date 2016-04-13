@@ -4,7 +4,6 @@ import main.Main;
 import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
-import util.math.Function;
 import util.math.Vec;
 
 public class PhysicsExtension extends AiPlugin {

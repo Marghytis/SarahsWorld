@@ -1,7 +1,5 @@
 package menu;
 
-import java.awt.Font;
-
 import org.lwjgl.opengl.GL11;
 
 import core.Listener;
@@ -10,23 +8,24 @@ import core.Updater;
 import core.Window;
 import item.ItemType;
 import main.Main;
+import main.Res;
 import menu.Settings.Key;
-import render.TexFile;
 import render.Texture;
+import render.VAO;
 import things.ThingType;
 import util.Anim;
 import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
 import world.World;
+import world.generation.Biome;
 
 public class Menu implements Updater, Renderer, Listener {
-	
-	public static Texture MONEYBAG = new Texture("res/items/Moneybag.png", 0, 0);
-	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 20), true);
+	public static Texture MONEYBAG = Res.moneybag;
+	public static TrueTypeFont font = /*new TrueTypeFont(new Font("Times New Roman", 0, 20), true)*/null;
 	public static Color fontColor = new Color(0.9f, 0.8f, 0.8f, 1);
 	public static Dialog dialog = new Dialog();
-	
+
 	public Settings settings = new Settings();
 	public Menus open = Menus.EMPTY, last = Menus.EMPTY, next = Menus.EMPTY;
 	public Element[] elements;
@@ -63,9 +62,6 @@ public class Menu implements Updater, Renderer, Listener {
 	}
 
 	public void draw() {
-		TexFile.bindNone();
-		Color.WHITE.bind();
-		GL11.glLoadIdentity();
 		for(Element e : open.elements){
 			e.render();
 		}
@@ -127,7 +123,7 @@ public class Menu implements Updater, Renderer, Listener {
 			public void setElements(){
 				elements = new Element[]{
 						new Element(7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0]*2, MONEYBAG.pixelCoords[1]*2 - 30, MONEYBAG.pixelCoords[2]*2, MONEYBAG.pixelCoords[3]*2 - 30, null, MONEYBAG),
-						new FlexibleTextField(() -> Main.world.avatar.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
+						new FlexibleTextField(() -> Main.world.avatar.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null, true),
 						
 						new ItemContainer(0, 1/6.0, 1.0/8),
 						new ItemContainer(1, 2/6.0, 1.0/8),
@@ -161,7 +157,7 @@ public class Menu implements Updater, Renderer, Listener {
 						new Button("Switch render mode", 0.7, 0.3, 0.7, 0.3, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								if(Settings.DRAW == GL11.GL_LINE_STRIP){
-									Settings.DRAW = GL11.GL_QUAD_STRIP;
+									Settings.DRAW = GL11.GL_TRIANGLES;
 								} else {
 									Settings.DRAW = GL11.GL_LINE_STRIP;
 								}
@@ -171,7 +167,32 @@ public class Menu implements Updater, Renderer, Listener {
 							public void released(int button) {
 								Main.menu.setMenu(Menus.DEBUG_SPAWNER);
 							}
+						},
+						new Button("Infos", 0.7, 0.5, 0.7, 0.5, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+							public void released(int button) {
+								Main.menu.setMenu(Menus.INFOS);
+							}
+						},
+				};
+			}
+		},
+		INFOS(false, false){
+			public void setElements(){
+				elements = new Element[]{
+						new FlexibleTextField(() -> {
+							String s = "Biome: " + World.world.avatar.link.biome.name();
+							for(int y = 0; y < Biome.layerCount-1; y++){
+								if(!World.world.avatar.link.vertices[y].empty()){
+									s += "\nLayer " + y + "(" + (int)(World.world.avatar.link.vertices[y].y - World.world.avatar.link.vertices[y+1].y) + "px) has materials ";
+									s += World.world.avatar.link.vertices[y].mats()[0] + "(" + World.world.avatar.link.vertices[y].alphas[0] + ")";
+									s += ", " + World.world.avatar.link.vertices[y].mats()[1] + "(" + World.world.avatar.link.vertices[y].alphas[1] + ")";
+									s += ", " + World.world.avatar.link.vertices[y].mats()[2] + "(" + World.world.avatar.link.vertices[y].alphas[2] + ")";
+									s += " and " + World.world.avatar.link.vertices[y].mats()[3] + "(" + World.world.avatar.link.vertices[y].alphas[3] + ")";
+								}
+							}
+							return s;
 						}
+						, 0, 0, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false)
 				};
 			}
 		},
@@ -187,7 +208,7 @@ public class Menu implements Updater, Renderer, Listener {
 				x = 0.5;
 				y = 0.9;
 				for (; i < elements.length; i++, y -= 0.06) {
-					elements[i] = new TextField(values[i-(values.length-1)].name() + ":", x, y, x, y, -150, -30, 150, 30, new Color(0, 0, 0, 0.5f), null);
+					elements[i] = new TextField(values[i-(values.length-1)].name() + ":", x, y, x, y, -150, -30, 150, 30, new Color(0, 0, 0, 0.5f), null, true);
 				}
 			}
 			
@@ -234,6 +255,7 @@ public class Menu implements Updater, Renderer, Listener {
 		public boolean stay;//can only be switched of by itself
 		public Element[] elements;
 		public Anim ani;
+		public VAO vao;
 		
 		Menus(boolean blockWorld, boolean stay){
 			this.blockWorld = blockWorld;

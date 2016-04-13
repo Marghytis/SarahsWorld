@@ -4,9 +4,6 @@ import item.ItemStack;
 import item.ItemType;
 import main.Main;
 import main.Res;
-
-import org.lwjgl.opengl.GL11;
-
 import render.Animator;
 import things.AiPlugin;
 import things.Thing;
@@ -39,8 +36,9 @@ public class Inventory extends AiPlugin{
 			stack.update(delta);
 		}
 		int coinAmount = 0;
-		for(Thing t2 = Main.world.window.leftEnd.things[ThingType.COIN.ordinal]; t2 != null && t2 !=  Main.world.window.rightEnd.things[ThingType.COIN.ordinal]; t2 = t2.right){
-			if(t2.type != ThingType.DUMMY && t2.pos.minus(t.pos).lengthSquare() < 1000){
+		for(int col = 0; col < Main.world.window.landscape.columns.length; col++)
+		for(Thing t2 = Main.world.window.landscape.columns[col].things[ThingType.COIN.ordinal]; t2 != null; t2 = t2.next){
+			if(t2.pos.minus(t.pos).lengthSquare() < 1000){
 				Main.world.window.deletionRequested.add(t2);
 				coinAmount++;
 			}
@@ -49,22 +47,6 @@ public class Inventory extends AiPlugin{
 			t.coins += coinAmount;
 			Res.coinSound.play();
 		}
-	}
-	
-	public void partRender(Thing t){
-		ItemType selected = getSelectedItem(t);
-		if(selected == null) return;
-		if(selected.texHand != null && !selected.texHand.equals(itemAnimator.ani)){
-			itemAnimator.setTexture(selected.texHand);
-		}
-
-		GL11.glEnd();
-		itemAnimator.bindTex();
-		
-		selected.renderHand(t, itemAnimator);
-		
-		t.ani.bindTex();
-		GL11.glBegin(GL11.GL_QUADS);
 	}
 	
 	public ItemType getSelectedItem(Thing t){

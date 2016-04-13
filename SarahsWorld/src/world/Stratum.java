@@ -3,6 +3,8 @@ package world;
 
 public class Stratum {
 
+	public static final Stratum air = new Stratum(Material.AIR, 0, 0, 0, 0, 0, 0);
+
 	public Material material;
 	public double thickness;
 	public double thicknessVariance;//(multiplier)

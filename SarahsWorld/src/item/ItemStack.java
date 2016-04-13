@@ -5,10 +5,11 @@ import render.Texture;
 import things.aiPlugins.Inventory;
 import util.math.Rect;
 import core.Window;
+import main.Res;
 
 
 public class ItemStack extends Rect{
-	public static final TexAtlas INVENTORY = new TexAtlas("res/items/Inventory.png", 1, 2, 0, 0);
+	public static final TexAtlas INVENTORY = Res.inventory;
 	public static final Texture NOT_SELECTED = INVENTORY.tex(0, 0);
 	public static final Texture SELECTED = INVENTORY.tex(0, 1);
 

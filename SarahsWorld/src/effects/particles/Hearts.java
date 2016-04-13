@@ -1,13 +1,13 @@
 package effects.particles;
 
-import render.Texture;
-import util.math.Vec;
 import effects.particles.Particle.ParticleType;
+import main.Res;
+import util.math.Vec;
 
 public class Hearts implements ParticleEffect{
 
 	
-	public static final ParticleType HEART = new ParticleType(new Texture("res/particles/Heart.png", -0.5, -0.5));
+	public static final ParticleType HEART = new ParticleType(Res.heartParticle);
 	
 	public ParticleEmitter hearts = new ParticleEmitter(14, 1, HEART, 2){
 

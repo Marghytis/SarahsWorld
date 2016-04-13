@@ -44,7 +44,7 @@ public class Lake extends Zone {
 	public double step(double x) {
 		if(!endReached && x >= width){
 			endReached = true;
-			biome.ants[0].resize(0, lake.sizingSpeed);
+			biome.ants[0].resize(0, 0, lake.sizingSpeed);
 		}
 		if(endReached && biome.ants[0].reachedSize){
 			end = true;

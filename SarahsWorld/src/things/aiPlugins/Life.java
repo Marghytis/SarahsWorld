@@ -58,7 +58,7 @@ public class Life extends AiPlugin {
 				}
 			}
 			for(int i = 0; i < t.coins; i++){
-				new Thing(ThingType.COIN, Main.world.data, t.link, t.pos.copy(), new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));//World.rand.nextInt(401)-200, 400
+				new Thing(ThingType.COIN, Main.world.data, t.link, t.pos.copy(), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));//World.rand.nextInt(401)-200, 400
 			}
 			for(ItemType item : t.fruits)
 				new Thing(ThingType.ITEM, Main.world.data, t.link, t.pos.copy(), item);

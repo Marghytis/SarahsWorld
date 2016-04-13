@@ -1,43 +1,32 @@
 package effects.particles;
 
-import org.lwjgl.opengl.GL11;
-
-import render.Texture;
-import util.math.Vec;
 import core.Window;
 import effects.particles.Particle.ParticleType;
+import main.Res;
+import util.math.Vec;
 
 public class FireEffect implements ParticleEffect{
 
-	public static final ParticleType SMOKE = new ParticleType(new Texture("res/particles/Smoke.png", -0.5, -0.5));
-
+	public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
 	public ParticleEmitter smoke = new ParticleEmitter(100, 50, SMOKE, 2){
 		
-		@Override
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
 			p.vel.set((random.nextFloat() - 0.5f)*50f, 100f);
 			p.col.set(0.4f, 0.4f, 0.4f, 1f);
+			p.lived = random.nextFloat() - 0.5f;
 		}
-
-		@Override
 		public void velocityInterpolator(Particle p, float delta) {
-			p.vel.x += 1f;
+			p.vel.shift(ParticleEffect.wind, delta);
 		}
-
-		@Override
 		public void colorInterpolator(Particle p, float delta) {
 			p.col.a = (float) (lifeSpan-p.lived) /lifeSpan;
 		}
-		
-		@Override
 		public void radiusInterpolator(Particle p, float delta){
 			p.rad = 0.1f + (2.5f*(p.lived)/lifeSpan);
 		}
-		
 	};
-	
-	public static final ParticleType FLAME = new ParticleType(new Texture("res/particles/Flame.png", -0.5, -0.5));
+	public static final ParticleType FLAME = new ParticleType(Res.flameParticle);
 	
 	public ParticleEmitter flame = new ParticleEmitter(50, 50, FLAME, 1){
 
@@ -46,12 +35,12 @@ public class FireEffect implements ParticleEffect{
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
 			p.vel.set((random.nextFloat() - 0.5f)*10f, 100f);
 			p.col.set(0.5f, 0.5f, 0.1f, 0.5f);
-			p.rot = random.nextInt(3)-1;
+			p.rot = random.nextFloat();
 		}
 
 		@Override
 		public void velocityInterpolator(Particle p, float delta) {
-			p.vel.x += 1f;
+			p.vel.shift(ParticleEffect.wind, delta);
 		}
 
 		@Override
@@ -64,9 +53,9 @@ public class FireEffect implements ParticleEffect{
 		@Override
 		public void rotationInterpolator(Particle p, float delta) {
 			if(p.rot > 0){
-				p.rot = ((float)Math.PI/10)*(lifeSpan - p.lived);
+				p.rot = (1f/5)*(lifeSpan - p.lived);
 			} else {
-				p.rot = -((float)Math.PI/10)*(lifeSpan - p.lived);
+				p.rot = -(1f/5)*(lifeSpan - p.lived);
 			}
 		}
 		
@@ -75,102 +64,37 @@ public class FireEffect implements ParticleEffect{
 			p.rad = 2*((lifeSpan - p.lived)/lifeSpan);
 		}
 
-//		public void renderParticles(){
-//			type.tex.bind();
-//				for(Particle p : particles){
-//					if(p.live > 0){
-//						renderParticle(p);
-//					}
-//				}
-//			TexRegion.bindNone();
-//		}
-
-		@Override
-		public void renderParticle(Particle p) {
-			GL11.glColor4f(p.col.r, p.col.g, p.col.b, p.col.a);
-			GL11.glPushMatrix();
-				GL11.glTranslated(p.pos.x, p.pos.y, 0);
-				GL11.glRotatef(p.rot, 0, 0, 1);
-				GL11.glScalef(p.rad, p.rad, 0);
-					GL11.glDrawArrays(GL11.GL_QUADS, 0, 4);
-			GL11.glPopMatrix();
-		}
-		
 	};
 	
-	public static final ParticleType SPARK = new ParticleType(new Texture("res/particles/Spark.png", -0.5, -0.5));
+	public static final ParticleType SPARK = new ParticleType(Res.sparkParticle);
 	
-	public ParticleEmitter spark = new ParticleEmitter(10, 5, SPARK, 2){
+	public ParticleEmitter spark = new ParticleEmitter(40, 20, SPARK, 1.5f){
 
 		@Override
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
 			p.vel.set((random.nextFloat() - 0.5f)*10, 100);
 			p.col.set(1f, 0.6f, 0.1f, 1f);
-			p.rot = random.nextInt(3)-1;
-			p.rad = 0.5f;
+			p.rot = random.nextFloat();
+			p.rad = 0.1f;
 		}
 
 		@Override
 		public void velocityInterpolator(Particle p, float delta) {
-			p.vel.x += (random.nextFloat() - 0.5f)*5f + 1f;
-		}
-
-		@Override
-		public void colorInterpolator(Particle p, float delta) {
-//			p.col.a = (float) (p.live*0.8f) /startLife;
-//			p.col.r = 0.5f + p.live*0.4f/startLife;
-//			p.col.g = 0.5f - p.live*0.2f/startLife;//0.9f, 0.3f, 0.1f, 0.5f
-			if(p.lived > lifeSpan/2){
-				p.col.set(0.1f, 0.1f, 0.1f, 1);
-			}
-		}
-
-		@Override
-		public void rotationInterpolator(Particle p, float delta) {
-			if(p.rot > 0){
-				p.rot = ((float)Math.PI/10)*(lifeSpan - p.lived);
-			} else {
-				p.rot = -((float)Math.PI/10)*(lifeSpan - p.lived);
-			}
+			p.vel.x += delta*(ParticleEffect.wind.x + (random.nextFloat() - 0.5f)*5f);
+			p.vel.y += ParticleEffect.wind.y*delta;
 		}
 	};
 	
-	public static final ParticleType LIGHT = new ParticleType(new Texture("res/particles/Fire.png", -0.5, -0.5));
+	public static final ParticleType LIGHT = new ParticleType(Res.fireParticle);
 	
 	public ParticleEmitter light = new ParticleEmitter(5, 5, LIGHT, 1){
 		
-		@Override
-		public void renderParticles(){
-//			type.tex.bind();
-//				lightmap.bind();
-//					for(Particle p : particles){
-//						if(p.lived > 0){
-//							renderParticle(p);
-//						}
-//					}
-//				lightmap.release();
-//			type.tex.release();
-		}
-		
-		@Override
-		public void renderParticle(Particle p){
-//			ARBShaderObjects.glUniform4fARB(glGetUniformLocationARB(Shader.Test.handle, "particleColor"), p.col.r, p.col.g, p.col.b, p.col.a);
-//			GL11.glPushMatrix();
-//				GL11.glTranslated(p.pos.x, Window.HEIGHT - p.pos.y, 0);
-//				GL11.glRotatef(p.rot, 0, 0, 1);
-//				GL11.glScalef(p.rad, p.rad, 0);
-//					GL11.glDrawArrays(GL11.GL_RectS, 0, 4);
-//			GL11.glPopMatrix();
-		}
-
 		@Override
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
 			p.vel.set((random.nextFloat() - 0.5f)*10, 100);
 			p.col.set(1f, 1f, 1f, 1f);
-			p.rad = 1 + (random.nextFloat()*2);
-			
 		}
 
 		@Override

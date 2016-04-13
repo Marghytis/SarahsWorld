@@ -1,5 +1,7 @@
 package world.generation;
 
+import core.Window;
+import effects.particles.Fog;
 import things.Thing;
 import things.ThingType;
 import util.math.Vec;
@@ -7,6 +9,7 @@ import world.Material;
 import world.Stratum;
 import world.WorldData;
 import world.WorldData.Column;
+import world.WorldWindow;
 
 public enum Biome {
 	DESERT(new Stratum[]{
@@ -70,7 +73,7 @@ public enum Biome {
 			new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05)),
 	GRAVEYARD(new Stratum[]{
 			null,
-			new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
+			new Stratum(Material.GRASS, 10.0, 20.0, 20, 10, 20, 4),
 			new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
 			null,
 			null,
@@ -80,8 +83,10 @@ public enum Biome {
 			null
 			},
 			
-			new ThingSpawner(ThingType.PYRAMID.defaultSpawner, 0.03),
-			new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05)),
+			new ThingSpawner(ThingType.TREE_GRAVE.defaultSpawner, 0.1),
+			new ThingSpawner(ThingType.ZOMBIE.defaultSpawner, 0.05),
+			new ThingSpawner(ThingType.GRAVE.defaultSpawner, 0.2),
+			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Window.WIDTH_HALF, pos.yInt() + Window.HEIGHT_HALF + 50, 100, 4, 50)); return null;}, 0.01)),
 	MEADOW(new Stratum[]{
 			null,
 			new Stratum(Material.GRASS, 60.0, 20.0, 20, 40, 20, 4),
@@ -192,6 +197,11 @@ public enum Biome {
 	Biome(Stratum[] stratums, ThingSpawner... spawners){
 		this.stratums = stratums;
 		this.spawners = spawners;
+		for(int i = 0; i < stratums.length; i++){
+			if(stratums[i] == null){
+				stratums[i] = Stratum.air;
+			}
+		}
 	}
 	
 	Vec posField = new Vec();

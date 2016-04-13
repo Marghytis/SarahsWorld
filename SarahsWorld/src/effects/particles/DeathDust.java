@@ -1,12 +1,12 @@
 package effects.particles;
 
-import render.Texture;
-import util.math.Vec;
 import effects.particles.Particle.ParticleType;
+import main.Res;
+import util.math.Vec;
 
 public class DeathDust implements ParticleEffect {
 	
-public static final ParticleType SMOKE = new ParticleType(new Texture("res/particles/Smoke.png", -0.5, -0.5));
+public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
 	
 	public ParticleEmitter smoke = new ParticleEmitter(40, 1, SMOKE, 3){
 
@@ -33,6 +33,7 @@ public static final ParticleType SMOKE = new ParticleType(new Texture("res/parti
 		public void velocityInterpolator(Particle p, float delta) {
 			p.vel.x -= p.vel.x*0.02f*delta;
 			p.vel.y -= p.vel.y*0.02f*delta;
+			p.vel.shift(ParticleEffect.wind, 5*delta);
 		}
 
 		public void colorInterpolator(Particle p, float delta) {
@@ -42,9 +43,9 @@ public static final ParticleType SMOKE = new ParticleType(new Texture("res/parti
 		@Override
 		public void rotationInterpolator(Particle p, float delta) {
 			if(p.rot > 0){
-				p.rot = ((float)Math.PI/100)*p.lived;
+				p.rot = (1f/50)*p.lived;
 			} else {
-				p.rot = -((float)Math.PI/100)*p.lived;
+				p.rot = -(1f/50)*p.lived;
 			}
 		}
 	};

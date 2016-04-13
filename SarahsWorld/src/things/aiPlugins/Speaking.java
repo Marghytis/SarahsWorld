@@ -1,11 +1,13 @@
 package things.aiPlugins;
 
-import main.Main;
-import menu.Dialog;
-import menu.Menu.Menus;
-
 import org.lwjgl.opengl.GL11;
 
+import core.Window;
+import effects.Effect;
+import main.Main;
+import main.Res;
+import menu.Dialog;
+import menu.Menu.Menus;
 import quest.ActiveQuest;
 import quest.Strings;
 import render.TexAtlas;
@@ -22,8 +24,6 @@ import util.math.UsefulF;
 import util.math.Vec;
 import world.World;
 import world.WorldData;
-import core.Window;
-import effects.Effect;
 
 public class Speaking extends AiPlugin {
 	
@@ -73,8 +73,8 @@ public class Speaking extends AiPlugin {
 			t.speaking = false;
 		}
 	}
-	public static Texture bubble1 = new Texture("res/particles/Bubble.png", 0, 0);
-	public static TexAtlas bubble2 = new TexAtlas("res/particles/ThoughtBubble.png", 1, 3, -0.5, -0.5);
+	public static Texture bubble1 = Res.speechBubble;
+	public static TexAtlas bubble2 = Res.thoughtBubble;
 	public static Texture[] texs = {bubble2.tex(0, 0), bubble2.tex(0, 1), bubble2.tex(0, 2)};
 	public static double animationTime = 1.8;
 	public static double[] positions = {0.1, 0.01, 0.25, 0.0625, 0.45, 0.2025, 0.65, 0.44225};
