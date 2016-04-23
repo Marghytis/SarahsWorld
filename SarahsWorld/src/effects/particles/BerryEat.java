@@ -93,9 +93,9 @@ public class BerryEat implements ParticleEffect{
 	}
 	
 	@Override
-	public void render(){
-		stars.render();
-		sparkle.render();
+	public void render(float scaleX, float scaleY){
+		stars.render(scaleX, scaleY);
+		sparkle.render(scaleX, scaleY);
 	}
 	
 	@Override

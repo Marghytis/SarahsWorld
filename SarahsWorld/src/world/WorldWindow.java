@@ -1,9 +1,11 @@
 package world;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
@@ -28,7 +30,6 @@ import render.Render;
 import render.Shader;
 import render.TexAtlas;
 import render.TexFile;
-import render.Texture;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
@@ -37,8 +38,6 @@ import things.ThingType;
 import util.Color;
 import util.math.Vec;
 import world.WorldData.Column;
-import world.WorldData.Vertex;
-import world.generation.Biome;
 
 public class WorldWindow implements Updater, Renderer{
 	public WorldData world;
@@ -54,10 +53,11 @@ public class WorldWindow implements Updater, Renderer{
 	public Framebuffer framebuffer;
 	public double darknessDistance = 600;
 	public ThingVAO[] vaos = new ThingVAO[ThingType.types.length];
+	public VAO background; ByteBuffer backgroundColors = BufferUtils.createByteBuffer(4*4);
 	List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
 	List<Thing> thingsChange = new ArrayList<>();
 	public int radius;
-	public float scaleX, scaleY, offsetX, offsetY;
+	public float scaleX, scaleY, offsetX, offsetY, zoom = 1;
 	
 	public WorldWindow(WorldData l, Column anchor, double startX, int radius) {
 		this.world = l;
@@ -71,17 +71,22 @@ public class WorldWindow implements Updater, Renderer{
 		landscape = new LandscapeWindow(world, anchor, radius, (int)Math.floor(startX/Column.step));
 		this.framebuffer = new Framebuffer(Window.WIDTH, Window.HEIGHT);
 //		GL11.glClearColor(0.2f, 0.6f, 0.7f, 0);
-		GL11.glClearColor(0.3f, 0.3f, 0.3f, 0);
+		GL11.glClearColor(0, 0, 0, 0);
 		GL11.glClearStencil(0);
 		effects.add(new Nametag());
+		background = new VAO(
+				new VBO(Render.standardIndex, GL15.GL_STATIC_READ),
+				new VBO(Render.createBuffer(new byte[]{
+						-1, -1,
+						+1, -1,
+						+1, +1,
+						-1, +1}), GL15.GL_STATIC_DRAW, 2*Byte.BYTES,
+						new VAP(2, GL11.GL_BYTE, false, 0)),
+				new VBO(backgroundColors, GL15.GL_STREAM_DRAW, 4*Byte.BYTES,
+						new VAP(4, GL11.GL_BYTE, true, 0)));
 	}
 	
 	public boolean update(final double delta){
-		scaleX = 1f/Window.WIDTH_HALF;
-		scaleY = 1f/Window.HEIGHT_HALF;
-		offsetX = (float)-world.world.avatar.pos.x;
-		offsetY = (float)-world.world.avatar.pos.y;
-		ParticleEffect.wind.set((Listener.getMousePos().x - Window.WIDTH_HALF)*60f/Window.WIDTH_HALF, 0);
 //		delta *= Settings.timeScale;
 
 		//Delete dead things
@@ -124,11 +129,18 @@ public class WorldWindow implements Updater, Renderer{
 		for(ActiveQuest aq : world.quests){
 			aq.update(delta);
 		}
-
+		scaleX = zoom/Window.WIDTH_HALF;
+		scaleY = zoom/Window.HEIGHT_HALF;
+		offsetX = (float)-world.world.avatar.pos.x;
+		offsetY = (float)-world.world.avatar.pos.y;
+		ParticleEffect.wind.set((Listener.getMousePos().x - Window.WIDTH_HALF)*60f/Window.WIDTH_HALF, 0);
 		return false;
 	}
-	
+	byte[] color = new byte[4];
 	public void draw(){
+		
+		renderBackground();
+		
 //		GL11.glLoadIdentity();
 //		if(Settings.DRAW == GL11.GL_LINE_STRIP) GL11.glClearColor(0, 0, 0, 1);
 //		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -147,6 +159,11 @@ public class WorldWindow implements Updater, Renderer{
 		
 //		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		renderThings((t) -> true);
+		Core.checkGLErrors(true, true, "after");
+		
+		renderWater();
+		
+		renderDarkness();
 		
 //		renderItemsInHand();
 //		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -204,7 +221,7 @@ public class WorldWindow implements Updater, Renderer{
 		ParticleEmitter.offset.set(- Main.world.avatar.pos.x - Window.WIDTH_HALF, - Main.world.avatar.pos.y - Window.HEIGHT_HALF);
 		for(Effect effect : effects){
 			if(effect instanceof Fog){
-				effect.render();
+				effect.render(scaleX, scaleY);
 			}
 		}
 //
@@ -213,59 +230,64 @@ public class WorldWindow implements Updater, Renderer{
 //		}
 	}
 	
+	public void renderBackground(){
+		Column rightBorder = landscape.right;
+		while(rightBorder.xReal > world.world.avatar.pos.x + Window.WIDTH_HALF) rightBorder = rightBorder.left;
+		Column leftBorder = landscape.left;
+		while(leftBorder.xReal < world.world.avatar.pos.x - Window.WIDTH_HALF) leftBorder = leftBorder.right;
+		rightBorder.lowColor.bytes(color);
+		backgroundColors.put(color);
+		leftBorder.lowColor.bytes(color);
+		backgroundColors.put(color);
+		rightBorder.topColor.bytes(color);
+		backgroundColors.put(color);
+		leftBorder.topColor.bytes(color);
+		backgroundColors.put(color);
+		backgroundColors.flip();
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, background.vbos[1].handle);
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, backgroundColors);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		
+		Res.darknessShader.bind();
+		Res.darknessShader.set("transform", 0, 0, 1, 1);
+		background.bindStuff();
+			GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
+		background.unbindStuff();
+		Shader.bindNone();
+	}
+	
 	public void renderLandscape(){
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		LandscapeWindow.layersDrawn = 0;
 
 		//LANDSCAPE
 		Res.landscapeShader.bind();
-		Res.landscapeShader.set("transform", offsetX, offsetY, 3*scaleX, 3*scaleY);
+		Res.landscapeShader.set("transform", offsetX, offsetY, scaleX, scaleY);
 		landscape.vao.bindStuff();
 			//draw normal quads
-//			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);//GL_DST_ALPHA is 1, if there is already some material
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			landscape.drawNormalQuads();
 			//draw quads for vertcal transition
-//			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST);
+			if(Settings.DRAW_TRANSITIONS)
 			landscape.drawTransitionQuads();
-//			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		landscape.vao.unbindStuff();
 		TexFile.bindNone();
 		Shader.bindNone();
-		
-		//DARKNESS
-		Res.darknessShader.bind();
-		Res.darknessShader.set("transform", offsetX, offsetY, scaleX, scaleY);
-		landscape.vaoDarkness.bindStuff();
-			landscape.drawDarkness();
-		landscape.vao.unbindStuff();
-		Shader.bindNone();
 	}
 	
-	public void renderLandscapeOld(){
-		/*I sadly had to split up the rendering to left and right from the origin,
-		 * because the generator generates from the middle to the outside
-		 * I could've changed the generator to do it's task left and right differently, but that would've been a lot more to do.
-		*/
-		if(rightEnd.xIndex < 0){
-			renderLayers(true, rightEnd, leftEnd);
-		} else if(leftEnd.xIndex > 0){
-			renderLayers(false, leftEnd, rightEnd);
-		} else {
-			Column middleColumn = leftEnd;
-			while(middleColumn.xIndex < 0) middleColumn = middleColumn.right;
-			renderLayers(true, middleColumn, leftEnd);
-			renderLayers(false, middleColumn, rightEnd);
-		}
-	}
+	public static Color waterColor = new Color(0.4f, 0.4f, 1f, 0.75f);
 	
 	public void renderWater(){
+		//WATER
+		Res.landscapeShader.bind();
+		Res.landscapeShader.set("transform", offsetX, offsetY, scaleX, scaleY);
+		landscape.vao.bindStuff();
+			//draw normal quads
+			landscape.drawWater();
+		landscape.vao.unbindStuff();
 		TexFile.bindNone();
-		waterColor.bind();
-		for(Vertex v : water){
-			renderWater(v, v.parent.xIndex < 0);
-		}
-		water.clear();
+		Shader.bindNone();
 	}
+	
 	public interface Decider { public boolean decide(Thing t);}
 	public void renderThings(Decider d){
 
@@ -285,7 +307,7 @@ public class WorldWindow implements Updater, Renderer{
 		}
 
 		Res.thingShader.bind();
-		Res.thingShader.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+		Res.thingShader.set("scale", scaleX, scaleY);
 		Res.thingShader.set("offset", -(float)Main.world.avatar.pos.x, -(float)Main.world.avatar.pos.y);
 		
 		for(int type = 0; type < ThingType.types.length; type++) {
@@ -340,55 +362,14 @@ public class WorldWindow implements Updater, Renderer{
 //		}
 	}
 	
-//	public void renderAuras(){
-//		framebuffer.bind();
-//		GL11.glClearColor(1, 1, 1, 0);
-//		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-//		Shader20.AURA.bind();
-////		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_DST_ALPHA);
-//		for(int i = 0; i < ThingType.values().length; i++) {
-//			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
-//				if(cursor.type != ThingType.DUMMY && cursor.aura != null){
-//					cursor.aura.render(cursor.pos.x, cursor.pos.y);
-//				}
-//			}
-//		}
-//		Shader20.bindNone();
-//		framebuffer.release();
-//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-//
-//		GL11.glPushMatrix();
-//		GL11.glLoadIdentity();
-//		GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.texture);
-//		GL11.glBegin(GL11.GL_QUADS);
-//		GL11.glTexCoord2f(0, 0);	GL11.glVertex2i(0, 0);
-//		GL11.glTexCoord2f(1, 0);	GL11.glVertex2i(Window.WIDTH, 0);
-//		GL11.glTexCoord2f(1, 1);	GL11.glVertex2i(Window.WIDTH, Window.HEIGHT);
-//		GL11.glTexCoord2f(0, 1);	GL11.glVertex2i(0, Window.HEIGHT);
-//		GL11.glEnd();
-//		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-//		GL11.glPopMatrix();
-//	}
-	
 	public void renderDarkness(){
-//		TexFile.bindNone();
-//		GL11.glBegin(GL11.GL_QUAD_STRIP);
-//		for(Column cursor = leftEnd; cursor != rightEnd.right; cursor = cursor.right){
-//			GL11.glColor4d(0, 0, 0, 0);
-//			GL11.glVertex2d(cursor.xReal, cursor.vertices[0].y);
-//			GL11.glColor4d(0, 0, 0, 1);
-//			GL11.glVertex2d(cursor.xReal, cursor.vertices[0].y - darknessDistance);
-//		}
-//		GL11.glEnd();
-//		GL11.glBegin(GL11.GL_QUAD_STRIP);
-//		for(Column cursor = leftEnd; cursor != rightEnd.right; cursor = cursor.right){
-//			GL11.glColor4d(0, 0, 0, 1);
-//			GL11.glVertex2d(cursor.xReal, cursor.vertices[0].y - darknessDistance);
-//			GL11.glColor4d(0, 0, 0, 1);
-//			GL11.glVertex2d(cursor.xReal, -10000000000000000.0);
-//		}
-//		GL11.glEnd();
+		//DARKNESS
+		Res.darknessShader.bind();
+		Res.darknessShader.set("transform", offsetX, offsetY, scaleX, scaleY);
+		landscape.vaoDarkness.bindStuff();
+			landscape.drawDarkness();
+		landscape.vao.unbindStuff();
+		Shader.bindNone();
 	}
 	
 	public void renderBoundingBoxes(){
@@ -405,104 +386,6 @@ public class WorldWindow implements Updater, Renderer{
 		}
 	}
 	
-	public void renderLayers(boolean left, Column start, Column end){
-		//normal layers (horizontal transitions already included)
-		for(int i = 0; i < Biome.layerCount-1; i++){
-			renderLayer(i, defaultRenderer, left, start, end, true);
-		}
-		//transition layers
-		for(int i = Biome.layerCount-1; i >= 0; i--){
-			renderLayer(i, blenderer, left, start, end, false);
-		}
-	}
-	
-	public List<Vertex> water = new ArrayList<>();
-	
-	public void renderLayer(int i, VertexRenderer renderer, boolean left, Column start, Column end, boolean markWater){
-
-		//when going along the layer to render, this var recieves the point, where the next mat starts
-		Column newMatStart = null;
-		int newMatIndex = 0;
-		
-		//The material which is currently being rendered
-		Material currentMat = start.vertices[i].mats.read.data;
-		int currentMatIndex = currentMat == null ? -1 : start.vertices[i].mats.read.index;
-		if(markWater && currentMat == Material.WATER){
-			water.add(start.vertices[i]);
-		}
-		//actual fields
-		if(currentMat != null){
-			currentMat.tex.file.bind();
-			if(currentMat.tex.file.handle == 0) currentMat.color.bind();
-			else Color.WHITE.bind();
-			GL11.glBegin(Settings.DRAW);
-		}
-		Column cursor = start;
-		while(cursor != end){
-
-			//detect if a new mat starts here
-			if(newMatStart == null){
-				if((currentMatIndex == -1 || cursor.vertices[i].mats.get(currentMatIndex).data == null) && !cursor.vertices[i].mats.empty()){//current mat ends/ hasn't started yet
-						newMatStart = cursor;
-						newMatIndex = cursor.vertices[i].mats.read.index;
-				} else if(cursor.vertices[i].mats.get((currentMatIndex+1)%Vertex.maxMatCount).data != null){//current mat continues
-						newMatStart = cursor;
-						newMatIndex = (currentMatIndex+1)%Vertex.maxMatCount;
-				}
-			}
-			if(currentMat != null){
-				//draw vertices
-				renderer.renderVertex(cursor, i, currentMatIndex, currentMat.tex);
-			}
-			if(currentMatIndex == -1 || cursor.vertices[i].mats.get(currentMatIndex).data == null || cursor.right == null) {//if the mat ends or hasn't started yet, it has to switch
-				if(currentMat != null){//end old mat
-					GL11.glEnd();
-				}
-				currentMat = null;
-				currentMatIndex = -1;
-				if(newMatStart != null){//Vertex is empty
-					//reset to the location of the oldest new mat start
-					cursor = newMatStart;
-					currentMatIndex = newMatIndex;
-					currentMat = newMatStart.vertices[i].mats.get(newMatIndex).data;
-					newMatStart = null;
-					
-					if(markWater && currentMat == Material.WATER){
-						water.add(cursor.vertices[i]);
-					}
-					
-					currentMat.tex.file.bind();
-					if(currentMat.tex.file.handle == 0) currentMat.color.bind();
-					else Color.WHITE.bind();
-					GL11.glBegin(Settings.DRAW);
-					
-					//draw vertices
-					renderer.renderVertex(cursor, i, currentMatIndex, currentMat.tex);
-				}
-			}
-			cursor = left ? cursor.left : cursor.right;
-		}
-		GL11.glEnd();
-	}
-	
-	public static Color waterColor = new Color(0.4f, 0.4f, 1f, 0.75f);
-	
-	public void renderWater(Vertex vert, boolean left){
-		GL11.glBegin(Settings.DRAW);
-			for(Column cursor = vert.parent; cursor != null && !cursor.vertices[vert.yIndex].mats.empty() && cursor.vertices[vert.yIndex].mats.read.data == Material.WATER; cursor = left ? cursor.left : cursor.right){
-				defaultRenderer.renderVertex(cursor, vert.yIndex, vert.mats.read.index, Material.WATER.tex);
-			}
-		GL11.glEnd();
-		GL11.glBegin(Settings.DRAW);
-			for(Column cursor = vert.parent; cursor != null && !cursor.vertices[vert.yIndex].mats.empty() && cursor.vertices[vert.yIndex].mats.read.data == Material.WATER; cursor = left ? cursor.left : cursor.right){
-				blenderer.renderVertex(cursor, vert.yIndex, vert.mats.read.index, Material.WATER.tex);
-			}
-		GL11.glEnd();
-	}
-	
-	public interface VertexRenderer {
-		public void renderVertex(Column column, int index, int matIndex, Texture tex);
-	}
 	public void setPos(double x){
 //		int chunk = (int)Math.floor(x/Chunk.realSize);
 //		//find the chunk at that location
@@ -569,5 +452,9 @@ public class WorldWindow implements Updater, Renderer{
 
 	public static String getDayTime() {
 		return "evening";
+	}
+
+	public String debugName() {
+		return "World Window";
 	}
 }

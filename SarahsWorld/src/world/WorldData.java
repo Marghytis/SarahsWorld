@@ -9,6 +9,7 @@ import java.util.Random;
 import quest.ActiveQuest;
 import things.Thing;
 import things.ThingType;
+import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
 
@@ -32,7 +33,7 @@ public class WorldData {
 	}
 	
 	public void addFirst(Biome biome, Vertex... vertices){
-		Column f = new Column(0, biome, vertices);
+		Column f = new Column(0, biome, biome.topColor, biome.lowColor, vertices);
 		leftColumn = f;
 		rightColumn = f;
 		first = f.xIndex;
@@ -45,8 +46,8 @@ public class WorldData {
 //		rightChunk.left = leftChunk;
 	}
 	
-	public Column addLeft(Biome biome, Vertex... vertices){
-		Column l = new Column(leftColumn.xIndex-1, biome, vertices);
+	public Column addLeft(Biome biome, Color top, Color low, Vertex... vertices){
+		Column l = new Column(leftColumn.xIndex-1, biome, top, low, vertices);
 		l.right = leftColumn;
 		leftColumn.left = l;
 		leftColumn = l;
@@ -64,8 +65,8 @@ public class WorldData {
 //		}
 		return l;
 	}
-	public Column addRight(Biome biome, Vertex... vertices){
-		Column r = new Column(rightColumn.xIndex+1, biome, vertices);
+	public Column addRight(Biome biome, Color top, Color low, Vertex... vertices){
+		Column r = new Column(rightColumn.xIndex+1, biome, top, low, vertices);
 		r.left = rightColumn;
 		rightColumn.right = r;
 		rightColumn = r;
@@ -93,11 +94,14 @@ public class WorldData {
 		public int collisionVec;
 		public int collisionVecWater;
 		public Biome biome;
+		public Color topColor, lowColor;
 		
-		public Column(int xIndex, Biome biome, Vertex[] vertices){
+		public Column(int xIndex, Biome biome, Color top, Color low, Vertex[] vertices){
 			this.xIndex = xIndex;
 			this.xReal = xIndex*step;
 			this.biome = biome;
+			this.topColor = top;
+			this.lowColor = low;
 			this.vertices = vertices;
 			for(Vertex v : vertices){
 				v.parent = this;
@@ -154,8 +158,8 @@ public class WorldData {
 		public static final int maxMatCount = 4;
 		public double y;
 		Material[] mats;
-		public double averageSolidity;
-		public int nextMatIndex, lastMatIndex;
+		public double averageSolidity, averageDeceleration, averageBouyancy;
+		public int lastMatIndex, firstMatIndex;
 		public double transitionHeight;
 		public double[] alphas;
 		public Column parent;
@@ -164,41 +168,53 @@ public class WorldData {
 		public boolean prepared;
 		public float[] texCoordsPrepared = new float[4];
 		
-		public Vertex(int yIndex, Material[] copy, double[] alphas, int nextMatIndex, double transitionHeight, double y) {
+		public Vertex(int yIndex, Material[] copy, double[] alphas, int firstMatIndex, int lastMatIndex, double transitionHeight, double y) {
 			this.yIndex = yIndex;
-			this.nextMatIndex = nextMatIndex;
-			this.lastMatIndex = (nextMatIndex + maxMatCount - 1)%maxMatCount;
+			this.firstMatIndex = firstMatIndex;
+			this.lastMatIndex = lastMatIndex;
 			this.alphas = alphas;
-			setMats(copy);
+			mats = copy;
+			calculateAverage();
 			this.transitionHeight = transitionHeight;
 			this.y = y;
 		}
 		public Material[] mats(){return mats;}
-		public void enqueueMat(Material mat, double alpha){
-			mats[nextMatIndex] = mat;
-			alphas[nextMatIndex] = alpha;
-			
-			alpha = 1 - alpha;
-			for(int i = 0; i < maxMatCount; i++){
-				if(i != nextMatIndex){
-					alphas[i] *= alpha;
-				}
+		public void enqueueMat(Material mat, double alpha, boolean below){
+			if(!below){
+				lastMatIndex = (lastMatIndex+1)%maxMatCount;
+				mats[lastMatIndex] = mat;
+				alphas[lastMatIndex] = alpha;
+			} else {
+				firstMatIndex = (firstMatIndex+maxMatCount-1)%maxMatCount;
+				mats[firstMatIndex] = mat;
+				alphas[firstMatIndex] = alpha;
 			}
-			lastMatIndex = nextMatIndex;
-			nextMatIndex = (nextMatIndex+1)%maxMatCount;
+			calculateAverage();
+//			alpha = 1 - alpha;
+//			for(int i = 0; i < maxMatCount; i++){
+//				if(i != nextMatIndex){
+//					alphas[i] *= alpha;
+//				}
+//			}
 		}
-		public void setMats(Material[] copy){
-			mats = copy;
+		public void calculateAverage(){
 			averageSolidity = 0;
-			double weight = 0;
+			averageDeceleration = 0;
+			averageBouyancy = 0;
+			double totalWeight = 0;
 			for(int i = 0; i < maxMatCount; i++){
 				if(mats[i] != Material.AIR){
-					weight += alphas[i];
+					totalWeight += alphas[i];
 					averageSolidity += alphas[i]*mats[i].solidity;
+					averageDeceleration += alphas[i]*mats[i].deceleration;
+					averageBouyancy += alphas[i]*mats[i].bouyancy;
 				}
 			}
-			if(weight != 0)
-				averageSolidity /= weight;
+			if(totalWeight != 0){
+				averageSolidity /= totalWeight;
+				averageDeceleration /= totalWeight;
+				averageBouyancy /= totalWeight;
+			}
 		}
 		public boolean empty(){
 			for(int i = 0; i < maxMatCount; i++)

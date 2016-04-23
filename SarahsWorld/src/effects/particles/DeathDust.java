@@ -68,8 +68,8 @@ public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
 	}
 	
 	@Override
-	public void render(){
-		smoke.render();
+	public void render(float scaleX, float scaleY){
+		smoke.render(scaleX, scaleY);
 	}
 	
 	@Override

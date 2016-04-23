@@ -52,8 +52,8 @@ public class BloodSplash implements ParticleEffect {
 	}
 	
 	@Override
-	public void render(){
-		blood.render();
+	public void render(float scaleX, float scaleY){
+		blood.render(scaleX, scaleY);
 	}
 	
 	@Override

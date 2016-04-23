@@ -107,7 +107,8 @@ public class Res {
 	public static final Texture fogParticle = new Texture("res/particles/Fog.png", -0.5, -0.5);
 
 	public static final Texture grass = new Texture("res/materials/Grass.png", 0, 0);
-	public static final Texture earth = new Texture("res/materials/Clay.png", 0, 0);
+	public static final Texture earth = new Texture("res/materials/Earth.png", 0, 0);
+	public static final Texture clay = new Texture("res/materials/Clay.png", 0, 0);
 	public static final Texture stone = new Texture("res/materials/Stone.png", 0, 0);
 	public static final Texture stone2 = new Texture("res/materials/Stone2.png", 0, 0);
 	public static final Texture sandstone3 = new Texture("res/materials/Sandstone3.png", 0, 0);
@@ -115,6 +116,7 @@ public class Res {
 	public static final Texture sand = new Texture("res/materials/Sand.png", 0, 0);
 	public static final Texture candy = new Texture("res/materials/Candy.png", 0, 0);
 	public static final Texture soil = new Texture("res/materials/Soil.png", 0, 0);
+	public static final Texture water = new Texture("res/materials/Water.png", 0, 0);
 	
 	public static TrueTypeFont menuFont = /*new TrueTypeFont(new Font("Times New Roman", 0, 35), true)*/null;
 	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);

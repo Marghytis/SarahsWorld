@@ -90,8 +90,8 @@ public class RainbowSpit implements ParticleEffect{
 	}
 
 	@Override
-	public void render() {
-		rainbow.render();
+	public void render(float scaleX, float scaleY) {
+		rainbow.render(scaleX, scaleY);
 	}
 	
 	@Override

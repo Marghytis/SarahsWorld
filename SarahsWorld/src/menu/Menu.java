@@ -163,12 +163,17 @@ public class Menu implements Updater, Renderer, Listener {
 								}
 							}
 						},
-						new Button("Spawn Things", 0.7, 0.4, 0.7, 0.4, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						new Button("Draw transitions", 0.7, 0.4, 0.7, 0.4, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+							public void released(int button) {
+								Settings.DRAW_TRANSITIONS = !Settings.DRAW_TRANSITIONS;
+							}
+						},
+						new Button("Spawn Things", 0.7, 0.5, 0.7, 0.5, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								Main.menu.setMenu(Menus.DEBUG_SPAWNER);
 							}
 						},
-						new Button("Infos", 0.7, 0.5, 0.7, 0.5, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						new Button("Infos", 0.7, 0.6, 0.7, 0.6, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								Main.menu.setMenu(Menus.INFOS);
 							}
@@ -200,14 +205,26 @@ public class Menu implements Updater, Renderer, Listener {
 			public void setElements(){
 				Key[] values = Key.values();
 				elements = new Element[(values.length-1)*2];
-				double x = 0.7, y = 0.9;
-				int i = 0;
+				double x = 0.25, y = 0.9;
+				int i = 0, columns = 0;
 				for (; i < values.length-1; i++, y -= 0.06) {
-					elements[i] = new KeyBinding(values[i], x, y, x, y, -100, -30, 100, 30, Color.GREEN, null);
+					if(i/15 > columns){
+						columns++;
+						x += 0.3;
+						y = 0.9;
+					}
+					elements[i] = new KeyBinding(values[i], x, y, x, y, -100, -30, 100, 30, new Color(0, 0.7f, 0), null);
 				}
-				x = 0.5;
+				x = 0.1;
 				y = 0.9;
+				columns = 0;
 				for (; i < elements.length; i++, y -= 0.06) {
+					int j = i - values.length+1;
+					if(j/15 > columns){
+						columns++;
+						x += 0.3;
+						y = 0.9;
+					}
 					elements[i] = new TextField(values[i-(values.length-1)].name() + ":", x, y, x, y, -150, -30, 150, 30, new Color(0, 0, 0, 0.5f), null, true);
 				}
 			}
@@ -228,7 +245,8 @@ public class Menu implements Updater, Renderer, Listener {
 					elements[i] = new TextInput("Hallo! :)", x, y, x, y, -80, -30, 80, 30, new Color(0, 0, 0, 0.5f), Color.BLACK, null);
 				}
 				x = 0.1;
-				y = 0.9;columns = 0;
+				y = 0.9;
+				columns = 0;
 				for (; i < elements.length; i++, y -= 0.06) {
 					int j = i - values.length+1;
 					if(j/15 > columns){
@@ -306,5 +324,9 @@ public class Menu implements Updater, Renderer, Listener {
 
 	public boolean keyReleased(int key) {
 		return false;
+	}
+
+	public String debugName() {
+		return "Menu";
 	}
 }

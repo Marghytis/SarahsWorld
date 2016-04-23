@@ -50,8 +50,8 @@ public class WaterSplash implements ParticleEffect{
 		count -= dTime;
 	}
 	
-	public void render(){
-		drops.render();
+	public void render(float scaleX, float scaleY){
+		drops.render(scaleX, scaleY);
 	}
 	
 	public void finalize(){

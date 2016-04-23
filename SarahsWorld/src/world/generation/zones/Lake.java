@@ -6,6 +6,7 @@ import world.Material;
 import world.Stratum;
 import world.generation.Biome;
 import world.generation.BiomeManager;
+import world.generation.BiomeManager.State;
 import world.generation.Zone;
 
 public class Lake extends Zone {
@@ -31,7 +32,7 @@ public class Lake extends Zone {
 		super(random, biome, originX, left, null);
 		before = biome.biome;
 		biome.switchToBiome(lakeBiome);
-		if(biome.ants[0].stratum == null) biome.ants[0].switchTo(lake, 0);
+		if(biome.ants[0].state == State.NOTHING) biome.ants[0].switchTo(lake, 0);
 		this.width = width;
 		this.ownHeight = height;
 	}

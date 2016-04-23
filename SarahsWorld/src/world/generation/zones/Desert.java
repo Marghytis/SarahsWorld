@@ -28,7 +28,7 @@ public class Desert extends Zone {
 		if(subZone instanceof Hills && subZone.end) end = true;
 		
 		if(subZone instanceof Hills && ((Hills)subZone).reachedP2){
-			if(random.nextInt(100) < 10){
+			if(random.nextInt(100) < 5){
 				subZone = new Oasis(random, biome, x, subZone.ownHeight, left);
 			} else {
 				subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2, 1, width - x, description);

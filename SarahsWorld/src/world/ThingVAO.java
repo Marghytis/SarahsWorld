@@ -6,6 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
+import core.Core;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
@@ -34,12 +35,14 @@ public class ThingVAO {
 	short lastUsedIndex = -1;
 	Thing[] things;
 	
+	ByteBuffer buffer1, buffer2;
+	
 	public ThingVAO(ThingType type){
 		this.type = type;
 		this.capacity = type.maxVisible;
 		this.things = new Thing[capacity];
-		ByteBuffer buffer1 = BufferUtils.createByteBuffer(capacity*usualBytesUpdated);
-		ByteBuffer buffer2 = BufferUtils.createByteBuffer(capacity*unusualBytesUpdated);
+		buffer1 = BufferUtils.createByteBuffer(capacity*usualBytesUpdated);
+		buffer2 = BufferUtils.createByteBuffer(capacity*unusualBytesUpdated);
 		
 		vbo1 = new VBO(buffer1, GL15.GL_DYNAMIC_DRAW, usualBytesUpdated,
 				new VAP(2, GL11.GL_FLOAT, false, 0),//vec2 in_position
@@ -68,7 +71,9 @@ public class ThingVAO {
 		changer1.putShort((short)(Short.MAX_VALUE*(t.dir ? t.ani.tex.texCoords[2] - t.ani.tex.texCoords[0] : 0)));
 		changer1.flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo1.handle);
+		Core.checkGLErrors(true, true, "debug 1");
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, t.index*usualBytesUpdated, changer1);
+		Core.checkGLErrors(true, true, t.index + "  " + capacity + "  " + (changer1.capacity()/usualBytesUpdated) + "  " + (GL15.glGetBufferParameter(GL15.GL_ARRAY_BUFFER, GL15.GL_BUFFER_SIZE)/usualBytesUpdated));
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		
 	}
@@ -88,10 +93,10 @@ public class ThingVAO {
 	}
 	
 	public void add(Thing t){
-		
+
 		lastUsedIndex++;
 		if(lastUsedIndex >= capacity){
-			new Exception("Not enough space for " + type.name + "s!!! Current capacity: " + capacity + " quads.").printStackTrace();
+			System.err.println("Not enough space for " + type.name + "s! Current capacity: " + capacity + " quads. Default: " + type.maxVisible);
 			enlarge();
 		}
 		things[lastUsedIndex] = t;
@@ -128,17 +133,25 @@ public class ThingVAO {
 	public void enlarge(){
 		capacity *= 1.1;
 		//VBO 1
-		ByteBuffer buffer1 = BufferUtils.createByteBuffer((int)(capacity*usualBytesUpdated));
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo1.handle);
-		GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer1);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer1, GL15.GL_DYNAMIC_DRAW);
+		GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, this.buffer1);
+		ByteBuffer buffer1 = BufferUtils.createByteBuffer((int)(capacity*usualBytesUpdated));
+		buffer1.put(this.buffer1);
+		buffer1.put(new byte[buffer1.capacity()-this.buffer1.capacity()]);
+		buffer1.flip();
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer1, GL15.GL_STREAM_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		this.buffer1 = buffer1;
 		//VBO 2
-		ByteBuffer buffer2 = BufferUtils.createByteBuffer((int)(capacity*unusualBytesUpdated));
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo2.handle);
-		GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, buffer2);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer2, GL15.GL_STATIC_DRAW);
+		GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, this.buffer2);
+		ByteBuffer buffer2 = BufferUtils.createByteBuffer((int)(capacity*unusualBytesUpdated));
+		buffer2.put(this.buffer2);
+		buffer2.put(new byte[buffer2.capacity()-this.buffer2.capacity()]);
+		buffer2.flip();
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer2, GL15.GL_DYNAMIC_DRAW);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+		this.buffer2 = buffer2;
 		
 		Thing[] newThings = new Thing[capacity];
 		System.arraycopy(things, 0, newThings, 0, things.length);

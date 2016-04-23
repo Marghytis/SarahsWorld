@@ -44,7 +44,7 @@ public class ParticleTest implements Listener, Renderer, Updater{
 	}
 
 	public void draw() {
-		effects.forEach((e) -> e.render());
+		effects.forEach((e) -> e.render(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF));
 	}
 
 	public boolean pressed(int button, Vec mousePos) {
@@ -124,6 +124,10 @@ public class ParticleTest implements Listener, Renderer, Updater{
 	public boolean keyReleased(int key) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public String debugName() {
+		return "Particle Test";
 	}
 	
 }

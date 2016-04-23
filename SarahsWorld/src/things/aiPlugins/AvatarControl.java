@@ -13,6 +13,7 @@ import menu.Settings.Key;
 import things.AiPlugin;
 import things.Thing;
 import util.math.Vec;
+import world.LandscapeWindow;
 import world.World;
 
 public  class AvatarControl extends AiPlugin implements Listener{
@@ -41,7 +42,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			if(Keyboard.isKeyDown(Key.SUPERSPRINT.key)){
 				walkingDir *= 4;
 				t.maxWalkingSpeed *= 4;
-				if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
+				if(Keyboard.isKeyDown(Key.MEGASPRINT.key)){
 					walkingDir *= 4;
 					t.maxWalkingSpeed *= 4;
 				}
@@ -49,7 +50,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		}
 		t.type.movement.setAni(t, walkingDir);
 		t.walkingForce = walkingDir*a;
-		if(Keyboard.isKeyDown(Keyboard.KEY_R)){
+		if(Keyboard.isKeyDown(Key.ANTIGRAVITY.key)){
 			t.force.shift(0, 10000);
 		}
 		
@@ -166,6 +167,18 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		case JUMPDOWN:
 			World.world.avatar.pos.y -= 200;
 			World.world.avatar.where.g = false;
+		case LAYERCOUNT_UP:
+			LandscapeWindow.layersToDraw++;
+			break;
+		case LAYERCOUNT_DOWN:
+			LandscapeWindow.layersToDraw--;
+			break;
+		case ZOOM_IN:
+			World.world.window.zoom *= 1.1;
+			break;
+		case ZOOM_OUT:
+			World.world.window.zoom *= 0.9;
+			break;
 		default:
 		}
 		//No, don't add if-clauses here!! Add the keys legally!!

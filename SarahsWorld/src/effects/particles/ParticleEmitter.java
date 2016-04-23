@@ -138,7 +138,7 @@ public abstract class ParticleEmitter{
 	
 	ByteBuffer buffer;
 	
-	public void render(){
+	public void render(float scaleX, float scaleY){
 		buffer.clear();
 		
 		for(int i = 0; i < particles.length; i++){
@@ -181,7 +181,7 @@ public abstract class ParticleEmitter{
 		
 		particleShader.bind();
 		type.tex.file.bind();
-		particleShader.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+		particleShader.set("scale", scaleX, scaleY);
 		particleShader.set("offset", (float)offset.x, (float)offset.y);
 		vao.bindStuff();
 			GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0, particles.length);

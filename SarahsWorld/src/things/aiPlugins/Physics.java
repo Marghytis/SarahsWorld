@@ -180,7 +180,7 @@ public class Physics extends AiPlugin{
 		//forces
 		double normal = t.force.dot(ortho);
 		double downhill = t.force.dot(topLine);//walking force already included from before
-		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.vertices[t.collisionC.collisionVec].mats()[t.collisionC.vertices[t.collisionC.collisionVec].lastMatIndex].deceleration
+		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.vertices[t.collisionC.collisionVec].averageDeceleration;
 //							+ (Settings.airFriction ? 1 : 0)*t.speed*t.speed*airFriction*airea
 							;
 
@@ -249,7 +249,7 @@ public class Physics extends AiPlugin{
 			Vertex waterVertex = t.link.vertices[t.link.collisionVecWater];
 			if(waterVertex.y > pos.y + t.box.pos.y){
 				t.where.water = Math.min((waterVertex.y - (pos.y + t.box.pos.y))/t.box.size.y, 1);//+20
-				force.shift(new Vec(0, waterVertex.mats()[waterVertex.lastMatIndex].bouyancy*t.where.water*(t.type.physics.airea + (Math.abs(t.walkingForce)/1000))));
+				force.shift(new Vec(0, waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea + (Math.abs(t.walkingForce)/1000))));
 			}
 		}
 	}

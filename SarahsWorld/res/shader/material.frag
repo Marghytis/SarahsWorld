@@ -1,7 +1,6 @@
 #version 150 core
 
 uniform sampler2D texture_diffuse;
-uniform bool transition;
 
 in vec2 pass_TexCoords;
 in vec2 pass_Alpha;
@@ -17,9 +16,10 @@ void main(void){
 	//	//cannot put the alpha in the alpha channel, background would bleed through.
 	//	out_Color = vec4(texture(texture_diffuse, pass_TexCoords).rgb*pass_Alpha, 1);
 	//}
-	if(transition){
-		out_Color = vec4(texture(texture_diffuse, pass_TexCoords).rgb, pass_Alpha.y);
-	} else {
-		out_Color = vec4(texture(texture_diffuse, pass_TexCoords).rgb*pass_Alpha.x, 1);
-	}
+	//if(transition){
+	//	out_Color = vec4(texture(texture_diffuse, pass_TexCoords).rgb, pass_Alpha.y);
+	//} else {
+	vec4 texColor = texture(texture_diffuse, pass_TexCoords);
+		out_Color = vec4(texColor.rgb, texColor.a*pass_Alpha.y*pass_Alpha.x);
+	//}
 }

@@ -122,11 +122,11 @@ public class FireEffect implements ParticleEffect{
 	}
 	
 	@Override
-	public void render(){
-		smoke.render();
-		flame.render();
-		spark.render();
-		light.render();
+	public void render(float scaleX, float scaleY){
+		smoke.render(scaleX, scaleY);
+		flame.render(scaleX, scaleY);
+		spark.render(scaleX, scaleY);
+		light.render(scaleX, scaleY);
 	}
 	
 	@Override

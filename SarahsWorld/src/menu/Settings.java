@@ -13,6 +13,7 @@ public class Settings{
 	public static boolean DARKNESS = true;
 	public static boolean FREEZE = false;//freeze all movement
 	public static int DRAW = GL11.GL_TRIANGLES;//GL_TRIANGLES
+	public static boolean DRAW_TRANSITIONS = true;
 	public static boolean SHOW_NAME_TAGS = true;
 	public static boolean STOP_GRAPH = false;
 	public static boolean printSarahPhysics = true;
@@ -29,11 +30,17 @@ public class Settings{
 		SPRINT(Keyboard.KEY_LSHIFT),
 		CROUCH(Keyboard.KEY_S),
 		SUPERSPRINT(Keyboard.KEY_W),
+		MEGASPRINT(Keyboard.KEY_RIGHT),
+		ANTIGRAVITY(Keyboard.KEY_R),
 		DISMOUNT(Keyboard.KEY_E),
 		FASTER(Keyboard.KEY_ADD),
 		SLOWER(Keyboard.KEY_MINUS),
 		FREEZE(Keyboard.KEY_F),
 		JUMPDOWN(Keyboard.KEY_J),
+		LAYERCOUNT_UP(Keyboard.KEY_L),
+		LAYERCOUNT_DOWN(Keyboard.KEY_K),
+		ZOOM_IN(Keyboard.KEY_I),
+		ZOOM_OUT(Keyboard.KEY_O),
 		NONE(0);
 		
 		public int key;

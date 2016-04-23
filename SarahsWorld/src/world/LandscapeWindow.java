@@ -2,6 +2,8 @@ package world;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
@@ -9,6 +11,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
+import core.Core;
 import main.Res;
 import menu.Settings;
 import render.VAO;
@@ -21,7 +24,7 @@ import world.generation.Biome;
 
 public class LandscapeWindow {
 	
-	public float darknessDistance = 600;
+	public float darknessDistance = 1000;
 
 	public Column[] columns;
 	public int indexShift;
@@ -38,6 +41,8 @@ public class LandscapeWindow {
 			indicesPerQuad = 6;
 		ByteBuffer changer = BufferUtils.createByteBuffer(bytesPerVertex*verticesPerPoint);
 		ByteBuffer changerDarkness = BufferUtils.createByteBuffer(bytesPerVertexDarkness*verticesPerPoint);
+		
+	int maxTextureUnits;
 
 	public LandscapeWindow(WorldData data, Column anchor, int columnRadius, int firstIndex){
 		this.columnRadius = columnRadius;
@@ -74,6 +79,8 @@ public class LandscapeWindow {
 				new VBO(createVertexBufferDarkness(), GL15.GL_DYNAMIC_DRAW, bytesPerVertexDarkness,
 						new VAP(2, GL11.GL_FLOAT, false, 0),//in_Position
 						new VAP(4, GL11.GL_BYTE, true, 2*Float.BYTES)));//in_Color
+		
+		maxTextureUnits = GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS);
 	}
 	void insertColumn(Column c){
 		int index = c.xIndex - (center - columnRadius); 
@@ -154,19 +161,27 @@ public class LandscapeWindow {
 	}
 	
 	public void drawNormalQuads(){
-		drawPatches(0, false);//premultiplied
+		drawPatches2(0, false);
 	}
 	public void drawTransitionQuads(){
+		drawPatches2(pointsX*pointsY*indicesPerQuad, false);
+	}
+	public void drawWater(){
+		drawPatches(0, true);
 		drawPatches(pointsX*pointsY*indicesPerQuad, true);
 	}
 	
-	void drawPatches(int indicesOffset, boolean alpha){
-		Res.landscapeShader.set("transition", alpha);
+	public static int layersToDraw = (Biome.layerCount-1)*6;
+	public static int layersDrawn = 0;
+	
+	void drawPatches(int indicesOffset, boolean water){
 		//for each material every patch of this material gets rendered.
 		int oneBeforeStart = (indexShift+columns.length-1)%columns.length;
 		for(int i = 0; i < Material.values().length-1; i++){
+			if(i == Material.WATER.ordinal() && !water) continue;
+			else if(i != Material.WATER.ordinal() && water) continue;
 			Material.values()[i].tex.file.bind();
-			for(int y = pointsY-1; y >= 0; y--){
+			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < layersToDraw; y--){//draw from the bottom up
 				int started = -1, index = 0, column = indexShift;
 				do {//while(column != indexShift), loop through all columns
 					if(started == -1){
@@ -180,32 +195,102 @@ public class LandscapeWindow {
 
 						//the current patch ends here. if there is an open patch it gets rendered cut
 					} else if(columns[column].vertices[y].mats()[index].ordinal() != i || column == oneBeforeStart){
-						int pos1 = (y*pointsX + started)*indicesPerQuad,
-							size1 = (column - started)*indicesPerQuad,
-							pos2 = 0, size2 = 0;
-						if(column < started){
-							size1 = (columns.length - started)*indicesPerQuad;//Yes, not -1, because linke this, the last and the first point will be connected.
-							pos2 = (y*pointsX + 0)*indicesPerQuad;
-							size2 = (column - 0)*indicesPerQuad;
-						}
-						GL20.glUniform1i(Res.landscapeShader.uniformLoc("matSlot"), index);
-						/*draw patch*/  GL11.glDrawElements(Settings.DRAW, size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
-						if(size2 != 0)	GL11.glDrawElements(Settings.DRAW, size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
+						drawPatch(y, started, column, indicesOffset, index);
 						started = -1;
 					}
 					column = (column+1)%columns.length;
 				} while(column != indexShift);
 			}
 		}
+		layersDrawn += pointsY;
+	}
+	
+	void drawPatches2(int indicesOffset, boolean water){
+		//for each material every patch of this material gets rendered.
+		int oneBeforeStart = (indexShift+columns.length-1)%columns.length;
+		Patch[] currentPatches = new Patch[Vertex.maxMatCount];
+		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < layersToDraw; y--){//draw from the bottom up
+			int  column = indexShift, matIndex = columns[column].vertices[y].firstMatIndex;
+			do {//while(column != indexShift), loop through all columns
+				for(int i = 0; i < Vertex.maxMatCount; i++){
+					if(currentPatches[i] != null && currentPatches[i].end == column){
+						currentPatches[i] = null;
+					}
+					if((currentPatches[i] == null || currentPatches[i].end == -1) && columns[column].vertices[y].mats[i] != Material.AIR){
+						currentPatches[i] = new Patch(y, i, column, columns[column].vertices[y].mats[i]);
+					}
+				}
+				int matIndex2 = matIndex;
+				do {
+					if(currentPatches[matIndex2] != null){
+						for(int column2 = column; currentPatches[matIndex2].end == -1; column2 = (column2+1)%pointsX){//if end != 1, the patch has been drawn
+							//the current patch ends here. if there is an open patch it gets rendered cut (after one layer currentPatches[i] = null for all i)
+							if(columns[column2].vertices[y].mats[matIndex2] != currentPatches[matIndex2].mat || column2 == oneBeforeStart)
+								drawPatch(currentPatches[matIndex2], column2, indicesOffset, water);
+						}
+					}
+					matIndex2 = (matIndex2+1)%Vertex.maxMatCount;
+				} while(matIndex2 != matIndex);//matIndex2 returns back to matIndex, if no patch is here
+				matIndex = matIndex2;
+				column = (column+1)%columns.length;
+			} while(column != indexShift);
+			Arrays.fill(currentPatches, null);
+		}
+		layersDrawn += pointsY;
+	}
+	public class Patch{
+		public int start, end = -1, yIndex, matIndex;
+		public Material mat;
+		public Patch(int yIndex, int matIndex, int start, Material mat) {
+			this.yIndex = yIndex;
+			this.matIndex = matIndex;
+			this.start = start;
+			this.mat = mat;
+		}
+	}
+	ArrayList<Patch> waterPatches = new ArrayList<>();
+	
+	public void drawPatch(Patch patch, int end, int indicesOffset, boolean water){
+		patch.end = end;
+		if(patch.mat == Material.WATER){
+			waterPatches.add(patch);
+		} else {
+			patch.mat.tex.file.bind();
+			drawPatch(patch.yIndex, patch.start, patch.end, indicesOffset, patch.matIndex);
+		}
+	}
+	
+	public void drawWater(int indicesOffset){
+		Material.WATER.tex.file.bind();
+		for(Patch patch : waterPatches){
+			drawPatch(patch.yIndex, patch.start, patch.end, indicesOffset, patch.matIndex);
+		}
+		waterPatches.clear();
+	}
+	
+	public void drawPatch(int yIndex, int start, int end, int indicesOffset, int index){
+		int pos1 = (yIndex*pointsX + start)*indicesPerQuad,
+				size1 = (end - start)*indicesPerQuad,
+				pos2 = 0, size2 = 0;
+			if(end < start){
+				size1 = (columns.length - start)*indicesPerQuad;//Yes, not -1, because linke this, the last and the first point will be connected.
+				pos2 = (yIndex*pointsX + 0)*indicesPerQuad;
+				size2 = (end - 0)*indicesPerQuad;
+			}
+			GL20.glUniform1i(Res.landscapeShader.uniformLoc("matSlot"), index);
+			/*draw patch*/  GL11.glDrawElements(Settings.DRAW, size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
+			if(size2 != 0)	GL11.glDrawElements(Settings.DRAW, size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
 	}
 	public void drawDarkness(){
-//		GL11.glDrawElements(GL11.GL_TRIANGLES, (pointsX-indexShift)*indicesPerQuad, GL11.GL_UNSIGNED_INT, indexShift*indicesPerQuad*Integer.BYTES);
-//		if(indexShift != 0)
-//			GL11.glDrawElements(GL11.GL_TRIANGLES, (indexShift-1)*indicesPerQuad,		GL11.GL_UNSIGNED_INT, 0*Integer.BYTES);
-//		
-//		GL11.glDrawElements(GL11.GL_TRIANGLES, (pointsX-indexShift)*indicesPerQuad, GL11.GL_UNSIGNED_INT, (indexShift + pointsX)*indicesPerQuad*Integer.BYTES);
-//		if(indexShift != 0)
-//			GL11.glDrawElements(GL11.GL_TRIANGLES, (indexShift-1)*indicesPerQuad,		GL11.GL_UNSIGNED_INT, pointsX*indicesPerQuad*Integer.BYTES);
+		int realShift = (indexShift+pointsX-1)%pointsX;
+		//Transition part
+		GL11.glDrawElements(Settings.DRAW, realShift*indicesPerQuad, GL11.GL_UNSIGNED_INT, 0*indicesPerQuad*Integer.BYTES);
+		if(realShift != pointsX-1)
+		GL11.glDrawElements(Settings.DRAW, (pointsX - 1 - realShift)*indicesPerQuad, GL11.GL_UNSIGNED_INT, (realShift+1)*indicesPerQuad*Integer.BYTES);
+		//complete dark part
+		GL11.glDrawElements(Settings.DRAW, realShift*indicesPerQuad, GL11.GL_UNSIGNED_INT, pointsX*indicesPerQuad*Integer.BYTES);
+		if(realShift != pointsX-1)
+		GL11.glDrawElements(Settings.DRAW, (pointsX - 1 - realShift)*indicesPerQuad, GL11.GL_UNSIGNED_INT, (realShift+1+pointsX)*indicesPerQuad*Integer.BYTES);
 	}
 	/**
 	 * Puts vertices in the buffer like this for every row: (vertexColumns = 4)
@@ -271,7 +356,7 @@ public class LandscapeWindow {
 			buffer.put((byte)(Byte.MAX_VALUE*column.vertices[yIndex].alphas[j]));
 		buffer.put((byte)0);
 	}
-	byte[] light = {127, 127, 127, 127}, dark = {0, 0, 0, 127};
+	byte[] light = {0, 0, 0, 0}, dark = {0, 0, 0, 127};
 	public void putPointDataDarkness(ByteBuffer buffer, Column c){
 		buffer.putFloat((float)c.xReal);
 		buffer.putFloat((float)c.vertices[c.collisionVec].y);
@@ -282,7 +367,7 @@ public class LandscapeWindow {
 		buffer.put(dark);
 		
 		buffer.putFloat((float)c.xReal);
-		buffer.putFloat(-Float.MAX_VALUE+1);
+		buffer.putFloat(-1000);
 		buffer.put(dark);
 	}
 	/**

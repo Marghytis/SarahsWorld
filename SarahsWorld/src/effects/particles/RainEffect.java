@@ -62,8 +62,8 @@ public class RainEffect implements ParticleEffect{
 	}
 	
 	@Override
-	public void render(){
-		drops.render();
+	public void render(float scaleX, float scaleY){
+		drops.render(scaleX, scaleY);
 	}
 	
 	@Override

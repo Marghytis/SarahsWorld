@@ -17,7 +17,7 @@ public class ParticleTester {
 	public static TexFile background;
 	
 	public static void main(String[] args){
-		Window.create("Particle", 1000, 700);
+		Window.create("Particle", 1000, 700, true);
 		background = new TexFile("res/particles/Background.png");
 		
 //		Lightmap lightmap = new Lightmap(new TexFile(Window.WIDTH/2, Window.HEIGHT));
@@ -54,11 +54,11 @@ public class ParticleTester {
 			rain.update(delta);
 
 //			fire.render();
-			rain.render();
+			rain.render(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 			
 			for(int i = 0; i < swooshs.size(); i++){
 				swooshs.get(i).update(delta);
-				swooshs.get(i).render();
+				swooshs.get(i).render(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 				if(!swooshs.get(i).living()){
 					swooshs.remove(i);
 					i--;

@@ -1,12 +1,7 @@
 package effects.particles;
 
-import org.lwjgl.opengl.GL11;
-
 import effects.particles.Particle.ParticleType;
-import main.Main;
 import main.Res;
-import util.Color;
-import util.math.UsefulF;
 import util.math.Vec;
 
 public class Fog implements ParticleEffect {
@@ -64,10 +59,8 @@ public class Fog implements ParticleEffect {
 	public boolean keyReleased(int key) {
 		return false;
 	}
-	public void render() {
-//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		fog.render();
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+	public void render(float scaleX, float scaleY) {
+		fog.render(scaleX, scaleY);
 	}
 	public boolean living() {
 		return true;

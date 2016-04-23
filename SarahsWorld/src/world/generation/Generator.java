@@ -76,7 +76,7 @@ public class Generator {
 					case 2 : zoneR = new Jungle(random, biomeR, posR.x, false);break;
 				}
 			}
-			Column newColumn = world.addRight(biomeR.biome, biomeR.createVertices(posR.y));
+			Column newColumn = world.addRight(biomeR.biome, biomeR.top, biomeR.low, biomeR.createVertices(posR.y));
 			biomeR.lastColumn = newColumn;
 			
 			if(columnCount < 3){
@@ -109,7 +109,7 @@ public class Generator {
 				zoneL = new Mountains(random, biomeL, -posL.x, true);
 			}
 			
-			Column newColumn = world.addLeft(biomeL.biome, biomeL.createVertices(posL.y));
+			Column newColumn = world.addLeft(biomeL.biome, biomeL.top, biomeL.low, biomeL.createVertices(posL.y));
 			biomeL.lastColumn = newColumn;
 
 			if(columnCount < 3){

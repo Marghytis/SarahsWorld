@@ -51,8 +51,8 @@ public class Hearts implements ParticleEffect{
 	}
 	
 	@Override
-	public void render(){
-		hearts.render();
+	public void render(float scaleX, float scaleY){
+		hearts.render(scaleX, scaleY);
 	}
 	
 	@Override

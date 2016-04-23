@@ -3,10 +3,8 @@ package things;
 import java.util.ArrayList;
 import java.util.List;
 
-import effects.Effect;
 import item.ItemType;
 import item.ItemType.WeaponType;
-import main.Main;
 import main.Res;
 import render.Animation;
 import render.TexAtlas;
@@ -220,7 +218,7 @@ public class ThingType {
 	};
 										static final Animation[][] midge =  {{
 											new Animation("stand", Res.midge, 0, 0)}};
-	public static final ThingType MIDGE = new ThingType("MIDGE", Res.midge, 150, true, (w, p, f, ed) -> new Thing(ThingType.MIDGE, w,p, f.shift(0, 90))
+	public static final ThingType MIDGE = new ThingType("MIDGE", Res.midge, 200, true, (w, p, f, ed) -> new Thing(ThingType.MIDGE, w,p, f.shift(0, 90))
 	,new Animating(midge[0][0], new Rect(Res.midge.pixelCoords), 0, 1, 1, false, midge)
 	,new Life(1, 1, 0)
 	,new Movement("stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand")
@@ -439,7 +437,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType TREE_CANDY = new ThingType("TREE_CANDY", Res.tree_candy, 50, new Animating(tree_candy[0][0], new Rect(Res.tree_candy.pixelCoords), 0, 1, 1, false, tree_candy)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
-	public static final ThingType TREE_GRAVE = new ThingType("TREE_GRAVE", Res.tree_grave, 50, new Animating(tree_grave[0][0], new Rect(Res.tree_grave.pixelCoords), 0, 1, 1, false, tree_grave)){
+	public static final ThingType TREE_GRAVE = new ThingType("TREE_GRAVE", Res.tree_grave, 10, new Animating(tree_grave[0][0], new Rect(Res.tree_grave.pixelCoords), 0, 1, 1, false, tree_grave)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.tree_palm, 50, new Animating(tree_palm[0][0], new Rect(Res.tree_palm.pixelCoords), 0, 1, 1, false, tree_palm)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
@@ -491,7 +489,7 @@ public class ThingType {
 					t.fruits.add(ItemType.BERRY);
 			}
 		}};
-	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.bush_jungle, 40,new Animating(bush_jungle[0][0], new Rect(Res.bush_jungle.pixelCoords), 0, 0, 1, false, bush_jungle)){
+	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.bush_jungle, 80,new Animating(bush_jungle[0][0], new Rect(Res.bush_jungle.pixelCoords), 0, 0, 1, false, bush_jungle)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType BUSH_CANDY = new ThingType("BUSH_CANDY", Res.bush_candy, 30 ,new Animating(bush_candy[0][0], new Rect(Res.bush_candy.pixelCoords), 0, 0, 1, false, bush_candy)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, world, field, pos, extraData);}};

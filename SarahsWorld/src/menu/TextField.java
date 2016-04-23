@@ -27,7 +27,7 @@ public class TextField extends Element {
 	public void render() {
 		super.render();
 		float xText = center? xCenter- (font.getWidth(text)/3) : this.x1+20;
-		float yText = yCenter + (font.getHeight(text)/2);
+		float yText = yCenter - (font.getHeight("I")/2);
 		font.drawString(xText - Window.WIDTH_HALF, yText - Window.HEIGHT_HALF, text, fontColor, 1, 1);
 	}
 
