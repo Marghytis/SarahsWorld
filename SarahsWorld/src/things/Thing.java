@@ -13,6 +13,7 @@ import things.aiPlugins.Speaking.ThoughtBubble;
 import util.Color;
 import util.math.Rect;
 import util.math.Vec;
+import world.World;
 import world.WorldData;
 import world.WorldData.Column;
 
@@ -98,9 +99,9 @@ public class Thing {
 	
 	public void setVisible(boolean visible){
 		if(this.visible && !visible){
-			Main.world.window.vaos[type.ordinal].remove(this);
+			World.world.window.vaos[type.ordinal].remove(this);
 		} else if(!this.visible && visible){
-			Main.world.window.vaos[type.ordinal].add(this);
+			World.world.window.vaos[type.ordinal].add(this);
 		}
 		this.visible = visible;
 	}

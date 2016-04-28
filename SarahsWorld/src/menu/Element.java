@@ -2,6 +2,7 @@ package menu;
 
 import org.lwjgl.opengl.GL11;
 
+import core.Core;
 import core.Window;
 import render.Render;
 import render.Shader;
@@ -66,6 +67,7 @@ public class Element {
 		
 		TexFile.bindNone();
 		Shader.bindNone();
+		Core.checkGLErrors(true, true, "after rendering this menu element with texture " + (tex != null ? tex.file.path : "null") + " and color " + (color != null ? color.toString() : "null"));
 	}
 	
 	public void pressed(int button, Vec mousePos){}

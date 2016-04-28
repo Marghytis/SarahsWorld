@@ -1,26 +1,22 @@
 package effects.particles;
 
+import effects.WorldEffect;
 import effects.particles.Particle.ParticleType;
 import main.Res;
 import util.math.Vec;
+import world.LandscapeWindow;
+import world.WorldData.Column;
 
-public class Fog implements ParticleEffect {
-
-
+public class FogWorld implements ParticleEffect, WorldEffect {
 
 	public static final ParticleType FOG = new ParticleType(Res.fogParticle);
-	public ParticleEmitter fog = new ParticleEmitter(100, 0, FOG, Float.MAX_VALUE){
+	public ParticleEmitter fog = new ParticleEmitter(400, 0, FOG, Float.MAX_VALUE, true){
 
 		float radius = 30, T = 10;
 		
 		public void makeParticle(Particle p) {
-			
-			double r = random.nextInt(size.xInt()),
-					phi = random.nextDouble()*Math.PI*2,
-					x = size.y*r*Math.cos(phi),
-					y = r*Math.sin(phi);
-			
-			p.someVec = new Vec(pos.x + x, pos.y + y);
+
+			p.someVec = new Vec(pos.x, pos.y + random.nextInt(height));
 			p.someFloat = random.nextFloat()*10;// + radius*UsefulF.cos100[100*(int)(p.irgendenFloat/T)%1]  |||| + radius*UsefulF.cos100[100*(int)(p.irgendenFloat/T)%1]
 			p.pos.set(p.someVec);
 			p.col.set(0.75f, 0.75f, 0.75f,0.25f);
@@ -34,18 +30,29 @@ public class Fog implements ParticleEffect {
 		};
 	};
 	
-	public Vec pos = new Vec(), size = new Vec();
+	public Vec pos = new Vec();
+	public int height;
 	
-	public Fog(int x, int y, int r, int xScale, int particles){
+	public FogWorld(int height){
+		this.height = height;
+	}
+	public int spawn(double x, double y, boolean left){
 		pos.set(x, y);
-		size.set(r, xScale);
-		for(int i = 0; i < particles; i++){
-			fog.emittParticle(0);
-		}
-		fog.emitting = false;
+		return fog.emittParticle(0);
+	}
+	public void destroy(int index){
+		if(index != -1)
+		fog.destroy(fog.particles[index]);
 	}
 	public void update(double delta) {
 		fog.tick((float)delta);
+	}
+	public void checkInside(LandscapeWindow lw) {
+		for(int i = 0; i < fog.particles.length; i++){
+			if(fog.particles[i].lived < fog.lifeSpan && (fog.particles[i].pos.x < lw.left.xReal - 2*Column.step || fog.particles[i].pos.x > lw.right.xReal + 2*Column.step)){
+				fog.destroy(fog.particles[i]);
+			}
+		}
 	}
 	public boolean pressed(int button, Vec mousePos) {
 		return false;

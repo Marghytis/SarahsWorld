@@ -24,7 +24,7 @@ void main(void){
 		scale.y*(size*((rot.y*pos1.x) + (rot.x*pos1.y)) + pos2.y + offset.y), 0, 1);
 		pass_color = in_color;
 	} else {
-		gl_Position = vec4(123.456789, 0, 0, 1);
+		gl_Position = vec4(111.1111171111, 0, 0, 1);
 		pass_color = vec4(0, 1, 1, 1); 
 	}
 	//gl_Position = vec4(scale*(pos1*size+pos2+offset), 0, 1);

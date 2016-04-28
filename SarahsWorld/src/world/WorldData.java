@@ -149,6 +149,22 @@ public class WorldData {
 			t.link = this;
 			t.oldLink = this;
 		}
+		public void appear(boolean left){
+			for(int i = 0; i < things.length; i++){
+				for(Thing t = things[i]; t != null; t = t.next){
+					t.setVisible(true);
+				}
+			}
+			biome.spawnEffects(WorldData.this, this, left);
+		}
+		
+		public void disappear(){
+			for(int i = 0; i < things.length; i++){
+				for(Thing t = things[i]; t != null; t = t.next){
+					t.setVisible(false);
+				}
+			}
+		}
 		
 		public Vec getTopLine(Vec topLine){
 			return topLine.set(right.xReal - xReal, right.vertices[collisionVec].y - vertices[collisionVec].y);

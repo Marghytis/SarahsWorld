@@ -16,7 +16,8 @@ import core.Renderer;
 import core.Updater;
 import core.Window;
 import effects.Effect;
-import effects.particles.Fog;
+import effects.WorldEffect;
+import effects.particles.FogWorld;
 import effects.particles.ParticleEffect;
 import effects.particles.ParticleEmitter;
 import item.ItemType;
@@ -47,13 +48,14 @@ public class WorldWindow implements Updater, Renderer{
 	public List<Thing> deletionRequested = new ArrayList<>();
 	
 
+	public static Weather weather = new Weather();
 	public static List<Effect> effects = new ArrayList<>();
 	public static List<Effect> toAdd = new ArrayList<>();
 	
 	public Framebuffer framebuffer;
 	public double darknessDistance = 600;
 	public ThingVAO[] vaos = new ThingVAO[ThingType.types.length];
-	public VAO background; ByteBuffer backgroundColors = BufferUtils.createByteBuffer(4*4);
+	public VAO background; ByteBuffer backgroundColorsTop, backgroundColorsBottom;
 	List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
 	List<Thing> thingsChange = new ArrayList<>();
 	public int radius;
@@ -61,6 +63,7 @@ public class WorldWindow implements Updater, Renderer{
 	
 	public WorldWindow(WorldData l, Column anchor, double startX, int radius) {
 		this.world = l;
+		World.world.window = this;
 		this.radius = radius;
 		for(int i = 0; i < ThingType.types.length; i++){
 			vaos[i] = new ThingVAO(ThingType.types[i]);
@@ -70,10 +73,24 @@ public class WorldWindow implements Updater, Renderer{
 		while(anchor.xReal < startX) anchor = anchor.right;
 		landscape = new LandscapeWindow(world, anchor, radius, (int)Math.floor(startX/Column.step));
 		this.framebuffer = new Framebuffer(Window.WIDTH, Window.HEIGHT);
+//		this.backgroundColors = BufferUtils.createByteBuffer(4*4);
+		this.backgroundColorsTop = BufferUtils.createByteBuffer((Window.WIDTH/100 + 1)*4);
+		this.backgroundColorsBottom = BufferUtils.createByteBuffer((Window.WIDTH/100 + 1)*4);
 //		GL11.glClearColor(0.2f, 0.6f, 0.7f, 0);
 		GL11.glClearColor(0, 0, 0, 0);
 		GL11.glClearStencil(0);
 		effects.add(new Nametag());
+		weather.addEffects();
+//		background = new VAO(
+//				new VBO(Render.standardIndex, GL15.GL_STATIC_READ),
+//				new VBO(Render.createBuffer(new byte[]{
+//						-1, -1,
+//						+1, -1,
+//						+1, +1,
+//						-1, +1}), GL15.GL_STATIC_DRAW, 2*Byte.BYTES,
+//						new VAP(2, GL11.GL_BYTE, false, 0)),
+//				new VBO(backgroundColors, GL15.GL_STREAM_DRAW, 4*Byte.BYTES,
+//						new VAP(4, GL11.GL_BYTE, true, 0)));
 		background = new VAO(
 				new VBO(Render.standardIndex, GL15.GL_STATIC_READ),
 				new VBO(Render.createBuffer(new byte[]{
@@ -81,9 +98,7 @@ public class WorldWindow implements Updater, Renderer{
 						+1, -1,
 						+1, +1,
 						-1, +1}), GL15.GL_STATIC_DRAW, 2*Byte.BYTES,
-						new VAP(2, GL11.GL_BYTE, false, 0)),
-				new VBO(backgroundColors, GL15.GL_STREAM_DRAW, 4*Byte.BYTES,
-						new VAP(4, GL11.GL_BYTE, true, 0)));
+						new VAP(2, GL11.GL_BYTE, false, 0)/*Positions*/));
 	}
 	
 	public boolean update(final double delta){
@@ -123,6 +138,8 @@ public class WorldWindow implements Updater, Renderer{
 			if(!effects.get(i).living()){
 				effects.remove(i);
 				i--;
+			} else if(effects.get(i) instanceof WorldEffect){
+				((WorldEffect)effects.get(i)).checkInside(landscape);
 			}
 		}
 		
@@ -133,6 +150,7 @@ public class WorldWindow implements Updater, Renderer{
 		scaleY = zoom/Window.HEIGHT_HALF;
 		offsetX = (float)-world.world.avatar.pos.x;
 		offsetY = (float)-world.world.avatar.pos.y;
+		ParticleEmitter.offset.set(offsetX, offsetY);
 		ParticleEffect.wind.set((Listener.getMousePos().x - Window.WIDTH_HALF)*60f/Window.WIDTH_HALF, 0);
 		return false;
 	}
@@ -159,7 +177,6 @@ public class WorldWindow implements Updater, Renderer{
 		
 //		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		renderThings((t) -> true);
-		Core.checkGLErrors(true, true, "after");
 		
 		renderWater();
 		
@@ -218,9 +235,8 @@ public class WorldWindow implements Updater, Renderer{
 //		if(Settings.SHOW_BOUNDING_BOX){
 //			renderBoundingBoxes();
 //		}
-		ParticleEmitter.offset.set(- Main.world.avatar.pos.x - Window.WIDTH_HALF, - Main.world.avatar.pos.y - Window.HEIGHT_HALF);
 		for(Effect effect : effects){
-			if(effect instanceof Fog){
+			if(effect instanceof FogWorld){
 				effect.render(scaleX, scaleY);
 			}
 		}
@@ -231,29 +247,50 @@ public class WorldWindow implements Updater, Renderer{
 	}
 	
 	public void renderBackground(){
-		Column rightBorder = landscape.right;
-		while(rightBorder.xReal > world.world.avatar.pos.x + Window.WIDTH_HALF) rightBorder = rightBorder.left;
-		Column leftBorder = landscape.left;
-		while(leftBorder.xReal < world.world.avatar.pos.x - Window.WIDTH_HALF) leftBorder = leftBorder.right;
-		rightBorder.lowColor.bytes(color);
-		backgroundColors.put(color);
-		leftBorder.lowColor.bytes(color);
-		backgroundColors.put(color);
-		rightBorder.topColor.bytes(color);
-		backgroundColors.put(color);
-		leftBorder.topColor.bytes(color);
-		backgroundColors.put(color);
-		backgroundColors.flip();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, background.vbos[1].handle);
-		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, backgroundColors);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-		
+
+		//BACKGROUND
 		Res.darknessShader.bind();
-		Res.darknessShader.set("transform", 0, 0, 1, 1);
-		background.bindStuff();
-			GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
-		background.unbindStuff();
+		Res.darknessShader.set("transform", offsetX, 0, scaleX, 1);
+		landscape.vaoColor.bindStuff();
+			landscape.drawBackground();
+		landscape.vao.unbindStuff();
 		Shader.bindNone();
+//		Column rightBorder = landscape.right;
+//		while(rightBorder.xReal > world.world.avatar.pos.x + Window.WIDTH_HALF) rightBorder = rightBorder.left;
+//		Column leftBorder = landscape.left;
+//		while(leftBorder.xReal < world.world.avatar.pos.x - Window.WIDTH_HALF) leftBorder = leftBorder.right;
+////		rightBorder.lowColor.bytes(color);
+////		backgroundColors.put(color);
+////		leftBorder.lowColor.bytes(color);
+////		backgroundColors.put(color);
+////		rightBorder.topColor.bytes(color);
+////		backgroundColors.put(color);
+////		leftBorder.topColor.bytes(color);
+////		backgroundColors.put(color);
+////		backgroundColors.flip();
+////		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, background.vbos[1].handle);
+////		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, backgroundColors);
+////		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+//
+//		backgroundColorsTop.flip();
+//		backgroundColorsBottom.flip();
+//		int width = rightBorder.xIndex - leftBorder.xIndex, step = width/(Window.WIDTH/100);
+//		for(Column c = leftBorder; c != rightBorder.right;){
+//			c.topColor.bytes(color);
+//			backgroundColorsTop.put(color);
+//			c.lowColor.bytes(color);
+//			backgroundColorsBottom.put(color);
+//			for(int i = 0; i < step; i++)
+//				c = c.right;
+//		}
+//		
+//		Res.backgroundShader.bind();
+//		Res.backgroundShader.set("transform", 0, 0, 1, 1);
+//		Res.backgroundShader.set
+//		background.bindStuff();
+//			GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
+//		background.unbindStuff();
+//		Shader.bindNone();
 	}
 	
 	public void renderLandscape(){
@@ -311,6 +348,7 @@ public class WorldWindow implements Updater, Renderer{
 		Res.thingShader.set("offset", -(float)Main.world.avatar.pos.x, -(float)Main.world.avatar.pos.y);
 		
 		for(int type = 0; type < ThingType.types.length; type++) {
+			if(vaos[type].lastUsedIndex == -1) continue;
 			//render Thing
 			TexAtlas tex = ThingType.types[type].file;
 			tex.file.bind();
@@ -366,7 +404,7 @@ public class WorldWindow implements Updater, Renderer{
 		//DARKNESS
 		Res.darknessShader.bind();
 		Res.darknessShader.set("transform", offsetX, offsetY, scaleX, scaleY);
-		landscape.vaoDarkness.bindStuff();
+		landscape.vaoColor.bindStuff();
 			landscape.drawDarkness();
 		landscape.vao.unbindStuff();
 		Shader.bindNone();

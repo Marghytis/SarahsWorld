@@ -14,6 +14,9 @@ import util.math.Vec;
 
 
 public class Particle {
+	public Particle nextFree;
+	public int indexInPool;
+	
 	public Vec pos = new Vec();
 	public Vec vel = new Vec();//per second
 	public Color col = new Color();
@@ -24,6 +27,10 @@ public class Particle {
 	public boolean justSpawned = true;
 	public Vec someVec;
 	public float someFloat;
+	
+	public Particle(int index){
+		this.indexInPool = index;
+	}
 	
 	public static class ParticleType {
 		public Texture tex;

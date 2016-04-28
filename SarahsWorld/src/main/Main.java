@@ -24,7 +24,6 @@ public class Main {
 
 	public static void main(String[] args){
 		String worldName = "Sarahs World";
-		Window.pixelFormat = new PixelFormat();
 		Window.contextAttribs = new ContextAttribs(3, 3)
 		    .withForwardCompatible(true)
 		    .withProfileCore(true);

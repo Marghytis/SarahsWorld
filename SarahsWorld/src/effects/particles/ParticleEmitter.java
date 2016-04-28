@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL31;
 
-import core.Window;
 import effects.particles.Particle.ParticleType;
 import render.Render;
 import render.Shader;
@@ -27,6 +26,7 @@ public abstract class ParticleEmitter{
 	public ParticleType type;
 	public boolean emitting = true;
 	float lifeSpan;
+	boolean externalKill = true;;
 	
 	/**
 	 * 
@@ -35,12 +35,16 @@ public abstract class ParticleEmitter{
 	 * @param type
 	 * @param lifeSpan in seconds
 	 */
-	public ParticleEmitter(int particleAmount, int spawnRate, ParticleType type, float lifeSpan){
+	public ParticleEmitter(int particleAmount, int spawnRate, ParticleType type, float lifeSpan, boolean externalKill){
 		particles = new Particle[particleAmount];
 		for(int i = 0; i < particles.length; i++){
-			particles[i] = new Particle();
+			particles[i] = new Particle(i);
 			particles[i].lived = lifeSpan;//To make it dead
+			if(i > 0){
+				particles[i].nextFree = particles[i-1];
+			}
 		}
+		firstFree = particles[particles.length-1];
 		if(spawnRate > 0){
 			this.interval = 1.0f/spawnRate;
 		} else {
@@ -50,28 +54,55 @@ public abstract class ParticleEmitter{
 		
 		this.type = type;
 		this.lifeSpan = lifeSpan;
+		this.externalKill = externalKill;
 		initVAO();
+	}
+	public ParticleEmitter(int particleAmount, int spawnRate, ParticleType type, float lifeSpan){
+		this(particleAmount, spawnRate, type, lifeSpan, false);
 	}
 
 	public Particle[] particles;
+	public Particle firstFree;
 	public Random random = new Random();
 	
 	int index;
-	public void emittParticle(float age){
-		Particle p = particles[index];
+	public int emittParticle(float age){
+		Particle p;
+		if(externalKill){
+			if(firstFree == null){
+				System.err.println("Not enough space in particle pool of path " + type.tex.file.path);
+				return -1;
+			}
+			p = firstFree;
+			firstFree = p.nextFree;
+			p.nextFree = null;
+		} else {
+			p = particles[index];
+			index = (index+1)%particles.length;
+		}
+		
 		makeParticle(p);
 		p.lived = 0;
 		p.justSpawned = true;
 		tickParticle(p, age);
-		index = (index + 1)%particles.length;
+		return p.indexInPool;
+	}
+	public void destroy(Particle p){
+		killParticle(p);
+		if(externalKill){
+			p.nextFree = firstFree;
+			firstFree = p;
+		}
+		p.lived = lifeSpan;
 	}
 	
-	public abstract void makeParticle(Particle p);
-	public void killParticle(Particle p){};
-	public void velocityInterpolator(Particle p, float delta){};
-	public void colorInterpolator(Particle p, float delta){};
-	public void rotationInterpolator(Particle p, float delta){};
-	public void radiusInterpolator(Particle p, float delta){};
+	//To get overridden
+	private void killParticle(Particle p){};
+	abstract void makeParticle(Particle p);
+	void velocityInterpolator(Particle p, float delta){};
+	void colorInterpolator(Particle p, float delta){};
+	void rotationInterpolator(Particle p, float delta){};
+	void radiusInterpolator(Particle p, float delta){};
 	
 	float overFlow;
 	public void tick(float delta){
@@ -100,7 +131,7 @@ public abstract class ParticleEmitter{
 		radiusInterpolator(p, delta);
 		p.pos.shift(p.vel, delta);
 		if(p.lived >= lifeSpan){
-			killParticle(p);
+			destroy(p);
 		}
 	}
 	
@@ -111,7 +142,7 @@ public abstract class ParticleEmitter{
 	FloatBuffer sizes;
 	ByteBuffer colors;
 	int[] offsets = new int[5];
-	public static Vec offset = new Vec(-Window.WIDTH_HALF, -Window.HEIGHT_HALF);
+	public static Vec offset = new Vec();
 	public static Shader particleShader = Shader.create("res/shader/particle.vert", "res/shader/particle.frag", "pos1", "in_texCoords", "draw", "pos2", "rot", "size", "in_color");
 	public void initVAO(){
 		//boolean draw

@@ -144,7 +144,7 @@ public class Menu implements Updater, Renderer, Listener {
 		DEBUG(false, false){
 			public void setElements(){
 				elements = new Element[]{new Debugger(),
-						new Button("Immortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						new Button("Immortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.8f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								Main.world.avatar.immortal = !Main.world.avatar.immortal;
 							}
