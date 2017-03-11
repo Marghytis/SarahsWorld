@@ -32,7 +32,6 @@ public class Movement extends AiPlugin {
 		}
 		if(acc > 0) t.dir = false;
 		else if(acc < 0) t.dir = true;
-		t.rotation = 0;
 //		String aniName = t.ani.ani.name;
 		if(t.where.g){
 			if(t.where.water < 0.3){
@@ -53,7 +52,6 @@ public class Movement extends AiPlugin {
 			if(t.where.water > 0){
 				if(acc != 0){
 					t.type.ani.setAnimation(t, swim);
-					t.rotation = (t.vel.angle()*360/(2*Math.PI)) + (t.dir? 180 : 0);
 					//TODO add animation for keeping itself at the surface and possibly a transition with rotation
 				} else {
 					t.type.ani.setAnimation(t, fly);
@@ -105,7 +103,6 @@ public class Movement extends AiPlugin {
 				//if one cursor is below the graph and the other above, that's where she'll collide
 				if(cursor.vertices[cursor.collisionVecWater].y < y){
 					lastOne = true;
-//					System.out.println("Graph: " + y + ", Vertex: " + cursor.vertices[cursor.collisionVecWater].y);
 				} else {
 					if(lastOne){
 						return true;

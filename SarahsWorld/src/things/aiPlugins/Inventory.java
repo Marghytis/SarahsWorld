@@ -16,16 +16,14 @@ public class Inventory extends AiPlugin{
 	public int itemAmount;
 	public ItemType defaultItem;
 	
-	public Animator itemAnimator;
-		
 	public Inventory(ItemType defaultItem, int itemAmount){
 		this.defaultItem = defaultItem;
 		this.itemAmount = itemAmount;
-		itemAnimator = new Animator(defaultItem.texHand);
 	}
 	
 	public void setup(Thing t, WorldData world){
 		t.itemStacks = new ItemStack[itemAmount];
+		t.itemAni =  new Animator(defaultItem.texHand);
 		for(int i = 0; i < itemAmount; i++){
 			t.itemStacks[i] = new ItemStack(i, this);
 		}
@@ -47,6 +45,7 @@ public class Inventory extends AiPlugin{
 			t.coins += coinAmount;
 			Res.coinSound.play();
 		}
+		t.itemAni.setTexture(getSelectedItem(t).texHand);
 	}
 	
 	public ItemType getSelectedItem(Thing t){
@@ -65,9 +64,9 @@ public class Inventory extends AiPlugin{
 					t.itemStacks[i].count = 0;
 				}
 				return true;
-			} else if (t.itemStacks[i].item == defaultItem){
-				t.itemStacks[i].item = item;
+			} else if (t.itemStacks[i].item == defaultItem && amount > 0){
 				t.itemStacks[i].count = amount;
+				t.itemStacks[i].item = item;
 				return true;
 			}
 		}

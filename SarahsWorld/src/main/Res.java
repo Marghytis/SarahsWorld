@@ -57,7 +57,7 @@ public class Res {
 	public static final TexInfo villager_HandPos = new TexInfo("res/creatures/NPC.txt");
 	public static final TexAtlas sarah = new TexAtlas("res/creatures/Sarah.png", 11, 10, -0.5, -0.1);static {sarah.addInfo(sarah_HandPos, sarah_HeadPos);}
 	public static final TexAtlas sarah_dive = new TexAtlas(sarah.file, 50, 0, 400, 75, 5, 1, -0.5, -0.1);static {sarah_dive.addInfo(sarah_HandPos_dive, sarah_HeadPos_dive);}
-	public static final TexAtlas sarah_swim = new TexAtlas(sarah.file, 150, 675, 350, 75, 5, 1, -0.5, -0.5);static {sarah_swim.addInfo(sarah_HandPos_swim, sarah_HeadPos_swim);}
+	public static final TexAtlas sarah_swim = new TexAtlas(sarah.file, 150, 675, 350, 56, 5, 1, -0.5, -0.5);static {sarah_swim.addInfo(sarah_HandPos_swim, sarah_HeadPos_swim);}
 	public static final TexAtlas sarah_onCow = new TexAtlas("res/creatures/Sarah_riding_cow.png", 7, 2, -0.5, -0.1);static {sarah_onCow.addInfo(sarah_HandPos_onCow, sarah_HeadPos_onCow);}
 	public static final TexAtlas sarah_death = new TexAtlas("res/creatures/Sarah_death.png", 14, 1, -0.5f, -0.5f);
 	public static final TexAtlas snail  = new TexAtlas("res/creatures/Snail.png", 7, 3, -0.5f, -0.1f);

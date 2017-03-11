@@ -65,7 +65,7 @@ public class ThingVAO {
 		changer1.clear();
 		changer1.putFloat((float)t.pos.x);
 		changer1.putFloat((float)(t.pos.y + t.yOffset));
-		changer1.putFloat((float)t.rotation);
+		changer1.putFloat((float)(t.rotation + t.aniRotation));
 		changer1.putShort((short)(Short.MAX_VALUE*t.ani.tex.texCoords[0]));
 		changer1.putShort((short)(Short.MAX_VALUE*t.ani.tex.texCoords[1]));
 		changer1.putShort((short)(Short.MAX_VALUE*(t.dir ? t.ani.tex.texCoords[2] - t.ani.tex.texCoords[0] : 0)));
@@ -84,8 +84,8 @@ public class ThingVAO {
 		changer2.put((byte)(Byte.MAX_VALUE*t.color.g));
 		changer2.put((byte)(Byte.MAX_VALUE*t.color.b));
 		changer2.put((byte)(Byte.MAX_VALUE*t.color.a));
-		changer2.putFloat(t.behind);
-		changer2.putFloat(t.size);
+		changer2.putFloat((float)t.z);
+		changer2.putFloat((float)t.size);
 		changer2.flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo2.handle);
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, t.index*unusualBytesUpdated, changer2);

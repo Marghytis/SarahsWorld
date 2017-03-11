@@ -1,5 +1,8 @@
 package menu;
 
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import core.Core;
@@ -19,6 +22,9 @@ public class Element {
 	public int x1, y1, x2, y2, w, h;
 	public Color color;
 	public Texture tex;
+	/**
+	 * By default consists of an index buffer and a vertex buffer with coords and texCoords intertwined (as shorts).
+	 */
 	public VAO vao;
 	
 	public Element(double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex){
@@ -45,6 +51,28 @@ public class Element {
 		this.h = y2 - y1;
 	}
 	
+	public void updateVertexBuffer(){
+		ByteBuffer newCoords = BufferUtils.createByteBuffer(16*Float.BYTES);
+		newCoords.putShort((short)(x1-Window.WIDTH_HALF));
+		newCoords.putShort((short)(y1-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(0));
+		newCoords.putShort((short)(0));
+		newCoords.putShort((short)(x2-Window.WIDTH_HALF));
+		newCoords.putShort((short)(y1-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(1));
+		newCoords.putShort((short)(0));
+		newCoords.putShort((short)(x2-Window.WIDTH_HALF));
+		newCoords.putShort((short)(y2-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(1));
+		newCoords.putShort((short)(1));
+		newCoords.putShort((short)(x1-Window.WIDTH_HALF));
+		newCoords.putShort((short)(y2-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(0));
+		newCoords.putShort((short)(1));
+		newCoords.flip();
+		vao.vbos[0].update(0, newCoords);
+	}
+	
 	public boolean contains(Vec vec){
 		return vec.x >= x1 && vec.x <= x2 && vec.y >= y1 && vec.y <= y2;
 	}
@@ -60,6 +88,8 @@ public class Element {
 			}
 			Shader.singleQuad.set("texture", tex != null);
 			Shader.singleQuad.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+			Shader.singleQuad.set("offset", 0f, 0f);
+			Shader.singleQuad.set("z", 0f);
 			
 			vao.bindStuff();
 				GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);

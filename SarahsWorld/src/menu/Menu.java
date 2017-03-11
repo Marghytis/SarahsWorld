@@ -1,5 +1,7 @@
 package menu;
 
+import java.awt.Font;
+
 import org.lwjgl.opengl.GL11;
 
 import core.Listener;
@@ -12,6 +14,8 @@ import main.Res;
 import menu.Settings.Key;
 import render.Texture;
 import render.VAO;
+import things.AiPlugin;
+import things.Thing;
 import things.ThingType;
 import util.Anim;
 import util.Color;
@@ -22,7 +26,7 @@ import world.generation.Biome;
 
 public class Menu implements Updater, Renderer, Listener {
 	public static Texture MONEYBAG = Res.moneybag;
-	public static TrueTypeFont font = /*new TrueTypeFont(new Font("Times New Roman", 0, 20), true)*/null;
+	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 20), true);
 	public static Color fontColor = new Color(0.9f, 0.8f, 0.8f, 1);
 	public static Dialog dialog = new Dialog();
 
@@ -123,16 +127,16 @@ public class Menu implements Updater, Renderer, Listener {
 			public void setElements(){
 				elements = new Element[]{
 						new Element(7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0]*2, MONEYBAG.pixelCoords[1]*2 - 30, MONEYBAG.pixelCoords[2]*2, MONEYBAG.pixelCoords[3]*2 - 30, null, MONEYBAG),
-						new FlexibleTextField(() -> Main.world.avatar.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null, true),
+						new FlexibleTextField(() -> Main.world.avatar.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, new Color(1, 1, 1, 0), null, true),
 						
-						new ItemContainer(0, 1/6.0, 1.0/8),
-						new ItemContainer(1, 2/6.0, 1.0/8),
-						new ItemContainer(2, 3/6.0, 1.0/8),
-						new ItemContainer(3, 4/6.0, 1.0/8),
-						new ItemContainer(4, 5/6.0, 1.0/8),
+						new ItemContainer(0, 4/12.0, 1.0/8),
+						new ItemContainer(1, 5/12.0, 1.0/8),
+						new ItemContainer(2, 6/12.0, 1.0/8),
+						new ItemContainer(3, 7/12.0, 1.0/8),
+						new ItemContainer(4, 8/12.0, 1.0/8),
 
-						new Bar(0.1, 6.0/16, 0.9, 6.0/16, 0, -16, 0, 16, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.health/(double)Main.world.avatar.type.life.maxHealth),//Health
-						new Bar(0.1, 5.0/16, 0.9, 5.0/16, 0, -16, 0, 16, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
+						new Bar(0.3, 5.0/16, 0.7, 5.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.health/(double)Main.world.avatar.type.life.maxHealth),//Health
+						new Bar(0.3, 4.0/16, 0.7, 4.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
 				};
 			}
 		},
@@ -185,16 +189,26 @@ public class Menu implements Updater, Renderer, Listener {
 			public void setElements(){
 				elements = new Element[]{
 						new FlexibleTextField(() -> {
-							String s = "Biome: " + World.world.avatar.link.biome.name();
-							for(int y = 0; y < Biome.layerCount-1; y++){
-								if(!World.world.avatar.link.vertices[y].empty()){
-									s += "\nLayer " + y + "(" + (int)(World.world.avatar.link.vertices[y].y - World.world.avatar.link.vertices[y+1].y) + "px) has materials ";
-									s += World.world.avatar.link.vertices[y].mats()[0] + "(" + World.world.avatar.link.vertices[y].alphas[0] + ")";
-									s += ", " + World.world.avatar.link.vertices[y].mats()[1] + "(" + World.world.avatar.link.vertices[y].alphas[1] + ")";
-									s += ", " + World.world.avatar.link.vertices[y].mats()[2] + "(" + World.world.avatar.link.vertices[y].alphas[2] + ")";
-									s += " and " + World.world.avatar.link.vertices[y].mats()[3] + "(" + World.world.avatar.link.vertices[y].alphas[3] + ")";
-								}
-							}
+							if(World.world.window.selected.size() != 1) return "";
+							Thing t = Main.world.window.selected.get(0);
+							String s = t.type.name + ": ";
+							if(t.type.physics != null)
+							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force;
+							return s;
+						}
+						, 0, 0.5, 0.5, 1, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						new FlexibleTextField(() -> {
+							if(World.world.window.selected.size() != 1) return "";
+							Thing t = Main.world.window.selected.get(0);
+							String s = t.type.name + ": ";
+							if(t.type.physics != null)
+							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force;
+							return s;
+						}
+						, 0, 0.25, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						new FlexibleTextField(() -> {
+							Vec idle = new Vec(0, 1);
+							String s = "Sarah: " + Main.world.avatar.vel;
 							return s;
 						}
 						, 0, 0, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false)

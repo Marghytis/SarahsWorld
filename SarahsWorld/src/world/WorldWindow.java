@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
-import core.Core;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
@@ -22,11 +21,11 @@ import effects.particles.ParticleEffect;
 import effects.particles.ParticleEmitter;
 import item.ItemType;
 import item.Nametag;
-import main.Framebuffer;
 import main.Main;
 import main.Res;
 import menu.Settings;
 import quest.ActiveQuest;
+import render.Framebuffer;
 import render.Render;
 import render.Shader;
 import render.TexAtlas;
@@ -38,12 +37,16 @@ import things.Thing;
 import things.ThingType;
 import util.Color;
 import util.math.Vec;
+import util.shapes.Circle;
 import world.WorldData.Column;
 
 public class WorldWindow implements Updater, Renderer{
+	public static Vec offset = new Vec(-Window.WIDTH_HALF, -Window.HEIGHT_HALF);
+	public static Vec scale = new Vec(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 	public WorldData world;
 //	public Chunk[] loadedChunks = new Chunk[3];
 	public LandscapeWindow landscape;
+	Framebuffer landscapeBuffer;
 	
 	public List<Thing> deletionRequested = new ArrayList<>();
 	
@@ -52,7 +55,7 @@ public class WorldWindow implements Updater, Renderer{
 	public static List<Effect> effects = new ArrayList<>();
 	public static List<Effect> toAdd = new ArrayList<>();
 	
-	public Framebuffer framebuffer;
+	VAO completeWindow;
 	public double darknessDistance = 600;
 	public ThingVAO[] vaos = new ThingVAO[ThingType.types.length];
 	public VAO background; ByteBuffer backgroundColorsTop, backgroundColorsBottom;
@@ -60,6 +63,7 @@ public class WorldWindow implements Updater, Renderer{
 	List<Thing> thingsChange = new ArrayList<>();
 	public int radius;
 	public float scaleX, scaleY, offsetX, offsetY, zoom = 1;
+	public List<Thing> selected = new ArrayList<>();
 	
 	public WorldWindow(WorldData l, Column anchor, double startX, int radius) {
 		this.world = l;
@@ -72,7 +76,8 @@ public class WorldWindow implements Updater, Renderer{
 		while(anchor.xReal > startX) anchor = anchor.left;
 		while(anchor.xReal < startX) anchor = anchor.right;
 		landscape = new LandscapeWindow(world, anchor, radius, (int)Math.floor(startX/Column.step));
-		this.framebuffer = new Framebuffer(Window.WIDTH, Window.HEIGHT);
+		landscapeBuffer = new Framebuffer("Landscape", Window.WIDTH, Window.HEIGHT);
+		this.completeWindow = Render.quadInScreen(-Window.WIDTH_HALF, Window.HEIGHT_HALF, Window.WIDTH_HALF, -Window.HEIGHT_HALF);
 //		this.backgroundColors = BufferUtils.createByteBuffer(4*4);
 		this.backgroundColorsTop = BufferUtils.createByteBuffer((Window.WIDTH/100 + 1)*4);
 		this.backgroundColorsBottom = BufferUtils.createByteBuffer((Window.WIDTH/100 + 1)*4);
@@ -164,25 +169,32 @@ public class WorldWindow implements Updater, Renderer{
 //		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 //		GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 //		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.x, Window.HEIGHT_HALF - Main.world.avatar.pos.y, 0);
-//
-//		GL11.glColor4f(1, 1, 1, 1);
-//		//things even behind the landscape
-//		for(int i = -5; i < 0; i++){
-//			int i2 = i;//effectively final...
-//			renderThings((t) -> t.behind == i2);
-//		}
-//		
+		
+		landscapeBuffer.bind();
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		renderLandscape();
 		
-		
-//		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		renderThings((t) -> true);
+		Framebuffer.bindNone();
+
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.4f);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+//		renderThings((type) -> type == ThingType.GRAVE);
+//		red.render(new Vec(50, 0), -0.1, 1);
+		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
+		Render.drawSingleQuad(completeWindow, Color.WHITE, landscapeBuffer.getTex(), scaleX, scaleY, true);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		renderThings((type) -> true);
+		renderItemsInHand();
+//		white.render(new Vec(-50, 0), +0.1, 1);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		
 		renderWater();
 		
-		renderDarkness();
+//		renderDarkness();
 		
-//		renderItemsInHand();
 //		GL11.glDisable(GL11.GL_DEPTH_TEST);
 //		
 //		//auras
@@ -241,9 +253,10 @@ public class WorldWindow implements Updater, Renderer{
 			}
 		}
 //
-//		for(ActiveQuest aq : world.quests){
-//			aq.render();
-//		}
+		for(ActiveQuest aq : world.quests){
+			aq.render();
+		}
+
 	}
 	
 	public void renderBackground(){
@@ -325,7 +338,7 @@ public class WorldWindow implements Updater, Renderer{
 		Shader.bindNone();
 	}
 	
-	public interface Decider { public boolean decide(Thing t);}
+	public interface Decider { public boolean decide(ThingType type);}
 	public void renderThings(Decider d){
 
 		//add things to the buffer that should be visible
@@ -343,12 +356,14 @@ public class WorldWindow implements Updater, Renderer{
 			}
 		}
 
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
 		Res.thingShader.bind();
 		Res.thingShader.set("scale", scaleX, scaleY);
 		Res.thingShader.set("offset", -(float)Main.world.avatar.pos.x, -(float)Main.world.avatar.pos.y);
 		
 		for(int type = 0; type < ThingType.types.length; type++) {
-			if(vaos[type].lastUsedIndex == -1) continue;
+			if(vaos[type].lastUsedIndex == -1 || !d.decide(ThingType.types[type])) continue;
 			//render Thing
 			TexAtlas tex = ThingType.types[type].file;
 			tex.file.bind();
@@ -357,9 +372,9 @@ public class WorldWindow implements Updater, Renderer{
 
 			for(int col = 0; col < landscape.columns.length; col++)
 			for(Thing t = landscape.columns[col].things[type]; t != null; t = t.next){
-				if(d.decide(t)){
+//				if(d.decide(t)){
 					t.prepareRender();
-				}
+//				}
 			}
 
 			vaos[type].vao.bindStuff();
@@ -368,6 +383,7 @@ public class WorldWindow implements Updater, Renderer{
 		}
 		TexFile.bindNone();
 		Shader.bindNone();
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
 	}
 	public void renderItemsInHand(){
 		Res.thingShader.bind();
@@ -451,7 +467,7 @@ public class WorldWindow implements Updater, Renderer{
 				thingsAt.add(t);
 			}
 		}
-		thingsAt.sort((t1, t2) -> t1.behind > t2.behind ? 1 : t1.behind < t2.behind ?  -1 : 0);
+		thingsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
 		return thingsAt.toArray(new Thing[thingsAt.size()]);
 	}
 	
@@ -464,7 +480,20 @@ public class WorldWindow implements Updater, Renderer{
 				objectsAt.add(t);
 			}
 		}
-		objectsAt.sort((t1, t2) -> t1.behind > t2.behind ? 1 : t1.behind < t2.behind ?  -1 : 0);
+		objectsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
+		return objectsAt.toArray(new Thing[objectsAt.size()]);
+	}
+	
+	public Thing[] thingsAt(Vec loc){
+		objectsAt.clear();
+		for(int type = 0; type < ThingType.types.length; type++)
+		for(int col = 0; col < landscape.columns.length; col++)
+		for(Thing t = landscape.columns[col].things[type]; t != null; t = t.next){
+			if(!t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y + t.yOffset, t.box.size.x, t.box.size.y)){
+				objectsAt.add(t);
+			}
+		}
+		objectsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
 		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 	

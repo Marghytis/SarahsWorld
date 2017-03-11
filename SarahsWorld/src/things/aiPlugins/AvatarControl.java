@@ -87,8 +87,13 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			Main.world.avatar.type.inv.useSelectedItem(Main.world.avatar, worldPos, objectsClickedOn);
 			break;
 		case 2:
-			objectsClickedOn = Main.world.window.objectsAt(worldPos);
+			objectsClickedOn = Main.world.window.thingsAt(worldPos);
 			for(Thing t : objectsClickedOn){
+				if(t.selected){
+					Main.world.window.selected.remove(t);
+				} else {
+					Main.world.window.selected.add(t);
+				}
 				t.selected = !t.selected;
 				t.switchedSelected = true;
 			}

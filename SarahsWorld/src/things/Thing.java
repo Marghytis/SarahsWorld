@@ -28,9 +28,10 @@ public class Thing {
 	public ItemType itemBeing;
 	public double yOffset;
 	public double accWalking = 1000, accSwimming = 250, accFlying;//accWalking is different from snail to snail for example
-	public float behind, size = 1;
+	public double z, size = 1;
 	public Rect box = new Rect();//NOT USED FOR DRAWING!!!
 
+	//dynamically changing values
 	public Thing prev, next;
 	public short index = -1;
 	public Vec pos = new Vec(), nextPos = new Vec();
@@ -40,9 +41,12 @@ public class Thing {
 	public double airTime;
 	public boolean reallyAir, willLandInWater;
 	public double walkingForce, speed, maxWalkingSpeed;
+	public double rotation, aniRotation;
+	public Vec orientation = new Vec(0, 1);
+	
+	//Values that change, if needed
 	public Animator ani;
 	public Animator itemAni;
-	public double rotation;
 	public List<ItemType> fruits = new ArrayList<>();
 	public ItemStack[] itemStacks;
 	public ThoughtBubble tb;

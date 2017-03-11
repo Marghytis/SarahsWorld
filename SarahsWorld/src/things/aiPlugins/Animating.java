@@ -21,24 +21,24 @@ public class Animating extends AiPlugin {
 	public Animation[][] animations;
 	public Animation defaultAni;
 	public Rect defaultBox;
-	public int behindMin, backRange, frontRange;
+	public double z, zRange, frontRange;
 	public boolean useTexBox;
 	
 	/**
 	 * 
 	 * @param defaultTex
 	 * @param box
-	 * @param behindMin
+	 * @param z
 	 * @param behindMax
 	 * @param aniCount
 	 * @param animations it has to be one single TexFile per Animation[]
 	 */
 	@SafeVarargs
-	public Animating(Animation defaultTex, Rect box, int behindMin, int backRange, int frontRange, int aniCount, boolean useTexBox, Animation[]... animations){
+	public Animating(Animation defaultTex, Rect box, double z, double zRange, double frontRange, int aniCount, boolean useTexBox, Animation[]... animations){
 		this.defaultAni = defaultTex;
 		this.defaultBox = box;
-		this.behindMin = behindMin;
-		this.backRange = backRange;
+		this.z = z;
+		this.zRange = zRange;
 		this.frontRange = frontRange;
 		this.aniCount = aniCount;
 		this.animations = animations;
@@ -48,12 +48,12 @@ public class Animating extends AiPlugin {
 			hashmap.put(animations[0][i].name, i);
 		}
 	}
-	public Animating(Animation defaultTex, Rect box, int behindMin, int behindRange, int aniCount, boolean useTexBox, Animation[]... animations){
-		this(defaultTex, box, behindMin, behindRange, behindRange, aniCount, useTexBox, animations);
+	public Animating(Animation defaultTex, Rect box, double z, double zRange, int aniCount, boolean useTexBox, Animation[]... animations){
+		this(defaultTex, box, z, zRange, 0, aniCount, useTexBox, animations);
 	}
 	
 	public void setup(Thing t, WorldData world){
-		t.behind = behindMin + World.rand.nextInt(frontRange+1) - World.rand.nextInt(backRange + 1);
+		t.z = World.rand.nextDouble()*zRange + z - (zRange/2);
 		t.dir = World.rand.nextBoolean();
 		t.ani = new Animator(defaultAni);
 		t.box = defaultBox != null ? defaultBox.copy() : new Rect(t.ani.tex.pixelCoords);
@@ -64,6 +64,8 @@ public class Animating extends AiPlugin {
 		if(useTexBox && !t.box.equals(t.ani.tex.pixelCoords)){
 			t.box.set(t.ani.tex.pixelCoords);
 		}
+		if(t.ani.ani != null && t.ani.ani.rotations != null)
+		t.aniRotation = t.ani.ani.rotations[t.ani.pos];
 	}
 	
 	public void prepareRender(Thing t){
@@ -73,7 +75,6 @@ public class Animating extends AiPlugin {
 				if(t.selected){
 					t.color = new Color(1, 0, 0, 1);
 					Main.world.window.vaos[t.type.ordinal].changeUnusual(t);
-					System.out.println("test");
 				} else {
 					t.color = new Color(1, 1, 1, 1);
 					Main.world.window.vaos[t.type.ordinal].changeUnusual(t);

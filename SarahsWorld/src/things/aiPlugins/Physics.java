@@ -4,6 +4,7 @@ import main.Main;
 import menu.Settings;
 import things.AiPlugin;
 import things.Thing;
+import things.ThingType;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.Material;
@@ -42,6 +43,9 @@ public class Physics extends AiPlugin{
 	
 	public Physics(double mass, double airea){
 		this(mass, airea, true, true, true, true, true);
+	}
+	public Physics(double mass, double airea, boolean walk){
+		this(mass, airea, true, true, true, true, walk);
 	}
 	
 	public void update(Thing t, double delta){
@@ -85,18 +89,55 @@ public class Physics extends AiPlugin{
 				t.airTime = 0;
 			} else {
 				t.airTime += delta;
-				if(!t.reallyAir && t.airTime > 0.4 && t.type.movement != null){
-					t.type.ani.setAnimation(t, t.type.movement.fly);
+				if(!t.reallyAir && t.airTime > 0.4){
 					t.reallyAir = true;
+					if(t.type.movement != null)
+						t.type.ani.setAnimation(t, t.type.movement.fly);
 				}
 			}
 		}
+		//UPDATE ROTATION
+		updateRotation(t, delta);
 		
 		//UPDATE WORLD LINK
 
 		int column = (int)Math.floor(t.pos.x/Column.step);
 		while(t.link.xIndex < column) t.link = t.link.right;
 		while(t.link.xIndex > column) t.link = t.link.left;
+	}
+	
+	public void updateRotation(Thing t, double delta){
+//		t.rotation = -(t.vel.angle()-Math.PI/2)*v/(v+100);
+		
+//		double a = 1, b = 1, idle = Math.PI/2;
+//		t.rotation = delta*(a*angleDist(idle, t.rotation) + b*angleDist(t.vel.angle(), t.rotation));
+		
+		double v = t.vel.length();
+		if(v > 10){
+			if(t.vel.dot(t.orientation) >= 0){
+				t.orientation.set(t.vel).shift(1, 0);
+			} else {
+				t.orientation.set(t.vel).scale(-1).shift(1, 0);
+			}
+			t.rotation = t.orientation.angle() + Math.PI/2;
+		}
+//		Vec rot = new Vec(Math.cos(t.rotation), Math.sin(t.rotation));
+//		if(Math.abs(angleDist(t.rotation, t.vel.angle())) <= Math.PI/2){
+//			t.rotation = (t.vel.angle()-Math.PI/2)*v/(v+100);
+//		} else {
+//			System.out.println("test");
+//			t.rotation = ((t.vel.angle()-Math.PI/2))%(2*Math.PI)*v/(v+100)-Math.PI;
+//		}
+	}
+	
+	public double angleDist(double a, double b){
+		double d = Math.abs(a - b) % (2*Math.PI); 
+		double r = d > Math.PI ? 2*Math.PI - d : d;
+
+		//calculate sign 
+		int sign = (a - b >= 0 && a - b <= Math.PI) || (a - b <=-Math.PI && a- b>= -2*Math.PI) ? 1 : -1; 
+		r *= sign;
+		return r;
 	}
 	
 	Vec circleCollision = new Vec();
@@ -244,12 +285,18 @@ public class Physics extends AiPlugin{
 		return false;
 	}
 	
+	/**
+	 * Look how deep the thing is inside the water and calculate the bouyancy from that
+	 * @param force
+	 * @param pos
+	 * @param t
+	 */
 	public void checkWater(Vec force, Vec pos, Thing t){
 		if(t.link.collisionVec != t.link.collisionVecWater && t.link.right.collisionVec != t.link.right.collisionVecWater){
 			Vertex waterVertex = t.link.vertices[t.link.collisionVecWater];
 			if(waterVertex.y > pos.y + t.box.pos.y){
 				t.where.water = Math.min((waterVertex.y - (pos.y + t.box.pos.y))/t.box.size.y, 1);//+20
-				force.shift(new Vec(0, waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea + (Math.abs(t.walkingForce)/1000))));
+				force.shift(new Vec(0, waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/)));
 			}
 		}
 	}

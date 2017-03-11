@@ -1,6 +1,7 @@
 package world.generation;
 
 import effects.WorldEffect;
+import main.Main;
 import things.Thing;
 import things.ThingType;
 import util.Color;
@@ -10,6 +11,7 @@ import world.Stratum;
 import world.WorldData;
 import world.WorldData.Column;
 import world.WorldWindow;
+import world.generation.Biome.ThingSpawner.Spawner;
 
 public enum Biome {
 	DESERT(new Color(0.2f, 0.4f, 0.65f), new Color(0.73f, 0.84f, 0.95f),
@@ -65,6 +67,23 @@ public enum Biome {
 				OASIS.stratums[6],
 				OASIS.stratums[7],
 				OASIS.stratums[8],
+			},
+			new ThingSpawner[]{
+			},
+			new EffectSpawner[]{
+			}),
+	OCEAN(new Color(0.2f, 0.4f, 0.65f), new Color(0.73f, 0.84f, 0.95f),
+			new Stratum[]{
+					new Stratum(Material.WATER, 400.0, 20.0, 10, 50, 0, 4),
+					new Stratum(Material.SAND, 20.0, 20.0, 5, 40, 2, 4),
+					new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 2, 4),
+					new Stratum(Material.STONE, 50.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE2, 50.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE, 100.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE2, 100.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 1, 5),
+					null
+				
 			},
 			new ThingSpawner[]{
 			},
@@ -180,14 +199,15 @@ public enum Biome {
 					null
 				},
 				new ThingSpawner[]{
-					 new ThingSpawner(ThingType.TREE_JUNGLE.defaultSpawner, 0.5)
-					,new ThingSpawner(ThingType.FERN.defaultSpawner, 0.5)
-					,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BAMBOO, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
-					,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.BUSH_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.2)
-					,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.GIANT_GRASS, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
+					 new ThingSpawner(zSpawner(ThingType.TREE_JUNGLE, 0.5, 0), 0.5)
+					,new ThingSpawner(zSpawner(ThingType.TREE_JUNGLE, -0.2, 0), 0.05)
+					,new ThingSpawner(zSpawner(ThingType.FERN, 0, 0.1), 0.5)
+					,new ThingSpawner(zSpawner(ThingType.BAMBOO, 0, 0.1), 0.2)
+					,new ThingSpawner(zSpawner(ThingType.BUSH_NORMAL, 0, 0.1), 0.2)
+					,new ThingSpawner(zSpawner(ThingType.GIANT_GRASS, 0, 0.1), 0.1)
 					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CRACK, w, c, pos.shift(0, -100 - w.random.nextInt(1000))), 0.3)
 					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.FOSSIL, w, c, pos.shift(0, -200 - w.random.nextInt(1000))), 0.1)
-					,new ThingSpawner((w, c, pos, ed) -> {Thing thing = new Thing(ThingType.FLOWER_NORMAL, w, c, pos); if(thing.behind > 0) thing.behind = 0; return thing;}, 0.1)
+					,new ThingSpawner(zSpawner(ThingType.FLOWER_NORMAL, 0, 0.1), 0.1)
 					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 1.5, -4), 0.5)
 					,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
 					,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
@@ -301,6 +321,14 @@ public enum Biome {
 			this.effect = effect;
 			this.probabilityOnFieldWidth = probabilityOnFieldWidth;
 		}
+	}
+	
+	public static Spawner zSpawner(ThingType type, double zCenter, double zRange){
+		return (w, c, pos, ed) -> {
+			Thing t = new Thing(type, w, c, pos.copy(), ed);
+			t.z = zCenter - zRange/2 + Main.world.rand.nextDouble()*zRange;
+			return t;
+		};
 	}
 	
 	public static class ThingSpawner {

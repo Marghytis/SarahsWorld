@@ -1,5 +1,6 @@
 package menu;
 
+import core.Window;
 import item.ItemStack;
 import item.ItemType;
 import main.Main;
@@ -17,7 +18,7 @@ public class ItemContainer extends Element {
 	public int ordinal;
 
 	public ItemContainer(int ordinal, double relX1, double relY1) {
-		super(relX1, relY1, relX1, relY1, inventoryButton.pixelCoords[0], inventoryButton.pixelCoords[1], inventoryButton.pixelCoords[2], inventoryButton.pixelCoords[3], null, t1);
+		super(relX1, relY1, relX1, relY1, inventoryButton.pixelCoords[0]/2, inventoryButton.pixelCoords[1]/2, inventoryButton.pixelCoords[2]/2, inventoryButton.pixelCoords[3]/2, null, t1);
 		this.ordinal = ordinal;
 	}
 	
@@ -31,12 +32,12 @@ public class ItemContainer extends Element {
 		
 		ItemStack stack = Main.world.avatar.itemStacks[ordinal];
 		if(stack.item != null && stack.item != ItemType.NOTHING && stack.item.texInv != null){
-			stack.item.texInv.file.bind();
-			stack.item.texInv.fill(x1, y1, x2, y2, false);
+			tex = stack.item.texInv;
+			super.render();
 		}
 		TexFile.bindNone();
 		Menu.fontColor.bind();
-		Menu.font.drawString(x2 - 30, y2 - 30, Main.world.avatar.itemStacks[ordinal].count + "", 1, 1);
+		Menu.font.drawString(x2 - 30 - Window.WIDTH_HALF, y2 - 30 - Window.HEIGHT_HALF, Main.world.avatar.itemStacks[ordinal].count + "", 1, 1);
 	}
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){

@@ -12,7 +12,6 @@ public class Following extends AiPlugin{
 	double rAimSq;
 	ThingType[] targetClasses;
 	
-	@SafeVarargs
 	public Following(double maxDistance, double rAim, ThingType... classes){
 		this.maxDistanceSquare = maxDistance*maxDistance;
 		this.rAimSq = rAim*rAim;
@@ -48,9 +47,8 @@ public class Following extends AiPlugin{
 			Thing closest = null;
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
-				for(int chunk = 0; chunk < Main.world.window.loadedChunks.length; chunk++)
-				for(int col = 0; col < Main.world.window.loadedChunks[chunk].columns.length; col++)
-				for(Thing t2 = Main.world.window.loadedChunks[chunk].columns[col].things[targetClasses[type].ordinal]; t2 != null; t2 = t2.next){
+				for(int col = 0; col < Main.world.window.landscape.columns.length; col++)
+				for(Thing t2 = Main.world.window.landscape.columns[col].things[targetClasses[type].ordinal]; t2 != null; t2 = t2.next){
 					double distSqu = t.pos.minus(t2.pos).lengthSquare();
 					if(distSqu < distanceSquare){
 						closest = t2;

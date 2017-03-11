@@ -1,5 +1,7 @@
 package things.aiPlugins;
 
+import effects.particles.BloodSplash;
+import effects.particles.DeathDust;
 import item.ItemStack;
 import item.ItemType;
 import main.Main;
@@ -9,8 +11,6 @@ import things.ThingType;
 import util.math.Vec;
 import world.World;
 import world.WorldData;
-import effects.particles.BloodSplash;
-import effects.particles.DeathDust;
 
 
 
@@ -71,6 +71,8 @@ public class Life extends AiPlugin {
 		if(damage > 0){
 			if(tgt.where.g){
 				tgt.type.physics.leaveGround(tgt, new Vec(tgt.pos.x > src.pos.x ? 200 : -200, 300));
+				tgt.where.g = false;
+				tgt.reallyAir = true;
 			}
 			tgt.health -= damage;
 			Main.world.window.effects.add(new BloodSplash(tgt.pos));

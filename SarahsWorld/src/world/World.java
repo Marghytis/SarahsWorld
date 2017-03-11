@@ -38,7 +38,7 @@ public class World {
 		
 
 		Vertex v = data.rightColumn.vertices[data.rightColumn.collisionVec];
-		Vec pos = new Vec(100, v.y + 200);
+		Vec pos = new Vec(100, v.y + 500);
 		avatar = new Thing(ThingType.SARAH, data, v.parent, pos.copy());
 		
 		init();

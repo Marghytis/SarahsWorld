@@ -49,7 +49,8 @@ public class ThingType {
 											new Animation("strike", Res.sarah, 13,	8, /**/0, 1, 2, 3, 4),
 											new Animation("spell", Res.sarah, 5,	9, /**/0, 1, 0),
 											new Animation("dive", Res.sarah_dive, 10, 0, 0, 1, 2, 3, 4),
-											new Animation("swim", Res.sarah_swim, 5, 0, 0, 1, 2, 3, 4),
+											new Animation("swim", Res.sarah, 5, 9, /**/2, 3, 4, 5, 6),//.addRot(-Math.PI/2, -Math.PI/2, -Math.PI/2, -Math.PI/2, -Math.PI/2)
+//											new Animation("swim", Res.sarah_swim, 5, 0, 0, 1, 2, 3, 4),
 											new Animation("plunge", Res.sarah_dive, 4, 0)
 											},{
 									
@@ -107,7 +108,7 @@ public class ThingType {
 			,new Animating(snail[0], new Rect(Res.snail.pixelCoords), 0, 0, 4, false, snail)
 			,new Life(10, 10, 2, new ItemType[]{ItemType.SNAIL_SHELL, ItemType.SNAILS_EYE}, 0.05, 2)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring")
-			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 5, 0.5)})
+			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 0.5)})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(1, 1)){
@@ -255,19 +256,22 @@ public class ThingType {
 											new Animation("stand", Res.zombie, 3, 0),
 											new Animation("walk", Res.zombie, 10, 0,/**/2, 1, 0, 1, 2, 3),
 											new Animation("sprint", Res.zombie, 20, 0,/**/2, 1, 0, 1, 2, 3),
-											new Animation("attack", Res.zombie, 30, 1,/**/0, 1, 2)};
-	public static final ThingType ZOMBIE = new ThingType("ZOMBIE", Res.zombie, 40, true
+											new Animation("punch", Res.zombie, 30, 1,/**/0, 1, 2)};
+	public static final ThingType ZOMBIE = new ThingType("ZOMBIE", Res.zombie, 40, true, (w, p, f, ed) -> new Thing(ThingType.ZOMBIE, w, p, f.shift(0, 100), ed)
 			,new Animating(zombie[0], new Rect(Res.zombie.pixelCoords), 0, 0, 4, false, zombie)
 			,new Life(10, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH}, 0.5, 0.5, 0.5)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand")
-			,new Attacking(4, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 0.5)})
-			,new Following(500.0, 300, ThingType.SARAH)
+			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 0.5)})
+			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
-			,new Physics(50, 300)) {
+			,new Physics(1, 1)) {
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData) {
+			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+		};
 
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attack.attack(t, WeaponType.PUNCH, ItemType.NOTHING, "attack", t.target);//attack
+				attack.attack(t, WeaponType.PUNCH, ItemType.NOTHING, "punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -424,9 +428,10 @@ public class ThingType {
 			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
 			t.type.ani.setAnimation(t, "");
 			t.box.scale(0.5 + world.random.nextDouble());
+			t.size = 0.5 + world.random.nextDouble();
 //			t.box.set(t.ani.createBox());//
-			if(t.behind == 0) t.behind = -1;
-			else if(t.behind == 1) t.behind = 2;
+			if(t.z == 0) t.z = -0.1;
+			else if(t.z == 0.1) t.z = 0.2;
 			int stickAmount = World.rand.nextInt(6);
 			for(int i = 0; i < stickAmount; i++)
 				t.fruits.add(ItemType.STICK);
@@ -437,11 +442,11 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType TREE_CANDY = new ThingType("TREE_CANDY", Res.tree_candy, 50, new Animating(tree_candy[0][0], new Rect(Res.tree_candy.pixelCoords), 0, 1, 1, false, tree_candy)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
-	public static final ThingType TREE_GRAVE = new ThingType("TREE_GRAVE", Res.tree_grave, 10, new Animating(tree_grave[0][0], new Rect(Res.tree_grave.pixelCoords), 0, 1, 1, false, tree_grave)){
+	public static final ThingType TREE_GRAVE = new ThingType("TREE_GRAVE", Res.tree_grave, 30, new Animating(tree_grave[0][0], new Rect(Res.tree_grave.pixelCoords), 0, 0, 1, false, tree_grave)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.tree_palm, 50, new Animating(tree_palm[0][0], new Rect(Res.tree_palm.pixelCoords), 0, 1, 1, false, tree_palm)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
-	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.tree_jungle, 50, new Animating(tree_jungle[0][0], new Rect(Res.tree_jungle.pixelCoords), 0, 2, 1, 1, false, tree_jungle)){
+	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.tree_jungle, 50, new Animating(tree_jungle[0][0], new Rect(Res.tree_jungle.pixelCoords), 0, 0.1, 1, false, tree_jungle)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 		
 		
@@ -476,12 +481,12 @@ public class ThingType {
 			t.type.ani.setAnimation(t, "");
 			t.box.scale(world.random.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5);
 			if(t.box.size.y > 80){
-				t.behind = -1;
+				t.z = -1;
 			}
 			if(extraData.length >= 2){
-				t.behind = (int) extraData[1];
+				t.z = (int) extraData[1];
 			} else {
-				t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+				t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 			}
 			if(t.type == this && t.aniSet == 1){//not necessary, because the other bushes use this too
 				int berryAmount = 1 + World.rand.nextInt(3);
@@ -518,7 +523,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
 			t.type.ani.setAnimation(t, "");
-			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 		}};
 	public static final ThingType FLOWER_CANDY = new ThingType("FLOWER_CANDY", Res.flower_candy , 50, new Animating(flower_candy[0][0], new Rect(Res.flower_candy.pixelCoords), 0, 0, 1, false, flower_candy)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ FLOWER_NORMAL.setup(t, world, field, pos, extraData);}};
@@ -571,7 +576,7 @@ public class ThingType {
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
 			t.box.set(new Rect(file.pixelCoords).scale(0.5 + world.random.nextDouble()));
-			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 		}};
 										static final Animation[][] plant_jungle = {
 											{new Animation(Res.plant_jungle ,0, 0)},
@@ -579,12 +584,12 @@ public class ThingType {
 											{new Animation(Res.plant_jungle ,0, 2)},
 											{new Animation(Res.plant_jungle ,0, 3)},
 											{new Animation(Res.plant_jungle ,0, 4)}};
-	public static final ThingType FERN = new ThingType("FERN", Res.plant_jungle ,70, new Animating(plant_jungle[0][0], new Rect(Res.plant_jungle.pixelCoords), 0, 0, 1, false, plant_jungle)){
+	public static final ThingType FERN = new ThingType("FERN", Res.plant_jungle ,70, new Animating(plant_jungle[0][0], new Rect(Res.plant_jungle.pixelCoords), 0, 0.05, 1, false, plant_jungle)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
 			t.box.set(new Rect(file.pixelCoords).scale(0.5 + world.random.nextDouble()));
-			t.behind = World.rand.nextBoolean() ? 1 : -1;
+			t.z = World.rand.nextBoolean() ? 1 : -1;
 		}};
 										static final Animation[][] cactus = {
 											{new Animation(Res.cactus, 0, 0)},
@@ -595,7 +600,7 @@ public class ThingType {
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
 			t.box.set(new Rect(file.pixelCoords).scale(0.5 + world.random.nextDouble()));
-			t.behind = World.rand.nextInt(100) < 30 ? 1 : -1;
+			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 		}};
 										static final Animation[][] grave = {
 											{new Animation(Res.grave, 0, 0)},
@@ -605,7 +610,7 @@ public class ThingType {
 											{new Animation(Res.grave, 0, 4)},
 											{new Animation(Res.grave, 0, 5)},
 											{new Animation(Res.grave, 0, 6)}};
-	public static final ThingType GRAVE = new ThingType("GRAVE", Res.grave, 80,new Animating(grave[0][0], new Rect(Res.grave.pixelCoords), 0, 0, 1, false, grave)){
+	public static final ThingType GRAVE = new ThingType("GRAVE", Res.grave, 80,new Animating(grave[0][0], new Rect(Res.grave.pixelCoords), 0.5, 0, 1, false, grave)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
@@ -616,7 +621,7 @@ public class ThingType {
 											{new Animation(Res.crack , 0, 1)},
 											{new Animation(Res.crack , 0, 2)},
 											{new Animation(Res.crack , 0, 3)}};
-		public static final ThingType CRACK = new ThingType("CRACK", Res.crack , 30,new Animating(crack[0][0], new Rect(Res.crack.pixelCoords), 0, 0, 1, false, crack)){
+		public static final ThingType CRACK = new ThingType("CRACK", Res.crack , 30, new Animating(crack[0][0], new Rect(Res.crack.pixelCoords), 0, 0, 1, false, crack)){
 			public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 				t.aniSet = World.rand.nextInt(ani.animations.length);
 				ani.setAnimation(t, "");

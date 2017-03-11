@@ -2,35 +2,37 @@ package item;
 
 import java.util.Random;
 
+import effects.particles.BerryEat;
 import main.Main;
 import main.Res;
 import render.Animation;
 import render.Animator;
-import render.TexAtlas;
 import render.TexFile;
 import render.Texture;
 import things.Thing;
 import things.ThingType;
+import util.Color;
 import util.math.Rect;
 import util.math.Vec;
 import world.World;
+import world.WorldWindow;
 
 public enum ItemType {
 
 //				Texture texWorld,			Texture texHand,		Texture texinv,			Rect boxWorld,				Rect boxHand,		String name, int coolDownStart, int value, WeaponType weaponType,	ItemUsageType useType, 	BodyPos bodyPos,int attackStrength, double crit,double critProb, boolean needsTarget
 //				Texture World           	|Texture on creature	|Texture inventory	 	|Box world					|Box on creature	|Name			|Cooldown						
-	SWORD(		Res.items_inv.sfA(0, 0),	Res.items_weapons.tex(0, 0),		Res.items_inv.tex(0, 0), new int[]{-25, -2, 50, 50},	"Sword",		500,			20, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	4, 					6, 			0.1,			false),
+	SWORD(		Res.items_inv.sfA(0, 0),	Res.items_weapons.tex(0, 0),		Res.items_inv.tex(0, 0), new int[]{-25, -2, 50, 50}, "Sword",		500,			20, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	4, 					6, 			0.1,			false),
 	AXE(		Res.items_inv.sfA(1, 0),	Res.items_weapons.tex(1, 0),		Res.items_inv.tex(1, 0), new int[]{-25, -2, 50, 50}, "Axe",			1000,			100, 		WeaponType.STRIKE,		ItemUsageType.FIST,		BodyPos.HAND, 	10, 				14,			0.1,			false),
 	STICK(		Res.items_inv.sfA(2, 0),	Res.items_weapons.tex(2, 0),		Res.items_inv.tex(3, 0), new int[]{-25, -2, 50, 50}, "Stick",		500,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2, 					2, 			0,				false),
 	CANDY_CANE(	Res.items_inv.sfA(3, 0),	Res.items_weapons.tex(3, 0),		Res.items_inv.tex(5, 0), new int[]{-25, -2, 50, 50}, "Candy cane",	1000,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2,					2,			0,				false),
 	SHOVEL(		Res.items_inv.sfA(4, 0),	Res.items_weapons.tex(4, 0),		Res.items_inv.tex(4, 0), new int[]{-25, -2, 50, 50}, "Shovel",		700,			70, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.1,			false),
 //	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.items_inv.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
-	BERRY(		Res.items_inv.sfA(6, 0),	Res.items_weapons.tex(7, 0),			Res.items_inv.tex(6, 0), new int[]{-25, -2, 50, 50}, "Berry",		0,				8, 			WeaponType.PUNCH,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.3,			false){
+	BERRY(		Res.items_inv.sfA(6, 0),	Res.items_weapons.tex(7, 0),		Res.items_inv.tex(6, 0), new int[]{-25, -2, 50, 50}, "Berry",		0,				8, 			WeaponType.PUNCH,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.3,			false){
 		public boolean use(Thing src, Vec pos){
 			src.itemStacks[Main.world.avatar.selectedItem].item = ItemType.NOTHING;
 			if(src.mana + 2 <= Main.world.avatar.type.magic.maxMana){
 				src.mana += 2;
-//				WorldView.particleEffects.add(new BerryEat(new Vec(World.sarah.pos.x + (World.sarah.animator.box.size.x/2), World.sarah.pos.y + (World.sarah.animator.box.size.y/2))));TODO watch above
+				WorldWindow.effects.add(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
 				return true;
 			}
 			return false;
@@ -38,7 +40,7 @@ public enum ItemType {
 	},
 	SNAILS_EYE(	Res.items_inv.sfA(0, 1),	Res.items_weapons.tex(0, 4),		Res.items_inv.tex(0, 1), new int[]{-25, -2, 50, 50},	"Snails eye",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.EAT,		BodyPos.HAND,	1,					2,			0.03,			false),
 	SNAIL_SHELL(Res.items_inv.sfA(1, 1),	Res.items_weapons.tex(1, 4),		Res.items_inv.tex(1, 1), new int[]{-25, -2, 50, 50},	"Snail shell",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
-	RABBITS_FOOT(Res.items_inv.sfA(2, 1),	Res.items_weapons.tex(2, 4),		Res.items_inv.tex(2, 1), new int[]{-25, -2, 50, 50},	"Trex tooth",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	RABBITS_FOOT(Res.items_inv.sfA(2, 1),	Res.items_weapons.tex(2, 4),		Res.items_inv.tex(2, 1), new int[]{-25, -2, 50, 50},	"Rabbits foot",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
 	TREX_TOOTH(	Res.items_inv.sfA(3, 1),	Res.items_weapons.tex(3, 4),		Res.items_inv.tex(3, 1), new int[]{-25, -2, 50, 50},	"TRex tooth",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
 	COW_LEG(	Res.items_inv.sfA(4, 1),	Res.items_weapons.tex(4, 4),		Res.items_inv.tex(4, 1), new int[]{-25, -2, 50, 50},	"Cow leg",		1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
 	COWHIDE(	Res.items_inv.sfA(5, 1),	Res.items_weapons.tex(0, 5),		Res.items_inv.tex(5, 1), new int[]{-25, -2, 50, 50},	"Cowhide",		1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
@@ -69,6 +71,7 @@ public enum ItemType {
 				int index = World.rand.nextInt(dest.fruits.size());
 				ItemType i = dest.fruits.get(index);
 				dest.fruits.remove(index);
+				System.out.println(i.name);
 				if(i != null) src.type.inv.addItem(src, i, 1);
 				success = true;
 			} else {
@@ -141,7 +144,7 @@ public enum ItemType {
 			this.texHand.pixelCoords[1] = -texHand.info[0][1];
 			this.texHand.pixelCoords[2] = this.texHand.pixelCoords[0] + this.texHand.w;
 			this.texHand.pixelCoords[3] = this.texHand.pixelCoords[1] + this.texHand.h;
-			this.defaultRotationHand = texHand.info[0][2];
+			this.defaultRotationHand = texHand.info[0][2]+180;
 		}
 		this.name = name;
 		this.value = value;
@@ -163,7 +166,7 @@ public enum ItemType {
 				}
 			}
 		} else {
-			use(src, pos, null);
+			use(src, pos);
 		}
 		return false;
 	}
@@ -178,6 +181,7 @@ public enum ItemType {
 	 * @param ani The animator which is used to render the item. Must have the correct texture set already.
 	 */
 	public void renderHand(Thing t, Animator ani){
+		
 		if(texHand == Texture.emptyTexture) return;
 		Texture thingTex = t.ani.tex;
 		int[] info = thingTex.info[bodyPos.ordinal()];
@@ -189,33 +193,16 @@ public enum ItemType {
 		if(info != null){
 			handX = info[0];
 			handY = info[1];
-			handAngle = info[2]+270;
+			handAngle = defaultRotationHand + info[2] + 90;
 		}
 		
 		if(t.dir){
 			handX = thingTex.w - handX;
-			handAngle = -handAngle;
+			handAngle = 180 -handAngle;
 		}
-
-		ani.resetMod();
-		ani.rotate(defaultRotationHand + handAngle);
-		ani.translate(handX + t.pos.x + thingTex.pixelCoords[0], handY + t.pos.y + thingTex.pixelCoords[1]);
-		ani.drawMod(t.dir);
-//		ani.draw((int)(handX + t.pos.x + thingTex.pixelCoords[0]), (int)(handY + t.pos.y + thingTex.pixelCoords[1]), 1, 1, Math.PI/4, false);
-		
-//		GL11.glPushMatrix();
-//		GL11.glTranslated(handX + t.pos.x, handY + t.pos.y + thingTex.pixelCoords[1], 0);
-//		GL11.glRotatef(defaultRotationHand + handAngle, 0, 0, 1);
-//		
-//		ani.file.bind();
-//		
-//		if(t.ani.dir){
-//			ani.fill(boxHand, true);
-//		} else {
-//			ani.fill(boxHand, false);
-//		}
-//	
-//		GL11.glPopMatrix();
+		ani.quad.update(new Vec(handX + t.pos.x + thingTex.pixelCoords[0] + Main.world.window.offsetX, handY + t.pos.y + thingTex.pixelCoords[1] + Main.world.window.offsetY), (0 + handAngle)/360.0, 1, t.dir);
+	
+		ani.quad.render(new Vec(), -1, new Vec(Main.world.window.scaleX, Main.world.window.scaleY), Color.WHITE);
 	}
 	
 	public static ItemType getRandomItem(Random random){

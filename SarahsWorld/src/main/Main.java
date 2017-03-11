@@ -3,7 +3,6 @@ package main;
 import org.lwjgl.opengl.ContextAttribs;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.PixelFormat;
 
 import core.Core;
 import core.Listener;
@@ -22,6 +21,10 @@ public class Main {
 	public static Core core;
 	public static StaticInit test;
 
+	/**
+	 * Creates a Window, loads or creates a world and resets the core classes.
+	 * @param args
+	 */
 	public static void main(String[] args){
 		String worldName = "Sarahs World";
 		Window.contextAttribs = new ContextAttribs(3, 3)
@@ -48,6 +51,14 @@ public class Main {
 		resetCoreClasses();
 
 		core.coreLoop();
+	}
+	
+	public static void print(Object...objects){
+		String out = "";
+		for(Object o : objects){
+			out += o.toString() + "  ";
+		}
+		System.out.println(out);
 	}
 	
 	public static void resetCoreClasses(){

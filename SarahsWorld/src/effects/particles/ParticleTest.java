@@ -31,7 +31,7 @@ public class ParticleTest implements Listener, Renderer, Updater{
 	
 	public ParticleTest(){
 //		RainEffect rain = new RainEffect(new Vec(1000, 500), 50, 100);
-		Fog fog = new Fog(Window.WIDTH_HALF, Window.HEIGHT_HALF, 300, 2, 100);
+		Fog fog = new Fog(0, 0, 300, 2, 100);
 //		effects.add(rain);
 		effects.add(fog);
 	}
@@ -54,20 +54,20 @@ public class ParticleTest implements Listener, Renderer, Updater{
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
 		switch(button){
 		case 0:
-			effects.add(new DeathDust(mousePos));
+			effects.add(new DeathDust(mousePos.minus(Window.WIDTH_HALF, Window.HEIGHT_HALF)));
 			break;
 		case 1:
-			effects.add(new Hearts(mousePos));
+			effects.add(new Hearts(mousePos.minus(Window.WIDTH_HALF, Window.HEIGHT_HALF)));
 			break;
 		case 2:
-			effects.add(new BloodSplash(mousePos));
+			effects.add(new BloodSplash(mousePos.minus(Window.WIDTH_HALF, Window.HEIGHT_HALF)));
 			break;
 		}
 		return false;
 	}
 
 	public boolean keyPressed(int key) {
-		Vec mousePos = Listener.getMousePos();
+		Vec mousePos = Listener.getMousePos().minus(Window.WIDTH_HALF, Window.HEIGHT_HALF);
 		switch(key){
 		case Keyboard.KEY_1:
 			effects.add(new DeathDust(mousePos));
