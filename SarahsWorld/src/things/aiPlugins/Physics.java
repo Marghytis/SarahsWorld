@@ -4,7 +4,6 @@ import main.Main;
 import menu.Settings;
 import things.AiPlugin;
 import things.Thing;
-import things.ThingType;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.Material;
@@ -24,14 +23,14 @@ public class Physics extends AiPlugin{
 	public double mass = 1;
 	public double airea = 1;//for air friction
 	public double friction = 0.5, stiction = 0.01;
-	public boolean frict, grav, coll, water, walk;
+	public boolean frict, grav, coll, water, walk, stickToGround;
 
 	/**
 	 * Should generally be one of the last plugins to update, so that other forces can come to effect
 	 * @param mass
 	 * @param airea
 	 */
-	public Physics(double mass, double airea, boolean frict, boolean grav, boolean coll, boolean water, boolean walk) {
+	public Physics(double mass, double airea, boolean frict, boolean grav, boolean coll, boolean water, boolean walk, boolean stickToGround) {
 		this.mass = mass;
 		this.airea = airea;
 		this.frict = frict;
@@ -39,13 +38,14 @@ public class Physics extends AiPlugin{
 		this.coll = coll;
 		this.water = water;
 		this.walk = walk;
+		this.stickToGround = stickToGround;
 	}
 	
 	public Physics(double mass, double airea){
-		this(mass, airea, true, true, true, true, true);
+		this(mass, airea, true, true, true, true, true, false);
 	}
 	public Physics(double mass, double airea, boolean walk){
-		this(mass, airea, true, true, true, true, walk);
+		this(mass, airea, true, true, true, true, walk, false);
 	}
 	
 	public void update(Thing t, double delta){
@@ -107,27 +107,23 @@ public class Physics extends AiPlugin{
 	}
 	
 	public void updateRotation(Thing t, double delta){
-//		t.rotation = -(t.vel.angle()-Math.PI/2)*v/(v+100);
-		
-//		double a = 1, b = 1, idle = Math.PI/2;
-//		t.rotation = delta*(a*angleDist(idle, t.rotation) + b*angleDist(t.vel.angle(), t.rotation));
-		
-		double v = t.vel.length();
-		if(v > 10){
-			if(t.vel.dot(t.orientation) >= 0){
-				t.orientation.set(t.vel).shift(1, 0);
-			} else {
-				t.orientation.set(t.vel).scale(-1).shift(1, 0);
+		if(!t.where.g && t.where.water > 0){
+			double v = t.vel.length();
+			if(v > 10){
+				if(t.vel.dot(t.orientation) >= 0){
+					t.orientation.set(t.vel).shift(1, 0);
+				} else {
+					t.orientation.set(t.vel).scale(-1).shift(1, 0);
+				}
+				t.rotation = t.orientation.angle() + Math.PI/2;
 			}
-			t.rotation = t.orientation.angle() + Math.PI/2;
+		} else if(t.where.g){
+			if(stickToGround){
+				t.rotation = -t.link.getTopLine(new Vec()).angle();
+			} else {
+				t.rotation = 0;
+			}
 		}
-//		Vec rot = new Vec(Math.cos(t.rotation), Math.sin(t.rotation));
-//		if(Math.abs(angleDist(t.rotation, t.vel.angle())) <= Math.PI/2){
-//			t.rotation = (t.vel.angle()-Math.PI/2)*v/(v+100);
-//		} else {
-//			System.out.println("test");
-//			t.rotation = ((t.vel.angle()-Math.PI/2))%(2*Math.PI)*v/(v+100)-Math.PI;
-//		}
 	}
 	
 	public double angleDist(double a, double b){

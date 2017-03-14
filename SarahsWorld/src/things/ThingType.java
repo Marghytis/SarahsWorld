@@ -24,6 +24,7 @@ import things.aiPlugins.Riding;
 import things.aiPlugins.Speaking;
 import things.aiPlugins.WalkAround;
 import util.Color;
+import util.math.Function;
 import util.math.Rect;
 import util.math.Vec;
 import world.World;
@@ -111,7 +112,7 @@ public class ThingType {
 			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 0.5)})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
-			,new Physics(1, 1)){
+			,new Physics(1, 1, true, true, true, true, true, true)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
 		}
@@ -223,7 +224,7 @@ public class ThingType {
 	,new Animating(midge[0][0], new Rect(Res.midge.pixelCoords), 0, 1, 1, false, midge)
 	,new Life(1, 1, 0)
 	,new Movement("stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand")
-	,new Physics(0.001, 1, true, false, true, true, false)
+	,new Physics(0.001, 1, true, false, true, true, false, false)
 	,new MidgeAround()) {
 		public void update(Thing t, double delta){
 			midgeAround.action(t, delta);
@@ -358,7 +359,7 @@ public class ThingType {
 										static final Animation[] cloud = {new Animation(Res.cloud, 0, 0)};
 	public static final ThingType CLOUD = new ThingType("CLOUD", Res.cloud, 30, true
 			,new Animating(cloud[0], new Rect(Res.cloud.pixelCoords), -1, 0, 1, false, cloud)
-			,new Physics(1, 1000, true, false, true, false, true)){
+			,new Physics(1, 1000, true, false, true, false, true, false)){
 
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.box = new Rect(file.pixelCoords).scale(world.random.nextDouble() + 0.5);
@@ -479,12 +480,12 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
 			t.type.ani.setAnimation(t, "");
-			t.box.scale(world.random.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5);
+			t.size = world.random.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5;
 			if(t.box.size.y > 80){
 				t.z = -1;
 			}
 			if(extraData.length >= 2){
-				t.z = (int) extraData[1];
+				t.z = (double) extraData[1];
 			} else {
 				t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 			}
@@ -575,7 +576,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
-			t.box.set(new Rect(file.pixelCoords).scale(0.5 + world.random.nextDouble()));
+			t.size = 0.5 + world.random.nextDouble();
 			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 		}};
 										static final Animation[][] plant_jungle = {
@@ -625,6 +626,7 @@ public class ThingType {
 			public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 				t.aniSet = World.rand.nextInt(ani.animations.length);
 				ani.setAnimation(t, "");
+				t.z = -0.001;
 			}};
 										static final Animation[][] fossil = {
 											{new Animation(Res.fossil, 0, 0)},
@@ -634,6 +636,7 @@ public class ThingType {
 			public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 				t.aniSet = World.rand.nextInt(ani.animations.length);
 				ani.setAnimation(t, "");
+				t.z = -0.001;
 			}};
 		
 	//OTHER THINGS

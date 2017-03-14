@@ -14,34 +14,34 @@ public class Res {
 	//togethers
 	public static final TexFile NPC_plus_Handheld_Items = new TexFile("res/creatures/NPC_and_handheld_Items.png");
 	
-	//Static things
-	public static final TexAtlas cloud = new TexAtlas("res/objects/Cloud.png", 1, 1, -0.5f, -0.5f);
-	public static final TexAtlas tree = new TexAtlas("res/objects/Tree.png", 1, 3, -0.5f, -0.3f);
-	public static final TexAtlas tree_fir = new TexAtlas("res/objects/Fir.png", 1, 3, -0.5, -0.1);
-	public static final TexAtlas tree_firSnow = new TexAtlas("res/objects/Fir_Snow.png", 1, 3, -0.5, -0.2);
-	public static final TexAtlas tree_grave = new TexAtlas("res/objects/GraveTree.png", 1, 2, -0.5f, -0.2f);
-	public static final TexAtlas tree_jungle	= new TexAtlas("res/objects/JungleTree.png", 1, 4, -0.5f, -0.1f);
-	public static final TexAtlas plant_jungle = new TexAtlas("res/objects/Fern.png", 1, 5, -0.5f, -0.1f);
-	public static final TexAtlas flower_jungle = new TexAtlas("res/objects/JungleFlower.png", 1, 5, -0.5f, -0.05f);
-	public static final TexAtlas bush_jungle = new TexAtlas("res/objects/JungleBush.png", 1, 1, -0.5f, -0.2f);
-	public static final TexAtlas plant_giant = new TexAtlas("res/objects/GiantPlant.png", 1, 4, -0.5f, -0.2f);
-	public static final TexAtlas grass_giant = new TexAtlas("res/objects/GiantGras.png", 1, 3, -0.5f, -0.1f);
-	public static final TexAtlas tree_palm = new TexAtlas("res/objects/PalmTree.png", 1, 3, -0.5f, -0.03f);
-	public static final TexAtlas tree_candy = new TexAtlas("res/objects/CandyTree.png", 1, 1, -0.5f, -0.2f);
-	public static final TexAtlas bamboo = new TexAtlas("res/objects/Bamboo.png", 1, 4, -0.5f, -0.02f);
-	public static final TexAtlas bush_normal = new TexAtlas("res/objects/Bush.png", 1, 2, -0.5f, -0.1f);
-	public static final TexAtlas bush_candy = new TexAtlas("res/objects/CandyBush.png", 1, 2, -0.5f, -0.2f);
-	public static final TexAtlas cactus = new TexAtlas("res/objects/Cactus.png", 1, 3, -0.5f, -0.05f);
-	public static final TexAtlas grasstuft = new TexAtlas("res/objects/Grass_tuft.png", 4, 1, -0.5f, -0.2f);
-	public static final TexAtlas flower_normal = new TexAtlas("res/objects/Flower.png", 1, 3, -0.5f, 0f);
-	public static final TexAtlas pyramide = new TexAtlas("res/objects/Pyramide.png", 1, 4, -0.5f, -0.1f);
-	public static final TexAtlas house = new TexAtlas("res/objects/House.png", 1, 6, -0.5f, -0.05f);
-	public static final TexAtlas townobject = new TexAtlas("res/objects/TownObject.png", 1, 5, -0.5f, -0.02f);
-	public static final TexAtlas flower_candy = new TexAtlas("res/objects/Candy.png", 1, 6, -0.5f, 0f);
-	public static final TexAtlas crack = new TexAtlas("res/objects/Crack.png", 1, 4, -0.5f, -0.5f);
-	public static final TexAtlas fossil = new TexAtlas("res/objects/Fossil.png", 1, 3, -0.5f, -0.5f);
-	public static final TexAtlas grave = new TexAtlas("res/objects/Grave.png", 1, 7, -0.5f, -0.05f);
-	public static final TexAtlas rainbow = new TexAtlas("res/objects/Rainbow.png", 1, 1, -0.5f, 0f);
+	//Static things (offsetY is location of point on floor)
+	public static final TexAtlas cloud = new TexAtlas("res/objects/Cloud.png", 1, 1, -0.5f, 0);//-0.5
+	public static final TexAtlas tree = new TexAtlas("res/objects/Tree.png", 1, 3, -0.5f, 0);//-0.3
+	public static final TexAtlas tree_fir = new TexAtlas("res/objects/Fir.png", 1, 3, -0.5, -0.1);//-0.1
+	public static final TexAtlas tree_firSnow = new TexAtlas("res/objects/Fir_Snow.png", 1, 3, -0.5, -0.2);//-0.2
+	public static final TexAtlas tree_grave = new TexAtlas("res/objects/GraveTree.png", 1, 2, -0.5f, -0.2);//-0.2
+	public static final TexAtlas tree_jungle	= new TexAtlas("res/objects/JungleTree.png", 1, 4, -0.5f, -0.12);//-0.1
+	public static final TexAtlas plant_jungle = new TexAtlas("res/objects/Fern.png", 1, 5, -0.5f, 0);//-0.1
+	public static final TexAtlas flower_jungle = new TexAtlas("res/objects/JungleFlower.png", 1, 5, -0.5f, 0);//-0.05
+	public static final TexAtlas bush_jungle = new TexAtlas("res/objects/JungleBush.png", 1, 1, -0.5f, 0);//-0.2
+	public static final TexAtlas plant_giant = new TexAtlas("res/objects/GiantPlant.png", 1, 4, -0.5f, 0);//-0.2
+	public static final TexAtlas grass_giant = new TexAtlas("res/objects/GiantGras.png", 1, 3, -0.5f, 0);//-0.1
+	public static final TexAtlas tree_palm = new TexAtlas("res/objects/PalmTree.png", 1, 3, -0.5f, 0);//-0.03
+	public static final TexAtlas tree_candy = new TexAtlas("res/objects/CandyTree.png", 1, 1, -0.5f, 0);//-0.2
+	public static final TexAtlas bamboo = new TexAtlas("res/objects/Bamboo.png", 1, 4, -0.5f, 0);//-0.02
+	public static final TexAtlas bush_normal = new TexAtlas("res/objects/Bush.png", 1, 2, -0.5f, 0);//-0.1
+	public static final TexAtlas bush_candy = new TexAtlas("res/objects/CandyBush.png", 1, 2, -0.5f, 0);//-0.2
+	public static final TexAtlas cactus = new TexAtlas("res/objects/Cactus.png", 1, 3, -0.5f, 0);//-0.05
+	public static final TexAtlas grasstuft = new TexAtlas("res/objects/Grass_tuft.png", 4, 1, -0.5f, -0.05);//-0.2
+	public static final TexAtlas flower_normal = new TexAtlas("res/objects/Flower.png", 1, 3, -0.5f, 0f);//0
+	public static final TexAtlas pyramide = new TexAtlas("res/objects/Pyramide.png", 1, 4, -0.5f, 0f);//-0.1
+	public static final TexAtlas house = new TexAtlas("res/objects/House.png", 1, 6, -0.5f, 0f);//-0.05
+	public static final TexAtlas townobject = new TexAtlas("res/objects/TownObject.png", 1, 5, -0.5f, 0);//-0.02
+	public static final TexAtlas flower_candy = new TexAtlas("res/objects/Candy.png", 1, 6, -0.5f, 0);//0
+	public static final TexAtlas crack = new TexAtlas("res/objects/Crack.png", 1, 4, -0.5f, 0);//-0.5
+	public static final TexAtlas fossil = new TexAtlas("res/objects/Fossil.png", 1, 3, -0.5f, 0);//-0.5
+	public static final TexAtlas grave = new TexAtlas("res/objects/Grave.png", 1, 7, -0.5f, 0);//-0.05
+	public static final TexAtlas rainbow = new TexAtlas("res/objects/Rainbow.png", 1, 1, -0.5f, 0f);//0
 //	public static final TexFile flower_light = new TexFile("res/Light_dimmed.png");
 	
 	//Creatures
@@ -126,6 +126,7 @@ public class Res {
 
 	public static Shader landscapeShader = Shader.create("res/shader/material.vert", "res/shader/material.frag", "in_Position", "in_TextureCoords", "in_Alphas", "in_TransAlpha");
 	public static Shader thingShader = Shader.withGeometry("res/shader/thing.vert", "res/shader/thing.geom", "res/shader/thing.frag", "in_position", "in_rotation", "in_texCoords", "in_mirror", "in_color", "in_z", "in_size");
+	public static Shader thingOutlineShader = Shader.withGeometry("res/shader/thing.vert", "res/shader/thing.geom", "res/shader/thingOutline.frag", "in_position", "in_rotation", "in_texCoords", "in_mirror", "in_color", "in_z", "in_size");
 	public static Shader darknessShader = Shader.create("res/shader/color.vert", "res/shader/color.frag", "in_Position", "in_Color");
 	public static Shader backgroundShader = Shader.create("res/shader/colorBackground.vert", "res/shader/colorBackground.frag", "in_Position");
 }

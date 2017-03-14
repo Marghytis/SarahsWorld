@@ -1,13 +1,14 @@
 package world.generation;
 
 import effects.WorldEffect;
-import main.Main;
 import things.Thing;
 import things.ThingType;
 import util.Color;
+import util.math.Function;
 import util.math.Vec;
 import world.Material;
 import world.Stratum;
+import world.World;
 import world.WorldData;
 import world.WorldData.Column;
 import world.WorldWindow;
@@ -199,18 +200,33 @@ public enum Biome {
 					null
 				},
 				new ThingSpawner[]{
-					 new ThingSpawner(zSpawner(ThingType.TREE_JUNGLE, 0.5, 0), 0.5)
-					,new ThingSpawner(zSpawner(ThingType.TREE_JUNGLE, -0.2, 0), 0.05)
-					,new ThingSpawner(zSpawner(ThingType.FERN, 0, 0.1), 0.5)
-					,new ThingSpawner(zSpawner(ThingType.BAMBOO, 0, 0.1), 0.2)
-					,new ThingSpawner(zSpawner(ThingType.BUSH_NORMAL, 0, 0.1), 0.2)
-					,new ThingSpawner(zSpawner(ThingType.GIANT_GRASS, 0, 0.1), 0.1)
-					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CRACK, w, c, pos.shift(0, -100 - w.random.nextInt(1000))), 0.3)
-					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.FOSSIL, w, c, pos.shift(0, -200 - w.random.nextInt(1000))), 0.1)
-					,new ThingSpawner(zSpawner(ThingType.FLOWER_NORMAL, 0, 0.1), 0.1)
-					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 1.5, -4), 0.5)
-					,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
-					,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
+						new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 2.0, 0.9), 0.5),
+						new ThingSpawner(spawnZ(ThingType.TREE_JUNGLE, 0.2),		0.5),
+						new ThingSpawner(spawnZ(ThingType.FERN, 			0.1,	0.2),	0.05),
+						new ThingSpawner(spawnZ(ThingType.BAMBOO, 			0.1,	0.2),	0.1),
+						new ThingSpawner(spawnZ(ThingType.BUSH_NORMAL, 			0.1,	0.2),	0.1),
+						new ThingSpawner(spawnZ(ThingType.GIANT_GRASS, 0.1, 0.2), 0.05),
+						new ThingSpawner(spawnZ(ThingType.FLOWER_NORMAL, 0.1, 0.2), 0.05),
+						new ThingSpawner(spawnZ(ThingType.GRASS, 0.1, 0.2), 0.6),
+						new ThingSpawner(spawnZ(ThingType.FLOWER_JUNGLE, 0.1, 0.2), 0.6),
+						new ThingSpawner(spawnBetween(ThingType.FLOWER_JUNGLE, 0, -20, true), 0.3),
+						new ThingSpawner(spawnBetween(ThingType.GRASS, -5, -15, true), 0.3),
+						new ThingSpawner(spawnBetween(ThingType.FLOWER_NORMAL, 0, -5, true), 0.05),
+						new ThingSpawner(spawnBetween(ThingType.GIANT_GRASS, 0, -25, true), 0.05),
+						new ThingSpawner(spawnBetween(ThingType.BUSH_NORMAL, 			0,	-10, true),	0.1),
+						new ThingSpawner(spawnBetween(ThingType.BAMBOO, 			0,	-25, true),	0.1),
+						new ThingSpawner(spawnBetween(ThingType.FERN, 			0,	-25, true),	0.5),
+						new ThingSpawner(spawnZ(ThingType.TREE_JUNGLE, -0.2),		0.05),
+//					new ThingSpawner(posSpawner(ThingType.BAMBOO, 0, 0.1, -5), 0.2)
+//					,new ThingSpawner(posSpawner(ThingType.BUSH_NORMAL, 0, 0.1, 0), 0.2)
+//					,new ThingSpawner(posSpawner(ThingType.GIANT_GRASS, 0, 0.1, 0), 0.1)
+//					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 1.5, -4), 0.5)
+//					,new ThingSpawner(posSpawner(ThingType.FLOWER_NORMAL, 0, 0.1, 0), 0.1)
+//					,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
+					
+					new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CRACK, w, c, pos.shift(0, -100 - w.random.nextInt(1000))), 0.3),
+					new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.FOSSIL, w, c, pos.shift(0, -200 - w.random.nextInt(1000))), 0.1)
+//					,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
 					,new ThingSpawner(ThingType.SNAIL.defaultSpawner, 0.01)
 					,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.05)
 					,new ThingSpawner(ThingType.MIDGE.defaultSpawner, 2)
@@ -323,12 +339,45 @@ public enum Biome {
 		}
 	}
 	
-	public static Spawner zSpawner(ThingType type, double zCenter, double zRange){
+	public static Spawner spawnZ(ThingType type, double z){
 		return (w, c, pos, ed) -> {
 			Thing t = new Thing(type, w, c, pos.copy(), ed);
-			t.z = zCenter - zRange/2 + Main.world.rand.nextDouble()*zRange;
+			t.z = z;
 			return t;
 		};
+	}
+	
+	public static Spawner spawnZ(ThingType type, double z1, double z2){
+		return (w, c, pos, ed) -> {
+			Thing t = new Thing(type, w, c, pos.copy(), ed);
+			t.z = z1 + World.rand.nextDouble()*(z2-z1);
+			return t;
+		};
+	}
+	
+	public static Spawner spawnBetween(ThingType type, double y1, double y2){
+		return spawnBetween(type, y1, y2, true);
+	}
+	
+	public static Spawner spawnBetween(ThingType type, double y1, double y2, boolean front){
+		return (w, c, pos, ed) -> {
+			Thing t = new Thing(type, w, c, pos.copy(), ed);
+			t.yOffset = y1 + World.rand.nextDouble()*(y2-y1);
+			if(!front){
+				t.z = foliageZ.f(t.yOffset);
+			} else {
+				t.z = -foliageZ.f(t.yOffset);
+			}
+			return t;
+		};
+	}
+
+	//assigns a z value to every yOffset, so that no plant overlap badly (leaves a gap of 0.2 around z=0 for living things)
+	public static final Function foliageZ = (y) -> 0.1*(1.5 - (Math.atan(y)/Math.PI));
+	
+	public static class SpawnType {
+		ThingType type;
+		double prob;
 	}
 	
 	public static class ThingSpawner {
@@ -340,6 +389,7 @@ public enum Biome {
 			this.spawner = spawner;
 			this.probabilityOnFieldWidth = probabilityOnFieldWidth;
 		}
+		
 		
 		public interface Spawner { public Thing spawn(WorldData world, Column field, Vec pos, Object... extraData); }
 		//default: (w, c, pos, ed) -> new Thing(ThingType.EXAMPLE, w, c, pos.copy(), ed);

@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 
 import core.Listener;
 import core.Renderer;
@@ -23,6 +24,7 @@ import item.ItemType;
 import item.Nametag;
 import main.Main;
 import main.Res;
+import main.Shader20;
 import menu.Settings;
 import quest.ActiveQuest;
 import render.Framebuffer;
@@ -37,7 +39,6 @@ import things.Thing;
 import things.ThingType;
 import util.Color;
 import util.math.Vec;
-import util.shapes.Circle;
 import world.WorldData.Column;
 
 public class WorldWindow implements Updater, Renderer{
@@ -183,7 +184,7 @@ public class WorldWindow implements Updater, Renderer{
 //		renderThings((type) -> type == ThingType.GRAVE);
 //		red.render(new Vec(50, 0), -0.1, 1);
 		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
-		Render.drawSingleQuad(completeWindow, Color.WHITE, landscapeBuffer.getTex(), scaleX, scaleY, true);
+		Render.drawSingleQuad(completeWindow, Color.WHITE, landscapeBuffer.getTex(), 0, 0, scaleX, scaleY, true, 0);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		renderThings((type) -> true);
 		renderItemsInHand();
@@ -192,6 +193,14 @@ public class WorldWindow implements Updater, Renderer{
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		
 		renderWater();
+
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glDepthFunc(GL11.GL_GREATER);
+		GL11.glBlendFunc(GL11.GL_DST_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		renderThings((type) -> type.life != null, Res.thingOutlineShader);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glDepthFunc(GL11.GL_LESS);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
 //		renderDarkness();
 		
@@ -340,6 +349,10 @@ public class WorldWindow implements Updater, Renderer{
 	
 	public interface Decider { public boolean decide(ThingType type);}
 	public void renderThings(Decider d){
+		renderThings(d, Res.thingShader);
+	}
+	
+	public void renderThings(Decider d, Shader shader){
 
 		//add things to the buffer that should be visible
 		for(int type = 0; type < ThingType.types.length; type++)
@@ -358,17 +371,17 @@ public class WorldWindow implements Updater, Renderer{
 
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
-		Res.thingShader.bind();
-		Res.thingShader.set("scale", scaleX, scaleY);
-		Res.thingShader.set("offset", -(float)Main.world.avatar.pos.x, -(float)Main.world.avatar.pos.y);
+		shader.bind();
+		shader.set("scale", scaleX, scaleY);
+		shader.set("offset", -(float)Main.world.avatar.pos.x, -(float)Main.world.avatar.pos.y);
 		
 		for(int type = 0; type < ThingType.types.length; type++) {
 			if(vaos[type].lastUsedIndex == -1 || !d.decide(ThingType.types[type])) continue;
 			//render Thing
 			TexAtlas tex = ThingType.types[type].file;
 			tex.file.bind();
-			Res.thingShader.set("box", tex.pixelCoords[0], tex.pixelCoords[1], tex.pixelCoords[2], tex.pixelCoords[3]);
-			Res.thingShader.set("texWH", tex.w2, tex.h2);
+			shader.set("box", tex.pixelCoords[0], tex.pixelCoords[1], tex.pixelCoords[2], tex.pixelCoords[3]);
+			shader.set("texWH", tex.w2, tex.h2);
 
 			for(int col = 0; col < landscape.columns.length; col++)
 			for(Thing t = landscape.columns[col].things[type]; t != null; t = t.next){

@@ -40,7 +40,7 @@ public class Generator {
 		this.world = world;
 		this.genRadius = radius;
 		
-		Biome startBiome = Biome.OCEAN;//TODO make it random
+		Biome startBiome = Biome.JUNGLE;//TODO make it random
 		
 		posL = new Vec();
 		posR = new Vec();
