@@ -55,7 +55,7 @@ public class Thing {
 	public boolean isRiding;
 	public boolean attacking;
 	public boolean speaking;
-	public boolean needsRenderUpdate, visible;
+	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible;
 	
 	public Thing target;
 	public Thing mountedThing;

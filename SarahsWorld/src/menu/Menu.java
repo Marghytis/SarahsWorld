@@ -208,7 +208,10 @@ public class Menu implements Updater, Renderer, Listener {
 						, 0, 0.25, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(() -> {
 							Vec idle = new Vec(0, 1);
-							String s = "Sarah: " + Main.world.avatar.vel;
+							String s =  "Sarah: " + Main.world.avatar.vel + "\n" +
+										"box: " + Main.world.avatar.box.toString() + "\n" +
+										"tex width: " + Main.world.avatar.ani.tex.w + "\n" + 
+										"dir: " + Main.world.avatar.dir;
 							return s;
 						}
 						, 0, 0, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false)

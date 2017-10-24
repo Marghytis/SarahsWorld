@@ -2,8 +2,6 @@
 
 uniform vec2 scale;
 uniform vec2 offset;
-uniform vec4 box;//right, up, left, down
-uniform vec2 texWH;
 
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
@@ -11,11 +9,12 @@ layout (triangle_strip, max_vertices = 4) out;
 in Vertex
 {
   float pass_rotation;
-  vec2 texXY;
+  vec2 pass_texXY;
   float pass_mirror;
   vec4 pass_color;
   float pass_size;
-  vec4 pass_box;
+  vec4 pass_box;//right, up, left, down
+  vec2 pass_texWH;
 } vertex[];
  
  
@@ -39,25 +38,25 @@ void main (void)
  
   //lower left
   gl_Position = vec4((P + p1)*scale, z, 1.0);
-  texCoords = vec2(vertex[0].texXY.x + vertex[0].pass_mirror, vertex[0].texXY.y + texWH.y);
+  texCoords = vec2(vertex[0].pass_texXY.x + vertex[0].pass_mirror, vertex[0].pass_texXY.y + vertex[0].pass_texWH.y);
   color = vertex[0].pass_color;
   EmitVertex();
  
   //lower right
   gl_Position = vec4((P + p2)*scale, z, 1.0);
-  texCoords = vec2(vertex[0].texXY.x + texWH.x - vertex[0].pass_mirror, vertex[0].texXY.y + texWH.y);
+  texCoords = vec2(vertex[0].pass_texXY.x + vertex[0].pass_texWH.x - vertex[0].pass_mirror, vertex[0].pass_texXY.y + vertex[0].pass_texWH.y);
   color = vertex[0].pass_color;
   EmitVertex();
  
   //upper left
   gl_Position = vec4((P + p3)*scale, z, 1.0);
-  texCoords = vec2(vertex[0].texXY.x + vertex[0].pass_mirror, vertex[0].texXY.y);
+  texCoords = vec2(vertex[0].pass_texXY.x + vertex[0].pass_mirror, vertex[0].pass_texXY.y);
   color = vertex[0].pass_color;
   EmitVertex();
  
   //upper right
   gl_Position = vec4((P + p4)*scale, z, 1.0);
-  texCoords = vec2(vertex[0].texXY.x + texWH.x - vertex[0].pass_mirror, vertex[0].texXY.y);
+  texCoords = vec2(vertex[0].pass_texXY.x + vertex[0].pass_texWH.x - vertex[0].pass_mirror, vertex[0].pass_texXY.y);
   color = vertex[0].pass_color;
   EmitVertex();
   

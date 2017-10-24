@@ -49,8 +49,8 @@ public class ThingVAO {
 					(t)-> (short)(Short.MAX_VALUE*t.ani.tex.texCoords[0]),
 					(t)-> (short)(Short.MAX_VALUE*t.ani.tex.texCoords[1])),
 			
-			new VBOContent(1, GL11.GL_SHORT, true,//float in_mirror
-					(t) -> (short)(Short.MAX_VALUE*(t.dir ? t.ani.tex.texCoords[2] - t.ani.tex.texCoords[0] : 0)))}, 0);
+			new VBOContent(1, GL11.GL_FLOAT, false,//float in_mirror
+					(t) -> (float)((t.dir ? t.ani.tex.w : 0)/(float)t.ani.tex.file.width))}, 0);
 
 		//Create VBO with data not usually updated
 		VBO vboUnusual = createVBO(new VBOContent[]{
@@ -63,11 +63,15 @@ public class ThingVAO {
 					(t) -> (float)t.z),
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_size
 					(t) -> (float)t.size),
-			new VBOContent(4, GL11.GL_SHORT, false,//vec4 in_box TODO
-					(t) -> (short)t.ani.tex.pixelCoords[0],
-					(t) -> (short)t.ani.tex.pixelCoords[1],
-					(t) -> (short)t.ani.tex.pixelCoords[2],
-					(t) -> (short)t.ani.tex.pixelCoords[3])}, 1);
+			new VBOContent(4, GL11.GL_SHORT, false,//vec4 in_box
+					(t) -> (short)t.box.pos.x,
+					(t) -> (short)t.box.pos.y,
+					(t) -> (short)(t.box.pos.x + t.box.size.x),
+					(t) -> (short)(t.box.pos.y + t.box.size.y)),
+			new VBOContent(2, GL11.GL_FLOAT, true,//vec2 in_texWH
+					(t) -> (float)((float)t.ani.tex.w/t.ani.tex.file.width),
+					(t) -> (float)((float)t.ani.tex.h/t.ani.tex.file.height)
+					)}, 1);
 		
 		//combine VBOs into VAO
 		vao = new VAO(null, vboUsual, vboUnusual);
@@ -106,6 +110,9 @@ public class ThingVAO {
 	}
 	
 	private void change(Thing t, int index){
+		if(index == 1 && t.type == ThingType.SARAH){
+			System.out.println("test: " + ((float)t.ani.tex.w/t.ani.tex.file.width));
+		}
 		if(t.index == -1){
 			(new Exception("Thing is not registered")).printStackTrace();
 			return;

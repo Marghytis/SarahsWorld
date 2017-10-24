@@ -17,16 +17,18 @@ void main(void){
 		bool hmpf = false;
 	   	for (int i=0; i<3; i++){
 	        for (int j=0; j<3; j++){
-	        	if(texelFetch(texture_diffuse, pos + ivec2(i, j), 0).a == 0){
+	        	if(texelFetch(texture_diffuse, pos + ivec2(i-1, j-1), 0).a <= 0.3){
 	        		hmpf = true;
 	        	}
 	        }
 	    } 
 	//	if(max(tex.r, max(tex.g, tex.b)) < 0.6 && tex.a != 0){
 		if(hmpf){
-			out_Color = vec4(0.1, 0.1, 0.1, 0.61);
+			out_Color = vec4(0.1, 0.1, 0.1, 1);
 		} else {
 			out_Color = vec4(0, 0, 0, 0);
 		}
+	} else {
+		out_Color = vec4(0, 0, 0, 0);
 	}
 }

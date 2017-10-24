@@ -90,6 +90,23 @@ public class ThingType {
 	){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			super.setup(t, world, field, pos);
+			System.out.println("name: " + sarah[0][10].name);
+			System.out.println("duration: " + sarah[0][10].duration);
+//			System.out.print("rotations: ");
+//			for(int i = 0; i < sarah[0][10].rotations.length; i++)
+//				System.out.print(sarah[0][10].rotations[i] + ",  ");
+//			System.out.println();
+			System.out.println("h1: " + sarah[0][10].atlas.h1);
+			System.out.println("h2: " + sarah[0][10].atlas.h2);
+			System.out.println("partsX: " + sarah[0][10].atlas.partsX);
+			System.out.println("partsY: " + sarah[0][10].atlas.partsY);
+			System.out.println("w1: " + sarah[0][10].atlas.w1);
+			System.out.println("w2: " + sarah[0][10].atlas.w2);
+			System.out.println("x1: " + sarah[0][10].atlas.x1);
+			System.out.println("x2: " + sarah[0][10].atlas.x2);
+			System.out.println("y1: " + sarah[0][10].atlas.y1);
+			System.out.println("y2: " + sarah[0][10].atlas.y2);
+			System.out.println("pixelCoords: " + sarah[0][10].atlas.pixelCoords[0] + ", " + sarah[0][10].atlas.pixelCoords[1] + ", " + sarah[0][10].atlas.pixelCoords[2] + ", " + sarah[0][10].atlas.pixelCoords[3]);
 		}
 		public void update(Thing t, double delta){
 			avatar.action(t, delta);

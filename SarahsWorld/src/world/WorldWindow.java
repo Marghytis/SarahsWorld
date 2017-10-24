@@ -194,6 +194,7 @@ public class WorldWindow implements Updater, Renderer{
 		
 		renderWater();
 
+		//Outlines of living things
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_GREATER);
 		GL11.glBlendFunc(GL11.GL_DST_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -378,16 +379,13 @@ public class WorldWindow implements Updater, Renderer{
 		for(int type = 0; type < ThingType.types.length; type++) {
 			if(vaos[type].lastUsedIndex == -1 || !d.decide(ThingType.types[type])) continue;
 			//render Thing
-			TexAtlas tex = ThingType.types[type].file;
-			tex.file.bind();
-			shader.set("box", tex.pixelCoords[0], tex.pixelCoords[1], tex.pixelCoords[2], tex.pixelCoords[3]);
-			shader.set("texWH", tex.w2, tex.h2);
+			ThingType.types[type].file.file.bind();
 
 			for(int col = 0; col < landscape.columns.length; col++)
 			for(Thing t = landscape.columns[col].things[type]; t != null; t = t.next){
-//				if(d.decide(t)){
+				if(d.decide(ThingType.types[type])){
 					t.prepareRender();
-//				}
+				}
 			}
 
 			vaos[type].vao.bindStuff();

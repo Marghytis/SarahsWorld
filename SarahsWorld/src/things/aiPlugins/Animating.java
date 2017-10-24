@@ -63,6 +63,8 @@ public class Animating extends AiPlugin {
 		t.ani.update(delta);
 		if(useTexBox && !t.box.equals(t.ani.tex.pixelCoords)){
 			t.box.set(t.ani.tex.pixelCoords);
+			t.needsRenderUpdate = true;
+			t.needsUnusualRenderUpdate = true;
 		}
 		if(t.ani.ani != null && t.ani.ani.rotations != null)
 		t.aniRotation = t.ani.ani.rotations[t.ani.pos];
@@ -71,7 +73,7 @@ public class Animating extends AiPlugin {
 	public void prepareRender(Thing t){
 		if(t.type.alwaysUpdateVBO || t.needsRenderUpdate || t.switchedSelected){
 			Main.world.window.vaos[t.type.ordinal].changeUsual(t);
-			if(t.switchedSelected){
+			if(t.switchedSelected || t.needsUnusualRenderUpdate){
 				if(t.selected){
 					t.color = new Color(1, 0, 0, 1);
 					Main.world.window.vaos[t.type.ordinal].changeUnusual(t);
@@ -80,7 +82,9 @@ public class Animating extends AiPlugin {
 					Main.world.window.vaos[t.type.ordinal].changeUnusual(t);
 				}
 				t.switchedSelected = false;
+				t.needsUnusualRenderUpdate = false;
 			}
+			t.needsRenderUpdate = false;
 		}
 	}
 	
