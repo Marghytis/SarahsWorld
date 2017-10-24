@@ -15,6 +15,7 @@ in Vertex
   float pass_mirror;
   vec4 pass_color;
   float pass_size;
+  vec4 pass_box;
 } vertex[];
  
  
@@ -27,7 +28,7 @@ void main (void)
   vec2 P = gl_in[0].gl_Position.xy + offset;
   float z = gl_in[0].gl_Position.z;
   
-  vec4 box1 = vec4(box.xy*vertex[0].pass_size, box.zw*vertex[0].pass_size);
+  vec4 box1 = vec4(vertex[0].pass_box.xy*vertex[0].pass_size, vertex[0].pass_box.zw*vertex[0].pass_size);
   float c = cos(vertex[0].pass_rotation);
   float s = sin(vertex[0].pass_rotation);
   mat2 rot = mat2(c, -s, s, c);

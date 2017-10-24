@@ -447,7 +447,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.tree_palm, 50, new Animating(tree_palm[0][0], new Rect(Res.tree_palm.pixelCoords), 0, 1, 1, false, tree_palm)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
-	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.tree_jungle, 50, new Animating(tree_jungle[0][0], new Rect(Res.tree_jungle.pixelCoords), 0, 0.1, 1, false, tree_jungle)){
+	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.tree_jungle, 150, new Animating(tree_jungle[0][0], new Rect(Res.tree_jungle.pixelCoords), 0, 0.1, 1, false, tree_jungle)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, world, field, pos, extraData);}};
 		
 		
@@ -474,7 +474,7 @@ public class ThingType {
 										static final Animation[][] bush_candy = {
 											{new Animation(Res.bush_candy, 0, 0)},
 											{new Animation(Res.bush_candy, 0, 1)}};
-	public static final ThingType BUSH_NORMAL = new ThingType("BUSH_NORMAL", Res.bush_normal, 30
+	public static final ThingType BUSH_NORMAL = new ThingType("BUSH_NORMAL", Res.bush_normal, 50
 			,new Animating(bush_normal[0][0], new Rect(Res.bush_normal.pixelCoords), 0, 0, 1, false, bush_normal)) {
 		
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
@@ -585,7 +585,7 @@ public class ThingType {
 											{new Animation(Res.plant_jungle ,0, 2)},
 											{new Animation(Res.plant_jungle ,0, 3)},
 											{new Animation(Res.plant_jungle ,0, 4)}};
-	public static final ThingType FERN = new ThingType("FERN", Res.plant_jungle ,70, new Animating(plant_jungle[0][0], new Rect(Res.plant_jungle.pixelCoords), 0, 0.05, 1, false, plant_jungle)){
+	public static final ThingType FERN = new ThingType("FERN", Res.plant_jungle ,120, new Animating(plant_jungle[0][0], new Rect(Res.plant_jungle.pixelCoords), 0, 0.05, 1, false, plant_jungle)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
@@ -622,7 +622,7 @@ public class ThingType {
 											{new Animation(Res.crack , 0, 1)},
 											{new Animation(Res.crack , 0, 2)},
 											{new Animation(Res.crack , 0, 3)}};
-		public static final ThingType CRACK = new ThingType("CRACK", Res.crack , 30, new Animating(crack[0][0], new Rect(Res.crack.pixelCoords), 0, 0, 1, false, crack)){
+		public static final ThingType CRACK = new ThingType("CRACK", Res.crack , 70, new Animating(crack[0][0], new Rect(Res.crack.pixelCoords), 0, 0, 1, false, crack)){
 			public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 				t.aniSet = World.rand.nextInt(ani.animations.length);
 				ani.setAnimation(t, "");

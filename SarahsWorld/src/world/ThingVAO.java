@@ -64,10 +64,10 @@ public class ThingVAO {
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_size
 					(t) -> (float)t.size),
 			new VBOContent(4, GL11.GL_SHORT, false,//vec4 in_box TODO
-					(t) -> (short)1,
-					(t) -> (short)1,
-					(t) -> (short)1,
-					(t) -> (short)1)}, 1);
+					(t) -> (short)t.ani.tex.pixelCoords[0],
+					(t) -> (short)t.ani.tex.pixelCoords[1],
+					(t) -> (short)t.ani.tex.pixelCoords[2],
+					(t) -> (short)t.ani.tex.pixelCoords[3])}, 1);
 		
 		//combine VBOs into VAO
 		vao = new VAO(null, vboUsual, vboUnusual);
@@ -88,7 +88,8 @@ public class ThingVAO {
 		bytesUpdated[index] = shift;
 		changer[index] = BufferUtils.createByteBuffer(bytesUpdated[index]);
 		ByteBuffer bufferTemp = BufferUtils.createByteBuffer(capacity*bytesUpdated[index]);
-		vbo[index] = new VBO(bufferTemp, GL15.GL_DYNAMIC_DRAW, bytesUpdated[index], vaps);
+		vbo[index] = new VBO(bufferTemp,  index == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW, bytesUpdated[index], vaps);
+		Core.checkGLErrors(true, true, "debug 0");
 		
 		return vbo[index];
 	}
@@ -152,6 +153,7 @@ public class ThingVAO {
 		t.index = -1;
 		
 		lastUsedIndex--;
+		Core.checkGLErrors(true, true, "debug 0");
 	}
 	
 	public void enlarge(){
@@ -171,6 +173,7 @@ public class ThingVAO {
 		Thing[] newThings = new Thing[capacity];
 		System.arraycopy(things, 0, newThings, 0, things.length);
 		things = newThings;
+		Core.checkGLErrors(true, true, "debug 0");
 	}
 	
 	private class VBOContent {
