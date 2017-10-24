@@ -7,6 +7,7 @@ in float in_mirror;
 in vec4 in_color;
 in float in_z;
 in float in_size;
+in vec4 in_box;
 
 out Vertex {
 	float pass_rotation;
@@ -14,6 +15,7 @@ out Vertex {
 	float pass_mirror;
 	vec4 pass_color;
 	float pass_size;
+	vec4 pass_box;
 } vertex;
 
 void main(void){
@@ -24,4 +26,5 @@ void main(void){
 	vertex.pass_mirror = in_mirror;
 	vertex.pass_color = in_color;
 	vertex.pass_size = in_size;
+	vertex.pass_box = in_box;
 }

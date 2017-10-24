@@ -179,10 +179,10 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			LandscapeWindow.layersToDraw--;
 			break;
 		case ZOOM_IN:
-			World.world.window.zoom *= 1.1;
+			World.world.window.zoom *= 1.25;
 			break;
 		case ZOOM_OUT:
-			World.world.window.zoom *= 0.9;
+			World.world.window.zoom *= 0.8;
 			break;
 		default:
 		}
