@@ -10,7 +10,7 @@ import world.Material;
 import world.WorldData.Column;
 import world.WorldData.Vertex;
 
-public class Physics extends AiPlugin{
+public class Physics extends AiPlugin {
 	
 	static double dt = 0.010;
 	public static double lowestSpeed = 0.1;
@@ -54,6 +54,9 @@ public class Physics extends AiPlugin{
 		}
 		
 		Vec constantForce = t.force.copy();
+		if(t.where.water > 0.5){
+			
+		}
 		t.where.water = 0;
 //		t.g = false;
 		
@@ -107,15 +110,23 @@ public class Physics extends AiPlugin{
 	}
 	
 	public void updateRotation(Thing t, double delta){
-		if(!t.where.g && t.where.water > 0){
-			double v = t.vel.length();
-			if(v > 10){
-				if(t.vel.dot(t.orientation) >= 0){
-					t.orientation.set(t.vel).shift(1, 0);
+		if(!t.where.g){
+			if(t.where.water > 0.3){
+				double v = t.vel.length();
+				if(v > 10 && (t.force.y != 0 || t.force.x != 0)){
+//					if(t.vel.dot(t.orientation) >= 0){
+//						t.orientation.set(t.vel).shift(1, 0);
+//					} else {
+//						t.orientation.set(t.vel).scale(-1).shift(1, 0);
+//					}
+//					t.rotation = t.orientation.angle() + Math.PI/2;
+
+					t.rotation = Math.atan2(t.vel.x, t.vel.y);
 				} else {
-					t.orientation.set(t.vel).scale(-1).shift(1, 0);
+					t.rotation = 0;
 				}
-				t.rotation = t.orientation.angle() + Math.PI/2;
+			} else if(t.willLandInWater){
+				t.rotation = Math.atan2(t.vel.x, t.vel.y);
 			}
 		} else if(t.where.g){
 			if(stickToGround){
@@ -293,6 +304,7 @@ public class Physics extends AiPlugin{
 			if(waterVertex.y > pos.y + t.box.pos.y){
 				t.where.water = Math.min((waterVertex.y - (pos.y + t.box.pos.y))/t.box.size.y, 1);//+20
 				force.shift(new Vec(0, waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/)));
+				
 			}
 		}
 	}

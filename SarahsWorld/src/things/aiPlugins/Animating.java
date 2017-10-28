@@ -63,6 +63,7 @@ public class Animating extends AiPlugin {
 		t.ani.update(delta);
 		if(useTexBox && !t.box.equals(t.ani.tex.pixelCoords)){
 			t.box.set(t.ani.tex.pixelCoords);
+			//needs unusual render update to update the box in the things vao
 			t.needsRenderUpdate = true;
 			t.needsUnusualRenderUpdate = true;
 		}

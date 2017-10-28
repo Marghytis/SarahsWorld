@@ -49,10 +49,12 @@ public class ThingType {
 											new Animation("kick", Res.sarah, 13,	6, /**/1, 2, 3, 4, 5),
 											new Animation("strike", Res.sarah, 13,	8, /**/0, 1, 2, 3, 4),
 											new Animation("spell", Res.sarah, 5,	9, /**/0, 1, 0),
-											new Animation("dive", Res.sarah_dive, 10, 0, 0, 1, 2, 3, 4),
+											new Animation("dive", Res.sarah, 15, 3, /**/1, 2, 3, 4, 5, 6),
+//											new Animation("dive", Res.sarah_dive, 10, 0, 0, 1, 2, 3, 4),
 											new Animation("swim", Res.sarah, 5, 9, /**/2, 3, 4, 5, 6),//.addRot(-Math.PI/2, -Math.PI/2, -Math.PI/2, -Math.PI/2, -Math.PI/2)
 //											new Animation("swim", Res.sarah_swim, 5, 0, 0, 1, 2, 3, 4),
-											new Animation("plunge", Res.sarah_dive, 4, 0)
+											new Animation("plunge", Res.sarah, 6, 3),
+//											new Animation("plunge", Res.sarah_dive, 4, 0)
 											},{
 									
 											new Animation("stand",		Res.sarah_onCow, 6, 0),//stand
@@ -86,27 +88,11 @@ public class ThingType {
 					}),
 			new Riding(new Rect(Res.sarah.pixelCoords), new Rect(Res.sarah_onCow.pixelCoords)),
 			new Inventory(ItemType.NOTHING, 5),
-			new Physics(1, 1)
+			new Physics(1, 1),
+			new Speaking()
 	){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			super.setup(t, world, field, pos);
-			System.out.println("name: " + sarah[0][10].name);
-			System.out.println("duration: " + sarah[0][10].duration);
-//			System.out.print("rotations: ");
-//			for(int i = 0; i < sarah[0][10].rotations.length; i++)
-//				System.out.print(sarah[0][10].rotations[i] + ",  ");
-//			System.out.println();
-			System.out.println("h1: " + sarah[0][10].atlas.h1);
-			System.out.println("h2: " + sarah[0][10].atlas.h2);
-			System.out.println("partsX: " + sarah[0][10].atlas.partsX);
-			System.out.println("partsY: " + sarah[0][10].atlas.partsY);
-			System.out.println("w1: " + sarah[0][10].atlas.w1);
-			System.out.println("w2: " + sarah[0][10].atlas.w2);
-			System.out.println("x1: " + sarah[0][10].atlas.x1);
-			System.out.println("x2: " + sarah[0][10].atlas.x2);
-			System.out.println("y1: " + sarah[0][10].atlas.y1);
-			System.out.println("y2: " + sarah[0][10].atlas.y2);
-			System.out.println("pixelCoords: " + sarah[0][10].atlas.pixelCoords[0] + ", " + sarah[0][10].atlas.pixelCoords[1] + ", " + sarah[0][10].atlas.pixelCoords[2] + ", " + sarah[0][10].atlas.pixelCoords[3]);
 		}
 		public void update(Thing t, double delta){
 			avatar.action(t, delta);
@@ -375,7 +361,7 @@ public class ThingType {
 	//DEAD THINGS
 										static final Animation[] cloud = {new Animation(Res.cloud, 0, 0)};
 	public static final ThingType CLOUD = new ThingType("CLOUD", Res.cloud, 30, true
-			,new Animating(cloud[0], new Rect(Res.cloud.pixelCoords), -1, 0, 1, false, cloud)
+			,new Animating(cloud[0], new Rect(Res.cloud.pixelCoords), 0, 0.25, 1, false, cloud)
 			,new Physics(1, 1000, true, false, true, false, true, false)){
 
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){

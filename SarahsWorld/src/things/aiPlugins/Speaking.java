@@ -10,9 +10,11 @@ import menu.Dialog;
 import menu.Menu.Menus;
 import quest.ActiveQuest;
 import quest.Strings;
+import render.Render;
 import render.TexAtlas;
 import render.TexFile;
 import render.Texture;
+import render.VAO;
 import things.AiPlugin;
 import things.Thing;
 import util.Anim;
@@ -24,6 +26,7 @@ import util.math.UsefulF;
 import util.math.Vec;
 import world.World;
 import world.WorldData;
+import world.WorldWindow;
 
 public class Speaking extends AiPlugin {
 	
@@ -35,8 +38,10 @@ public class Speaking extends AiPlugin {
 		t.quest = quest;
 		t.currentSpeech = what;
 		t.answers = answers;
-		
+
+		System.out.println("Speaking Test 1 " + thoughtBubble + "  " + t.pos.minus(Main.world.avatar.pos).lengthSquare());
 		if(!thoughtBubble && t.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000){
+			System.out.println("Speaking Test 2");
 			t.speaking = true;
 			String[] realAnswers = new String[answers.length];
 			for(int i = 0; i < answers.length; i++){
@@ -85,6 +90,7 @@ public class Speaking extends AiPlugin {
 		public Vec relPos, pos, vel = new Vec();
 		double rWobble = 0.8;
 		Value[] rs = {new Value(), new Value(), new Value(), new Value(), new Value()};
+		VAO quad = Render.quadInScreen(-1, -1, 1, 1);
 		
 		public ThoughtBubble(Thing speaker){
 			this.speaker = speaker;
@@ -126,7 +132,7 @@ public class Speaking extends AiPlugin {
 			if(!living){
 				living = true;
 				ani.time = 0;
-				Main.world.window.toAdd.add(this);
+				WorldWindow.toAdd.add(this);
 			}
 		}
 		
@@ -134,38 +140,76 @@ public class Speaking extends AiPlugin {
 			ani.dir = false;
 		}
 
-		public void render() {
+		public void render(){
+			render(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+		}
+		public void render(float scaleX, float scaleY) {
 			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
-			bubble1.file.bind();
-			Color.WHITE.bind();
-			GL11.glBegin(GL11.GL_QUADS);
+//			bubble1.file.bind();
+//			Color.WHITE.bind();
+//			GL11.glBegin(GL11.GL_QUADS);
 			for(int i = 0, s = 1; i < 8; i += 2, s += 3){
 				double r = rs[i/2].v*s;
 				if(r >= 0){
-					double x = speaker.pos.x + shift.x*positions[i];
-					double y = speaker.pos.y + shift.y*positions[i+1] + 60;
-					GL11.glTexCoord2d(0, 1);
-					GL11.glVertex2d(x - r, y - r);
-					GL11.glTexCoord2d(1, 1);
-					GL11.glVertex2d(x + r, y - r);
-					GL11.glTexCoord2d(1, 0);
-					GL11.glVertex2d(x + r, y + r);
-					GL11.glTexCoord2d(0, 0);
-					GL11.glVertex2d(x - r, y + r);
+					double x = speaker.pos.x + shift.x*positions[i] - Main.world.avatar.pos.x;
+					double y = speaker.pos.y + shift.y*positions[i+1] + 60 - Main.world.avatar.pos.y;
+					Render.drawSingleQuad(quad, Color.WHITE, bubble1, x, y, Main.world.window.scaleX, Main.world.window.scaleY, true, 0, r);
+//					GL11.glTexCoord2d(0, 1);
+//					GL11.glVertex2d(x - r, y - r);
+//					GL11.glTexCoord2d(1, 1);
+//					GL11.glVertex2d(x + r, y - r);
+//					GL11.glTexCoord2d(1, 0);
+//					GL11.glVertex2d(x + r, y + r);
+//					GL11.glTexCoord2d(0, 0);
+//					GL11.glVertex2d(x - r, y + r);
 				}
 			}
-			GL11.glEnd();
-			double bR = rs[4].v*(pressed ? 0.16 : 0.2);
+//			GL11.glEnd();
+			double bR = rs[4].v*170*(pressed ? 0.16 : 0.2);
 			if(bR >= 0){
-				bubbleR = bR;
-				bubble2.file.bind();
-				texs[tex].resetMod();
-				texs[tex].scale(bubbleR, bubbleR);
-				texs[tex].translate(speaker.pos.x + shift.x, speaker.pos.y + shift.y+60);
-				texs[tex].drawMod(false);
+				Render.drawSingleQuad(quad, Color.WHITE, texs[tex], speaker.pos.x + shift.x - Main.world.avatar.pos.x, speaker.pos.y + shift.y+60 - Main.world.avatar.pos.y, Main.world.window.scaleX, Main.world.window.scaleY, true, 0, bR);
+//				bubbleR = bR;
+//				bubble2.file.bind();
+//				texs[tex].resetMod();
+//				texs[tex].scale(bubbleR, bubbleR);
+//				texs[tex].translate(speaker.pos.x + shift.x, speaker.pos.y + shift.y+60);
+//				texs[tex].drawMod(false);
 			}
-			TexFile.bindNone();
+//			TexFile.bindNone();
 		}
+		
+//		public void render(float scaleX, float scaleY) {
+//			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
+//			bubble1.file.bind();
+//			Color.WHITE.bind();
+//			GL11.glBegin(GL11.GL_QUADS);
+//			for(int i = 0, s = 1; i < 8; i += 2, s += 3){
+//				double r = rs[i/2].v*s;
+//				if(r >= 0){
+//					double x = speaker.pos.x + shift.x*positions[i];
+//					double y = speaker.pos.y + shift.y*positions[i+1] + 60;
+//					GL11.glTexCoord2d(0, 1);
+//					GL11.glVertex2d(x - r, y - r);
+//					GL11.glTexCoord2d(1, 1);
+//					GL11.glVertex2d(x + r, y - r);
+//					GL11.glTexCoord2d(1, 0);
+//					GL11.glVertex2d(x + r, y + r);
+//					GL11.glTexCoord2d(0, 0);
+//					GL11.glVertex2d(x - r, y + r);
+//				}
+//			}
+//			GL11.glEnd();
+//			double bR = rs[4].v*(pressed ? 0.16 : 0.2);
+//			if(bR >= 0){
+//				bubbleR = bR;
+//				bubble2.file.bind();
+//				texs[tex].resetMod();
+//				texs[tex].scale(bubbleR, bubbleR);
+//				texs[tex].translate(speaker.pos.x + shift.x, speaker.pos.y + shift.y+60);
+//				texs[tex].drawMod(false);
+//			}
+//			TexFile.bindNone();
+//		}
 		double bubbleR;
 		
 		boolean living = false;

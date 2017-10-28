@@ -37,6 +37,7 @@ public class Thing {
 	public Vec pos = new Vec(), nextPos = new Vec();
 	public Vec vel = new Vec(), nextVelAvDelta = new Vec(), nextVel = new Vec();
 	public Vec force = new Vec(), noFricForce = new Vec(), flyForce = new Vec();//flyForce is mainly for butterflies
+	public double phi;
 	public Column collisionC = null;
 	public double airTime;
 	public boolean reallyAir, willLandInWater;

@@ -21,10 +21,9 @@ void main(void){
 	        		hmpf = true;
 	        	}
 	        }
-	    } 
-	//	if(max(tex.r, max(tex.g, tex.b)) < 0.6 && tex.a != 0){
+	    }
 		if(hmpf){
-			out_Color = vec4(0.1, 0.1, 0.1, 1);
+			out_Color = vec4(0.1, 0.1, 0.1, 0.65);
 		} else {
 			out_Color = vec4(0, 0, 0, 0);
 		}

@@ -110,9 +110,6 @@ public class ThingVAO {
 	}
 	
 	private void change(Thing t, int index){
-		if(index == 1 && t.type == ThingType.SARAH){
-			System.out.println("test: " + ((float)t.ani.tex.w/t.ani.tex.file.width));
-		}
 		if(t.index == -1){
 			(new Exception("Thing is not registered")).printStackTrace();
 			return;

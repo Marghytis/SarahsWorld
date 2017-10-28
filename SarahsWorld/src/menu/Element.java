@@ -89,6 +89,7 @@ public class Element {
 			Shader.singleQuad.set("texture", tex != null);
 			Shader.singleQuad.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 			Shader.singleQuad.set("offset", 0f, 0f);
+			Shader.singleQuad.set("size", 1f);
 			Shader.singleQuad.set("z", 0f);
 			
 			vao.bindStuff();

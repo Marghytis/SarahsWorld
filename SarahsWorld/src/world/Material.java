@@ -14,7 +14,7 @@ public enum Material {
 	SANDSTONE(Color.YELLOW, Physics.grassFriction, Res.sandstone3, 2, 0, 0),
 	SANDSTONE2(Color.YELLOW, Physics.grassFriction, Res.sandstone2, 2, 0, 0),
 	SAND(Color.YELLOW, Physics.grassFriction, Res.sand, 2, 0, 0),
-	WATER(Color.BLUE, 4f, Res.water, 1, 1200, 0.5),
+	WATER(Color.BLUE, 4f, Res.water, 1, 1600, 0.5),
 	CANDY(Color.BLUE, 400f, Res.candy, 2, 0, 0.2),
 	SNOW(new Color(0.8f, 0.8f, 0.8f), 400f, Texture.emptyTexture, 2, 0, 0.2),
 	SOIL(Color.BROWN, Physics.grassFriction, Res.soil, 2, 0, 0),

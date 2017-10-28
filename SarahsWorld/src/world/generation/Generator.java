@@ -13,10 +13,10 @@ import things.Thing;
 import util.math.Vec;
 import world.WorldData;
 import world.WorldData.Column;
-import world.generation.zones.Graveyard;
 import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
+import world.generation.zones.Ocean;
 
 
 public class Generator {
@@ -40,7 +40,7 @@ public class Generator {
 		this.world = world;
 		this.genRadius = radius;
 		
-		Biome startBiome = Biome.JUNGLE;//TODO make it random
+		Biome startBiome = Biome.FIR_FORREST;//TODO make it random
 		
 		posL = new Vec();
 		posR = new Vec();
@@ -48,8 +48,8 @@ public class Generator {
 		biomeL = new BiomeManager(world, startBiome, true);
 		biomeR = new BiomeManager(world, startBiome, false);
 
-		zoneL = new Graveyard(random, biomeL, 0, true);
-		zoneR = new Graveyard(random, biomeR, 0, false);
+		zoneL = new Mountains(random, biomeL, 0, true);
+		zoneR = new Mountains(random, biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}

@@ -37,6 +37,7 @@ import render.VBO;
 import render.VBO.VAP;
 import things.Thing;
 import things.ThingType;
+import things.aiPlugins.Speaking.ThoughtBubble;
 import util.Color;
 import util.math.Vec;
 import world.WorldData.Column;
@@ -176,8 +177,7 @@ public class WorldWindow implements Updater, Renderer{
 		renderLandscape();
 		
 		Framebuffer.bindNone();
-
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.4f);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -186,15 +186,18 @@ public class WorldWindow implements Updater, Renderer{
 		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
 		Render.drawSingleQuad(completeWindow, Color.WHITE, landscapeBuffer.getTex(), 0, 0, scaleX, scaleY, true, 0);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		renderThings((type) -> true);
+		renderThings((type) -> type != ThingType.CLOUD);
 		renderItemsInHand();
+		GL11.glAlphaFunc(GL11.GL_ALWAYS, 1.0f);
+		renderThings((type) -> type == ThingType.CLOUD);
 //		white.render(new Vec(-50, 0), +0.1, 1);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
 		renderWater();
 
 		//Outlines of living things
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_GREATER);
 		GL11.glBlendFunc(GL11.GL_DST_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -202,6 +205,7 @@ public class WorldWindow implements Updater, Renderer{
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		
 //		renderDarkness();
 		
@@ -258,7 +262,7 @@ public class WorldWindow implements Updater, Renderer{
 //			renderBoundingBoxes();
 //		}
 		for(Effect effect : effects){
-			if(effect instanceof FogWorld){
+			if(effect instanceof FogWorld || effect instanceof ThoughtBubble){
 				effect.render(scaleX, scaleY);
 			}
 		}
@@ -321,8 +325,8 @@ public class WorldWindow implements Updater, Renderer{
 		LandscapeWindow.layersDrawn = 0;
 
 		//LANDSCAPE
-		Res.landscapeShader.bind();
-		Res.landscapeShader.set("transform", offsetX, offsetY, scaleX, scaleY);
+		Res.landscapeShader.bind();//Yes, don't use scaleX, scaleY here, because the landscape gets rendered into a framebuffer
+		Res.landscapeShader.set("transform", offsetX, offsetY, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 		landscape.vao.bindStuff();
 			//draw normal quads
 			landscape.drawNormalQuads();
@@ -370,8 +374,6 @@ public class WorldWindow implements Updater, Renderer{
 			}
 		}
 
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
 		shader.bind();
 		shader.set("scale", scaleX, scaleY);
 		shader.set("offset", -(float)Main.world.avatar.pos.x, -(float)Main.world.avatar.pos.y);
@@ -394,7 +396,6 @@ public class WorldWindow implements Updater, Renderer{
 		}
 		TexFile.bindNone();
 		Shader.bindNone();
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
 	}
 	public void renderItemsInHand(){
 		Res.thingShader.bind();

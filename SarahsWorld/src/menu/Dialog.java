@@ -21,6 +21,7 @@ import util.TrueTypeFont2;
 import util.math.Graph;
 import util.math.UsefulF;
 import util.math.Vec;
+import util.shapes.Quad;
 
 public class Dialog extends Element {
 	public static Texture answersTex = Res.answers;
@@ -105,10 +106,13 @@ public class Dialog extends Element {
 		}
 	}
 	
+	Quad test = new Quad(new Vec(0,0), new Vec(300, 300), Color.BLUE);
 	Vec graph = new Vec();
 	Color textColor1 = new Color(0.9f, 0.9f, 0.9f), textColor2 = new Color(0.5f, 0.5f, 0.5f);
 	Texture corner = new Texture("res/menu/SpeechBubbleCorner.png", 0, 0);
 	public void render(){
+		System.out.println("Dialog is beeing rendered!");
+		test.render(new Vec(0,0), 1);
 		GL11.glPushMatrix();
 		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.x, Window.HEIGHT_HALF - Main.world.avatar.pos.y, 0);
 		
