@@ -15,6 +15,7 @@ import things.Thing;
 import util.math.Vec;
 import world.LandscapeWindow;
 import world.World;
+import world.WorldWindow;
 
 public  class AvatarControl extends AiPlugin implements Listener{
 
@@ -66,7 +67,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 	}
 
 	public boolean pressed(int button, Vec mousePos) {
-		for(Effect e : Main.world.window.effects){
+		for(Effect e : WorldWindow.getEffects()){
 			e.pressed(button, mousePos);
 		}
 		return false;
@@ -83,7 +84,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			}
 			break;
 		case 1://USE
-			Thing[] objectsClickedOn = Main.world.window.objectsAt(worldPos);
+			Thing[] objectsClickedOn = Main.world.window.thingsAt(worldPos);
 			Main.world.avatar.type.inv.useSelectedItem(Main.world.avatar, worldPos, objectsClickedOn);
 			break;
 		case 2:
@@ -100,7 +101,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			break;
 		}
 		
-		for(Effect e : Main.world.window.effects){
+		for(Effect e : WorldWindow.getEffects()){
 			e.released(button, mousePos, pathSincePress);
 		}
 //		int hitThingLoc = -3;

@@ -3,8 +3,10 @@ package things;
 import java.util.ArrayList;
 import java.util.List;
 
+import effects.particles.RainbowSpit;
 import item.ItemType;
 import item.ItemType.WeaponType;
+import main.Main;
 import main.Res;
 import render.Animation;
 import render.TexAtlas;
@@ -30,6 +32,7 @@ import util.math.Vec;
 import world.World;
 import world.WorldData;
 import world.WorldData.Column;
+import world.WorldWindow;
 import world.generation.Biome.ThingSpawner.Spawner;
 
 public class ThingType {
@@ -58,18 +61,18 @@ public class ThingType {
 											},{
 									
 											new Animation("stand",		Res.sarah_onCow, 6, 0),//stand
-											new Animation("fly",		Res.sarah_onCow, 6, 2),
+											new Animation("fly",		Res.sarah_onCow, 2, 1),
 											new Animation("walk", 		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4),
 											new Animation("sprint",		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4),
-											new Animation("jump",		Res.sarah_onCow, 6, 0),//jump
-											new Animation("land",		Res.sarah_onCow, 6, 0),//land
+											new Animation("jump",		Res.sarah_onCow, 20, 1, /**/0, 1, 2),//jump
+											new Animation("land",		Res.sarah_onCow, 20, 1, /**/2, 3, 4),//land
 											new Animation("punch",		Res.sarah_onCow, 6, 0),//punch
 											new Animation("kick",		Res.sarah_onCow, 6, 0),//kick
 											new Animation("strike",		Res.sarah_onCow, 6, 0),//strike
 											new Animation("spell",		Res.sarah_onCow, 6, 0),//spell
-											new Animation("dive", 		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4),
+											new Animation("dive", 		Res.sarah_onCow, 2, 1),
 											new Animation("swim", 		Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4),
-											new Animation("plunge", 	Res.sarah_onCow,	20,	1, /**/0, 1, 2, 3, 4),
+											new Animation("plunge", 	Res.sarah_onCow, 2, 1),
 											
 											new Animation("mount",		Res.sarah_onCow,	20,	0, /**/0, 1, 2, 3, 4, 5, 6),
 											new Animation("dismount",	Res.sarah_onCow,	20,	0, /**/6, 5, 4, 3, 2, 1, 0)}};
@@ -88,8 +91,7 @@ public class ThingType {
 					}),
 			new Riding(new Rect(Res.sarah.pixelCoords), new Rect(Res.sarah_onCow.pixelCoords)),
 			new Inventory(ItemType.NOTHING, 5),
-			new Physics(1, 1),
-			new Speaking()
+			new Physics(1, 1)
 	){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			super.setup(t, world, field, pos);
@@ -282,6 +284,33 @@ public class ThingType {
 		}
 	};
 	
+	static final Animation[] unicorn = {
+			new Animation("stand", Res.unicorn, 0, 0),
+			new Animation("walk", Res.unicorn, 10, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
+			new Animation("sprint", Res.unicorn, 20, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
+			new Animation("spit", Res.unicorn, 5, 2,/**/0, 1, 2, 2, 2)};
+	public static final ThingType UNICORN = new ThingType("UNICORN", Res.unicorn, 40, true, (w, p, f, ed) -> new Thing(ThingType.UNICORN, w, p, f.shift(0, 100), ed)
+			,new Animating(unicorn[0], new Rect(Res.unicorn.pixelCoords), 0, 0, 4, false, unicorn)
+			,new Life(20, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH, ItemType.UNICORN_HORN}, 0.5, 0.5, 0.5, 1.1)
+			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand")
+			,new Attacking(2, 0.05, new AttackType[]{new AttackType("spit", 300, -300, 300, WeaponType.SPELL, 2, 2, 0.5,
+					new AttackSelectedSpell(AttackType.standardEffect, 2.0), AttackType.standardEffect)})
+			,new Following(500.0, 50, ThingType.SARAH)
+			,new WalkAround()
+			,new Physics(1, 1)) {
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData) {
+			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+		};
+
+		public void update(Thing t, double delta){
+			if(follow.action(t, delta)){//follow
+				attack.attack(t, WeaponType.SPELL, ItemType.NOTHING, "spit", t.target);//attack
+			} else if(t.target == null){
+				walkAround.action(t, delta);//walk around
+			}
+		}
+	};
+	
 										static final Animation[] cat_giant = {
 												new Animation("stand", Res.cat_giant, 0, 0),
 												new Animation("walk", Res.cat_giant, 10, 0,/**/1, 2, 3, 4),
@@ -340,6 +369,18 @@ public class ThingType {
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
+		}
+	};
+	
+	static final Animation[][] heart = {
+			{new Animation("hover", Res.heart, 10, 0, /**/0, 1, 2, 3, 2, 1)},
+			{new Animation("hover", Res.heart, 10, 1, /**/0, 1, 2, 3, 2, 1)}};
+	public static final ThingType HEART = new ThingType("HEART", Res.heart, 300, true
+			,new Animating(heart[0][0], new Rect(Res.heart.pixelCoords), 0, 0, 1, false, heart)) {
+
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
+			t.ani.pos = (int)extraData[0];
+			t.yOffset = 80;
 		}
 	};
 //	public static final ThingType BIRD_NORMAL = new ThingType(Res.bird){

@@ -19,20 +19,21 @@ import world.WorldWindow;
 
 public enum ItemType {
 
-//				Texture texWorld,			Texture texHand,		Texture texinv,			Rect boxWorld,				Rect boxHand,		String name, int coolDownStart, int value, WeaponType weaponType,	ItemUsageType useType, 	BodyPos bodyPos,int attackStrength, double crit,double critProb, boolean needsTarget
-//				Texture World           	|Texture on creature	|Texture inventory	 	|Box world					|Box on creature	|Name			|Cooldown						
+//				Texture texWorld,			Texture texHand,					Texture texinv,			Rect boxWorld,				Rect boxHand,	String name, int coolDownStart, int value, WeaponType weaponType,	ItemUsageType useType, 	BodyPos bodyPos,int attackStrength, double crit,double critProb, boolean needsTarget
+//				Texture World           	|Texture on creature				|Texture inventory	 	|Box world					|Box on creature|Name			|Cooldown						
 	SWORD(		Res.items_inv.sfA(0, 0),	Res.items_weapons.tex(0, 0),		Res.items_inv.tex(0, 0), new int[]{-25, -2, 50, 50}, "Sword",		500,			20, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	4, 					6, 			0.1,			false),
 	AXE(		Res.items_inv.sfA(1, 0),	Res.items_weapons.tex(1, 0),		Res.items_inv.tex(1, 0), new int[]{-25, -2, 50, 50}, "Axe",			1000,			100, 		WeaponType.STRIKE,		ItemUsageType.FIST,		BodyPos.HAND, 	10, 				14,			0.1,			false),
 	STICK(		Res.items_inv.sfA(2, 0),	Res.items_weapons.tex(2, 0),		Res.items_inv.tex(3, 0), new int[]{-25, -2, 50, 50}, "Stick",		500,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2, 					2, 			0,				false),
 	CANDY_CANE(	Res.items_inv.sfA(3, 0),	Res.items_weapons.tex(3, 0),		Res.items_inv.tex(5, 0), new int[]{-25, -2, 50, 50}, "Candy cane",	1000,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2,					2,			0,				false),
 	SHOVEL(		Res.items_inv.sfA(4, 0),	Res.items_weapons.tex(4, 0),		Res.items_inv.tex(4, 0), new int[]{-25, -2, 50, 50}, "Shovel",		700,			70, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.1,			false),
+	UNICORN_HORN(Res.items_inv.sfA(5, 0),	Res.items_weapons.tex(1, 1),		Res.items_inv.tex(5, 0), new int[]{-25, -2, 50, 50}, "Unicorn horn",1000,			200,		WeaponType.SPELL,		ItemUsageType.FIST,		BodyPos.HEAD,	10,					2,			0.03,			false),
 //	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.items_inv.tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
 	BERRY(		Res.items_inv.sfA(6, 0),	Res.items_weapons.tex(7, 0),		Res.items_inv.tex(6, 0), new int[]{-25, -2, 50, 50}, "Berry",		0,				8, 			WeaponType.PUNCH,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.3,			false){
 		public boolean use(Thing src, Vec pos){
 			src.itemStacks[Main.world.avatar.selectedItem].item = ItemType.NOTHING;
 			if(src.mana + 2 <= Main.world.avatar.type.magic.maxMana){
 				src.mana += 2;
-				WorldWindow.effects.add(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
+				WorldWindow.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
 				return true;
 			}
 			return false;
@@ -71,7 +72,6 @@ public enum ItemType {
 				int index = World.rand.nextInt(dest.fruits.size());
 				ItemType i = dest.fruits.get(index);
 				dest.fruits.remove(index);
-				System.out.println(i.name);
 				if(i != null) src.type.inv.addItem(src, i, 1);
 				success = true;
 			} else {
@@ -85,8 +85,6 @@ public enum ItemType {
 						success = true;
 					}
 				}
-	//			case BUSH:
-	//				break;
 			}
 			return success;
 		}

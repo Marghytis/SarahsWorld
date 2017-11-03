@@ -26,6 +26,7 @@ public class Riding extends AiPlugin {
 		rider.type.file = rider.type.ani.animations[1][0].atlas;
 		rider.box = ridingBox;
 		rider.aniSet = 1;
+		rider.needsUnusualRenderUpdate = true;
 		
 		if(rider.mountedThing != null){//rider is already riding on something
 			rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount+1], () -> {

@@ -32,13 +32,13 @@ public class Nametag implements Effect {
 		
 	}
 
-	public void render() {
+	public void render(float scaleX, float scaleY) {
 		if(Settings.SHOW_NAME_TAGS){
-			Color.BLACK.bind();
-			Res.light2.file.bind();
-			Main.world.window.forEach(ThingType.ITEM, (t) -> {
-				Res.light.fill(t.pos.x - 50, t.pos.y - 20, t.pos.x + Menu.font.getWidth(t.itemBeing.name)/2 + 50, t.pos.y + Menu.font.getHeight() + 20, false);
-			});
+//			Color.BLACK.bind();
+//			Res.light2.file.bind();
+//			Main.world.window.forEach(ThingType.ITEM, (t) -> {
+//				Res.light.fill(t.pos.x - 50, t.pos.y - 20, t.pos.x + Menu.font.getWidth(t.itemBeing.name)/2 + 50, t.pos.y + Menu.font.getHeight() + 20, false);
+//			});TODO
 			
 			TexFile.bindNone();
 			Color.WHITE.bind();

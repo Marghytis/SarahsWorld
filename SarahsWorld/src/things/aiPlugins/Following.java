@@ -9,11 +9,12 @@ import things.ThingType;
 public class Following extends AiPlugin{
 
 	double maxDistanceSquare;
-	double rAimSq;
+	double rAimSq, rAim;
 	ThingType[] targetClasses;
 	
 	public Following(double maxDistance, double rAim, ThingType... classes){
 		this.maxDistanceSquare = maxDistance*maxDistance;
+		this.rAim = rAim;
 		this.rAimSq = rAim*rAim;
 		this.targetClasses = classes;
 	}
@@ -23,18 +24,20 @@ public class Following extends AiPlugin{
 			findTarget(t);
 			int acc = 0;
 			if(t.target != null){
-				if(t.target.pos.minus(t.pos).lengthSquare() > rAimSq) {
+				double r = rAim + (t.box.size.x/2);
+				if(t.target.pos.minus(t.pos).lengthSquare() > r*r) {
 					if(t.target.pos.x > t.pos.x){
 						acc += 2;
 					} else if(t.target.pos.x < t.pos.x){
 						acc -= 2;
 					}
-					if(acc != 0){
-						t.type.movement.setAni(t, acc);
-						t.walkingForce = acc*2*t.accWalking;
-						t.maxWalkingSpeed = t.accWalking/5;
-					}
 				} else {
+				}
+				t.type.movement.setAni(t, acc);
+				t.walkingForce = acc*2*t.accWalking;
+				t.maxWalkingSpeed = t.accWalking/5;
+
+				if(acc == 0){
 					return true;
 				}
 			}

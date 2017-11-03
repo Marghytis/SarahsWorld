@@ -14,7 +14,6 @@ import main.Res;
 import menu.Settings.Key;
 import render.Texture;
 import render.VAO;
-import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
 import util.Anim;
@@ -22,7 +21,6 @@ import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
 import world.World;
-import world.generation.Biome;
 
 public class Menu implements Updater, Renderer, Listener {
 	public static Texture MONEYBAG = Res.moneybag;
@@ -148,12 +146,12 @@ public class Menu implements Updater, Renderer, Listener {
 		DEBUG(false, false){
 			public void setElements(){
 				elements = new Element[]{new Debugger(),
-						new Button("Immortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.8f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						new FlexibleButton(() -> Main.world.avatar.immortal? "Mortal" : "Immortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.8f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								Main.world.avatar.immortal = !Main.world.avatar.immortal;
 							}
 						},
-						new Button("Disable agressive creatures", 0.7, 0.2, 0.7, 0.2, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						new FlexibleButton(() -> Settings.AGGRESSIVE_CREATURES? "Disable agressive creatures" : "Enable agressive creatures", 0.7, 0.2, 0.7, 0.2, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								Settings.AGGRESSIVE_CREATURES = !Settings.AGGRESSIVE_CREATURES;
 							}
@@ -167,7 +165,7 @@ public class Menu implements Updater, Renderer, Listener {
 								}
 							}
 						},
-						new Button("Draw transitions", 0.7, 0.4, 0.7, 0.4, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						new FlexibleButton(() -> Settings.DRAW_TRANSITIONS? "Don't draw transitions" : "Draw transitions", 0.7, 0.4, 0.7, 0.4, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
 								Settings.DRAW_TRANSITIONS = !Settings.DRAW_TRANSITIONS;
 							}

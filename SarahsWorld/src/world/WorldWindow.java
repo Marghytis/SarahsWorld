@@ -9,7 +9,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
 
 import core.Listener;
 import core.Renderer;
@@ -17,34 +16,28 @@ import core.Updater;
 import core.Window;
 import effects.Effect;
 import effects.WorldEffect;
-import effects.particles.FogWorld;
 import effects.particles.ParticleEffect;
 import effects.particles.ParticleEmitter;
 import item.ItemType;
 import item.Nametag;
 import main.Main;
 import main.Res;
-import main.Shader20;
 import menu.Settings;
 import quest.ActiveQuest;
 import render.Framebuffer;
 import render.Render;
 import render.Shader;
-import render.TexAtlas;
 import render.TexFile;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
 import things.Thing;
 import things.ThingType;
-import things.aiPlugins.Speaking.ThoughtBubble;
 import util.Color;
 import util.math.Vec;
 import world.WorldData.Column;
 
 public class WorldWindow implements Updater, Renderer{
-	public static Vec offset = new Vec(-Window.WIDTH_HALF, -Window.HEIGHT_HALF);
-	public static Vec scale = new Vec(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
 	public WorldData world;
 //	public Chunk[] loadedChunks = new Chunk[3];
 	public LandscapeWindow landscape;
@@ -54,7 +47,7 @@ public class WorldWindow implements Updater, Renderer{
 	
 
 	public static Weather weather = new Weather();
-	public static List<Effect> effects = new ArrayList<>();
+	private static List<Effect> effects = new ArrayList<>();
 	public static List<Effect> toAdd = new ArrayList<>();
 	
 	VAO completeWindow;
@@ -262,9 +255,7 @@ public class WorldWindow implements Updater, Renderer{
 //			renderBoundingBoxes();
 //		}
 		for(Effect effect : effects){
-			if(effect instanceof FogWorld || effect instanceof ThoughtBubble){
-				effect.render(scaleX, scaleY);
-			}
+			effect.render(scaleX, scaleY);
 		}
 //
 		for(ActiveQuest aq : world.quests){
@@ -438,35 +429,15 @@ public class WorldWindow implements Updater, Renderer{
 		Shader.bindNone();
 	}
 	
+	Consumer<Thing> boundingBoxRenderer = (t) -> {
+//		Render.bounds(t.ani.tex.pixelCoords, t.pos.x, t.pos.y + t.yOffset);TODO
+//		t.pos.drawPoint();
+	};
 	public void renderBoundingBoxes(){
-		TexFile.bindNone();
-		Color.WHITE.bind();
-		for(int i = 0; i < ThingType.types.length; i++) {
-			//the pointer thing in the columns is always the dummy of its kind and is the one before the things of the next column
-			for(Thing cursor = leftEnd.left.things[i]; cursor != rightEnd.things[i]; cursor = cursor.right){
-				if(cursor.type != ThingType.DUMMY){
-					Render.bounds(cursor.ani.pixelCoords, cursor.pos.x, cursor.pos.y + cursor.yOffset);
-					cursor.pos.drawPoint();
-				}
-			}
-		}
+		forEachThing(boundingBoxRenderer);
 	}
 	
 	public void setPos(double x){
-//		int chunk = (int)Math.floor(x/Chunk.realSize);
-//		//find the chunk at that location
-//		Chunk current = loadedChunks[1];
-//		while(current.xIndex > chunk && current.left != null){
-//			current = current.left;
-//		}
-//		while(current.xIndex < chunk && current.right != null){
-//			current = current.right;
-//		}
-//		//set the found chunks to be loaded
-//		loadedChunks[0] = current.left;//Neighbors cannot be null at this point
-//		loadedChunks[1] = current;
-//		loadedChunks[2] = current.right;
-
 		landscape.moveTo((int)Math.floor(x/Column.step));
 	}
 
@@ -509,23 +480,28 @@ public class WorldWindow implements Updater, Renderer{
 		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 	
+	public static List<Effect> getEffects(){
+		return effects;
+	}
+	
+	public static void addEffect(Effect effect){
+		toAdd.add(effect);
+	}
+	
 	public void forEach(ThingType type, Consumer<Thing> cons){
 
-		for(int chunk = 0; chunk < loadedChunks.length; chunk++)
-		for(int col = 0; col < loadedChunks[chunk].columns.length; col++)
-		for(Thing cursor = loadedChunks[chunk].columns[col].things[type.ordinal]; cursor != null; cursor = cursor.next){
-			cons.accept(cursor);
-		}
-		
+		for(int col = 0; col < landscape.columns.length; col++)
+			for(Thing thing = landscape.columns[col].things[type.ordinal]; thing != null; thing = thing.next){
+				cons.accept(thing);
+			}
 	}
 	
 	public void forEachThing(Consumer<Thing> cons){
 
 		for(int type = 0; type < ThingType.types.length; type++)
-		for(int chunk = 0; chunk < loadedChunks.length; chunk++)
-		for(int col = 0; col < loadedChunks[chunk].columns.length; col++)
-		for(Thing cursor = loadedChunks[chunk].columns[col].things[type]; cursor != null; cursor = cursor.next){
-			cons.accept(cursor);
+		for(int col = 0; col < landscape.columns.length; col++)
+		for(Thing thing = landscape.columns[col].things[type]; thing != null; thing = thing.next){
+			cons.accept(thing);
 		}
 	}
 

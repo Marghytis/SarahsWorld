@@ -6,7 +6,7 @@ import java.util.Random;
 public abstract class Zone {
 
 	public static enum Attribute {
-		TREES, DRY, MOIST, LAKES, ROUGH, FLAT, LONELY, BUSY, HOT, HILLY
+		TREES, DRY, MOIST, LAKES, ROUGH, FLAT, LONELY, BUSY, HOT, HILLY, SWEET
 	}
 	protected Random random;
 	public BiomeManager biome;

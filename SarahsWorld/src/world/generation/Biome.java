@@ -28,8 +28,8 @@ public enum Biome {
 				null
 			},
 			new ThingSpawner[]{
-				new ThingSpawner(ThingType.PYRAMID.defaultSpawner, 0.03),
-				new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05),
+				new ThingSpawner(spawnBetween(ThingType.PYRAMID, -30, -50), 0.03),
+				new ThingSpawner(spawnBetween(ThingType.CACTUS, -5, -10), 0.05),
 				new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05),
 				new ThingSpawner(ThingType.SCORPION.defaultSpawner, 0.01)
 			},
@@ -50,9 +50,9 @@ public enum Biome {
 			},
 			new ThingSpawner[]{
 				new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.1),
-				new ThingSpawner(ThingType.TREE_PALM.defaultSpawner, 0.1),
+				new ThingSpawner(spawnBetween(ThingType.TREE_PALM, -7, -14), 0.1),
+				new ThingSpawner(spawnBetween(ThingType.BUSH_NORMAL, -5, -10), 0.08),
 				new ThingSpawner(ThingType.SCORPION.defaultSpawner, 0.02),
-				new ThingSpawner(ThingType.BUSH_NORMAL.defaultSpawner, 0.08)
 			},
 			new EffectSpawner[]{
 			}
@@ -94,17 +94,20 @@ public enum Biome {
 			new Stratum[]{
 				null,
 				new Stratum(Material.CANDY, 60.0, 20.0, 20, 40, 20, 4),
-				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 20, 4),
 				null,
 				null,
 				null,
 				null,
-				new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 1, 5),
+				null,
+				new Stratum(Material.SNOW, 1000.0, 200.0, 20, 40, 1, 5),
 				null
 			},
 			new ThingSpawner[]{
-				new ThingSpawner(ThingType.BUSH_CANDY.defaultSpawner, 0.03),
-				new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05)
+				new ThingSpawner(spawnBetween(ThingType.BUSH_CANDY, -5, -15), 0.1),
+				new ThingSpawner(spawnBetween(ThingType.FLOWER_CANDY, -5, -10), 0.2),
+				new ThingSpawner(spawnBetween(ThingType.TREE_CANDY, -20, -30), 0.06),
+				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.HEART, w, c, pos, 1), 0.04),
+				new ThingSpawner(ThingType.UNICORN.defaultSpawner, 0.01),
 			},
 			new EffectSpawner[]{
 			}),
@@ -154,11 +157,11 @@ public enum Biome {
 				null,
 				new Stratum(Material.GRASS, 20.0, 20.0, 5, 40, 2, 4),
 				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 5, 4),
-				null,
-				null,
-				null,
-				null,
-				new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 5, 5),
+				new Stratum(Material.STONE, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE, 100.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 100.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 1, 5),
 				null
 			},
 			new ThingSpawner[]{
@@ -234,6 +237,30 @@ public enum Biome {
 				new EffectSpawner[]{
 				}
 		),
+		FIR_VILLAGE(new Color(0.65f, 0.83f, 1f), new Color(0.27f, 0.47f, 0.81f),
+				new Stratum[]{
+					null,
+					new Stratum(Material.GRASS, 20.0, 20.0, 5, 40, 2, 4),
+					new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 5, 4),
+					new Stratum(Material.STONE, 50.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE2, 50.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE, 100.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE2, 100.0, 20.0, 20, 40, 1, 5),
+					new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 1, 5),
+					null
+				},
+				new ThingSpawner[]{
+					new ThingSpawner(ThingType.TREE_FIR.defaultSpawner, 0.05)
+					,new ThingSpawner(ThingType.GRASS.defaultSpawner, 0.2)
+					,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.03)
+					,new ThingSpawner(ThingType.VILLAGER.defaultSpawner, 0.1)
+					,new ThingSpawner(spawnBetween(ThingType.HOUSE, -20, -30, false), 0.05)
+					,new ThingSpawner(spawnBetween(ThingType.TOWN_OBJECT, -20, -30), 0.05)
+					,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.01)
+//					,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.VILLAGER, w,p, f), 0.01)	
+				},
+				new EffectSpawner[]{
+				}),
 	EMPTY(new Color(1, 1, 1), new Color(1f, 1f, 1f), new Stratum[]{
 			null,
 			null,
@@ -354,16 +381,22 @@ public enum Biome {
 			return t;
 		};
 	}
-	
+
 	public static Spawner spawnBetween(ThingType type, double y1, double y2){
-		return spawnBetween(type, y1, y2, true);
+		return spawnBetween(type, y1, y2, true, true);
 	}
 	
 	public static Spawner spawnBetween(ThingType type, double y1, double y2, boolean front){
+		return spawnBetween(type, y1, y2, false, front);
+	}
+	
+	public static Spawner spawnBetween(ThingType type, double y1, double y2, boolean randomSide, boolean front){
 		return (w, c, pos, ed) -> {
 			Thing t = new Thing(type, w, c, pos.copy(), ed);
 			t.yOffset = y1 + World.rand.nextDouble()*(y2-y1);
-			if(!front){
+			boolean frontLocal = front;
+			if(randomSide) frontLocal = World.rand.nextBoolean();
+			if(!frontLocal){
 				t.z = foliageZ.f(t.yOffset);
 			} else {
 				t.z = -foliageZ.f(t.yOffset);
@@ -372,7 +405,7 @@ public enum Biome {
 		};
 	}
 
-	//assigns a z value to every yOffset, so that no plant overlap badly (leaves a gap of 0.2 around z=0 for living things)
+	//assigns a z value to every yOffset, so that no plants overlap badly (leaves a gap of 0.2 around z=0 for living things)
 	public static final Function foliageZ = (y) -> 0.1*(1.5 - (Math.atan(y)/Math.PI));
 	
 	public static class SpawnType {

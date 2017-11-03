@@ -1,0 +1,1 @@
+1. Nothing is rendered when using glDrawElements: indices buffer offset has to be in bytes

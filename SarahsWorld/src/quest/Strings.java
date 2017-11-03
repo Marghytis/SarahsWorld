@@ -17,7 +17,7 @@ public class Strings {
 			String line = "";
 			
 			while((line = reader.readLine()) != null){
-				String[] data = line.replace("\"", "").split("=");
+				String[] data = line.replace("\"", "").replace("; ", ";").split("=");
 				strings.put(data[0], data[1].split(";"));
 			}
 			

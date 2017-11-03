@@ -2,6 +2,7 @@ package effects.particles;
 
 import effects.particles.Particle.ParticleType;
 import main.Res;
+import things.AttackType.AttackEffect;
 import things.Thing;
 import util.Color;
 import util.math.Vec;
@@ -34,8 +35,8 @@ public class RainbowSpit implements ParticleEffect{
 		
 		@Override
 		public void makeParticle(Particle p) {
-			p.pos.set(pos.x, pos.y + (-color*2));
-			p.vel.set(/*source.ani.dir ? -0.2f : */200f, speedY[color]);
+			p.pos.set(pos.x, pos.y - (color*2));
+			p.vel.set(-dir*200f, speedY[color]);
 			p.col.set(colors[color]);
 			p.rot = random.nextInt(3)-1;
 			color = (color+1)%6;
@@ -44,11 +45,13 @@ public class RainbowSpit implements ParticleEffect{
 		@Override
 		public void velocityInterpolator(Particle p, float delta) {
 			p.vel.y -= 2f;
-//			if(World.sarah != null){
-//				if(World.sarah.animator.tex.texs[0][0].box.plus(World.sarah.pos).contains(p.pos)){
-//					World.sarah.hitBy(source, null);
-//				}
-//			}
+			if(targets != null){
+				for(int i = 0; i < targets.length; i++){
+					if(targets[i].box.copy().shift(targets[i].pos).contains(p.pos)){
+						effect.attackEffect(source, damages[i], targets[i]);
+					}
+				}
+			}
 		}
 
 		@Override
@@ -73,11 +76,22 @@ public class RainbowSpit implements ParticleEffect{
 	
 	Vec pos;
 	float live = 1.5f;
-	Thing source;
+	int damages[];
+	Thing source, targets[];
+	AttackEffect effect;
+	int dir;
 	
-	public RainbowSpit(Vec pos, Thing source){
+	public RainbowSpit(Vec pos, int dir){
+		this(pos, dir, null, null, null, null);
+	}
+	
+	public RainbowSpit(Vec pos, int dir, Thing source, Thing[] target, int[] damage, AttackEffect effect){
 		this.pos = pos.copy();
+		this.dir = dir;
 		this.source = source;
+		this.targets = target;
+		this.damages = damage;
+		this.effect = effect;
 	}
 	
 	@Override

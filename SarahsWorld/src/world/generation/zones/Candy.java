@@ -1,63 +1,36 @@
 package world.generation.zones;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
-import util.math.Function;
-import util.math.Vec;
 import world.generation.Biome;
 import world.generation.BiomeManager;
 import world.generation.Zone;
 
 public class Candy extends Zone {
-
+	
+public static boolean[] description = describe(Attribute.SWEET);
+	
 	double width;
-	
-	Vec[] interpolationPoints;
-	int interpolationIndex;
-	Function curve;
-	
-	public Candy(BiomeManager biome, double originX) {
-		super(biome, originX);
+	double height;
+	double offsetByLakes;
+
+	public Candy(Random random, BiomeManager biome, double originX, boolean left) {
+		super(random, biome, originX, left, description);
 		biome.switchToBiome(Biome.CANDY);
-
-		width =  10000 + random.nextInt(5000);
 		
-		List<Vec> points = new ArrayList<>();
-		double x = 0;
-		points.add(new Vec());
-
-		int widthPar = 500;
-		int widthVar = 300;
-		int heightVar = 1000;
+		width =  40000 + random.nextInt(10000);
 		
-		while(x < width){
-			x += widthPar + (random.nextInt(2*widthVar)-widthVar);
-			points.add(new Vec(x, random.nextInt(2*heightVar)-heightVar));
-		}
-		this.width = x;
-		
-		interpolationPoints = points.toArray(new Vec[points.size()]);
+		subZone = new Hills(random, biome, 0, left, 0, 3, 1, width, description);
 	}
 	
 	public double step(double x) {
-		//end zone
-		if(x >= width){
-			end = true;
+		//Change biome / subZone
+		if(subZone instanceof Hills && subZone.end) end = true;
+
+		if(subZone instanceof Hills && ((Hills)subZone).reachedP2){
+			subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2, 1, width - x, description);
 		}
-		
-		//interpolate hills
-		if(x >= interpolationPoints[interpolationIndex].x && interpolationIndex + 1 < interpolationPoints.length){
-			interpolationIndex++;
-			Vec delta = interpolationPoints[interpolationIndex].minus(interpolationPoints[interpolationIndex - 1]);
-			curve = Function.parabola2(delta.x, delta.y);
-		}
-		
-		//return dy
-		double dy = 0;
-		if(x < width){
-			dy = curve.f(x - interpolationPoints[interpolationIndex - 1].x);
-		}
-		return dy;
+
+		return ownHeight;
 	}
 }

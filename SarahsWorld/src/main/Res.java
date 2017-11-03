@@ -1,5 +1,7 @@
 package main;
 
+import java.awt.Font;
+
 import render.Shader;
 import render.TexAtlas;
 import render.TexFile;
@@ -27,7 +29,7 @@ public class Res {
 	public static final TexAtlas plant_giant = new TexAtlas("res/objects/GiantPlant.png", 1, 4, -0.5f, 0);//-0.2
 	public static final TexAtlas grass_giant = new TexAtlas("res/objects/GiantGras.png", 1, 3, -0.5f, 0);//-0.1
 	public static final TexAtlas tree_palm = new TexAtlas("res/objects/PalmTree.png", 1, 3, -0.5f, 0);//-0.03
-	public static final TexAtlas tree_candy = new TexAtlas("res/objects/CandyTree.png", 1, 1, -0.5f, 0);//-0.2
+	public static final TexAtlas tree_candy = new TexAtlas("res/objects/CandyTree.png", 1, 1, -0.5f, -0.17);//-0.2
 	public static final TexAtlas bamboo = new TexAtlas("res/objects/Bamboo.png", 1, 4, -0.5f, 0);//-0.02
 	public static final TexAtlas bush_normal = new TexAtlas("res/objects/Bush.png", 1, 2, -0.5f, 0);//-0.1
 	public static final TexAtlas bush_candy = new TexAtlas("res/objects/CandyBush.png", 1, 2, -0.5f, 0);//-0.2
@@ -55,6 +57,7 @@ public class Res {
 	public static final TexInfo sarah_HeadPos_dive = new TexInfo("res/creatures/Sarah_dive_hand.txt");
 	public static final TexInfo sarah_HeadPos_swim = new TexInfo("res/creatures/Sarah_dive_hand.txt");
 	public static final TexInfo villager_HandPos = new TexInfo("res/creatures/NPC.txt");
+	public static final TexInfo unicorn_MouthPos = new TexInfo("res/creatures/UnicornMouth.txt");
 	public static final TexAtlas sarah = new TexAtlas("res/creatures/Sarah.png", 11, 10, -0.5, -0.1);static {sarah.addInfo(sarah_HandPos, sarah_HeadPos);}
 	public static final TexAtlas sarah_dive = new TexAtlas(sarah.file, 50, 0, 400, 75, 5, 1, -0.5, -0.1);static {sarah_dive.addInfo(sarah_HandPos_dive, sarah_HeadPos_dive);}
 	public static final TexAtlas sarah_swim = new TexAtlas(sarah.file, 150, 675, 350, 56, 5, 1, -0.5, -0.5);static {sarah_swim.addInfo(sarah_HandPos_swim, sarah_HeadPos_swim);}
@@ -69,7 +72,7 @@ public class Res {
 	public static final TexAtlas panda  = new TexAtlas("res/creatures/Panda.png", 6, 2, -0.5f, -0.1f);
 	public static final TexAtlas scorpion  = new TexAtlas("res/creatures/Scorpion.png", 7, 2, -0.5f, -0.1f);
 	public static final TexAtlas cow  = new TexAtlas("res/creatures/Cow.png", 7, 1, -0.5f, -0.1f);
-	public static final TexAtlas unicorn = new TexAtlas("res/creatures/Unicorn.png", 6, 3, -0.5f, -0.1f);
+	public static final TexAtlas unicorn = new TexAtlas("res/creatures/Unicorn.png", 6, 3, -0.5f, -0.1f);static {unicorn.addInfo(unicorn_MouthPos);}
 	public static final TexAtlas unicorn_hair  = new TexAtlas("res/creatures/Unicorn_hair.png", 6, 3, -0.5f, -0.1f);
 	public static final TexAtlas trex  = new TexAtlas("res/creatures/Trex.png", 9, 4, -0.5f, -0.05f);
 	public static final TexAtlas cat_giant  = new TexAtlas("res/creatures/GiantCat.png", 5, 2, -0.5f, -0.05f);
@@ -117,8 +120,9 @@ public class Res {
 	public static final Texture candy = new Texture("res/materials/Candy.png", 0, 0);
 	public static final Texture soil = new Texture("res/materials/Soil.png", 0, 0);
 	public static final Texture water = new Texture("res/materials/Water.png", 0, 0);
+	public static final Texture ice = new Texture("res/materials/Ice.png", 0, 0);
 	
-	public static TrueTypeFont menuFont = /*new TrueTypeFont(new Font("Times New Roman", 0, 35), true)*/null;
+	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 35), true);
 	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);
 
 //	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);
@@ -129,4 +133,5 @@ public class Res {
 	public static Shader thingOutlineShader = Shader.withGeometry("res/shader/thing.vert", "res/shader/thing.geom", "res/shader/thingOutline.frag", "in_position", "in_rotation", "in_texCoords", "in_mirror", "in_color", "in_z", "in_size", "in_box", "in_texWH");
 	public static Shader darknessShader = Shader.create("res/shader/color.vert", "res/shader/color.frag", "in_Position", "in_Color");
 	public static Shader backgroundShader = Shader.create("res/shader/colorBackground.vert", "res/shader/colorBackground.frag", "in_Position");
+	public static Shader usualShader = Shader.create("res/shader/usual.vert", "res/shader/usual.frag", "in_position", "in_texCoords");
 }
