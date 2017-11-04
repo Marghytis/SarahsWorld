@@ -1,16 +1,12 @@
 package world;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Random;
 
-import core.Window;
-import things.Thing;
-import things.ThingType;
+import main.Main;
+import things.*;
 import util.math.Vec;
-import world.WorldData.Column;
-import world.WorldData.Vertex;
+import world.WorldData.*;
 import world.generation.Generator;
 
 public class World {
@@ -27,7 +23,7 @@ public class World {
 		world = this;
 
 		data = new WorldData(this);
-		generator = new Generator(data, Window.WIDTH + 800);
+		generator = new Generator(data, Main.SIZE.w + 800);
 		//TODO TODO TODO
 		/*
 		 * World initialization (Avatar, first Column etc.)
@@ -55,7 +51,7 @@ public class World {
 		Column anchor = data.leftColumn;
 		generator.borders(avatar.pos.x - generator.genRadius, avatar.pos.x + generator.genRadius);
 
-		window = new WorldWindow(data, anchor, avatar.pos.x, (int)((Window.WIDTH + 400)/Column.step));
+		window = new WorldWindow(data, anchor, avatar.pos.x, (int)((Main.SIZE.w + 400)/Column.step));
 	}
 	
 	public void save(DataOutputStream output) throws IOException {

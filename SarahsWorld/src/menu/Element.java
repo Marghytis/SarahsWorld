@@ -5,13 +5,8 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import core.Core;
-import core.Window;
-import render.Render;
-import render.Shader;
-import render.TexFile;
-import render.Texture;
-import render.VAO;
+import main.Main;
+import render.*;
 import util.Color;
 import util.math.Vec;
 
@@ -39,34 +34,34 @@ public class Element {
 		this.color = color;
 		this.tex = tex;
 		setCoords();
-		this.vao = Render.quadInScreen((short)(this.x1-Window.WIDTH_HALF), (short)(this.y1-Window.HEIGHT_HALF), (short)(this.x2-Window.WIDTH_HALF), (short)(this.y2-Window.HEIGHT_HALF));
+		this.vao = Render.quadInScreen((short)(this.x1-Main.HALFSIZE.w), (short)(this.y1-Main.HALFSIZE.h), (short)(this.x2-Main.HALFSIZE.w), (short)(this.y2-Main.HALFSIZE.h));
 	}
 	
 	public void setCoords(){
-		this.x1 = (int)(Window.WIDTH*relX1) + x1O;
-		this.y1 = (int)(Window.HEIGHT*relY1) + y1O;
-		this.x2 = (int)(Window.WIDTH*relX2) + x2O;
-		this.y2 = (int)(Window.HEIGHT*relY2) + y2O;
+		this.x1 = (int)(Main.SIZE.w*relX1) + x1O;
+		this.y1 = (int)(Main.SIZE.h*relY1) + y1O;
+		this.x2 = (int)(Main.SIZE.w*relX2) + x2O;
+		this.y2 = (int)(Main.SIZE.h*relY2) + y2O;
 		this.w = x2 - x1;
 		this.h = y2 - y1;
 	}
 	
 	public void updateVertexBuffer(){
 		ByteBuffer newCoords = BufferUtils.createByteBuffer(16*Float.BYTES);
-		newCoords.putShort((short)(x1-Window.WIDTH_HALF));
-		newCoords.putShort((short)(y1-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(x1-Main.HALFSIZE.w));
+		newCoords.putShort((short)(y1-Main.HALFSIZE.h));
 		newCoords.putShort((short)(0));
 		newCoords.putShort((short)(0));
-		newCoords.putShort((short)(x2-Window.WIDTH_HALF));
-		newCoords.putShort((short)(y1-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(x2-Main.HALFSIZE.w));
+		newCoords.putShort((short)(y1-Main.HALFSIZE.h));
 		newCoords.putShort((short)(1));
 		newCoords.putShort((short)(0));
-		newCoords.putShort((short)(x2-Window.WIDTH_HALF));
-		newCoords.putShort((short)(y2-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(x2-Main.HALFSIZE.w));
+		newCoords.putShort((short)(y2-Main.HALFSIZE.h));
 		newCoords.putShort((short)(1));
 		newCoords.putShort((short)(1));
-		newCoords.putShort((short)(x1-Window.WIDTH_HALF));
-		newCoords.putShort((short)(y2-Window.HEIGHT_HALF));
+		newCoords.putShort((short)(x1-Main.HALFSIZE.w));
+		newCoords.putShort((short)(y2-Main.HALFSIZE.h));
 		newCoords.putShort((short)(0));
 		newCoords.putShort((short)(1));
 		newCoords.flip();
@@ -87,7 +82,7 @@ public class Element {
 				Shader.singleQuad.set("texCoords", tex.texCoords[0], tex.texCoords[1], tex.texCoords[2] - tex.texCoords[0], tex.texCoords[3] - tex.texCoords[1]);
 			}
 			Shader.singleQuad.set("texture", tex != null);
-			Shader.singleQuad.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+			Shader.singleQuad.set("scale", 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 			Shader.singleQuad.set("offset", 0f, 0f);
 			Shader.singleQuad.set("size", 1f);
 			Shader.singleQuad.set("z", 0f);
@@ -98,12 +93,15 @@ public class Element {
 		
 		TexFile.bindNone();
 		Shader.bindNone();
-		Core.checkGLErrors(true, true, "after rendering this menu element with texture " + (tex != null ? tex.file.path : "null") + " and color " + (color != null ? color.toString() : "null"));
 	}
 	
 	public void pressed(int button, Vec mousePos){}
 	
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){return false;}
-	
+
 	public boolean keyPressed(int key){return false;}
+	
+	public boolean keyReleased(int key){return false;}
+	
+	public boolean charTyped(char ch){return false;}
 }

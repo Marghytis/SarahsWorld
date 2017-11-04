@@ -1,37 +1,20 @@
 package menu;
 
 import java.awt.Font;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.*;
 
-import core.Core;
-import core.Window;
-import main.Main;
-import main.Res;
+import core.*;
+import main.*;
 import quest.ActiveQuest;
-import render.Render;
-import render.Shader;
-import render.TexAtlas;
-import render.TexFile;
-import render.Texture;
-import render.VAO;
-import render.VBO;
+import render.*;
 import render.VBO.VAP;
 import things.Thing;
-import util.Anim;
-import util.Anim.AnimPart;
-import util.Anim.Func;
-import util.Anim.Value;
-import util.Color;
-import util.TrueTypeFont;
-import util.math.Graph;
-import util.math.UsefulF;
-import util.math.Vec;
+import util.*;
+import util.Anim.*;
+import util.math.*;
 
 public class Dialog extends Element {
 	public static Texture answersTex = Res.answers;
@@ -79,7 +62,7 @@ public class Dialog extends Element {
 		this.ys = new double[answers.length];
 		int height = font.getHeight(), d = (answersTex.h - (answers.length*height))/(answers.length+1);
 		line = height + 20;
-		for(int i = 0, y = -(Window.HEIGHT_HALF/2) + (answersTex.h/2) - (height + d); i < answers.length; i++, y -= height + d){
+		for(int i = 0, y = -(Main.HALFSIZE.h/2) + (answersTex.h/2) - (height + d); i < answers.length; i++, y -= height + d){
 			widthsH[i] = font.getWidth(answers[i])/2;
 			ys[i] = y;
 		}
@@ -169,7 +152,6 @@ public class Dialog extends Element {
 				new VAP(2, GL11.GL_FLOAT, false, 0),//in_position
 				new VAP(2, GL11.GL_FLOAT, false, 8)//in_texCoords
 				));
-		Core.checkGLErrors(true, true, "after preparing the speech bubble head");
 	}
 	
 	/**
@@ -274,7 +256,7 @@ public class Dialog extends Element {
 		if(bubbleHeightR.v > 0.9){
 			double y = bubbleHeight/2 + (0.5*text1.length*line);
 			for(int i = 0; i < text1.length; i++){
-				font.drawString((int)(other.pos.x + shift.x - (width1[i]/2) + Main.world.window.offsetX), (float)(other.pos.y + shift.y + y - fontHeightHalf + Main.world.window.offsetY), text1[i], Color.WHITE, 1, 1);
+				font.drawString((int)(other.pos.x + shift.x - (width1[i]/2) + Main.world.window.offsetX), (float)(other.pos.y + shift.y + y - fontHeightHalf + Main.world.window.offsetY), text1[i], Color.WHITE, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 				y -= line;
 			}
 		}
@@ -286,12 +268,10 @@ public class Dialog extends Element {
 	 */
 	private void renderSpeechBubble2(Vec shift){
 		//bind shader and set uniforms
-		Core.checkGLErrors(true, true, "before rendering the speech bubble head");
 		Res.usualShader.bind();
 		Res.usualShader.set("scale", Main.world.window.scaleX, Main.world.window.scaleY);
 		Res.usualShader.set("offset", (float)(shift.x + other.pos.x + Main.world.window.offsetX), (float)(shift.y + other.pos.y + Main.world.window.offsetY), -1);//TODO
 		Res.usualShader.set("color", 1, 1, 1, 1);
-		Core.checkGLErrors(true, true, "after rendering the speech bubble head");
 		speechBubbleVAO.bindStuff();
 		
 		//HEAD
@@ -322,7 +302,7 @@ public class Dialog extends Element {
 		
 		if(answersWidth.v > 0){
 			answersTex.file.bind();
-			double y2 = -(Window.HEIGHT_HALF/2) + (answersTex.h/2);
+			double y2 = -(Main.HALFSIZE.h/2) + (answersTex.h/2);
 			double y1 = ys[ys.length-1] - 40;
 			drawQuadCheaty(justAQuad, answersTex, -(answersTex.w*answersWidth.v/2), y1, answersTex.w*answersWidth.v/2, y2);
 		}
@@ -330,11 +310,11 @@ public class Dialog extends Element {
 
 		for(int i = 0; i < answers.length; i++){
 			if(answerWidths[i].v > 0){
-				if(UsefulF.contains(Mouse.getX(), Mouse.getY(), Window.WIDTH_HALF + answersTex.pixelCoords[0], Window.HEIGHT_HALF + ys[i], Window.WIDTH_HALF + answersTex.pixelCoords[2], Window.HEIGHT_HALF + ys[i] + Res.menuFont.getHeight())){
+				if(UsefulF.contains(Listener.getMousePos(Main.WINDOW).x, Listener.getMousePos(Main.WINDOW).y, Main.HALFSIZE.w + answersTex.pixelCoords[0], Main.HALFSIZE.h + ys[i], Main.HALFSIZE.w + answersTex.pixelCoords[2], Main.HALFSIZE.h + ys[i] + Res.menuFont.getHeight())){
 					drawQuadCheaty(justAQuad, Res.light2, new Color(1, 1, 1, 0.5f), - widthsH[i], ys[i]-10, + widthsH[i], ys[i] + Res.menuFont.getHeight() + 10);
 				}
 				String string = answers[i].substring(0, (int)(answers[i].length()*answerWidths[i].v));
-				font.drawString((int)(-widthsH[i]), (float)ys[i], string, Color.WHITE, 1, 1);
+				font.drawString((int)(-widthsH[i]), (float)ys[i], string, Color.WHITE, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 			}
 		}
 	}
@@ -344,12 +324,12 @@ public class Dialog extends Element {
 	}
 	
 	private void drawQuadCheaty(VAO vao, Texture tex, Color color, double x1, double y1, double x2, double y2){
-		Render.drawSingleQuad(vao, color, tex, x1/(x2-x1), y1/(y2-y1), (float)(x2-x1)/Window.WIDTH_HALF, (float)(y2-y1)/Window.HEIGHT_HALF, true, 0, 1);
+		Render.drawSingleQuad(vao, color, tex, x1/(x2-x1), y1/(y2-y1), (float)(x2-x1)/Main.HALFSIZE.w, (float)(y2-y1)/Main.HALFSIZE.h, true, 0, 1);
 	}
 	
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){
 		for(int i = 0; i < answers.length; i++){
-			if(UsefulF.contains(mousePos.xInt(), mousePos.yInt(), Window.WIDTH_HALF + answersTex.pixelCoords[0], Window.HEIGHT_HALF + ys[i], Window.WIDTH_HALF + answersTex.pixelCoords[2], ys[i] + Window.HEIGHT_HALF + Res.menuFont.getHeight())){
+			if(UsefulF.contains(mousePos.xInt(), mousePos.yInt(), Main.HALFSIZE.w + answersTex.pixelCoords[0], Main.HALFSIZE.h + ys[i], Main.HALFSIZE.w + answersTex.pixelCoords[2], ys[i] + Main.HALFSIZE.h + Res.menuFont.getHeight())){
 				other.currentSpeech = "";
 				quest.onAnswer(i);
 				Main.menu.setLast();

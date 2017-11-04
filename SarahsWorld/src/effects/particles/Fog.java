@@ -65,7 +65,13 @@ public class Fog implements ParticleEffect {
 	public boolean living() {
 		return true;
 	}
-	public void finalize() {
+	public void terminate() {
 		
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

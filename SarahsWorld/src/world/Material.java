@@ -16,7 +16,7 @@ public enum Material {
 	SAND(Color.YELLOW, Physics.grassFriction, Res.sand, 2, 0, 0),
 	WATER(Color.BLUE, 4f, Res.water, 1, 1600, 0.5),
 	CANDY(Color.RED, 1, Res.candy, 2, 0, 0.2),
-	SNOW(new Color(0.8f, 0.8f, 0.8f), 400f, Res.ice, 2, 0, 0.2),
+	SNOW(new Color(0.8f, 0.8f, 0.8f), 400f, Res.snow, 2, 0, 0.2),
 	SOIL(Color.BROWN, Physics.grassFriction, Res.soil, 2, 0, 0),
 	AIR(new Color(0.8f, 0.8f, 1, 0), 0.001f, Texture.emptyTexture, 0, 0, 1);
 	

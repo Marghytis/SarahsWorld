@@ -4,21 +4,13 @@ import java.awt.Font;
 
 import org.lwjgl.opengl.GL11;
 
-import core.Listener;
-import core.Renderer;
-import core.Updater;
-import core.Window;
+import core.*;
 import item.ItemType;
-import main.Main;
-import main.Res;
+import main.*;
 import menu.Settings.Key;
-import render.Texture;
-import render.VAO;
-import things.Thing;
-import things.ThingType;
-import util.Anim;
-import util.Color;
-import util.TrueTypeFont;
+import render.*;
+import things.*;
+import util.*;
 import util.math.Vec;
 import world.World;
 
@@ -87,6 +79,10 @@ public class Menu implements Updater, Renderer, Listener {
 		settings.keyPressed(key);
 		return open.keyPressed(key);
 	}
+
+	public boolean charTyped(char ch) {
+		return open.charTyped(ch);
+	}
 	
 	public enum Menus {
 		EMPTY(false, false) {
@@ -100,20 +96,32 @@ public class Menu implements Updater, Renderer, Listener {
 		MAIN(false, false) {
 			public void setElements(){
 				elements = new Element[]{
-					new Button("Exit", 0.3, 0.5, 0.3, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+					new Button("Exit", 0.3, 0.5, 0.3, 0.5,
+							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+						
 						public void released(int button) {
-							Window.closeRequested = true;
+							Main.core.getWindow().requestClose();
 						}
 					},
-					new Button("New world", 0.5, 0.5, 0.5, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+					new Button("New world", 0.5, 0.5, 0.5, 0.5,
+							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+						
 						public void released(int button) {
-							Main.core.doAfterTheRest = () -> {
+							Main.core.doAfterTheRest(() -> {
 								Main.world = new World();
 								Main.resetCoreClasses();
-							};
+							});
 						}
 					},
-					new Button("Key bindings", 0.7, 0.5, 0.7, 0.5, -200, -200, 200, 200, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
+					new Button("Key bindings", 0.7, 0.5, 0.7, 0.5,
+							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+						
 						public void released(int button) {
 							Main.menu.setMenu(Menus.KEY_BINDINGS);
 						}
@@ -298,10 +306,26 @@ public class Menu implements Updater, Renderer, Listener {
 		
 		public abstract void setElements();
 		
+		public boolean keyReleased(int key){
+			boolean success = false;
+			for(Element e : elements){
+				if(e.keyReleased(key)) success = true;
+			}
+			return success;
+		}
+		
 		public boolean keyPressed(int key){
 			boolean success = false;
 			for(Element e : elements){
 				if(e.keyPressed(key)) success = true;
+			}
+			return success;
+		}
+		
+		public boolean charTyped(char ch) {
+			boolean success = false;
+			for(Element e : elements){
+				if(e.charTyped(ch)) success = true;
 			}
 			return success;
 		}
@@ -338,7 +362,7 @@ public class Menu implements Updater, Renderer, Listener {
 	}
 
 	public boolean keyReleased(int key) {
-		return false;
+		return open.keyReleased(key);
 	}
 
 	public String debugName() {

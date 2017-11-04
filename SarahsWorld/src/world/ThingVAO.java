@@ -93,7 +93,6 @@ public class ThingVAO {
 		changer[index] = BufferUtils.createByteBuffer(bytesUpdated[index]);
 		ByteBuffer bufferTemp = BufferUtils.createByteBuffer(capacity*bytesUpdated[index]);
 		vbo[index] = new VBO(bufferTemp,  index == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW, bytesUpdated[index], vaps);
-		Core.checkGLErrors(true, true, "debug 0");
 		
 		return vbo[index];
 	}
@@ -120,9 +119,7 @@ public class ThingVAO {
 		}
 		changer[index].flip();
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo[index].handle);
-		Core.checkGLErrors(true, true, "debug 1");
 		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, t.index*bytesUpdated[index], changer[index]);
-		Core.checkGLErrors(true, true, t.index + "  " + capacity + "  " + (changer[index].capacity()/bytesUpdated[index]) + "  " + (GL15.glGetBufferParameter(GL15.GL_ARRAY_BUFFER, GL15.GL_BUFFER_SIZE)/bytesUpdated[index]));
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
@@ -157,7 +154,6 @@ public class ThingVAO {
 		t.index = -1;
 		
 		lastUsedIndex--;
-		Core.checkGLErrors(true, true, "debug 0");
 	}
 	
 	public void enlarge(){
@@ -177,7 +173,6 @@ public class ThingVAO {
 		Thing[] newThings = new Thing[capacity];
 		System.arraycopy(things, 0, newThings, 0, things.length);
 		things = newThings;
-		Core.checkGLErrors(true, true, "debug 0");
 	}
 	
 	private class VBOContent {

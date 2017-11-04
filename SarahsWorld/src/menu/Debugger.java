@@ -1,22 +1,15 @@
 package menu;
 
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.*;
 
 import core.Window;
-import render.Render;
-import render.Shader;
-import render.Texture;
-import render.VAO;
-import render.VBO;
+import main.Main;
+import render.*;
 import render.VBO.VAP;
-import util.Color;
-import util.Time;
-import util.TrueTypeFont;
+import util.*;
 
 public class Debugger extends Element {
 	String fps = "Frame time:";
@@ -25,10 +18,10 @@ public class Debugger extends Element {
 	float scale = 4000;
 	Color highColor = Color.RED, lowColor = Color.GREEN;
 	float highValue = scale/60;//ms scaled
-	float zero = Window.HEIGHT/4, sixty = zero + highValue;//vertices pixels
+	float zero = Main.SIZE.h/4, sixty = zero + highValue;//vertices pixels
 	int xStep = 4;//horizontal pixels
-	DataSnake data = new DataSnake(Window.WIDTH/5, Window.WIDTH/5 * 4);
-	float[] data2 = new float[Window.WIDTH/5]; int dataIndex = 0;
+	DataSnake data = new DataSnake(Main.SIZE.w/5, Main.SIZE.w/5 * 4);
+	float[] data2 = new float[Main.SIZE.w/5]; int dataIndex = 0;
 	FloatBuffer buffer = Render.createBuffer(data2);
 	FloatBuffer xs = BufferUtils.createFloatBuffer(data2.length);
 	{for(int i = 0; i < data2.length; i++) xs.put(i*xStep); xs.flip();}
@@ -43,9 +36,9 @@ public class Debugger extends Element {
 						new VAP(1, GL11.GL_FLOAT, false, 0)),
 				new VBO(buffer, GL15.GL_DYNAMIC_DRAW, Float.BYTES, 
 						new VAP(1, GL11.GL_FLOAT, false, 0)));
-		zeroLine = Render.quadInScreen((short)(-2*Window.WIDTH/5), (short)zero, (short)(2*Window.WIDTH/5), (short)(zero+1));
-		line60 = Render.quadInScreen((short)(-2*Window.WIDTH/5), (short)(sixty), (short)(2*Window.WIDTH/5), (short)(sixty + 1));
-		background = Render.quadInScreen((short)(-2*Window.WIDTH/5-220), (short)(zero-20), (short)(2*Window.WIDTH/5+20), (short)(zero + 2*highValue + 21));
+		zeroLine = Render.quadInScreen((short)(-2*Main.SIZE.w/5), (short)zero, (short)(2*Main.SIZE.w/5), (short)(zero+1));
+		line60 = Render.quadInScreen((short)(-2*Main.SIZE.w/5), (short)(sixty), (short)(2*Main.SIZE.w/5), (short)(sixty + 1));
+		background = Render.quadInScreen((short)(-2*Main.SIZE.w/5-220), (short)(zero-20), (short)(2*Main.SIZE.w/5+20), (short)(zero + 2*highValue + 21));
 	}
 
 	FloatBuffer updater = BufferUtils.createFloatBuffer(1);
@@ -62,16 +55,16 @@ public class Debugger extends Element {
 
 	public void render() {
 		//String
-		TrueTypeFont.times.drawString(20 - Window.WIDTH_HALF, Window.HEIGHT_HALF*0.5f, fps, Color.RED, 1, 1);
+		TrueTypeFont.times.drawString(20 - Main.HALFSIZE.w, Main.HALFSIZE.h*0.5f, fps, Color.RED, 1, 1);
 		
 		//Zero line
-		Render.drawSingleQuad(background, new Color(0.5f, 0.5f, 0.5f, 0.5f), Texture.emptyTexture, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, false);
-		Render.drawSingleQuad(zeroLine, Color.RED, Texture.emptyTexture, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, false);
-		Render.drawSingleQuad(line60, Color.RED, Texture.emptyTexture, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF, false);
+		Render.drawSingleQuad(background, new Color(0.5f, 0.5f, 0.5f, 0.5f), Texture.emptyTexture, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, false);
+		Render.drawSingleQuad(zeroLine, Color.RED, Texture.emptyTexture, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, false);
+		Render.drawSingleQuad(line60, Color.RED, Texture.emptyTexture, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, false);
 		
 		Shader.graph.bind();
-		Shader.graph.set("scale", 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
-		Shader.graph.set("stuff", this.highValue*4, zero, -Window.WIDTH_HALF*4/5);
+		Shader.graph.set("scale", 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
+		Shader.graph.set("stuff", this.highValue*4, zero, -Main.HALFSIZE.w*4/5);
 		Shader.graph.set("colorHigh", highColor);
 		Shader.graph.set("colorLow", lowColor);
 		vao.bindStuff();

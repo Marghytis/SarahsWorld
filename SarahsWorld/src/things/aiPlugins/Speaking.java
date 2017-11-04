@@ -1,29 +1,16 @@
 package things.aiPlugins;
 
-import core.Window;
 import effects.Effect;
-import main.Main;
-import main.Res;
+import main.*;
 import menu.Dialog;
 import menu.Menu.Menus;
-import quest.ActiveQuest;
-import quest.Strings;
-import render.Render;
-import render.TexAtlas;
-import render.Texture;
-import render.VAO;
-import things.AiPlugin;
-import things.Thing;
-import util.Anim;
-import util.Anim.AnimPart;
-import util.Anim.Func;
-import util.Anim.Value;
-import util.Color;
-import util.math.UsefulF;
-import util.math.Vec;
-import world.World;
-import world.WorldData;
-import world.WorldWindow;
+import quest.*;
+import render.*;
+import things.*;
+import util.*;
+import util.Anim.*;
+import util.math.*;
+import world.*;
 
 public class Speaking extends AiPlugin {
 	
@@ -142,7 +129,7 @@ public class Speaking extends AiPlugin {
 		}
 
 		public void render(){
-			render(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+			render(1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 		}
 		public void render(float scaleX, float scaleY) {
 			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
@@ -185,7 +172,7 @@ public class Speaking extends AiPlugin {
 		public boolean contains(Vec mousePos){
 			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
 			return UsefulF.contains(
-					mousePos.x + Main.world.avatar.pos.x - Window.WIDTH_HALF, mousePos.y + Main.world.avatar.pos.y - Window.HEIGHT_HALF,
+					mousePos.x + Main.world.avatar.pos.x - Main.HALFSIZE.w, mousePos.y + Main.world.avatar.pos.y - Main.HALFSIZE.h,
 					bubble2.pixelCoords[0]*bubbleR + speaker.pos.x + shift.x,
 					bubble2.pixelCoords[1]*bubbleR + speaker.pos.y + shift.y+60,
 					bubble2.pixelCoords[2]*bubbleR + speaker.pos.x + shift.x,
@@ -205,6 +192,11 @@ public class Speaking extends AiPlugin {
 		}
 
 		public boolean keyReleased(int key) {
+			return false;
+		}
+
+		@Override
+		public boolean charTyped(char ch) {
 			return false;
 		}
 		

@@ -1,7 +1,13 @@
 package main;
 
-import org.lwjgl.opengl.ContextAttribs;
-import org.lwjgl.opengl.Display;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
+
 import org.lwjgl.opengl.GL11;
 
 import core.Core;
@@ -11,6 +17,8 @@ import core.Updater;
 import core.Window;
 import menu.Menu;
 import newStuff.StaticInit;
+import util.Color;
+import util.math.IntVec;
 import world.Save;
 import world.World;
 
@@ -20,26 +28,28 @@ public class Main {
 	public static World world;
 	public static Core core;
 	public static StaticInit test;
-
+	public static IntVec SIZE, HALFSIZE;
+	public static long WINDOW;
+	
 	/**
 	 * Creates a Window, loads or creates a world and resets the core classes.
 	 * @param args
 	 */
 	public static void main(String[] args){
-		String worldName = "Sarahs World";
-		Window.contextAttribs = new ContextAttribs(3, 3)
-		    .withForwardCompatible(true)
-		    .withProfileCore(true);
-		core = new Core(worldName);System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
-		if(Window.WIDTH == 0){
-			System.out.println("ERROR AT START!!! Try again.");
-			Window.destroy();
-			System.exit(0);
-			return;
-		}
-		StaticInit.checkGLErrors(true);
-		Display.setVSyncEnabled(false);
 
+		core = new Core("res/creatures/Meteor.png");
+		core.init(new Window("Sarahs World", true, 1, 1, true
+//				,GLFW_CONTEXT_VERSION_MAJOR, 3,
+//				GLFW_CONTEXT_VERSION_MINOR, 3,
+//				GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE,
+//				GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE
+				),
+				Color.BLACK);
+		System.out.println("OpenGL version used: " + GL11.glGetString(GL11.GL_VERSION));
+		SIZE = core.SIZE;
+		HALFSIZE = core.SIZE_HALF;
+		WINDOW = core.getWindow().getHandle();
+		
 		menu = new Menu();
 		if(Save.worldSaved()){
 			world = Save.loadWorld();

@@ -2,10 +2,9 @@ package menu;
 
 import java.awt.Font;
 
-import core.Window;
+import main.Main;
 import render.Texture;
-import util.Color;
-import util.TrueTypeFont;
+import util.*;
 
 public class TextField extends Element {
 
@@ -26,9 +25,11 @@ public class TextField extends Element {
 	
 	public void render() {
 		super.render();
-		float xText = center? xCenter- (font.getWidth(text)/2) : this.x1+20;
-		float yText = yCenter - (font.getHeight("I")/2);
-		font.drawString(xText - Window.WIDTH_HALF, yText - Window.HEIGHT_HALF, text, fontColor, 1, 1);
+		if(text != null){
+			float xText = center? xCenter- (font.getWidth(text)/2) : this.x1+20;
+			float yText = yCenter - (font.getHeight("I")/2);
+			font.drawString(xText - Main.HALFSIZE.w, yText - Main.HALFSIZE.h, text, fontColor, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
+		}
 	}
 
 }

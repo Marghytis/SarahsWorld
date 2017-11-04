@@ -1,23 +1,16 @@
 package world;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.nio.*;
+import java.util.*;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 
-import main.Res;
+import main.*;
 import menu.Settings;
-import render.VAO;
-import render.VBO;
+import render.*;
 import render.VBO.VAP;
-import world.WorldData.Column;
-import world.WorldData.Vertex;
+import world.WorldData.*;
 import world.generation.Biome;
 
 public class LandscapeWindow {
@@ -63,7 +56,6 @@ public class LandscapeWindow {
 		}
 		if(left.xIndex > firstIndex-columnRadius || right.xIndex < firstIndex + columnRadius){
 			new Exception("World data is not large enough yet").printStackTrace();
-			Display.destroy();
 			System.exit(-1);
 		}
 		vao = new VAO(

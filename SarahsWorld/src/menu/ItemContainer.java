@@ -37,7 +37,7 @@ public class ItemContainer extends Element {
 		}
 		TexFile.bindNone();
 		Menu.fontColor.bind();
-		Menu.font.drawString(x2 - 30 - Window.WIDTH_HALF, y2 - 30 - Window.HEIGHT_HALF, Main.world.avatar.itemStacks[ordinal].count + "", 1, 1);
+		Menu.font.drawString(x2 - 30 - Main.HALFSIZE.w, y2 - 30 - Main.HALFSIZE.h, Main.world.avatar.itemStacks[ordinal].count + "", 1, 1);
 	}
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){

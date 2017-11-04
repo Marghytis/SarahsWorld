@@ -20,14 +20,14 @@ public class ParticleTester {
 		Window.create("Particle", 1000, 700, true);
 		background = new TexFile("res/particles/Background.png");
 		
-//		Lightmap lightmap = new Lightmap(new TexFile(Window.WIDTH/2, Window.HEIGHT));
+//		Lightmap lightmap = new Lightmap(new TexFile(Main.SIZE.w/2, Main.SIZE.h));
 //		lightmap.resetDark( 0);
-		Rect leftWindow = new Rect(0, 0, Window.WIDTH/2, Window.HEIGHT);
+		Rect leftWindow = new Rect(0, 0, Main.SIZE.w/2, Main.SIZE.h);
 		
-//		FireEffect fire = new FireEffect(Window.WIDTH/4, Window.HEIGHT/2, lightmap);
+//		FireEffect fire = new FireEffect(Main.SIZE.w/4, Main.SIZE.h/2, lightmap);
 
-		RainEffect rain = new RainEffect(new Vec(Window.WIDTH*2/3 + 50, Window.HEIGHT*3/4 + 10), 100, 20);
-		Rect cloud = new Rect(Window.WIDTH*2/3, Window.HEIGHT*3/4 - 20, 200, 140);
+		RainEffect rain = new RainEffect(new Vec(Main.SIZE.w*2/3 + 50, Main.SIZE.h*3/4 + 10), 100, 20);
+		Rect cloud = new Rect(Main.SIZE.w*2/3, Main.SIZE.h*3/4 - 20, 200, 140);
 		
 		float t = 0;
 		float r = 20;
@@ -38,9 +38,9 @@ public class ParticleTester {
 			Display.sync(60);
 			mouseListening();
 //			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-//			fire.pos.set(Window.WIDTH/4 + (r * (float) Math.cos(t)), Window.HEIGHT/2 + (r * (float) Math.sin(t)));
+//			fire.pos.set(Main.SIZE.w/4 + (r * (float) Math.cos(t)), Main.SIZE.h/2 + (r * (float) Math.sin(t)));
 			t += (float)Math.PI/200;
-			rain.pos.x = Window.WIDTH*2/3 + 50 + (d * (float) Math.cos(t));
+			rain.pos.x = Main.SIZE.w*2/3 + 50 + (d * (float) Math.cos(t));
 			cloud.pos.x = rain.pos.x - 50;
 			
 //			lightmap.bind();
@@ -54,11 +54,11 @@ public class ParticleTester {
 			rain.update(delta);
 
 //			fire.render();
-			rain.render(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+			rain.render(1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 			
 			for(int i = 0; i < swooshs.size(); i++){
 				swooshs.get(i).update(delta);
-				swooshs.get(i).render(1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+				swooshs.get(i).render(1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 				if(!swooshs.get(i).living()){
 					swooshs.remove(i);
 					i--;

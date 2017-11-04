@@ -1,11 +1,11 @@
 package item;
 
+import main.Main;
+import main.Res;
 import render.TexAtlas;
 import render.Texture;
 import things.aiPlugins.Inventory;
 import util.math.Rect;
-import core.Window;
-import main.Res;
 
 
 public class ItemStack extends Rect{
@@ -20,7 +20,7 @@ public class ItemStack extends Rect{
 	public int coolDown;
 	
 	public ItemStack(int slot, Inventory inventory2){
-		super((slot+1)*(Window.WIDTH/7) -50, Window.HEIGHT/5 -50, 100, 100);
+		super((slot+1)*(Main.SIZE.w/7) -50, Main.SIZE.h/5 -50, 100, 100);
 		this.slot = slot;
 		this.inv = inventory2;
 		this.item = ItemType.NOTHING;

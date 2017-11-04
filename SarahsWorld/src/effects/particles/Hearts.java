@@ -55,9 +55,8 @@ public class Hearts implements ParticleEffect{
 		hearts.render(scaleX, scaleY);
 	}
 	
-	@Override
-	public void finalize(){
-		hearts.finalize();
+	public void terminate(){
+		hearts.terminate();
 	}
 
 	@Override
@@ -85,6 +84,12 @@ public class Hearts implements ParticleEffect{
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

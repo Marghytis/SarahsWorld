@@ -1,24 +1,15 @@
 package item;
 
+import effects.Effect;
 import main.Main;
-import main.Res;
 import menu.Menu;
 import menu.Settings;
 import render.TexFile;
 import things.ThingType;
 import util.Color;
 import util.math.Vec;
-import effects.Effect;
 
 public class Nametag implements Effect {
-
-	public boolean pressed(int button, Vec mousePos) {
-		return false;
-	}
-
-	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
-		return false;
-	}
 
 	public boolean keyPressed(int key) {
 		return false;
@@ -50,6 +41,24 @@ public class Nametag implements Effect {
 	
 	public boolean living() {
 		return true;
+	}
+
+	@Override
+	public boolean pressed(int button, Vec mousePos) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean released(int button, Vec mousePos, Vec mouseDelta) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

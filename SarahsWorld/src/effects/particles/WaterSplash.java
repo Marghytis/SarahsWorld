@@ -54,8 +54,8 @@ public class WaterSplash implements ParticleEffect{
 		drops.render(scaleX, scaleY);
 	}
 	
-	public void finalize(){
-		drops.finalize();
+	public void terminate(){
+		drops.terminate();
 	}
 
 	public boolean living() {
@@ -76,6 +76,12 @@ public class WaterSplash implements ParticleEffect{
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

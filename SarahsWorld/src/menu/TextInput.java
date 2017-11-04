@@ -1,9 +1,7 @@
 package menu;
 
-import org.lwjgl.input.Keyboard;
+import static org.lwjgl.glfw.GLFW.*;
 
-import render.Render;
-import render.TexFile;
 import render.Texture;
 import util.Color;
 import util.math.Vec;
@@ -48,16 +46,22 @@ public class TextInput extends TextField {
 	
 	public boolean keyPressed(int key){
 		if(selected){
-			if(key == Keyboard.KEY_BACK && text.length() > 0){
+			if(key == GLFW_KEY_BACKSPACE && text.length() > 0){
 				text = text.substring(0, text.length()-1);
-			} else {
-				char ch = Keyboard.getEventCharacter();
-				if(ch != 0){
-					text += ch;
-				}
+				return true;
 			}
-			return true;
-		} else return false;
+		}
+		return false;
 	}
 
+	@Override
+	public boolean charTyped(char ch){
+		if(selected){
+			if(ch != 0){
+				text += ch;
+			}
+			return true;
+		}
+		return false;
+	}
 }

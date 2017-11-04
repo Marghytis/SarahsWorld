@@ -99,9 +99,9 @@ public class BerryEat implements ParticleEffect{
 	}
 	
 	@Override
-	public void finalize(){
-		stars.finalize();
-		sparkle.finalize();
+	public void terminate(){
+		stars.terminate();
+		sparkle.terminate();
 	}
 
 	@Override
@@ -129,6 +129,12 @@ public class BerryEat implements ParticleEffect{
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -93,7 +93,7 @@ public enum Biome {
 	CANDY(new Color(0.6f, 0.14f, 0.87f), new Color(0.9f, 0.68f, 0.9f),
 			new Stratum[]{
 				null,
-				new Stratum(Material.CANDY, 60.0, 20.0, 20, 40, 20, 4),
+				new Stratum(Material.CANDY, 60.0, 20.0, 20, 100, 20, 4),
 				null,
 				null,
 				null,
@@ -127,8 +127,8 @@ public enum Biome {
 				new ThingSpawner(ThingType.TREE_GRAVE.defaultSpawner, 0.1),
 				new ThingSpawner(ThingType.ZOMBIE.defaultSpawner, 0.05),
 				new ThingSpawner(ThingType.GRAVE.defaultSpawner, 0.2)
-	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Window.WIDTH_HALF, pos.yInt() + Window.HEIGHT_HALF + 50, 100, 4, 50)); return null;}, 0.01),
-	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.weather.fog.emittFog(pos.x + Window.WIDTH_HALF, pos.y + Window.HEIGHT_HALF); return null;}, 1)
+	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Main.HALFSIZE.w, pos.yInt() + Main.HALFSIZE.h + 50, 100, 4, 50)); return null;}, 0.01),
+	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.weather.fog.emittFog(pos.x + Main.HALFSIZE.w, pos.y + Main.HALFSIZE.h); return null;}, 1)
 			},
 			new EffectSpawner[]{
 					new EffectSpawner(WorldWindow.weather.fog, 1.5)

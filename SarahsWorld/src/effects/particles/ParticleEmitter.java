@@ -221,8 +221,7 @@ public abstract class ParticleEmitter{
 		Shader.bindNone();
 	}
 	
-	@Override
-	public void finalize(){
+	public void terminate(){
 		GL15.glDeleteBuffers(type.vbo.handle);
 	}
 }

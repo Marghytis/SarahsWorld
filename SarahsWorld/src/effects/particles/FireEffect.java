@@ -1,8 +1,7 @@
 package effects.particles;
 
-import core.Window;
 import effects.particles.Particle.ParticleType;
-import main.Res;
+import main.*;
 import util.math.Vec;
 
 public class FireEffect implements ParticleEffect{
@@ -104,7 +103,7 @@ public class FireEffect implements ParticleEffect{
 	};
 
 	
-	public Vec pos = new Vec(Window.WIDTH/4, Window.HEIGHT/2);
+	public Vec pos = new Vec();
 	public int size = 20;
 //	public Lightmap lightmap;
 	
@@ -130,11 +129,11 @@ public class FireEffect implements ParticleEffect{
 	}
 	
 	@Override
-	public void finalize(){
-		smoke.finalize();
-		flame.finalize();
-		spark.finalize();
-		light.finalize();
+	public void terminate(){
+		smoke.terminate();
+		flame.terminate();
+		spark.terminate();
+		light.terminate();
 	}
 
 	@Override
@@ -162,6 +161,12 @@ public class FireEffect implements ParticleEffect{
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -109,8 +109,8 @@ public class RainbowSpit implements ParticleEffect{
 	}
 	
 	@Override
-	public void finalize(){
-		rainbow.finalize();
+	public void terminate(){
+		rainbow.terminate();
 	}
 
 	@Override
@@ -138,6 +138,12 @@ public class RainbowSpit implements ParticleEffect{
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

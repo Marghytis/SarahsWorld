@@ -1,38 +1,22 @@
 package world;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.*;
 
-import core.Listener;
-import core.Renderer;
-import core.Updater;
-import core.Window;
-import effects.Effect;
-import effects.WorldEffect;
-import effects.particles.ParticleEffect;
-import effects.particles.ParticleEmitter;
-import item.ItemType;
-import item.Nametag;
-import main.Main;
-import main.Res;
+import core.*;
+import effects.*;
+import effects.particles.*;
+import item.*;
+import main.*;
 import menu.Settings;
 import quest.ActiveQuest;
-import render.Framebuffer;
-import render.Render;
-import render.Shader;
-import render.TexFile;
-import render.VAO;
-import render.VBO;
+import render.*;
 import render.VBO.VAP;
-import things.Thing;
-import things.ThingType;
+import things.*;
 import util.Color;
 import util.math.Vec;
 import world.WorldData.Column;
@@ -71,11 +55,11 @@ public class WorldWindow implements Updater, Renderer{
 		while(anchor.xReal > startX) anchor = anchor.left;
 		while(anchor.xReal < startX) anchor = anchor.right;
 		landscape = new LandscapeWindow(world, anchor, radius, (int)Math.floor(startX/Column.step));
-		landscapeBuffer = new Framebuffer("Landscape", Window.WIDTH, Window.HEIGHT);
-		this.completeWindow = Render.quadInScreen(-Window.WIDTH_HALF, Window.HEIGHT_HALF, Window.WIDTH_HALF, -Window.HEIGHT_HALF);
+		landscapeBuffer = new Framebuffer("Landscape", Main.SIZE.w, Main.SIZE.h);
+		this.completeWindow = Render.quadInScreen(-Main.HALFSIZE.w, Main.HALFSIZE.h, Main.HALFSIZE.w, -Main.HALFSIZE.h);
 //		this.backgroundColors = BufferUtils.createByteBuffer(4*4);
-		this.backgroundColorsTop = BufferUtils.createByteBuffer((Window.WIDTH/100 + 1)*4);
-		this.backgroundColorsBottom = BufferUtils.createByteBuffer((Window.WIDTH/100 + 1)*4);
+		this.backgroundColorsTop = BufferUtils.createByteBuffer((Main.SIZE.w/100 + 1)*4);
+		this.backgroundColorsBottom = BufferUtils.createByteBuffer((Main.SIZE.w/100 + 1)*4);
 //		GL11.glClearColor(0.2f, 0.6f, 0.7f, 0);
 		GL11.glClearColor(0, 0, 0, 0);
 		GL11.glClearStencil(0);
@@ -146,12 +130,12 @@ public class WorldWindow implements Updater, Renderer{
 		for(ActiveQuest aq : world.quests){
 			aq.update(delta);
 		}
-		scaleX = zoom/Window.WIDTH_HALF;
-		scaleY = zoom/Window.HEIGHT_HALF;
+		scaleX = zoom/Main.HALFSIZE.w;
+		scaleY = zoom/Main.HALFSIZE.h;
 		offsetX = (float)-world.world.avatar.pos.x;
 		offsetY = (float)-world.world.avatar.pos.y;
 		ParticleEmitter.offset.set(offsetX, offsetY);
-		ParticleEffect.wind.set((Listener.getMousePos().x - Window.WIDTH_HALF)*60f/Window.WIDTH_HALF, 0);
+		ParticleEffect.wind.set((Listener.getMousePos(Main.WINDOW).x - Main.HALFSIZE.w)*60f/Main.HALFSIZE.w, 0);
 		return false;
 	}
 	byte[] color = new byte[4];
@@ -163,7 +147,7 @@ public class WorldWindow implements Updater, Renderer{
 //		if(Settings.DRAW == GL11.GL_LINE_STRIP) GL11.glClearColor(0, 0, 0, 1);
 //		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 //		GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-//		GL11.glTranslated(Window.WIDTH_HALF - Main.world.avatar.pos.x, Window.HEIGHT_HALF - Main.world.avatar.pos.y, 0);
+//		GL11.glTranslated(Main.HALFSIZE.w - Main.world.avatar.pos.x, Main.HALFSIZE.h - Main.world.avatar.pos.y, 0);
 		
 		landscapeBuffer.bind();
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -237,11 +221,11 @@ public class WorldWindow implements Updater, Renderer{
 //		GL11.glTexCoord2d(0, 0);
 //		GL11.glVertex2d(0, 0);
 //		GL11.glTexCoord2d(1, 0);
-//		GL11.glVertex2d(Window.WIDTH, 0);
+//		GL11.glVertex2d(Main.SIZE.w, 0);
 //		GL11.glTexCoord2d(1, 1);
-//		GL11.glVertex2d(Window.WIDTH, Window.HEIGHT);
+//		GL11.glVertex2d(Main.SIZE.w, Main.SIZE.h);
 //		GL11.glTexCoord2d(0, 1);
-//		GL11.glVertex2d(0, Window.HEIGHT);
+//		GL11.glVertex2d(0, Main.SIZE.h);
 //		GL11.glEnd();
 //		GL11.glPopMatrix();
 //
@@ -274,9 +258,9 @@ public class WorldWindow implements Updater, Renderer{
 		landscape.vao.unbindStuff();
 		Shader.bindNone();
 //		Column rightBorder = landscape.right;
-//		while(rightBorder.xReal > world.world.avatar.pos.x + Window.WIDTH_HALF) rightBorder = rightBorder.left;
+//		while(rightBorder.xReal > world.world.avatar.pos.x + Main.HALFSIZE.w) rightBorder = rightBorder.left;
 //		Column leftBorder = landscape.left;
-//		while(leftBorder.xReal < world.world.avatar.pos.x - Window.WIDTH_HALF) leftBorder = leftBorder.right;
+//		while(leftBorder.xReal < world.world.avatar.pos.x - Main.HALFSIZE.w) leftBorder = leftBorder.right;
 ////		rightBorder.lowColor.bytes(color);
 ////		backgroundColors.put(color);
 ////		leftBorder.lowColor.bytes(color);
@@ -292,7 +276,7 @@ public class WorldWindow implements Updater, Renderer{
 //
 //		backgroundColorsTop.flip();
 //		backgroundColorsBottom.flip();
-//		int width = rightBorder.xIndex - leftBorder.xIndex, step = width/(Window.WIDTH/100);
+//		int width = rightBorder.xIndex - leftBorder.xIndex, step = width/(Main.SIZE.w/100);
 //		for(Column c = leftBorder; c != rightBorder.right;){
 //			c.topColor.bytes(color);
 //			backgroundColorsTop.put(color);
@@ -317,7 +301,7 @@ public class WorldWindow implements Updater, Renderer{
 
 		//LANDSCAPE
 		Res.landscapeShader.bind();//Yes, don't use scaleX, scaleY here, because the landscape gets rendered into a framebuffer
-		Res.landscapeShader.set("transform", offsetX, offsetY, 1f/Window.WIDTH_HALF, 1f/Window.HEIGHT_HALF);
+		Res.landscapeShader.set("transform", offsetX, offsetY, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 		landscape.vao.bindStuff();
 			//draw normal quads
 			landscape.drawNormalQuads();

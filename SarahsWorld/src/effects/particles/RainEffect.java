@@ -67,8 +67,8 @@ public class RainEffect implements ParticleEffect{
 	}
 	
 	@Override
-	public void finalize(){
-		drops.finalize();
+	public void terminate(){
+		drops.terminate();
 	}
 
 	@Override
@@ -96,6 +96,12 @@ public class RainEffect implements ParticleEffect{
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -1,21 +1,14 @@
 package things.aiPlugins;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
 import core.Listener;
-import core.Window;
 import effects.Effect;
 import main.Main;
 import menu.Menu.Menus;
 import menu.Settings;
 import menu.Settings.Key;
-import things.AiPlugin;
-import things.Thing;
+import things.*;
 import util.math.Vec;
-import world.LandscapeWindow;
-import world.World;
-import world.WorldWindow;
+import world.*;
 
 public  class AvatarControl extends AiPlugin implements Listener{
 
@@ -31,19 +24,19 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		else a = t.accFlying;
 		
 		int walkingDir = 0;
-		if(Keyboard.isKeyDown(Key.RIGHT.key)){
+		if(Listener.isKeyDown(Main.WINDOW, Key.RIGHT.key)){
 			walkingDir++;
 		}
-		if(Keyboard.isKeyDown(Key.LEFT.key)){
+		if(Listener.isKeyDown(Main.WINDOW, Key.LEFT.key)){
 			walkingDir--;
 		}
-		if(walkingDir != 0 && Keyboard.isKeyDown(Key.SPRINT.key)){
+		if(walkingDir != 0 && Listener.isKeyDown(Main.WINDOW, Key.SPRINT.key)){
 			walkingDir *= 2;
 			t.maxWalkingSpeed *= 2;
-			if(Keyboard.isKeyDown(Key.SUPERSPRINT.key)){
+			if(Listener.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key)){
 				walkingDir *= 4;
 				t.maxWalkingSpeed *= 4;
-				if(Keyboard.isKeyDown(Key.MEGASPRINT.key)){
+				if(Listener.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key)){
 					walkingDir *= 4;
 					t.maxWalkingSpeed *= 4;
 				}
@@ -51,12 +44,12 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		}
 		t.type.movement.setAni(t, walkingDir);
 		t.walkingForce = walkingDir*a;
-		if(Keyboard.isKeyDown(Key.ANTIGRAVITY.key)){
+		if(Listener.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
 			t.force.shift(0, 10000);
 		}
 		
 		//Scroll through inventory
-		int scroll = Mouse.getDWheel();
+		int scroll = Listener.getDWheel(Main.WINDOW);
 		t.selectedItem += -scroll/120;
 		if(t.selectedItem < 0){
 			t.selectedItem %= t.itemStacks.length;
@@ -66,6 +59,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		return true;
 	}
 
+	@Override
 	public boolean pressed(int button, Vec mousePos) {
 		for(Effect e : WorldWindow.getEffects()){
 			e.pressed(button, mousePos);
@@ -73,8 +67,9 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		return false;
 	}
 
+	@Override
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
-		Vec worldPos = mousePos.minus(Window.WIDTH/2, Window.HEIGHT/2).shift(Main.world.avatar.pos);
+		Vec worldPos = mousePos.minus(Main.SIZE.w/2, Main.SIZE.h/2).shift(Main.world.avatar.pos);
 		Thing[] livingsClickedOn = Main.world.window.livingsAt(worldPos);
 		
 		switch(button){
@@ -125,7 +120,8 @@ public  class AvatarControl extends AiPlugin implements Listener{
 //		}
 		return false;
 	}
-	
+
+	@Override
 	public boolean keyPressed(int key) {
 		
 		Key bind = Key.getBinding(key);
@@ -190,7 +186,13 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		//No, don't add if-clauses here!! Add the keys legally!!
 		return false;
 	}
+	@Override
 	public boolean keyReleased(int key) {
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		return false;
 	}
 

@@ -1,9 +1,7 @@
 package menu;
 
-import core.Window;
 import main.Main;
-import render.TexFile;
-import render.Texture;
+import render.*;
 import util.Color;
 import util.math.Vec;
 import util.shapes.Line;
@@ -34,7 +32,7 @@ public class Bar extends Element {
 		//Inner color
 		super.render();
 		//outline
-		outline.render(new Vec(-Window.WIDTH_HALF, -Window.HEIGHT_HALF), 1);
+		outline.render(new Vec(-Main.HALFSIZE.w, -Main.HALFSIZE.h), new Vec(1.0/Main.HALFSIZE.w, 1.0/Main.HALFSIZE.h), 1);
 	}
 
 	public static interface ValueGetter {

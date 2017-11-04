@@ -11,7 +11,7 @@ public interface ParticleEffect extends Effect{
 	
 	public void render(float scaleX, float scaleY);
 	
-	public void finalize();
+	public void terminate();
 	
 	public boolean living();
 }

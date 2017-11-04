@@ -57,8 +57,8 @@ public class BloodSplash implements ParticleEffect {
 	}
 	
 	@Override
-	public void finalize(){
-		blood.finalize();
+	public void terminate(){
+		blood.terminate();
 	}
 
 	@Override
@@ -83,6 +83,12 @@ public class BloodSplash implements ParticleEffect {
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

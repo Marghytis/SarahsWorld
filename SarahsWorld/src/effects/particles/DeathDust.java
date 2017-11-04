@@ -73,8 +73,8 @@ public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
 	}
 	
 	@Override
-	public void finalize(){
-		smoke.finalize();
+	public void terminate(){
+		smoke.terminate();
 	}
 
 	@Override
@@ -102,6 +102,12 @@ public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}

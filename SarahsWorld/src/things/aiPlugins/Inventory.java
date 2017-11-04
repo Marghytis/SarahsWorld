@@ -1,13 +1,9 @@
 package things.aiPlugins;
 
-import item.ItemStack;
-import item.ItemType;
+import item.*;
 import main.Main;
-import main.Res;
 import render.Animator;
-import things.AiPlugin;
-import things.Thing;
-import things.ThingType;
+import things.*;
 import util.math.Vec;
 import world.WorldData;
 
@@ -43,7 +39,7 @@ public class Inventory extends AiPlugin{
 		}
 		if(coinAmount > 0){
 			t.coins += coinAmount;
-			Res.coinSound.play();
+//			Res.coinSound.play();TODO readd this!
 		}
 		t.itemAni.setTexture(getSelectedItem(t).texHand);
 	}

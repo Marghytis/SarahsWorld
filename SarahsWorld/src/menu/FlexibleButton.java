@@ -1,7 +1,7 @@
 package menu;
 
 import core.Listener;
-import main.Res;
+import main.*;
 import menu.FlexibleTextField.StringProducer;
 import render.TexAtlas;
 import render.Texture;
@@ -41,7 +41,7 @@ public abstract class FlexibleButton extends TextField {
 	public abstract void released(int button);
 
 	public void render() {
-		if(contains(Listener.getMousePos())){
+		if(contains(Listener.getMousePos(Main.WINDOW))){
 			color = c2;
 			tex = t2;
 		} else {

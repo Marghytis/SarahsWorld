@@ -34,8 +34,8 @@ public class StaticInit implements Renderer {
 	public VAO vao;
 	
 	public float[] transform = {
-			0.75f/Window.WIDTH_HALF,	0,						0,	0,
-			0,						0.75f/Window.HEIGHT_HALF,	0,	0,
+			0.75f/Main.HALFSIZE.w,	0,						0,	0,
+			0,						0.75f/Main.HALFSIZE.h,	0,	0,
 			0,						0,						1,	0,
 			0,						0,						0,	1
 		};
@@ -138,7 +138,7 @@ public class StaticInit implements Renderer {
 	}
 	
 	public void draw() {
-		transform[3] = -0.75f*(float)Main.world.avatar.pos.x/Window.WIDTH_HALF;
+		transform[3] = -0.75f*(float)Main.world.avatar.pos.x/Main.HALFSIZE.w;
 //		System.out.println("Avatar position: " + Main.world.avatar.pos.x);
 		transformBuffer.put(transform);
 		transformBuffer.flip();

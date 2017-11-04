@@ -121,12 +121,13 @@ public class Res {
 	public static final Texture soil = new Texture("res/materials/Soil.png", 0, 0);
 	public static final Texture water = new Texture("res/materials/Water.png", 0, 0);
 	public static final Texture ice = new Texture("res/materials/Ice.png", 0, 0);
+	public static final Texture snow = new Texture("res/materials/Snow.png", 0, 0);
 	
 	public static TrueTypeFont menuFont = new TrueTypeFont(new Font("Times New Roman", 0, 35), true);
 	public static Color menuFontColor = new Color(0.9f, 0.8f, 0.1f);
 
 //	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);
-	public static final Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.wav", null);
+//	public static final Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.wav", null);TODO add these sounds back in
 
 	public static Shader landscapeShader = Shader.create("res/shader/material.vert", "res/shader/material.frag", "in_Position", "in_TextureCoords", "in_Alphas", "in_TransAlpha");
 	public static Shader thingShader = Shader.withGeometry("res/shader/thing.vert", "res/shader/thing.geom", "res/shader/thing.frag", "in_position", "in_rotation", "in_texCoords", "in_mirror", "in_color", "in_z", "in_size", "in_box", "in_texWH");

@@ -22,7 +22,8 @@ public class MagicEffect implements ParticleEffect{
 	}
 
 	@Override
-	public void render() {
+	public void render(float scaleX, float scaleY) {
+		// TODO Auto-generated method stub
 		
 	}
 
@@ -32,7 +33,7 @@ public class MagicEffect implements ParticleEffect{
 	}
 	
 	@Override
-	public void finalize(){
+	public void terminate(){
 		
 	}
 
@@ -56,6 +57,12 @@ public class MagicEffect implements ParticleEffect{
 
 	@Override
 	public boolean keyReleased(int key) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean charTyped(char ch) {
 		// TODO Auto-generated method stub
 		return false;
 	}
