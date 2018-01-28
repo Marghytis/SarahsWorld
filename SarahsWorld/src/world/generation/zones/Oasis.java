@@ -3,12 +3,9 @@ package world.generation.zones;
 import java.util.Random;
 
 import things.ThingType;
-import util.math.Function;
-import util.math.UsefulF;
-import world.WorldData.Column;
-import world.generation.Biome;
-import world.generation.BiomeManager;
-import world.generation.Zone;
+import util.math.*;
+import world.data.Column;
+import world.generation.*;
 
 public class Oasis extends Zone {
 	
@@ -38,7 +35,7 @@ public class Oasis extends Zone {
 		if(part == 0){//SLOPE DOWN
 			ownHeight = curve.f(x - xStart) + yStart;
 			if(startingPart) startingPart = false;
-			if(x >= xNearShore - Column.step){
+			if(x >= xNearShore - Column.COLUMN_WIDTH){
 				part = 1;
 				startingPart = true;
 			}
@@ -71,12 +68,12 @@ public class Oasis extends Zone {
 			if(subZone != null){
 				subZone = null;
 			}
-			if(x + Column.step >= xEnd){
+			if(x + Column.COLUMN_WIDTH >= xEnd){
 				end = true;
 			}
 		}
-		if( (x >= xNearShore - Column.step && x <= xNearShore + Column.step) ||
-			(x >= xFarShore - Column.step && x <= xFarShore + Column.step)){
+		if( (x >= xNearShore - Column.COLUMN_WIDTH && x <= xNearShore + Column.COLUMN_WIDTH) ||
+			(x >= xFarShore - Column.COLUMN_WIDTH && x <= xFarShore + Column.COLUMN_WIDTH)){
 			biome.extraSpawns.add(ThingType.TREE_PALM.defaultSpawner);
 			biome.extraSpawns.add(ThingType.TREE_PALM.defaultSpawner);
 		}

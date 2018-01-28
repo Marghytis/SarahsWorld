@@ -1,38 +1,16 @@
 package things;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import effects.particles.RainbowSpit;
 import item.ItemType;
 import item.ItemType.WeaponType;
-import main.Main;
-import main.Res;
-import render.Animation;
-import render.TexAtlas;
-import things.aiPlugins.Animating;
-import things.aiPlugins.Attacking;
-import things.aiPlugins.AvatarControl;
-import things.aiPlugins.FlyAround;
-import things.aiPlugins.Following;
-import things.aiPlugins.Inventory;
-import things.aiPlugins.Life;
-import things.aiPlugins.Magic;
-import things.aiPlugins.MidgeAround;
-import things.aiPlugins.Movement;
-import things.aiPlugins.Physics;
-import things.aiPlugins.PhysicsExtension;
-import things.aiPlugins.Riding;
-import things.aiPlugins.Speaking;
-import things.aiPlugins.WalkAround;
+import main.*;
+import render.*;
+import things.aiPlugins.*;
 import util.Color;
-import util.math.Function;
-import util.math.Rect;
-import util.math.Vec;
-import world.World;
-import world.WorldData;
-import world.WorldData.Column;
-import world.WorldWindow;
+import util.math.*;
+import world.*;
+import world.data.*;
 import world.generation.Biome.ThingSpawner.Spawner;
 
 public class ThingType {
@@ -107,7 +85,7 @@ public class ThingType {
 											new Animation("punch", Res.snail, 30, 1, /**/1, 2, 3, 4, 5, 6, 5)};
 	public static final ThingType SNAIL = new ThingType("SNAIL", Res.snail, 30, true,
 			(w, c, p, ed) -> {
-				if(c.vertices[c.collisionVecWater].averageSolidity == 2)
+				if(c.getTopFluidVertex().averageSolidity == 2)
 				return new Thing(ThingType.SNAIL, w, c, p.shift(0, 100));
 				else return null;
 			}
@@ -141,7 +119,7 @@ public class ThingType {
 											new Animation("bite", Res.rabbit, 30, 4, /**/1, 2, 3, 4, 1)}};
 	public static final ThingType RABBIT = new ThingType("RABBIT", Res.rabbit, 40, true,
 			(w, c, p, ed) -> {
-				if(c.vertices[c.collisionVecWater].averageSolidity == 2)
+				if(c.getTopFluidVertex().averageSolidity == 2)
 					return new Thing(ThingType.RABBIT, w, c, p.shift(0, 100));
 				else return null;
 			}
@@ -154,6 +132,8 @@ public class ThingType {
 			,new Physics(1, 1)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+			if(extraData.length > 0)
+				t.aniSet = (int)extraData[0];
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
@@ -170,7 +150,7 @@ public class ThingType {
 											new Animation("punch", Res.scorpion, 10, 1, /**/1, 2, 3, 4)};
 	public static final ThingType SCORPION = new ThingType("SCORPION", Res.scorpion, 40, true,
 			(w, c, p, ed) -> {
-				if(c.vertices[c.collisionVecWater].averageSolidity == 2)
+				if(c.getTopFluidVertex().averageSolidity == 2)
 					return new Thing(ThingType.SCORPION, w, c, p.shift(0, 100));
 				else return null;
 			}
@@ -242,8 +222,8 @@ public class ThingType {
 											new Animation("stand", Res.villager, 0, 3)}};
 	public static final ThingType VILLAGER = new ThingType("VILLAGER", Res.villager, 40, true,
 			(w, c, p, ed) -> {
-				if(c.vertices[c.collisionVecWater].averageSolidity == 2)
-				return new Thing(ThingType.VILLAGER, w, c, p.shift(0, 100));
+				if(c.getTopFluidVertex().averageSolidity == 2)
+				return new Thing(ThingType.VILLAGER, w, c, p.shift(0, 100),ed);
 				else return null;
 			}
 			,new Animating(villager[0][0], new Rect(Res.villager.pixelCoords), 0, 0, 1, false, villager)
@@ -253,7 +233,11 @@ public class ThingType {
 			,new Inventory(ItemType.NOTHING, 4)) {
 		
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			if(extraData.length >= 1 && Integer.parseInt((String)extraData[0]) > 0){
+				t.aniSet =  Integer.parseInt((String)extraData[0]);
+			} else {
+				t.aniSet = World.rand.nextInt(ani.animations.length);
+			}
 			ani.setAnimation(t, "stand");
 		}
 	};
@@ -284,13 +268,32 @@ public class ThingType {
 		}
 	};
 	
-	static final Animation[] unicorn = {
-			new Animation("stand", Res.unicorn, 0, 0),
-			new Animation("walk", Res.unicorn, 10, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
-			new Animation("sprint", Res.unicorn, 20, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
-			new Animation("spit", Res.unicorn, 5, 2,/**/0, 1, 2, 2, 2)};
+										static final Animation[][] unicorn = {{
+											new Animation("stand", Res.unicorn, 0, 0),
+											new Animation("walk", Res.unicorn, 10, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
+											new Animation("sprint", Res.unicorn, 20, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
+											new Animation("spit", Res.unicorn, 5, 2,/**/0, 1, 2, 2, 2)},{
+												new Animation("stand", Res.unicorn_hair, 0, 0),
+												new Animation("walk", Res.unicorn_hair, 10, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
+												new Animation("sprint", Res.unicorn_hair, 20, 0,/**/0, 1, 2, 3, 4, 3, 2, 1),
+												new Animation("spit", Res.unicorn_hair, 5, 2,/**/0, 1, 2, 2, 2)}};
 	public static final ThingType UNICORN = new ThingType("UNICORN", Res.unicorn, 40, true, (w, p, f, ed) -> new Thing(ThingType.UNICORN, w, p, f.shift(0, 100), ed)
-			,new Animating(unicorn[0], new Rect(Res.unicorn.pixelCoords), 0, 0, 4, false, unicorn)
+			,new Animating(unicorn[0][0], new Rect(Res.unicorn.pixelCoords), 0, 0, 4, false, unicorn) {
+		
+					public void prepareRender(Thing t){
+						t.z += 0.001;
+						super.prepareRender(t);
+					}
+					public void prepareSecondRender(Thing t){
+						//calculate new color for unicorns hair
+						UsefulStuff.colorFromHue(t.time, t.color);
+						t.z -= 0.001;
+						//update the color in the vbo
+						Main.world.window.vaos[t.type.ordinal].changeUnusual(t);
+						//return the color to normal in the next render cycle
+						t.needsUnusualRenderUpdate = true;
+					}
+				}.addSecondTex(Res.unicorn_hair.file)
 			,new Life(20, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH, ItemType.UNICORN_HORN}, 0.5, 0.5, 0.5, 1.1)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand")
 			,new Attacking(2, 0.05, new AttackType[]{new AttackType("spit", 300, -300, 300, WeaponType.SPELL, 2, 2, 0.5,
@@ -303,6 +306,7 @@ public class ThingType {
 		};
 
 		public void update(Thing t, double delta){
+			t.time += delta*0.1;
 			if(follow.action(t, delta)){//follow
 				attack.attack(t, WeaponType.SPELL, ItemType.NOTHING, "spit", t.target);//attack
 			} else if(t.target == null){
@@ -310,6 +314,7 @@ public class ThingType {
 			}
 		}
 	};
+	
 	
 										static final Animation[] cat_giant = {
 												new Animation("stand", Res.cat_giant, 0, 0),
@@ -408,7 +413,6 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.box = new Rect(file.pixelCoords).scale(world.random.nextDouble() + 0.5);
 			t.yOffset = 200 + World.rand.nextInt(100);
-
 			if(extraData.length > 0){
 				t.color.set((Color)extraData[0]);
 			}
@@ -587,6 +591,14 @@ public class ThingType {
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
 		}};
+
+
+										static final Animation[] cake = {new Animation(Res.cake, 0, 0)};
+	public static final ThingType CAKE = new ThingType("CAKE", Res.cake, 20, new Animating(cake[0], new Rect(Res.cake.pixelCoords), -1, 0, 1, true, cake)){
+	public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
+	ani.setAnimation(t, "");
+	t.itemBeing = ItemType.BIRTHDAY_CAKE;
+	}};
 		
 										static final Animation[][] house = {
 											{new Animation(Res.house, 0, 0)},

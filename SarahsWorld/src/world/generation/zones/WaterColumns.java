@@ -1,12 +1,13 @@
 package world.generation.zones;
 
-import world.generation.BiomeManager;
-import world.generation.Zone;
+import java.util.Random;
 
-public class WaterColumns extends Zone{
+import world.generation.*;
 
-	public WaterColumns(BiomeManager biome, double originX, boolean left) {
-		super(biome, originX, left);
+public class WaterColumns extends Zone {
+
+	public WaterColumns(Random rand, BiomeManager biome, double originX, boolean left) {
+		super(rand, biome, originX, left, describe());
 	}
 
 	public double deltaY() {

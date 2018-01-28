@@ -2,20 +2,24 @@ package world.generation;
 
 import java.util.Random;
 
+import world.data.*;
+
 
 public abstract class Zone {
 
 	public static enum Attribute {
-		TREES, DRY, MOIST, LAKES, ROUGH, FLAT, LONELY, BUSY, HOT, HILLY, SWEET
+		TREES, DRY, MOIST, LAKES, ROUGH, FLAT, LONELY, BUSY, HOT, HILLY, SWEET, EVELYN, COLD
 	}
 	protected Random random;
 	public BiomeManager biome;
 	public boolean end;
 	public double ownHeight;
-	public Zone subZone;
 	public double originX;
 	public boolean left;
+	protected double lastHeight;
 	public boolean[] description;
+	@Deprecated
+	protected Zone subZone;
 	
 	/**
 	 * The Zone is just responsible for the terrain height - the biome manager manages the rest like structure materials and things
@@ -46,9 +50,25 @@ public abstract class Zone {
 	
 	/**
 	 * Updates the height of this zone and returns the complete height
-	 * @return the height at x of this zone and all subZones together
+	 * @return the height at x of this zone and all subZones summed up
 	 */
-	public double y(double x){
-		return step(x) + (subZone != null ? subZone.y(x - subZone.originX) : 0);
+	public double stepOnce(double x){
+		biome.step();
+		return step(x) + (subZone != null ? subZone.stepOnce(x + originX - subZone.originX) : 0);
+	}
+	
+	/**
+	 * Don't override this, it's generic
+	 * @param world
+	 * @param x
+	 * @return
+	 */
+	public Column nextColumn(double x){
+		lastHeight = stepOnce(x);
+		return createColumn(x);
+	}
+	
+	protected Column createColumn(double x){
+		return new Column(0, biome.biome, biome.getTop(), biome.getLow(), biome.createVertices(lastHeight));
 	}
 }

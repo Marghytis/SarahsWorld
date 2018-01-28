@@ -3,14 +3,12 @@ package things.aiPlugins;
 import java.util.HashMap;
 
 import main.Main;
-import render.Animation;
-import render.Animator;
-import things.AiPlugin;
-import things.Thing;
+import render.*;
+import things.*;
 import util.Color;
 import util.math.Rect;
-import world.World;
-import world.WorldData;
+import world.*;
+import world.data.WorldData;
 
 public class Animating extends AiPlugin {
 	
@@ -23,6 +21,7 @@ public class Animating extends AiPlugin {
 	public Rect defaultBox;
 	public double z, zRange, frontRange;
 	public boolean useTexBox;
+	public TexFile secondFile = null;//ports the information if the thing has to be rendered twice (see unicorn)
 	
 	/**
 	 * 
@@ -87,6 +86,15 @@ public class Animating extends AiPlugin {
 			}
 			t.needsRenderUpdate = false;
 		}
+	}
+	
+	public void prepareSecondRender(Thing t){
+		prepareRender(t);
+	}
+	
+	public Animating addSecondTex(TexFile file){
+		this.secondFile = file;
+		return this;
 	}
 	
 	public Animation get(Thing t, String aniName){

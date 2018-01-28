@@ -6,7 +6,7 @@ import java.util.Random;
 import main.Main;
 import things.*;
 import util.math.Vec;
-import world.WorldData.*;
+import world.data.*;
 import world.generation.Generator;
 
 public class World {
@@ -33,7 +33,7 @@ public class World {
 		 */
 		
 
-		Vertex v = data.rightColumn.vertices[data.rightColumn.collisionVec];
+		Vertex v = data.rightColumn.getTopSolidVertex();
 		Vec pos = new Vec(100, v.y + 500);
 		avatar = new Thing(ThingType.SARAH, data, v.parent, pos.copy());
 		
@@ -51,7 +51,7 @@ public class World {
 		Column anchor = data.leftColumn;
 		generator.borders(avatar.pos.x - generator.genRadius, avatar.pos.x + generator.genRadius);
 
-		window = new WorldWindow(data, anchor, avatar.pos.x, (int)((Main.SIZE.w + 400)/Column.step));
+		window = new WorldWindow(data, anchor, avatar.pos.x, (int)((Main.SIZE.w + 400)/Column.COLUMN_WIDTH));
 	}
 	
 	public void save(DataOutputStream output) throws IOException {

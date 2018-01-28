@@ -27,11 +27,15 @@ public class ParticleTest implements Listener, Renderer, Updater{
 	
 	public ParticleTest(){
 //		RainEffect rain = new RainEffect(new Vec(1000, 500), 50, 100);
-		Fog fog = new Fog(0, 0, 300, 2, 100);
+//		Fog fog = new Fog(0, 0, 300, 2, 100);
 //		effects.add(rain);
-		effects.add(fog);
+//		effects.add(fog);
+//		effects.add(new Snow(new Vec(-core.SIZE_HALF.w, core.SIZE_HALF.h+20), core.SIZE.w, 1));
+//		effects.add(new BasicMagicEffect(() -> {
+//			return Listener.getMousePos(core.getWindow().getHandle()).copy().shift(-core.SIZE_HALF.w, -core.SIZE_HALF.h);
+//		}, 100));
 	}
-
+	
 	public boolean update(double delta) {
 		float d = (float) delta;
 		ParticleEffect.wind.set((Listener.getMousePos(core.getWindow().getHandle()).x - core.SIZE_HALF.w)*60f/core.SIZE_HALF.w, 0);
@@ -87,10 +91,13 @@ public class ParticleTest implements Listener, Renderer, Updater{
 			effects.add(new RainEffect(mousePos, 100, 20));
 			break;
 		case GLFW_KEY_8:
+			effects.add(new ChristmasBalls(mousePos));
 			break;
 		case GLFW_KEY_9:
+			effects.add(new Snow(mousePos, 2000, 1));
 			break;
 		case GLFW_KEY_0:
+			effects.add(new BasicMagicDissapperance(mousePos));
 			break;
 		}
 		return false;

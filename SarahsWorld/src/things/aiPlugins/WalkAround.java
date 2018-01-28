@@ -4,7 +4,7 @@ import main.Main;
 import things.AiPlugin;
 import things.Thing;
 import world.World;
-import world.WorldData;
+import world.data.WorldData;
 
 
 

@@ -2,12 +2,9 @@ package world.generation.zones;
 
 import java.util.Random;
 
-import util.math.Function;
-import util.math.UsefulF;
-import util.math.Vec;
-import world.WorldData.Column;
-import world.generation.BiomeManager;
-import world.generation.Zone;
+import util.math.*;
+import world.data.Column;
+import world.generation.*;
 
 public class Hills extends Zone {
 
@@ -52,7 +49,7 @@ public class Hills extends Zone {
 		reachedP2 = false;
 		
 		//interpolate hills
-		if(x + Column.step >= p2.x){
+		if(x + Column.COLUMN_WIDTH >= p2.x){
 			
 			if((p1.x + p2.x)/2 > aimWidth){
 				if(last){

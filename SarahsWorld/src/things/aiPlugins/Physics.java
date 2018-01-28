@@ -2,13 +2,10 @@ package things.aiPlugins;
 
 import main.Main;
 import menu.Settings;
-import things.AiPlugin;
-import things.Thing;
-import util.math.UsefulF;
-import util.math.Vec;
-import world.Material;
-import world.WorldData.Column;
-import world.WorldData.Vertex;
+import things.*;
+import util.math.*;
+import world.*;
+import world.data.*;
 
 public class Physics extends AiPlugin {
 	
@@ -104,7 +101,7 @@ public class Physics extends AiPlugin {
 		
 		//UPDATE WORLD LINK
 
-		int column = (int)Math.floor(t.pos.x/Column.step);
+		int column = (int)Math.floor(t.pos.x/Column.COLUMN_WIDTH);
 		while(t.link.xIndex < column) t.link = t.link.right;
 		while(t.link.xIndex > column) t.link = t.link.left;
 	}
@@ -130,7 +127,7 @@ public class Physics extends AiPlugin {
 			}
 		} else if(t.where.g){
 			if(stickToGround){
-				t.rotation = -t.link.getTopLine(new Vec()).angle();
+				t.rotation = -t.link.getCollisionLine(new Vec()).angle();
 			} else {
 				t.rotation = 0;
 			}
@@ -154,7 +151,7 @@ public class Physics extends AiPlugin {
 		if(collision(t, t.pos, t.nextVelAvDelta)){
 //			if(t.type == ThingType.SARAH) System.out.println("Collision! " + collisionVec);
 			double t1 = calculateCollisionTime(collisionVec.minus(t.pos).length(), t.force.length()/mass, t.vel.length());
-			Vec topLine = t.collisionC.getTopLine(new Vec()).normalize();
+			Vec topLine = t.collisionC.getCollisionLine(new Vec()).normalize();
 			updateForceNextVelAndNextPos(t, constantForce, null, t1, true);
 			t.pos.set(collisionVec);
 			t.link = t.collisionC;
@@ -177,7 +174,7 @@ public class Physics extends AiPlugin {
 	
 	public void walkOrLiftOf(Thing t, Vec constantForce, double delta){
 		
-		Vec topLine = t.link.getTopLine(new Vec()).normalize();
+		Vec topLine = t.link.getCollisionLine(new Vec()).normalize();
 		Vec ortho = topLine.ortho(true);
 
 		//constant Force with walking force minus air friction, nextVel and nextPos get set
@@ -194,7 +191,7 @@ public class Physics extends AiPlugin {
 				t.vel.set(0, 0);
 			} else {
 				t.pos.set(circleCollision);
-				t.vel.set(t.collisionC.getTopLine(topLine)).setLength(t.speed);
+				t.vel.set(t.collisionC.getCollisionLine(topLine)).setLength(t.speed);
 				t.link = t.collisionC;
 			}
 			t.where.g = true;
@@ -228,7 +225,7 @@ public class Physics extends AiPlugin {
 		//forces
 		double normal = t.force.dot(ortho);
 		double downhill = t.force.dot(topLine);//walking force already included from before
-		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.vertices[t.collisionC.collisionVec].averageDeceleration;
+		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.getTopSolidVertex().averageDeceleration;
 //							+ (Settings.airFriction ? 1 : 0)*t.speed*t.speed*airFriction*airea
 							;
 
@@ -257,8 +254,8 @@ public class Physics extends AiPlugin {
 		Column[] array = Main.world.window.landscape.columns;
 		for(int c = 0; c < Main.world.window.landscape.columns.length; c++){
 			Vec[] output = UsefulF.circleIntersection(
-					vec1.set(array[c].xReal, array[c].vertices[array[c].collisionVec].y),
-					vec2.set(array[c].right.xReal, array[c].right.vertices[array[c].right.collisionVec].y),
+					vec1.set(array[c].xReal, array[c].getCollisionY()),
+					vec2.set(array[c].right.xReal, array[c].right.getCollisionY()),
 					pos1,
 					r);
 			if(right && output[1] != null){
@@ -282,8 +279,8 @@ public class Physics extends AiPlugin {
 				if(UsefulF.intersectionLines2(
 						pos1,
 						velt,
-						vec1.set(c.xReal, c.vertices[c.collisionVec].y),
-						vec2.set(c.right.xReal, c.right.vertices[c.right.collisionVec].y), collisionVec)){
+						vec1.set(c.xReal, c.getCollisionY()),
+						vec2.set(c.right.xReal, c.right.getCollisionY()), collisionVec)){
 					t.collisionC = c;
 					return true;//can only collide with one vertex
 				}
@@ -299,8 +296,8 @@ public class Physics extends AiPlugin {
 	 * @param t
 	 */
 	public void checkWater(Vec force, Vec pos, Thing t){
-		if(t.link.collisionVec != t.link.collisionVecWater && t.link.right.collisionVec != t.link.right.collisionVecWater){
-			Vertex waterVertex = t.link.vertices[t.link.collisionVecWater];
+		if(t.link.getTopSolidVertex() != t.link.getTopFluidVertex() && t.link.right.getTopSolidVertex() != t.link.right.getTopFluidVertex()){
+			Vertex waterVertex = t.link.getTopFluidVertex();
 			if(waterVertex.y > pos.y + t.box.pos.y){
 				t.where.water = Math.min((waterVertex.y - (pos.y + t.box.pos.y))/t.box.size.y, 1);//+20
 				force.shift(new Vec(0, waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/)));

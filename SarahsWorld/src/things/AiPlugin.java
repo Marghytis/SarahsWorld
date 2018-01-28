@@ -1,6 +1,6 @@
 package things;
 
-import world.WorldData;
+import world.data.WorldData;
 
 
 

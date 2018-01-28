@@ -1,21 +1,17 @@
 package things;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import item.ItemStack;
-import item.ItemType;
+import item.*;
 import main.Main;
 import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
 import things.aiPlugins.Speaking.ThoughtBubble;
 import util.Color;
-import util.math.Rect;
-import util.math.Vec;
-import world.World;
-import world.WorldData;
-import world.WorldData.Column;
+import util.math.*;
+import world.*;
+import world.data.*;
 
 public class Thing {
 	//DEBUG
@@ -24,7 +20,7 @@ public class Thing {
 	
 	//values, that don't change, but are entity specific
 	public ThingType type;
-	public Color color = Color.WHITE;
+	public Color color = new Color(Color.WHITE);
 	public ItemType itemBeing;
 	public double yOffset;
 	public double accWalking = 1000, accSwimming = 250, accFlying;//accWalking is different from snail to snail for example
@@ -44,6 +40,7 @@ public class Thing {
 	public double walkingForce, speed, maxWalkingSpeed;
 	public double rotation, aniRotation;
 	public Vec orientation = new Vec(0, 1);
+	public double time;//just for unicorns at this point. Can be used to animate certain effects
 	
 	//Values that change, if needed
 	public Animator ani;
@@ -114,6 +111,12 @@ public class Thing {
 	public void prepareRender(){
 		if(visible){
 			type.ani.prepareRender(this);
+		}
+	}
+	
+	public void prepareSecondRender(){
+		if(visible){
+			type.ani.prepareSecondRender(this);
 		}
 	}
 	

@@ -1,5 +1,8 @@
 quests.firefighter.question1="Hey, would you mind helping me out a bit?|I'm afraid of leaving the village,|but I don't have any firewood left...|If you bring some to me I'll be very grateful!"
 quests.test.question1="Please don't kill me!"; "Ne me tue pas, s'il te plaît!"; "Tortilla con queso!"; "No me jodas"
+quests.evelyn.greeting="Hi!"; "Hello!"; "Huhu!"
+quests.evelyn.birthdayWish="Hi Evelyn, I wish you the best for your birthday! Have a cake! :)"
+quests.evelyn.thankYou="Wow, what a huge cake! Thanks a lot!"
 accept.kind="O.K."; "Yes, sure."; "Yeah, I'll do it."; "No problem!"; "Deal!"; "Great man!"
 reject.kind="No, sorry, I don't have time now."; "I'm sorry, I can't do that now."
 reject.unkind="I'm not your slave, man!"; "Shut up, fucking asshole!"; "I'm not going to do that."; "What do you want from me?!?"

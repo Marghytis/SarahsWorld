@@ -1,0 +1,51 @@
+Attributes{
+    TREES;
+    EVELYN
+}
+Characters{
+    mario = SARAH;
+    evelyn = VILLAGER
+}
+Start{
+	IF
+        random(100)<=1
+    ~DO
+    	bindAvatar(mario);
+        spawn(evelyn,3)
+    ~NEXT
+        Hello?
+}
+Hello?{
+    IF
+        distance(mario, evelyn) <= 300
+    ~NEXT
+        Ready_Yes;
+        Ready_No
+}
+Ready_Yes{
+	IF
+		has(mario, BIRTHDAY_CAKE, 1) == true
+	~DO
+        say(true, evelyn, quests.evelyn.greeting, quests.evelyn.greeting | quests.evelyn.birthdayWish)
+	~NEXT
+		1: OnlyGreeting;
+		2: ThankYou
+}
+OnlyGreeting{
+	NEXT
+		Hello?
+}
+Ready_No{
+	IF
+		has(mario, BIRTHDAY_CAKE, 1) == false
+	~DO
+        say(true, evelyn, quests.evelyn.greeting, quests.evelyn.greeting)
+    ~NEXT
+    	Hello?
+}
+ThankYou{
+	DO
+        give(evelyn, BIRTHDAY_CAKE, 1);
+        give(mario, BIRTHDAY_CAKE, -1);
+        say(false, evelyn, quests.evelyn.thankYou);
+}

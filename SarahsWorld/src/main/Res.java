@@ -2,14 +2,8 @@ package main;
 
 import java.awt.Font;
 
-import render.Shader;
-import render.TexAtlas;
-import render.TexFile;
-import render.TexInfo;
-import render.Texture;
-import util.Color;
-import util.Sound;
-import util.TrueTypeFont;
+import render.*;
+import util.*;
 
 public class Res {
 	
@@ -38,6 +32,7 @@ public class Res {
 	public static final TexAtlas flower_normal = new TexAtlas("res/objects/Flower.png", 1, 3, -0.5f, 0f);//0
 	public static final TexAtlas pyramide = new TexAtlas("res/objects/Pyramide.png", 1, 4, -0.5f, 0f);//-0.1
 	public static final TexAtlas house = new TexAtlas("res/objects/House.png", 1, 6, -0.5f, 0f);//-0.05
+	public static final TexAtlas cake = new TexAtlas("res/objects/BirthdayCake.png", 1, 1, -0.5f, -0.2f);//-0.05
 	public static final TexAtlas townobject = new TexAtlas("res/objects/TownObject.png", 1, 5, -0.5f, 0);//-0.02
 	public static final TexAtlas flower_candy = new TexAtlas("res/objects/Candy.png", 1, 6, -0.5f, 0);//0
 	public static final TexAtlas crack = new TexAtlas("res/objects/Crack.png", 1, 4, -0.5f, 0);//-0.5
@@ -67,7 +62,7 @@ public class Res {
 	public static final TexAtlas butterfly  = new TexAtlas("res/creatures/Butterfly.png", 5, 2, -0.5f, -0.5f);
 	public static final TexAtlas midge  = new TexAtlas("res/creatures/Midge.png", 1, 1, -0.5f, -0.5f);
 	public static final TexAtlas heart = new TexAtlas("res/creatures/Heart.png", 4, 2, -0.5f, -0.2f);
-	public static final TexAtlas rabbit  = new TexAtlas("res/creatures/Rabbit.png", 5, 3, -0.5f, -0.2f);
+	public static final TexAtlas rabbit  = new TexAtlas("res/creatures/Rabbit.png", 5, 6, -0.5f, -0.2f);
 	public static final TexAtlas bird  = new TexAtlas("res/creatures/Bird.png", 5, 4, -0.5f, -0.2f);
 	public static final TexAtlas panda  = new TexAtlas("res/creatures/Panda.png", 6, 2, -0.5f, -0.1f);
 	public static final TexAtlas scorpion  = new TexAtlas("res/creatures/Scorpion.png", 7, 2, -0.5f, -0.1f);
@@ -108,6 +103,8 @@ public class Res {
 	public static final Texture heartParticle = new Texture("res/particles/Heart.png", -0.5, -0.5);
 	public static final Texture rainParticle = new Texture("res/particles/Raindrop.png", -0.5, -0.5);
 	public static final Texture fogParticle = new Texture("res/particles/Fog.png", -0.5, -0.5);
+	public static final Texture christmasBallPartile = new Texture("res/particles/ChristmasBall.png",-0.5,-0.5);
+	public static final Texture snowFlakeParticle = new Texture("res/particles/SnowFlake.png",-0.5,-0.5);
 
 	public static final Texture grass = new Texture("res/materials/Grass.png", 0, 0);
 	public static final Texture earth = new Texture("res/materials/Earth.png", 0, 0);

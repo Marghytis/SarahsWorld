@@ -1,17 +1,11 @@
 package world.generation;
 
 import effects.WorldEffect;
-import things.Thing;
-import things.ThingType;
+import things.*;
 import util.Color;
-import util.math.Function;
-import util.math.Vec;
-import world.Material;
-import world.Stratum;
-import world.World;
-import world.WorldData;
-import world.WorldData.Column;
-import world.WorldWindow;
+import util.math.*;
+import world.*;
+import world.data.*;
 import world.generation.Biome.ThingSpawner.Spawner;
 
 public enum Biome {
@@ -108,6 +102,7 @@ public enum Biome {
 				new ThingSpawner(spawnBetween(ThingType.TREE_CANDY, -20, -30), 0.06),
 				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.HEART, w, c, pos, 1), 0.04),
 				new ThingSpawner(ThingType.UNICORN.defaultSpawner, 0.01),
+				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CLOUD, w, c, pos, new Color(0.9f, 0.68f, 0.9f)), 0.06),
 			},
 			new EffectSpawner[]{
 			}),
@@ -170,6 +165,27 @@ public enum Biome {
 				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
 				,new ThingSpawner(ThingType.SNAIL.defaultSpawner, 0.01)
 				,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.01)
+//				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.VILLAGER, w,p, f), 0.01)	
+			},
+			new EffectSpawner[]{
+			}),
+	WINTER_FORREST(new Color(0.91f, 0.94f, 0.94f), new Color(0.73f, 0.82f, 0.86f),
+			new Stratum[]{
+				null,
+				new Stratum(Material.SNOW, 20.0, 20.0, 5, 40, 2, 4),
+				new Stratum(Material.EARTH, 60.0, 20.0, 20, 40, 5, 4),
+				new Stratum(Material.STONE, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 50.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE, 100.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE2, 100.0, 20.0, 20, 40, 1, 5),
+				new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 1, 5),
+				null
+			},
+			new ThingSpawner[]{
+				new ThingSpawner(ThingType.TREE_FIR_SNOW.defaultSpawner, 0.3)
+				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
+				,new ThingSpawner(ThingType.RABBIT.defaultSpawner, 0.01)
+				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.HEART, w, c, pos, 1), 0.04)
 //				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.VILLAGER, w,p, f), 0.01)	
 			},
 			new EffectSpawner[]{
@@ -257,6 +273,7 @@ public enum Biome {
 					,new ThingSpawner(spawnBetween(ThingType.HOUSE, -20, -30, false), 0.05)
 					,new ThingSpawner(spawnBetween(ThingType.TOWN_OBJECT, -20, -30), 0.05)
 					,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.01)
+					,new ThingSpawner(ThingType.CAKE.defaultSpawner, 0.01)
 //					,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.VILLAGER, w,p, f), 0.01)	
 				},
 				new EffectSpawner[]{

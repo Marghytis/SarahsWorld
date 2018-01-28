@@ -8,9 +8,8 @@ Characters{
 Start{
     IF
         daytime()==evening
-        &&
-        random(100)<=1
     ~DO
+    	bindAvatar(sarah);
         spawn(villy1)
     ~NEXT
         WillYouDoIt?

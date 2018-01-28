@@ -1,21 +1,19 @@
 package quest;
 
-import item.ItemStack;
-import item.ItemType;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Hashtable;
 
+import item.*;
 import things.ThingType;
-import world.WorldData;
-import world.WorldWindow;
+import world.*;
+import world.data.WorldData;
 import world.generation.Zone.Attribute;
 
 public enum Quest {
-	FIREFIGHTER("res/quest/Firefighter.txt"),
-	TEST("res/quest/Test.txt");
+//	FIREFIGHTER("res/quest/Firefighter.txt"),
+//	TEST("res/quest/Test.txt"),
+	EVELYN("res/quest/Evelyn.txt")
+	;
 
 	public static Quest[] values;
 	
@@ -73,7 +71,10 @@ public enum Quest {
 		for(int i = 2, i2 = 0; i < blocks.length; i++, i2++){
 			String[] data = blocks[i].split("\\{");
 			names[i2] = data[0];
-			blocks2[i2] = data[1];
+			if(data.length > 1)
+				blocks2[i2] = data[1];
+			else
+				blocks2[i2] = "";
 		}
 		
 		//actual quest
@@ -91,6 +92,8 @@ public enum Quest {
 				break;
 			case 'N'://NEXT
 				events[i].nextTemp = compileNext(names, paragraphs[i2].substring(4));
+				break;
+			case 'E'://EMPTY
 				break;
 			}
 			if(events[i].condition == null) events[i].condition = (q, w) -> true;
@@ -121,6 +124,7 @@ public enum Quest {
 			String[] args = method.length > 1 ? method[1].split(",") : null;
 			Objector leftSide = null;
 			switch(method[0]){
+			case "true": leftSide = (q, w) -> 1; break;
 			case "daytime": leftSide = (q, w) -> WorldWindow.getDayTime();break;
 			case "random": leftSide = (q, w) -> w.random.nextInt(Integer.parseInt(args[0]));break;
 			case "distance": leftSide = (q, w) -> {
@@ -134,7 +138,7 @@ public enum Quest {
 						return (stacks[i1].count >= Integer.parseInt(args[2])) ? "true" : "false";
 					}
 				}
-				return false;
+				return "false";
 			};break;
 			default: throw(new UnknownMethodException("condition", method[0]));
 			}
@@ -164,7 +168,11 @@ public enum Quest {
 	
 	public Condition getCondition(Objector left, String operator, String rightSide){
 		switch(operator){
-		case "==": return (q, w) -> {return left.object(q, w).equals(rightSide);};
+		case "==": return (q, w) -> {
+			if(left instanceof Number){
+				System.out.println(((Number)left.object(q, w)).intValue());
+			}
+			return left.object(q, w).equals(rightSide) || (left instanceof Number && ((Number)left.object(q, w)).intValue() <= Integer.parseInt(rightSide));};
 		case "<=": return (q, w) -> ((Number)left.object(q, w)).intValue() <= Integer.parseInt(rightSide);
 		case ">=": return (q, w) -> ((Number)left.object(q, w)).intValue() >= Integer.parseInt(rightSide);
 		case "<<": return (q, w) -> ((Number)left.object(q, w)).intValue() < Integer.parseInt(rightSide);
@@ -184,10 +192,12 @@ public enum Quest {
 			String[] method = actions[i].substring(0, actions[i].length()-1).split("\\(");
 			String[] args = method[1].split(",");
 			switch(method[0]){
-			case "spawn": realActions[i] = (q, w) -> {w.world.generator.questThings.add(new QuestSpawner(characters.get(args[0]), q, args[0], true)); q.eventFinished = false;}; break;
+			case "bindAvatar": realActions[i] = (q,w)->{q.characters.put(args[0], w.world.avatar);}; break;
+			case "spawn": realActions[i] = (q, w) -> {w.world.generator.questThings.add(new QuestSpawner(characters.get(args[0]), q, args[0], args.length > 1 ? args[1] : -1)); q.eventFinished = false;}; break;
 			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).type.speak.say(q.characters.get(args[1]), Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
 			//say(boolean thoughtBubble, villager, question, answers)break;
 			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).type.inv.addItem(q.characters.get(args[0]), ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
+			case "print": realActions[i] = (q, w) -> System.out.println(args[0]); break;
 			default: throw(new UnknownMethodException("action", method[0]));
 			}
 		}

@@ -2,7 +2,7 @@ package things.aiPlugins;
 
 import things.AiPlugin;
 import things.Thing;
-import world.WorldData;
+import world.data.WorldData;
 
 
 

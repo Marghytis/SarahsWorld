@@ -6,11 +6,11 @@ import java.util.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
-import main.*;
+import main.Res;
 import menu.Settings;
 import render.*;
 import render.VBO.VAP;
-import world.WorldData.*;
+import world.data.*;
 import world.generation.Biome;
 
 public class LandscapeWindow {
@@ -21,6 +21,8 @@ public class LandscapeWindow {
 	public int indexShift;
 	public int columnRadius, center, index;
 	public Column left, right;
+	
+	WorldData data;
 	
 	public VAO vao, vaoColor;//vaoColor contains the data for the darkness and the background, because they have the same format
 	//I consider a Point to be an object of the Vertex class, because the name "vertex" is already in use...
@@ -40,6 +42,7 @@ public class LandscapeWindow {
 		columns = new Column[2*columnRadius+1];
 		this.center = firstIndex;
 		pointsX = columns.length;
+		this.data = data;
 		left = anchor;
 		right = left;
 		//create Column array and find borders
@@ -47,12 +50,12 @@ public class LandscapeWindow {
 		while(left.xIndex > firstIndex-columnRadius && left.left != null){
 			left = left.left;
 			insertColumn( left);
-			left.appear(true);
+			left.appear(true, data);
 		}
 		while(right.xIndex < firstIndex+columnRadius && right.right != null){
 			right = right.right;
 			insertColumn( right);
-			right.appear(false);
+			right.appear(false, data);
 		}
 		if(left.xIndex > firstIndex-columnRadius || right.xIndex < firstIndex + columnRadius){
 			new Exception("World data is not large enough yet").printStackTrace();
@@ -97,7 +100,7 @@ public class LandscapeWindow {
 			addRight(right);
 			center++;
 			
-			right.appear(false);
+			right.appear(false, data);
 		}
 		while(center > xIndex && left.left != null){
 			
@@ -108,7 +111,7 @@ public class LandscapeWindow {
 			addLeft(left);
 			center--;
 
-			left.appear(true);
+			left.appear(true, data);
 		}
 	}
 
@@ -357,11 +360,11 @@ public class LandscapeWindow {
 	byte[] light = {0, 0, 0, 0}, dark = {0, 0, 0, 127};
 	public void putPointDataDarkness(ByteBuffer buffer, Column c){
 		buffer.putFloat((float)c.xReal);
-		buffer.putFloat((float)c.vertices[c.collisionVec].y);
+		buffer.putFloat((float)c.getTopSolidVertex().y);
 		buffer.put(light);
 		
 		buffer.putFloat((float)c.xReal);
-		buffer.putFloat((float)(c.vertices[c.collisionVec].y - darknessDistance));
+		buffer.putFloat((float)(c.getTopSolidVertex().y - darknessDistance));
 		buffer.put(dark);
 		
 		buffer.putFloat((float)c.xReal);

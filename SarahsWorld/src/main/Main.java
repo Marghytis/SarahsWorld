@@ -1,33 +1,18 @@
 package main;
 
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
-import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.opengl.GL11.GL_ALPHA_TEST;
-
 import org.lwjgl.opengl.GL11;
 
-import core.Core;
-import core.Listener;
-import core.Renderer;
-import core.Updater;
-import core.Window;
+import core.*;
 import menu.Menu;
-import newStuff.StaticInit;
 import util.Color;
 import util.math.IntVec;
-import world.Save;
-import world.World;
+import world.*;
 
 public class Main {
 	
 	public static Menu menu;
 	public static World world;
 	public static Core core;
-	public static StaticInit test;
 	public static IntVec SIZE, HALFSIZE;
 	public static long WINDOW;
 	

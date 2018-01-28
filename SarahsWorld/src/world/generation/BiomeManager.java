@@ -1,18 +1,11 @@
 package world.generation;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import util.Color;
-import util.math.Function;
-import util.math.UsefulF;
-import util.math.Vec;
-import world.Material;
-import world.Stratum;
-import world.WorldData;
-import world.WorldData.Column;
-import world.WorldData.Vertex;
+import util.math.*;
+import world.*;
+import world.data.*;
 import world.generation.Biome.ThingSpawner.Spawner;
 
 public class BiomeManager {
@@ -34,8 +27,8 @@ public class BiomeManager {
 			ants[yIndx] = new Ant(normal.stratums[yIndx]);
 		}
 		this.biome = normal;
-		top = biome.topColor;
-		low = biome.lowColor;
+		setTop(biome.topColor);
+		setLow(biome.lowColor);
 		last = biome;
 	}
 	public List<Spawner> extraSpawns = new ArrayList<>();
@@ -55,7 +48,8 @@ public class BiomeManager {
 	boolean first = true;
 	Biome last; int dx;
 	static int colorTransition = 40;
-	Color top, low;
+	private Color top;
+	private Color low;
 	//Idea of the day: Just go back the Line, if the biome has to change!!! TODO
 	/**
 	 * If the stratum in an ant stays the same, it does nothing there
@@ -69,8 +63,8 @@ public class BiomeManager {
 				c.topColor = newBiome.topColor.minus(biome.topColor).scale((float)dx/colorTransition).add(biome.topColor);
 				c.lowColor = newBiome.lowColor.minus(biome.lowColor).scale((float)dx/colorTransition).add(biome.lowColor);
 			}
-			top = newBiome.topColor.minus(biome.topColor).scale(0.5f).add(biome.topColor);
-			low = newBiome.lowColor.minus(biome.lowColor).scale(0.5f).add(biome.lowColor);
+			setTop(newBiome.topColor.minus(biome.topColor).scale(0.5f).add(biome.topColor));
+			setLow(newBiome.lowColor.minus(biome.lowColor).scale(0.5f).add(biome.lowColor));
 			dx = colorTransition/2;
 			this.last = biome;
 			this.biome = newBiome;
@@ -118,7 +112,7 @@ public class BiomeManager {
 			System.arraycopy(ants[i].mats, 0, outMat, 0, ants[i].mats.length);
 			System.arraycopy(ants[i].realAlphas, 0, outAlpha, 0, ants[i].realAlphas.length);//if(!make0)
 			
-			out[i] = world.new Vertex(i, outMat, outAlpha, ants[i].index.first, ants[i].index.last, transHeight, apparentY);
+			out[i] = new Vertex(i, outMat, outAlpha, ants[i].index.first, ants[i].index.last, transHeight, apparentY);
 			
 			y -= ants[i].thickness;
 		}
@@ -130,8 +124,8 @@ public class BiomeManager {
 	 */
 	public void step(){
 		if(dx <= colorTransition){
-			top = biome.topColor.minus(last.topColor).scale((float)dx/colorTransition).add(last.topColor);
-			low = biome.lowColor.minus(last.lowColor).scale((float)dx/colorTransition).add(last.lowColor);
+			setTop(biome.topColor.minus(last.topColor).scale((float)dx/colorTransition).add(last.topColor));
+			setLow(biome.lowColor.minus(last.lowColor).scale((float)dx/colorTransition).add(last.lowColor));
 			dx++;
 		}
 		for(Ant a : ants){
@@ -139,6 +133,22 @@ public class BiomeManager {
 		}
 	}
 	
+	public Color getTop() {
+		return top;
+	}
+
+	public void setTop(Color top) {
+		this.top = top;
+	}
+
+	public Color getLow() {
+		return low;
+	}
+
+	public void setLow(Color low) {
+		this.low = low;
+	}
+
 	public class Ant {
 		public State state;
 		public Material[] mats; Indices index;//all the mats active in this layer

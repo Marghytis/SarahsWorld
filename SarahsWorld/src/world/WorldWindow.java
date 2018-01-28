@@ -19,7 +19,7 @@ import render.VBO.VAP;
 import things.*;
 import util.Color;
 import util.math.Vec;
-import world.WorldData.Column;
+import world.data.*;
 
 public class WorldWindow implements Updater, Renderer{
 	public WorldData world;
@@ -54,7 +54,7 @@ public class WorldWindow implements Updater, Renderer{
 				
 		while(anchor.xReal > startX) anchor = anchor.left;
 		while(anchor.xReal < startX) anchor = anchor.right;
-		landscape = new LandscapeWindow(world, anchor, radius, (int)Math.floor(startX/Column.step));
+		landscape = new LandscapeWindow(world, anchor, radius, (int)Math.floor(startX/Column.COLUMN_WIDTH));
 		landscapeBuffer = new Framebuffer("Landscape", Main.SIZE.w, Main.SIZE.h);
 		this.completeWindow = Render.quadInScreen(-Main.HALFSIZE.w, Main.HALFSIZE.h, Main.HALFSIZE.w, -Main.HALFSIZE.h);
 //		this.backgroundColors = BufferUtils.createByteBuffer(4*4);
@@ -338,12 +338,12 @@ public class WorldWindow implements Updater, Renderer{
 		for(int type = 0; type < ThingType.types.length; type++)
 		for(int col = 0; col < landscape.columns.length; col++)
 		for(Thing t = landscape.columns[col].things[type]; t != null; t = t.next)
-			if(t.pos.x >= Main.world.avatar.pos.x - radius*Column.step && t.pos.x <= Main.world.avatar.pos.x + radius*Column.step)
+			if(t.pos.x >= Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH && t.pos.x <= Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH)
 				t.setVisible(true);
 		//remove things from the buffer that should not be visible
 		for(int type = 0; type < ThingType.types.length; type++) {
 			for(int t = 0; t <= vaos[type].lastUsedIndex; t++){
-				if(vaos[type].things[t].pos.x < Main.world.avatar.pos.x - radius*Column.step || vaos[type].things[t].pos.x > Main.world.avatar.pos.x + radius*Column.step){
+				if(vaos[type].things[t].pos.x < Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH || vaos[type].things[t].pos.x > Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH){
 					vaos[type].things[t].setVisible(false);
 				}
 			}
@@ -368,6 +368,21 @@ public class WorldWindow implements Updater, Renderer{
 			vaos[type].vao.bindStuff();
 				GL11.glDrawArrays(GL11.GL_POINTS, 0, vaos[type].lastUsedIndex+1);
 			vaos[type].vao.unbindStuff();
+			
+			if(ThingType.types[type].ani.secondFile != null){
+				ThingType.types[type].ani.secondFile.bind();
+
+				for(int col = 0; col < landscape.columns.length; col++)
+				for(Thing t = landscape.columns[col].things[type]; t != null; t = t.next){
+					if(d.decide(ThingType.types[type])){
+						t.prepareSecondRender();
+					}
+				}
+
+				vaos[type].vao.bindStuff();
+					GL11.glDrawArrays(GL11.GL_POINTS, 0, vaos[type].lastUsedIndex+1);
+				vaos[type].vao.unbindStuff();
+			}
 		}
 		TexFile.bindNone();
 		Shader.bindNone();
@@ -422,7 +437,7 @@ public class WorldWindow implements Updater, Renderer{
 	}
 	
 	public void setPos(double x){
-		landscape.moveTo((int)Math.floor(x/Column.step));
+		landscape.moveTo((int)Math.floor(x/Column.COLUMN_WIDTH));
 	}
 
 	public Thing[] livingsAt(Vec loc){

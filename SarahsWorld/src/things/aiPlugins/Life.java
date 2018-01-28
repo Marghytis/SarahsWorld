@@ -9,9 +9,8 @@ import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
 import util.math.Vec;
-import world.World;
-import world.WorldData;
-import world.WorldWindow;
+import world.*;
+import world.data.WorldData;
 
 
 

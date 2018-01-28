@@ -1,10 +1,9 @@
 package things.aiPlugins;
 
-import things.AiPlugin;
-import things.Thing;
-import util.math.Function;
-import util.math.Vec;
-import world.WorldData.Column;
+import main.Main;
+import things.*;
+import util.math.*;
+import world.data.Column;
 
 
 
@@ -57,7 +56,9 @@ public class Movement extends AiPlugin {
 					t.type.ani.setAnimation(t, fly);
 				}
 			} else if(!t.willLandInWater){
-				t.type.ani.setAnimation(t, fly);
+				if(t.reallyAir){
+					t.type.ani.setAnimation(t, fly);
+				}
 			} else {
 				t.type.ani.setAnimation(t, plunge);
 			}
@@ -74,19 +75,27 @@ public class Movement extends AiPlugin {
 	 */
 	public void jump(Thing t){
 		if(t.willLandInWater = willLandInWater(t)){
-			t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));
-			t.type.ani.setAnimation(t,  dive, () -> {
-				t.reallyAir = true;
-				t.type.ani.setAnimation(t, plunge);
-				t.where.g = false;
+			t.type.ani.setAnimation(t,  liftOf, () -> {
+				if(Main.world.avatar.where.g){
+					t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));
+					t.reallyAir = true;
+					t.where.g = false;
+					t.type.ani.setAnimation(t,  dive, () -> {
+						t.type.ani.setAnimation(t, plunge);
+					});
+				} else {
+					t.willLandInWater = false;
+				}
 			});
 		} else 
 		t.type.ani.setAnimation(t,  liftOf, () -> {
-			t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));//ortho(t.vel.x > 0)
-//			t.type.phys.leaveGround(Math.cos(Math.atan(t.link.parent.getTopLine(topLine).slope()))*t.vel.length(), 400.0);
-			t.reallyAir = true;
-			t.type.ani.setAnimation(t, fly);
-			t.where.g = false;
+			if(Main.world.avatar.where.g){
+				t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));//ortho(t.vel.x > 0)
+	//			t.type.phys.leaveGround(Math.cos(Math.atan(t.link.parent.getTopLine(topLine).slope()))*t.vel.length(), 400.0);
+				t.reallyAir = true;
+				t.type.ani.setAnimation(t, fly);
+				t.where.g = false;
+			}
 		});
 	}
 	
@@ -98,10 +107,10 @@ public class Movement extends AiPlugin {
 		Column cursor = t.link;
 		boolean lastOne = false;
 		while(cursor != null){
-			if(/*cursor.xReal > xPeak && */cursor.collisionVec != cursor.collisionVecWater){
+			if(/*cursor.xReal > xPeak && */cursor.getCollisionY() != cursor.getCollisionYFluid()){
 				double y = f.f(cursor.xReal - t.pos.x);
 				//if one cursor is below the graph and the other above, that's where she'll collide
-				if(cursor.vertices[cursor.collisionVecWater].y < y){
+				if(cursor.getTopFluidVertex().y < y){
 					lastOne = true;
 				} else {
 					if(lastOne){

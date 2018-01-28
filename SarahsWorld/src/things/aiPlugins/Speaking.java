@@ -11,6 +11,7 @@ import util.*;
 import util.Anim.*;
 import util.math.*;
 import world.*;
+import world.data.WorldData;
 
 public class Speaking extends AiPlugin {
 	

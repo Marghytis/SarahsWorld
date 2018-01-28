@@ -5,7 +5,7 @@ import main.Main;
 import render.Animator;
 import things.*;
 import util.math.Vec;
-import world.WorldData;
+import world.data.WorldData;
 
 public class Inventory extends AiPlugin{
 

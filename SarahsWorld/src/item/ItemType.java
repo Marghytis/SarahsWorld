@@ -52,6 +52,16 @@ public enum ItemType {
 	ZOMBIE_EYE(	Res.items_inv.sfA(10, 1),	Res.items_weapons.tex(0, 6),		Res.items_inv.tex(10, 1),new int[]{-25, -2, 50, 50}, 	"Zombie eye",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
 	ZOMBIE_BRAIN(Res.items_inv.sfA(11, 1),	Res.items_weapons.tex(1, 6),		Res.items_inv.tex(11, 1),new int[]{-25, -2, 50, 50}, 	"Zombie brain",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
 	ZOMBIE_FLESH(Res.items_inv.sfA(12, 1),	Res.items_weapons.tex(2, 6),		Res.items_inv.tex(12, 1),new int[]{-25, -2, 50, 50}, 	"Zombie flesh",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false),
+	BIRTHDAY_CAKE(Res.items_inv.sfA(14, 1),	Res.items_weapons.tex(4, 6),		Res.items_inv.tex(14, 1),new int[]{-25, -2, 50, 50}, 	"Birthday cake",1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false){
+		public boolean use(Thing src, Vec pos){
+			src.itemStacks[Main.world.avatar.selectedItem].item = ItemType.NOTHING;
+			pos = pos.copy();
+			src.link.getRandomTopLocation(World.rand, pos);
+			ThingType.CAKE.defaultSpawner.spawn(Main.world.data, src.link, pos);
+			WorldWindow.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
+			return true;
+		}
+	},
 	
 	//Item types below this line won't appear in traders inventories
 	MOUTH(null, Texture.emptyTexture, Texture.emptyTexture, new int[4], "Mouth", 1, 0, WeaponType.BITE, ItemUsageType.EAT, BodyPos.HEAD, 1, 2, 0.03, true),
@@ -78,7 +88,7 @@ public enum ItemType {
 				if(dest.type == ThingType.COW){
 					src.type.ride.mount(src, dest);
 					success = true;
-				} else if(dest.type == ThingType.ITEM){
+				} else if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE){
 					if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
 						src.type.inv.addItem(src, dest.itemBeing, 1);
 						Main.world.window.deletionRequested.add(dest);
