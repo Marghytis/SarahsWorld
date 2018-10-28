@@ -26,6 +26,12 @@ public class Vertex {
 			this.transitionHeight = transitionHeight;
 			this.y = y;
 		}
+		public Vertex(Vertex toCopy, double newY){
+			this(toCopy.yIndex, toCopy.mats, toCopy.alphas, toCopy.firstMatIndex, toCopy.lastMatIndex, toCopy.transitionHeight, newY);
+		}
+		public Vertex(Vertex toCopy){
+			this(toCopy, toCopy.y);
+		}
 		public Material[] mats(){return mats;}
 		public void enqueueMat(Material mat, double alpha, boolean below){
 			if(!below){
@@ -70,4 +76,5 @@ public class Vertex {
 					return false;
 			return true;
 		}
+		
 	}

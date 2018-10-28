@@ -78,7 +78,6 @@ public class FogWorld implements ParticleEffect, WorldEffect {
 
 	@Override
 	public boolean charTyped(char ch) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

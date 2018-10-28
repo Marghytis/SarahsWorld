@@ -81,13 +81,11 @@ public class ChristmasBalls implements ParticleEffect {
 
 	@Override
 	public boolean keyReleased(int key) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean charTyped(char ch) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

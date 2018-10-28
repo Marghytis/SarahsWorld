@@ -230,7 +230,7 @@ public class Dialog extends Element {
 		
 		double rT = connection.w/2, maxAngle = -Math.PI*0.5, startAngle = maxAngle*drawAngle.v, dAngle = (startAngle-maxAngle)/tailSections, dTex = (1-drawAngle.v)/tailSections;
 		int i = 0;
-		for(double angle = startAngle, texY = drawAngle.v; i <= tailSections; angle -= dAngle, texY += dTex, i++){//TODO really texY += 0.02?
+		for(double angle = startAngle, texY = drawAngle.v; i <= tailSections; angle -= dAngle, texY += dTex, i++){
 			Graph.unitCircle2.xy(graph, angle);
 			double xM = shift.x*(graph.x-1);
 			double yM = shift.y*(graph.y-1) + 60;
@@ -270,7 +270,7 @@ public class Dialog extends Element {
 		//bind shader and set uniforms
 		Res.usualShader.bind();
 		Res.usualShader.set("scale", Main.world.window.scaleX, Main.world.window.scaleY);
-		Res.usualShader.set("offset", (float)(shift.x + other.pos.x + Main.world.window.offsetX), (float)(shift.y + other.pos.y + Main.world.window.offsetY), -1);//TODO
+		Res.usualShader.set("offset", (float)(shift.x + other.pos.x + Main.world.window.offsetX), (float)(shift.y + other.pos.y + Main.world.window.offsetY), -1);
 		Res.usualShader.set("color", 1, 1, 1, 1);
 		speechBubbleVAO.bindStuff();
 		

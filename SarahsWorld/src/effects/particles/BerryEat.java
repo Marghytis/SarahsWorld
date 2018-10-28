@@ -111,31 +111,26 @@ public class BerryEat implements ParticleEffect{
 
 	@Override
 	public boolean pressed(int button, Vec mousePos) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean keyPressed(int key) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean keyReleased(int key) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean charTyped(char ch) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

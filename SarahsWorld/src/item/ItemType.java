@@ -130,7 +130,7 @@ public enum ItemType {
 	 * @param texHand Texture shown, if the item is held
 	 * @param texinv Texture of the item in the inventory
 	 * @param boxWorld The box the item has lying around
-	 * @param defaultRotationHand The rotation the item already has in the texture 0� would be horizontal to the right TODO true?
+	 * @param defaultRotationHand The rotation the item already has in the texture 0� would be horizontal to the right
 	 * @param name The name the item shows in inventory
 	 * @param coolDownStart Length of the cool down after usage
 	 * @param value Value when trading

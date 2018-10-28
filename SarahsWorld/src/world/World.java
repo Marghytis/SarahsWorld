@@ -24,14 +24,6 @@ public class World {
 
 		data = new WorldData(this);
 		generator = new Generator(data, Main.SIZE.w + 800);
-		//TODO TODO TODO
-		/*
-		 * World initialization (Avatar, first Column etc.)
-		 * Generator stepping (if zone.end)
-		 * Delete old classes
-		 * create save functions and load constructors
-		 */
-		
 
 		Vertex v = data.rightColumn.getTopSolidVertex();
 		Vec pos = new Vec(100, v.y + 500);

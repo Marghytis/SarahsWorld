@@ -57,6 +57,14 @@ public abstract class Zone {
 		return step(x) + (subZone != null ? subZone.stepOnce(x + originX - subZone.originX) : 0);
 	}
 	
+	public void stepColumn(Column nextColumn){
+		biome.lastColumn = nextColumn;
+	}
+	
+	public void spawnThings(Column column){
+		biome.spawnThings(column);
+	}
+	
 	/**
 	 * Don't override this, it's generic
 	 * @param world

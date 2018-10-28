@@ -71,7 +71,6 @@ public class Fog implements ParticleEffect {
 
 	@Override
 	public boolean charTyped(char ch) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

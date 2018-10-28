@@ -10,6 +10,6 @@ public class Village extends Hills {
 	
 	public Village(Random random, BiomeManager biome, double originX, boolean left) {
 		super(random, biome, originX, left, 0, 3, 1, 40000, description);
-		biome.switchToBiome(Biome.FIR_VILLAGE);//TODO
+		biome.switchToBiome(Biome.FIR_VILLAGE);
 	}
 }

@@ -45,19 +45,16 @@ public class Nametag implements Effect {
 
 	@Override
 	public boolean pressed(int button, Vec mousePos) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean released(int button, Vec mousePos, Vec mouseDelta) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean charTyped(char ch) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

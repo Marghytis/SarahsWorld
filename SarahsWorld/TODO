@@ -1,0 +1,18 @@
+_Add Horn in ItemType
+_add particle effects to the spell attack
+_Readd background for inventory nametags
+_readd sound (music and coin)
+_improve swimming animations(not urgent)
+_save and load functions for everything
+_test the zone MountainRange and check why I need to add mountains!?!
+_make several zones more distinct
+_improve the biome transition in BiomeManager
+_switch more frequently to random zones
+_improve code style everywhere
+_for debug add again rendering of boundingboxes (when it's needed?)
+_sky color transitions better
+
+
+
+Ideas:
+_Landscape with lots of rocks and small grass pits with flowers

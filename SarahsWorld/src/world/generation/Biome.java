@@ -336,6 +336,28 @@ public enum Biome {
 		}
 	}
 	
+	public Vertex[] createCenterVertices(){
+		Vertex[] vertices = new Vertex[layerCount];
+		double y = 0;
+		for(int i = 0; i < layerCount; i++){
+			Material[] mats = new Material[Vertex.maxMatCount];
+			double[] alphas = new double[Vertex.maxMatCount];
+			alphas[0] = 1;
+			mats[1] = Material.AIR;
+			mats[2] = Material.AIR;
+			mats[3] = Material.AIR;
+			if(stratums[i] == null){
+				mats[0] = Material.AIR;
+				vertices[i] = new Vertex(i, mats, alphas, 0, 0, 0, y);
+			} else {
+				mats[0] = stratums[i].material;
+				vertices[i] = new Vertex(i, mats, alphas, 0, 0, stratums[i].transitionHeight, y);
+				y -= stratums[i].thickness;
+			}
+		}
+		return vertices;
+	}
+	
 	Vec posField = new Vec();
 	
 	public void spawnThings(WorldData world, Column c){

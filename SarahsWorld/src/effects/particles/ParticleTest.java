@@ -105,7 +105,6 @@ public class ParticleTest implements Listener, Renderer, Updater{
 
 	@Override
 	public boolean keyReleased(int key) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -115,7 +114,6 @@ public class ParticleTest implements Listener, Renderer, Updater{
 
 	@Override
 	public boolean charTyped(char ch) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	
