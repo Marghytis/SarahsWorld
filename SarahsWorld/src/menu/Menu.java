@@ -111,7 +111,7 @@ public class Menu implements Updater, Renderer, Listener {
 						public void released(int button) {
 							Main.core.doAfterTheRest = () -> {
 								Main.world = new World();
-								Main.resetCoreClasses();
+								Main.resetCoreLists();
 							};
 						}
 					},
