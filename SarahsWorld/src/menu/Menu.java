@@ -4,15 +4,25 @@ import java.awt.Font;
 
 import org.lwjgl.opengl.GL11;
 
-import core.*;
+import core.Listener;
+import core.Renderer;
+import core.Updater;
+import core.Window;
 import item.ItemType;
-import main.*;
+import main.Main;
+import main.Res;
 import menu.Settings.Key;
-import render.*;
-import things.*;
-import util.*;
+import render.Texture;
+import render.VAO;
+import things.AiPlugin;
+import things.Thing;
+import things.ThingType;
+import util.Anim;
+import util.Color;
+import util.TrueTypeFont;
 import util.math.Vec;
 import world.World;
+import world.generation.Biome;
 
 public class Menu implements Updater, Renderer, Listener {
 	public static Texture MONEYBAG = Res.moneybag;

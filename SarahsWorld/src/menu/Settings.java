@@ -21,6 +21,7 @@ public class Settings{
 	public static boolean STOP_GRAPH = false;
 	public static boolean printSarahPhysics = true;
 	public static double timeScale = 1;
+	public static int DEBUG_LEVEL = 0;
 	
 	public static enum Key {
 		MAIN_MENU(GLFW_KEY_ESCAPE),
