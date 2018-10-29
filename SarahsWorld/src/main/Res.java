@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,7 +12,6 @@ import render.TexFile;
 import render.TexInfo;
 import render.Texture;
 import util.Color;
-import util.Sound;
 import util.TrueTypeFont;
 
 public class Res {

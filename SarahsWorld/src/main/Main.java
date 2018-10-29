@@ -11,9 +11,6 @@ import core.Updater;
 import core.Window;
 import menu.Menu;
 import menu.Settings;
-import util.Color;
-import util.math.IntVec;
-import world.*;
 import newStuff.StaticInit;
 import world.World;
 
