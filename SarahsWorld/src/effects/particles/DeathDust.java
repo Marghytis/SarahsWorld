@@ -6,7 +6,7 @@ import util.math.Vec;
 
 public class DeathDust implements ParticleEffect {
 	
-public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
+public static final ParticleType SMOKE = new ParticleType(Res.getTex("smokeParticle"));
 	
 	public ParticleEmitter smoke = new ParticleEmitter(40, 1, SMOKE, 3){
 

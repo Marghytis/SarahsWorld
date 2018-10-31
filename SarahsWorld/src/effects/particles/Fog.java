@@ -8,7 +8,7 @@ public class Fog implements ParticleEffect {
 
 
 
-	public static final ParticleType FOG = new ParticleType(Res.fogParticle);
+	public static final ParticleType FOG = new ParticleType(Res.getTex("fogParticle"));
 	public ParticleEmitter fog = new ParticleEmitter(100, 0, FOG, Float.MAX_VALUE){
 
 		float radius = 30, T = 10;

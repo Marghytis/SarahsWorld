@@ -7,7 +7,7 @@ import util.math.Vec;
 public class BloodSplash implements ParticleEffect {
 
 	
-	public static final ParticleType BLOOD_DROP = new ParticleType(Res.bloodParticle);
+	public static final ParticleType BLOOD_DROP = new ParticleType(Res.getTex("bloodParticle"));
 	
 	public ParticleEmitter blood = new ParticleEmitter(30, 1, BLOOD_DROP, 1){
 

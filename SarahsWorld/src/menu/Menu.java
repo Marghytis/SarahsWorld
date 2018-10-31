@@ -25,7 +25,7 @@ import world.World;
 import world.generation.Biome;
 
 public class Menu implements Updater, Renderer, Listener {
-	public static Texture MONEYBAG = Res.moneybag;
+	public static Texture MONEYBAG = Res.getTex("moneybag");
 	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 20), true);
 	public static Color fontColor = new Color(0.9f, 0.8f, 0.8f, 1);
 	public static Dialog dialog = new Dialog();
@@ -123,7 +123,7 @@ public class Menu implements Updater, Renderer, Listener {
 						public void released(int button) {
 							Main.core.doAfterTheRest(() -> {
 								Main.world = new World();
-								Main.resetCoreClasses();
+								Main.resetCoreLists();
 							});
 						}
 					},

@@ -9,7 +9,7 @@ import world.data.Column;
 
 public class FogWorld implements ParticleEffect, WorldEffect {
 
-	public static final ParticleType FOG = new ParticleType(Res.fogParticle);
+	public static final ParticleType FOG = new ParticleType(Res.getTex("fogParticle"));
 	public ParticleEmitter fog = new ParticleEmitter(400, 0, FOG, Float.MAX_VALUE, true){
 
 		float radius = 30, T = 10;

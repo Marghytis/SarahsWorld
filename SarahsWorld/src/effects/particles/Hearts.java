@@ -7,7 +7,7 @@ import util.math.Vec;
 public class Hearts implements ParticleEffect{
 
 	
-	public static final ParticleType HEART = new ParticleType(Res.heartParticle);
+	public static final ParticleType HEART = new ParticleType(Res.getTex("heartParticle"));
 	
 	public ParticleEmitter hearts = new ParticleEmitter(14, 1, HEART, 2){
 

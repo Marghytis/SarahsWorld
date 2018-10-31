@@ -7,7 +7,7 @@ import util.math.Vec;
 public class ChristmasBalls implements ParticleEffect {
 
 	
-	public static final ParticleType CHRISTMAS_BALL = new ParticleType(Res.christmasBallPartile);
+	public static final ParticleType CHRISTMAS_BALL = new ParticleType(Res.getTex("christmasBallPartile"));
 	
 	public ParticleEmitter christmasBall = new ParticleEmitter(30, 1, CHRISTMAS_BALL, 2){
 

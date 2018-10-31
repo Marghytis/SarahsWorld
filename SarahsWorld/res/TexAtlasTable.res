@@ -26,6 +26,7 @@ TexAtlas	pyramide		res/objects/Pyramide.png		d	d	d	d	1	4	-0.5f	0f
 TexAtlas	house			res/objects/House.png			d	d	d	d	1	6	-0.5f	0f
 TexAtlas	townobject		res/objects/TownObject.png		d	d	d	d	1	5	-0.5f	0
 TexAtlas	flower_candy	res/objects/Candy.png			d	d	d	d	1	6	-0.5f	0
+TexAtlas 	cake			res/objects/BirthdayCake.png	d	d	d	d	1	1	-0.5f	-0.2f
 TexAtlas	crack			res/objects/Crack.png			d	d	d	d	1	4	-0.5f	0
 TexAtlas	fossil			res/objects/Fossil.png			d	d	d	d	1	3	-0.5f	0
 TexAtlas	grave			res/objects/Grave.png			d	d	d	d	1	7	-0.5f	0
@@ -107,3 +108,4 @@ Texture	sand		res/materials/Sand.png			0	0
 Texture	candy		res/materials/Candy.png			0	0
 Texture	soil		res/materials/Soil.png			0	0
 Texture	water		res/materials/Water.png			0	0
+Texture	snow		res/materials/Snow.png			0	0

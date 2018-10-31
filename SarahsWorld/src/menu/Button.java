@@ -11,7 +11,7 @@ import util.math.Vec;
 
 public abstract class Button extends TextField {
 	
-	public static TexAtlas button = Res.button;
+	public static TexAtlas button = Res.getAtlas("button");
 
 	public Color c1, c2, c3;
 	public Texture t1, t2, t3;

@@ -7,7 +7,7 @@ import util.math.Vec;
 public class BerryEat implements ParticleEffect{
 
 	
-	public static final ParticleType STAR = new ParticleType(Res.rainbowParticle);
+	public static final ParticleType STAR = new ParticleType(Res.getTex("rainbowParticle"));
 	
 	public ParticleEmitter stars = new ParticleEmitter(30, 1, STAR, 1){
 
@@ -39,7 +39,7 @@ public class BerryEat implements ParticleEffect{
 		}
 	};
 	
-	public static final ParticleType SPARKLE = new ParticleType(Res.sparkleParticle);
+	public static final ParticleType SPARKLE = new ParticleType(Res.getTex("sparkleParticle"));
 	
 	public ParticleEmitter sparkle = new ParticleEmitter(stars.particles.length, 1, SPARKLE, 1){
 

@@ -6,7 +6,7 @@ import util.math.Vec;
 
 public class Snow implements ParticleEffect{
 	
-	public static final ParticleType SNOWFLAKE = new ParticleType(Res.snowFlakeParticle);
+	public static final ParticleType SNOWFLAKE = new ParticleType(Res.getTex("snowFlakeParticle"));
 	
 	public ParticleEmitter drops = new ParticleEmitter(4000, 100, SNOWFLAKE, 9f){
 

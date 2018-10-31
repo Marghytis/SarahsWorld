@@ -9,7 +9,7 @@ import util.math.Vec;
 
 public class RainbowSpit implements ParticleEffect{
 	
-	public static final ParticleType RAINBOW = new ParticleType(Res.sparkParticle);
+	public static final ParticleType RAINBOW = new ParticleType(Res.getTex("sparkParticle"));
 	
 	public ParticleEmitter rainbow = new ParticleEmitter(210, 200, RAINBOW, 1){
 		

@@ -6,7 +6,7 @@ import util.math.Vec;
 
 public class RainEffect implements ParticleEffect{
 	
-	public static final ParticleType RAINDROP = new ParticleType(Res.rainParticle);
+	public static final ParticleType RAINDROP = new ParticleType(Res.getTex("rainParticle"));
 	
 	public ParticleEmitter drops = new ParticleEmitter(100, 50, RAINDROP, 1.5f){
 

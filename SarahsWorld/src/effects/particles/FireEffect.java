@@ -6,7 +6,7 @@ import util.math.Vec;
 
 public class FireEffect implements ParticleEffect{
 
-	public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
+	public static final ParticleType SMOKE = new ParticleType(Res.getTex("smokeParticle"));
 	public ParticleEmitter smoke = new ParticleEmitter(100, 50, SMOKE, 2){
 		
 		public void makeParticle(Particle p) {
@@ -25,7 +25,7 @@ public class FireEffect implements ParticleEffect{
 			p.rad = 0.1f + (2.5f*(p.lived)/lifeSpan);
 		}
 	};
-	public static final ParticleType FLAME = new ParticleType(Res.flameParticle);
+	public static final ParticleType FLAME = new ParticleType(Res.getTex("flameParticle"));
 	
 	public ParticleEmitter flame = new ParticleEmitter(50, 50, FLAME, 1){
 
@@ -65,7 +65,7 @@ public class FireEffect implements ParticleEffect{
 
 	};
 	
-	public static final ParticleType SPARK = new ParticleType(Res.sparkParticle);
+	public static final ParticleType SPARK = new ParticleType(Res.getTex("sparkParticle"));
 	
 	public ParticleEmitter spark = new ParticleEmitter(40, 20, SPARK, 1.5f){
 
@@ -85,7 +85,7 @@ public class FireEffect implements ParticleEffect{
 		}
 	};
 	
-	public static final ParticleType LIGHT = new ParticleType(Res.fireParticle);
+	public static final ParticleType LIGHT = new ParticleType(Res.getTex("fireParticle"));
 	
 	public ParticleEmitter light = new ParticleEmitter(5, 5, LIGHT, 1){
 		

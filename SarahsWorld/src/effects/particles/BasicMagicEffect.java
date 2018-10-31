@@ -6,7 +6,7 @@ import util.math.Vec;
 
 public class BasicMagicEffect extends MovingEffect{
 	
-	public static final ParticleType LIGHT = new ParticleType(Res.fireParticle);
+	public static final ParticleType LIGHT = new ParticleType(Res.getTex("fireParticle"));
 	
 	public ParticleEmitter light = new ParticleEmitter(1, 0, LIGHT, 1000){
 			
@@ -29,7 +29,7 @@ public class BasicMagicEffect extends MovingEffect{
 		
 	};
 
-	public static final ParticleType SPARKLE = new ParticleType(Res.sparkleParticle);
+	public static final ParticleType SPARKLE = new ParticleType(Res.getTex("sparkleParticle"));
 	
 	public ParticleEmitter sparkle = new ParticleEmitter(300, 200, SPARKLE, 1){
 
@@ -102,7 +102,7 @@ public class BasicMagicEffect extends MovingEffect{
 		return false;
 	}
 
-	public boolean keyPressed(int key) {
+	public boolean keyPressed(int key) { 
 		return false;
 	}
 

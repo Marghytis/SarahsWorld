@@ -1,7 +1,5 @@
 package main;
 
-import org.lwjgl.opengl.ContextAttribs;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import core.Core;
@@ -11,7 +9,8 @@ import core.Updater;
 import core.Window;
 import menu.Menu;
 import menu.Settings;
-import newStuff.StaticInit;
+import util.Color;
+import util.math.IntVec;
 import world.World;
 
 /**
@@ -27,6 +26,8 @@ public class Main {
 	public static Menu menu;
 	public static World world;
 	public static Core core;
+	public static IntVec SIZE, HALFSIZE;
+	public static long WINDOW;
 	
 	/**
 	 * Creates a Window, loads or creates a world and resets the core classes. Then it starts the game loop.
@@ -48,19 +49,16 @@ public class Main {
 	 */
 	static void initializeGame(String worldName)
 	{
-		//set openGL version
-		Window.contextAttribs = new ContextAttribs(3, 3)
-		    .withForwardCompatible(true)
-		    .withProfileCore(true);
-		
 		//create a core object
-		core = new Core(worldName);
-		
+		core = new Core("res/creatures/Meteor.png");
+		core.init(new Window("Sarahs World", true, 1, 1, true), Color.BLACK);
 		if(Settings.DEBUG_LEVEL > 1)
 			System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
-
-		StaticInit.checkGLErrors(true);
-		Display.setVSyncEnabled(false);
+		
+		SIZE = core.SIZE;
+		HALFSIZE = core.SIZE_HALF;
+		WINDOW = core.getWindow().getHandle();
+		
 
 		//create a menu object and load or create a world object
 		menu = new Menu();

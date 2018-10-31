@@ -6,7 +6,7 @@ import util.math.Vec;
 
 public class BasicMagicDissapperance implements ParticleEffect {
 	
-	public static final ParticleType SPARKLE = new ParticleType(Res.sparkleParticle);
+	public static final ParticleType SPARKLE = new ParticleType(Res.getTex("sparkleParticle"));
 	
 	public ParticleEmitter sparkle = new ParticleEmitter(100, 1, SPARKLE, 3){
 
@@ -34,7 +34,7 @@ public class BasicMagicDissapperance implements ParticleEffect {
 
 	};
 
-	public static final ParticleType SMOKE = new ParticleType(Res.smokeParticle);
+	public static final ParticleType SMOKE = new ParticleType(Res.getTex("smokeParticle"));
 	
 	public ParticleEmitter smoke = new ParticleEmitter(60, 0, SMOKE, 1){
 
@@ -121,8 +121,7 @@ public class BasicMagicDissapperance implements ParticleEffect {
 		return false;
 	}
 
-	@Override
-	public boolean keyPressed(int key) {
+	public boolean keyPressed(int key) { 
 		return false;
 	}
 

@@ -17,10 +17,10 @@ import util.Anim.*;
 import util.math.*;
 
 public class Dialog extends Element {
-	public static Texture answersTex = Res.answers;
-	public static TexAtlas tex2 = Res.dialogBar2;
+	public static Texture answersTex = Res.getTex("answers");
+	public static TexAtlas tex2 = Res.getAtlas("dialogBar2");
 	public static Texture upTex2_1 = tex2.tex(0, 0), upTex2_2 = tex2.tex(1, 0),upTex2_3 = tex2.tex(2, 0), downTex2_1 = tex2.tex(0, 1), downTex2_2 = tex2.tex(1, 1), downTex2_3 = tex2.tex(2, 1), tex12_1 = tex2.tex(2, 2), tex12_2 = tex2.tex(1, 2), tex12_3 = tex2.tex(0, 2);
-	public static Texture connection = Res.speechBubbleConnector;
+	public static Texture connection = Res.getTex("speechBubbleConnector");
 	public static TrueTypeFont fontOld = Res.menuFont;
 	public static TrueTypeFont font = new TrueTypeFont(new Font("Times New Roman", 0, 40), true);
 	public static int fontHeightHalf = /*Res.menuFont.getHeight()/2*/0;
@@ -311,7 +311,7 @@ public class Dialog extends Element {
 		for(int i = 0; i < answers.length; i++){
 			if(answerWidths[i].v > 0){
 				if(UsefulF.contains(Listener.getMousePos(Main.WINDOW).x, Listener.getMousePos(Main.WINDOW).y, Main.HALFSIZE.w + answersTex.pixelCoords[0], Main.HALFSIZE.h + ys[i], Main.HALFSIZE.w + answersTex.pixelCoords[2], Main.HALFSIZE.h + ys[i] + Res.menuFont.getHeight())){
-					drawQuadCheaty(justAQuad, Res.light2, new Color(1, 1, 1, 0.5f), - widthsH[i], ys[i]-10, + widthsH[i], ys[i] + Res.menuFont.getHeight() + 10);
+					drawQuadCheaty(justAQuad, Res.getTex("light2"), new Color(1, 1, 1, 0.5f), - widthsH[i], ys[i]-10, + widthsH[i], ys[i] + Res.menuFont.getHeight() + 10);
 				}
 				String string = answers[i].substring(0, (int)(answers[i].length()*answerWidths[i].v));
 				font.drawString((int)(-widthsH[i]), (float)ys[i], string, Color.WHITE, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);

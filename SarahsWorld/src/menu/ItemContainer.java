@@ -12,7 +12,7 @@ import util.math.Vec;
 
 public class ItemContainer extends Element {
 	
-	public static TexAtlas inventoryButton = Res.inventoryDifferentOffset;
+	public static TexAtlas inventoryButton = Res.getAtlas("inventoryDifferentOffset");
 	static Texture t1 = inventoryButton.tex(0, 0), t2 = inventoryButton.tex(0, 1);
 	
 	public int ordinal;

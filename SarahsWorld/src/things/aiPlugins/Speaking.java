@@ -63,8 +63,8 @@ public class Speaking extends AiPlugin {
 			t.speaking = false;
 		}
 	}
-	public static Texture bubble1 = Res.speechBubble;
-	public static TexAtlas bubble2 = Res.thoughtBubble;
+	public static Texture bubble1 = Res.getTex("speechBubble");
+	public static TexAtlas bubble2 = Res.getAtlas("thoughtBubble");
 	public static Texture[] texs = {bubble2.tex(0, 0), bubble2.tex(0, 1), bubble2.tex(0, 2)};
 	public static double animationTime = 1.8;
 	public static double[] positions = {0.1, 0.01, 0.25, 0.0625, 0.45, 0.2025, 0.65, 0.44225};

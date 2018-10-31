@@ -1,5 +1,7 @@
 package main;
 
+import render.TexAtlas;
+
 public class Test {
 
 	public static void main(String[] args)
@@ -8,9 +10,9 @@ public class Test {
 		
 		Main.resetCoreLists();
 		
-		Res.readTexAtlasTable();
 		
-		System.out.println("huhu");
+		TexAtlas cloud = Res.getAtlas("cloud");
+		System.out.println(cloud);
 	}
 	
 }
