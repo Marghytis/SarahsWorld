@@ -1,6 +1,6 @@
 package world.data;
 
-import world.Material;
+import world.generation.Material;
 
 public class Vertex {
 		public static final int maxMatCount = 4;

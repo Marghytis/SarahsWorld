@@ -41,6 +41,7 @@ public class Thing {
 	public double rotation, aniRotation;
 	public Vec orientation = new Vec(0, 1);
 	public double time;//just for unicorns at this point. Can be used to animate certain effects
+	public int testInt;
 	
 	//Values that change, if needed
 	public Animator ani;
@@ -54,6 +55,7 @@ public class Thing {
 	public boolean attacking;
 	public boolean speaking;
 	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible;
+	public boolean linked = false;
 	
 	public Thing target;
 	public Thing mountedThing;
@@ -87,7 +89,7 @@ public class Thing {
 		this.pos = pos;
 		link = field;
 		oldLink = field;
-		field.add(this);
+		applyLink();
 		
 		setup(world, field, pos, extraData);
 	}
@@ -131,6 +133,13 @@ public class Thing {
 		if(next != null) next.prev = prev;
 		if(prev != null) prev.next = next;
 		if(link.things[type.ordinal] == this) link.things[type.ordinal] = null;
+	}
+	public void applyLink() {
+		if(oldLink != link || !linked) {
+			disconnectFrom(oldLink);
+			link.add(this);
+			linked = true;
+		}
 	}
 	public void remove() {
 		for(AiPlugin plugin : type.plugins){

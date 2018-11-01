@@ -2,10 +2,10 @@ package world.generation.zones;
 
 import java.util.Random;
 
-import world.Material;
-import world.Stratum;
 import world.generation.Biome;
 import world.generation.BiomeManager;
+import world.generation.Material;
+import world.generation.Stratum;
 import world.generation.BiomeManager.State;
 import world.generation.Zone;
 

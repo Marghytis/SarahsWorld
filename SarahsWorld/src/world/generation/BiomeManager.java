@@ -1,12 +1,17 @@
 package world.generation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import util.Color;
-import util.math.*;
-import world.*;
-import world.data.*;
-import world.generation.Biome.ThingSpawner.Spawner;
+import util.math.Function;
+import util.math.UsefulF;
+import util.math.Vec;
+import world.World;
+import world.data.Column;
+import world.data.Vertex;
+import world.data.WorldData;
 
 public class BiomeManager {
 
@@ -40,7 +45,7 @@ public class BiomeManager {
 	public void spawnThings(Column c){
 		c.biome.spawnThings(world, c);
 		for(Spawner sp : extraSpawns){
-			sp.spawn(world, c.getRandomTopLocation(world.random, posField), posField.copy());
+			sp.spawn(world, c.getRandomTopLocation(World.rand, posField), posField.copy());
 		}
 		extraSpawns.clear();
 	}

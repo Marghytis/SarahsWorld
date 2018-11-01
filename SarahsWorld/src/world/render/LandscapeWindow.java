@@ -1,4 +1,4 @@
-package world;
+package world.render;
 
 import java.nio.*;
 import java.util.*;
@@ -12,17 +12,11 @@ import render.*;
 import render.VBO.VAP;
 import world.data.*;
 import world.generation.Biome;
+import world.generation.Material;
+import world.window.ArrayWorldWindow;
 
-public class LandscapeWindow {
+public class LandscapeWindow extends ArrayWorldWindow {
 	
-	public float darknessDistance = 600;
-
-	public Column[] columns;
-	public int indexShift;
-	public int columnRadius, center, index;
-	public Column left, right;
-	
-	WorldData data;
 	
 	public VAO vao, vaoColor;//vaoColor contains the data for the darkness and the background, because they have the same format
 	//I consider a Point to be an object of the Vertex class, because the name "vertex" is already in use...
@@ -36,31 +30,18 @@ public class LandscapeWindow {
 		ByteBuffer changerColor = BufferUtils.createByteBuffer(bytesPerVertexColor*verticesPerPoint);
 		
 	int maxTextureUnits;
+	byte[] light = {0, 0, 0, 0}, dark = {0, 0, 0, 127};
+	byte[] color = new byte[4], white = {127, 127, 127, 127};//use 'color' only cleared
+
+	public float darknessDistance = 600;
+
+	//Variables that are local in nature, but are defined once to save time.
+	int layersDrawn = 0;
+	ArrayList<Patch> waterPatches = new ArrayList<>();
 
 	public LandscapeWindow(WorldData data, Column anchor, int columnRadius, int firstIndex){
-		this.columnRadius = columnRadius;
-		columns = new Column[2*columnRadius+1];
-		this.center = firstIndex;
+		super(anchor, columnRadius);
 		pointsX = columns.length;
-		this.data = data;
-		left = anchor;
-		right = left;
-		//create Column array and find borders
-		insertColumn( left);
-		while(left.xIndex > firstIndex-columnRadius && left.left != null){
-			left = left.left;
-			insertColumn( left);
-			left.appear(true, data);
-		}
-		while(right.xIndex < firstIndex+columnRadius && right.right != null){
-			right = right.right;
-			insertColumn( right);
-			right.appear(false, data);
-		}
-		if(left.xIndex > firstIndex-columnRadius || right.xIndex < firstIndex + columnRadius){
-			new Exception("World data is not large enough yet").printStackTrace();
-			System.exit(-1);
-		}
 		vao = new VAO(
 				new VBO(createIndexBuffer(pointsY), GL15.GL_STATIC_DRAW),
 				new VBO(createVertexBuffer(), GL15.GL_DYNAMIC_DRAW, bytesPerVertex,
@@ -77,53 +58,16 @@ public class LandscapeWindow {
 		
 		maxTextureUnits = GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS);
 	}
-	void insertColumn(Column c){
-		int index = c.xIndex - (center - columnRadius); 
-		columns[index] = c;
-		if(index > 0 && columns[index-1] != null){
-			c.left = columns[index-1];
-			columns[index-1].right = c;
-		}
-		if(index < columns.length-1 && columns[index+1] != null){
-			c.right = columns[index+1];
-			columns[index+1].left = c;
-		}
+	
+	protected void letAppear(Column c, int iDir) {
+		c.appear(true);
 	}
 	
-	public void moveTo(int xIndex){
-		while(center < xIndex && right.right != null){
-			
-			left.disappear();
-			
-			right = right.right;
-			left = left.right;
-			addRight(right);
-			center++;
-			
-			right.appear(false, data);
-		}
-		while(center > xIndex && left.left != null){
-			
-			right.disappear();
-
-			left = left.left;
-			right = right.left;
-			addLeft(left);
-			center--;
-
-			left.appear(true, data);
-		}
-	}
-
-	public void addRight(Column c){
-		columns[indexShift] = c;
-		addToVBOAtIndexShift(c);
-		indexShift = (indexShift+1)%columns.length;
+	protected void letDisappear(Column c) {
+		c.disappear();
 	}
 	
-	public void addLeft(Column c){
-		indexShift = (indexShift+columns.length-1)%columns.length;//this has to run prior to the other two statements
-		columns[indexShift] = c;
+	protected void addAtIndexShift(Column c) {
 		addToVBOAtIndexShift(c);
 	}
 	
@@ -133,18 +77,18 @@ public class LandscapeWindow {
 			for(int yIndex = 0; yIndex < pointsY; yIndex++){
 				putPointData(changer, c, yIndex);
 				changer.flip();
-				GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (yIndex*pointsX + indexShift)*verticesPerPoint*bytesPerVertex, changer);
+				GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (yIndex*pointsX + indexShift())*verticesPerPoint*bytesPerVertex, changer);
 			}
 		//Darkness and Background
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vaoColor.vbos[0].handle);
 			//darkness
 			putPointDataDarkness(changerColor, c);
 			changerColor.flip();
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, indexShift*verticesPerPoint*bytesPerVertexColor, changerColor);
+			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, indexShift()*verticesPerPoint*bytesPerVertexColor, changerColor);
 			//background
 			putPointDataBackground(changerColor, c);
 			changerColor.flip();
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (indexShift + pointsX)*verticesPerPoint*bytesPerVertexColor, changerColor);
+			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (indexShift() + pointsX)*verticesPerPoint*bytesPerVertexColor, changerColor);
 		
 		//Unbind buffer
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
@@ -161,18 +105,15 @@ public class LandscapeWindow {
 		drawPatches(pointsX*pointsY*indicesPerQuad, true);
 	}
 	
-	public static int layersToDraw = (Biome.layerCount-1)*6;
-	public static int layersDrawn = 0;
-	
 	void drawPatches(int indicesOffset, boolean water){
 		//for each material every patch of this material gets rendered.
-		int oneBeforeStart = (indexShift+columns.length-1)%columns.length;
+		int oneBeforeStart = (indexShift()+columns.length-1)%columns.length;
 		for(int i = 0; i < Material.values().length-1; i++){
 			if(i == Material.WATER.ordinal() && !water) continue;
 			else if(i != Material.WATER.ordinal() && water) continue;
 			Material.values()[i].tex.file.bind();
-			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < layersToDraw; y--){//draw from the bottom up
-				int started = -1, index = 0, column = indexShift;
+			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.LAYERS_TO_DRAW; y--){//draw from the bottom up
+				int started = -1, index = 0, column = indexShift();
 				do {//while(column != indexShift), loop through all columns
 					if(started == -1){
 						for(int j = 0; j < Vertex.maxMatCount; j++){
@@ -189,7 +130,7 @@ public class LandscapeWindow {
 						started = -1;
 					}
 					column = (column+1)%columns.length;
-				} while(column != indexShift);
+				} while(column != indexShift());
 			}
 		}
 		layersDrawn += pointsY;
@@ -197,10 +138,10 @@ public class LandscapeWindow {
 	
 	void drawPatches2(int indicesOffset, boolean water){
 		//for each material every patch of this material gets rendered.
-		int oneBeforeStart = (indexShift+columns.length-1)%columns.length;
+		int oneBeforeStart = (indexShift()+columns.length-1)%columns.length;
 		Patch[] currentPatches = new Patch[Vertex.maxMatCount];
-		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < layersToDraw; y--){//draw from the bottom up
-			int  column = indexShift, matIndex = columns[column].vertices[y].firstMatIndex;
+		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.LAYERS_TO_DRAW; y--){//draw from the bottom up
+			int  column = indexShift(), matIndex = columns[column].vertices[y].firstMatIndex;
 			do {//while(column != indexShift), loop through all columns
 				for(int i = 0; i < Vertex.maxMatCount; i++){
 					if(currentPatches[i] != null && currentPatches[i].end == column){
@@ -223,11 +164,12 @@ public class LandscapeWindow {
 				} while(matIndex2 != matIndex);//matIndex2 returns back to matIndex, if no patch is here
 				matIndex = matIndex2;
 				column = (column+1)%columns.length;
-			} while(column != indexShift);
+			} while(column != indexShift());
 			Arrays.fill(currentPatches, null);
 		}
 		layersDrawn += pointsY;
 	}
+	
 	public class Patch{
 		public int start, end = -1, yIndex, matIndex;
 		public Material mat;
@@ -238,7 +180,6 @@ public class LandscapeWindow {
 			this.mat = mat;
 		}
 	}
-	ArrayList<Patch> waterPatches = new ArrayList<>();
 	
 	public void drawPatch(Patch patch, int end, int indicesOffset, boolean water){
 		patch.end = end;
@@ -271,8 +212,9 @@ public class LandscapeWindow {
 			/*draw patch*/  GL11.glDrawElements(Settings.DRAW, size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
 			if(size2 != 0)	GL11.glDrawElements(Settings.DRAW, size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
 	}
+	
 	public void drawDarkness(){
-		int realShift = (indexShift+pointsX-1)%pointsX;
+		int realShift = (indexShift()+pointsX-1)%pointsX;
 		//Transition part
 		GL11.glDrawElements(GL11.GL_TRIANGLES, realShift*indicesPerQuad, GL11.GL_UNSIGNED_INT, 0*indicesPerQuad*Integer.BYTES);
 		if(realShift != pointsX-1)
@@ -282,8 +224,9 @@ public class LandscapeWindow {
 		if(realShift != pointsX-1)
 		GL11.glDrawElements(GL11.GL_TRIANGLES, (pointsX - 1 - realShift)*indicesPerQuad, GL11.GL_UNSIGNED_INT, (realShift+1+2*pointsX)*indicesPerQuad*Integer.BYTES);
 	}
+	
 	public void drawBackground(){
-		int realShift = (indexShift+pointsX-1)%pointsX;
+		int realShift = (indexShift()+pointsX-1)%pointsX;
 		
 		//only draw the upper part (lower part is just to fit in the vbo)
 		GL11.glDrawElements(GL11.GL_TRIANGLES, realShift*indicesPerQuad, GL11.GL_UNSIGNED_INT, pointsX*indicesPerQuad*Integer.BYTES);
@@ -307,6 +250,7 @@ public class LandscapeWindow {
 		buffer.flip();
 		return buffer;
 	}
+	
 	ByteBuffer createVertexBufferColor(){
 		ByteBuffer buffer = BufferUtils.createByteBuffer(2*pointsX*verticesPerPoint*bytesPerVertexColor);
 		for(Column column : columns){
@@ -318,6 +262,7 @@ public class LandscapeWindow {
 		buffer.flip();
 		return buffer;
 	}
+	
 	public void putPointData(ByteBuffer buffer, Column column, int yIndex){
 		float 	x0 = (float)column.xReal,
 				y0 = (float)column.vertices[yIndex].y,
@@ -357,7 +302,7 @@ public class LandscapeWindow {
 			buffer.put((byte)(Byte.MAX_VALUE*column.vertices[yIndex].alphas[j]));
 		buffer.put((byte)0);
 	}
-	byte[] light = {0, 0, 0, 0}, dark = {0, 0, 0, 127};
+	
 	public void putPointDataDarkness(ByteBuffer buffer, Column c){
 		buffer.putFloat((float)c.xReal);
 		buffer.putFloat((float)c.getTopSolidVertex().y);
@@ -371,7 +316,7 @@ public class LandscapeWindow {
 		buffer.putFloat(-2000);
 		buffer.put(dark);
 	}
-	byte[] color = new byte[4], white = {127, 127, 127, 127};
+	
 	public void putPointDataBackground(ByteBuffer buffer, Column c){
 		buffer.putFloat((float)c.xReal);
 		buffer.putFloat((float)1);//always the top of the screen
@@ -389,6 +334,7 @@ public class LandscapeWindow {
 		c.lowColor.bytes(color);
 		buffer.put(color);
 	}
+	
 	/**
 	 * Puts indices in the buffer like this for every row: (vertexColumns = 4)
 	 * 		V0         V3		  V6		 V9	 (Main quads)

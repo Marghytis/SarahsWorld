@@ -11,6 +11,7 @@ import things.ThingType;
 import util.math.Vec;
 import world.*;
 import world.data.WorldData;
+import world.render.WorldWindow;
 
 
 
@@ -44,7 +45,7 @@ public class Life extends AiPlugin {
 		if(fruits != null) for(int i = 0; i < fruits.length; i++){
 			for(int j = 1; j < fruitProperties[i]; j++)
 				t.fruits.add(fruits[i]);
-			if(world.random.nextDouble() < fruitProperties[i] - (int)fruitProperties[i]) t.fruits.add(fruits[i]);
+			if(World.rand.nextDouble() < fruitProperties[i] - (int)fruitProperties[i]) t.fruits.add(fruits[i]);
 		}
 	}
 

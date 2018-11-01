@@ -12,6 +12,7 @@ import util.Anim.*;
 import util.math.*;
 import world.*;
 import world.data.WorldData;
+import world.render.WorldWindow;
 
 public class Speaking extends AiPlugin {
 	

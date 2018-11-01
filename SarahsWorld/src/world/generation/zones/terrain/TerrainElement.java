@@ -1,8 +1,8 @@
 package world.generation.zones.terrain;
 
-import world.Material;
 import world.data.Column;
 import world.generation.BiomeManager;
+import world.generation.Material;
 
 public class TerrainElement {
 

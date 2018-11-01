@@ -1,6 +1,6 @@
 package effects;
 
-import world.LandscapeWindow;
+import world.render.LandscapeWindow;
 
 public interface WorldEffect {
 

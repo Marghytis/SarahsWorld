@@ -5,6 +5,8 @@ import main.Main;
 import render.Animator;
 import things.*;
 import util.math.Vec;
+import world.data.Column;
+import world.data.Dir;
 import world.data.WorldData;
 
 public class Inventory extends AiPlugin{
@@ -30,8 +32,8 @@ public class Inventory extends AiPlugin{
 			stack.update(delta);
 		}
 		int coinAmount = 0;
-		for(int col = 0; col < Main.world.window.landscape.columns.length; col++)
-		for(Thing t2 = Main.world.window.landscape.columns[col].things[ThingType.COIN.ordinal]; t2 != null; t2 = t2.next){
+		for(Column c = Main.world.window.landscape.getEnd(Dir.l); c != Main.world.window.landscape.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r))
+		for(Thing t2 = c.things[ThingType.COIN.ordinal]; t2 != null; t2 = t2.next){
 			if(t2.pos.minus(t.pos).lengthSquare() < 1000){
 				Main.world.window.deletionRequested.add(t2);
 				coinAmount++;

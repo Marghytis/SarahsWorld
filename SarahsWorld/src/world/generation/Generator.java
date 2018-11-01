@@ -1,16 +1,20 @@
 package world.generation;
 
-import java.io.*;
-import java.util.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-import quest.*;
-import things.Thing;
 import util.math.Vec;
-import world.data.*;
-import world.generation.zones.*;
+import world.data.Column;
+import world.data.WorldData;
+import world.generation.zones.Jungle;
+import world.generation.zones.Meadow;
+import world.generation.zones.Mountains;
 
 
-public class Generator {
+public class Generator implements GeneratorInterface {
 	
 	WorldData world;
 	Random random = new Random();
@@ -25,12 +29,10 @@ public class Generator {
 	
 	Column nextColumnR, nextColumnL;
 
-	public List<QuestSpawner> questThings = new ArrayList<>();
-	public double genRadius;
+	public List<Spawner> questThings = new ArrayList<>();
 	
-	public Generator(WorldData world, double radius){
+	public Generator(WorldData world){
 		this.world = world;
-		this.genRadius = radius;
 		
 //		Biome startBiome = Biome.values()[world.random.nextInt(Biome.values().length)];//TODO make it random
 		Biome startBiome = Biome.JUNGLE;
@@ -53,136 +55,76 @@ public class Generator {
 	}
 	
 	Vec questPos = new Vec();
-	int columnCount;
 	
-	
-//	public void border(double end, int dir){
-//		while(posR < end){
-//			posR += Column.COLUMN_WIDTH;
-//			
-//			nextColumnR = zoneR.nextColumn(posR - zoneR.originX);
-//			world.addRight(nextColumnR);
-//			
-//			if(zoneR.end){
-//				switch(random.nextInt(3)){
-//					case 0 : zoneR = new Mountains(random, biomeR, posR, false);break;
-//					case 1 : zoneR = new Meadow(random, biomeR, posR, false);break;
-//					case 2 : zoneR = new Jungle(random, biomeR, posR, false);break;
-//				}
-//			}
-//			biomeR.lastColumn = nextColumnR;
-//			
-//			if(columnCount < 3){
-//				columnCount++;
-//				continue;
-//			}
-//			
-//			tryToStartQuests(zoneR);
-//			
-////			world.mostRight.left.biome.spawnThings(world, world.mostRight.left.left);
-//			biomeR.spawnThings(nextColumnR.left);
-//			for(int i = 0; i < questThings.size(); i++){
-//				QuestSpawner qs = questThings.get(i);
-//				Thing t = qs.thingType.defaultSpawner.spawn(world, nextColumnR.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
-//				if(t != null) {
-//					qs.quest.characters.put(qs.name, t);
-//					qs.quest.eventFinished = true;
-//					questThings.remove(i);
-//					i--;
-//				}
-//			}
-//		}
-//	}
-	
-	public void borders(double d, double e) {
+	public boolean borders(double d, double e) {
 		while(posR < e){
-			posR += Column.COLUMN_WIDTH;
-			
-			nextColumnR = zoneR.nextColumn(posR - zoneR.originX);
-			world.addRight(nextColumnR);
-			
-			if(zoneR.end){
-				switch(random.nextInt(3)){
-					case 0 : zoneR = new Mountains(random, zoneR.biome, posR, false);break;
-					case 1 : zoneR = new Meadow(random, zoneR.biome, posR, false);break;
-					case 2 : zoneR = new Jungle(random, zoneR.biome, posR, false);break;
-				}
-			}
-			zoneR.stepColumn(nextColumnR);
-			
-			if(columnCount < 3){
-				columnCount++;
-				continue;
-			}
-			
-			tryToStartQuests(zoneR);
-			
-//			world.mostRight.left.biome.spawnThings(world, world.mostRight.left.left);
-			zoneR.spawnThings(nextColumnR.left);
-			for(int i = 0; i < questThings.size(); i++){
-				QuestSpawner qs = questThings.get(i);
-				Thing t = qs.thingType.defaultSpawner.spawn(world, nextColumnR.left.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
-				if(t != null) {
-					qs.quest.characters.put(qs.name, t);
-					qs.quest.eventFinished = true;
-					questThings.remove(i);
-					i--;
-				}
-			}
+			if(!extendRight())
+				return false;
 		}
 		while(posL > d){
-			posL -= Column.COLUMN_WIDTH;
-			
-			nextColumnL = zoneL.nextColumn(-posL - zoneL.originX);
-			world.addLeft(nextColumnL);
-
-			if(zoneL.end){
-				zoneL = new Mountains(random, zoneL.biome, -posL, true);
-			}
-			
-			zoneL.stepColumn(nextColumnL);
-
-			if(columnCount < 3){
-				columnCount++;
-				continue;
-			}
-			
-			tryToStartQuests(zoneL);
-//			world.mostLeft.right.biome.spawnThings(world, world.mostLeft.right.right);
-			biomeL.spawnThings(nextColumnL);
-			for(int i = 0; i < questThings.size(); i++){
-				QuestSpawner qs = questThings.get(i);//Yes left below!! change it later to last and next
-				Thing t = qs.thingType.defaultSpawner.spawn(world, nextColumnL.getRandomTopLocation(world.random, questPos), questPos.copy(), qs.extraData);
-				if(t != null) {
-					qs.quest.characters.put(qs.name, t);
-					qs.quest.eventFinished = true;
-					questThings.remove(i);
-					i--;
-				}
-			}
+			if(!extendLeft())
+				return false;
 		}
+		return true;
 	}
-	//TODO!!!!!
-	public void step(boolean left){
+
+	public void spawnOnce(Spawner spawner) {
+		questThings.add(spawner);
 	}
-	
-	public void tryToStartQuests(Zone zone){
-		for(Quest quest : Quest.values){
-			boolean attributesMatch = true;
-			for(int attrib : quest.startAttributes){
-				if(!zone.description[attrib]) attributesMatch = false;
-				break;
-			}
-			if(attributesMatch && quest.start.condition.isMet(null, world)){
-				ActiveQuest newOne = new ActiveQuest(world.world, quest);
-				world.quests.add(newOne);
-				quest.start.action.run(newOne, world);
-			}
-		}
-	}
+
 
 	public void save(DataOutputStream output) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean extendRight() {
+		posR += Column.COLUMN_WIDTH;
+		
+		nextColumnR = zoneR.nextColumn(posR - zoneR.originX);
+//		world.addRight(nextColumnR);
+		
+		if(zoneR.end){
+			switch(random.nextInt(3)){
+				case 0 : zoneR = new Mountains(random, zoneR.biome, posR, false);break;
+				case 1 : zoneR = new Meadow(random, zoneR.biome, posR, false);break;
+				case 2 : zoneR = new Jungle(random, zoneR.biome, posR, false);break;
+			}
+		}
+		zoneR.stepColumn(nextColumnR);
+
+		world.processNewColumn(nextColumnR, 1, zoneR.description);
+
+		zoneR.spawnThings(nextColumnR.left);
+		
+		return true;
+	}
+
+	public boolean extendLeft() {
+
+		posL -= Column.COLUMN_WIDTH;
+		
+		nextColumnL = zoneL.nextColumn(-posL - zoneL.originX);
+//		world.addLeft(nextColumnL);
+
+		if(zoneL.end){
+			zoneL = new Mountains(random, zoneL.biome, -posL, true);
+		}
+		
+		zoneL.stepColumn(nextColumnL);
+
+		world.processNewColumn(nextColumnL, -1, zoneL.description);
+
+		zoneL.spawnThings(nextColumnL.right);
+		
+		return true;
+	}
+	
+	public boolean extend(int iDir) {
+		switch(iDir) {
+		case 0 : return extendLeft();
+		case 1 : return extendRight();
+		default: return false;
+		}
 	}
 }

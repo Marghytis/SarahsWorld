@@ -1,17 +1,37 @@
 package things;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import item.ItemType;
 import item.ItemType.WeaponType;
-import main.*;
-import render.*;
-import things.aiPlugins.*;
+import main.Main;
+import main.Res;
+import main.UsefulStuff;
+import render.Animation;
+import render.TexAtlas;
+import things.aiPlugins.Animating;
+import things.aiPlugins.Attacking;
+import things.aiPlugins.AvatarControl;
+import things.aiPlugins.FlyAround;
+import things.aiPlugins.Following;
+import things.aiPlugins.Inventory;
+import things.aiPlugins.Life;
+import things.aiPlugins.Magic;
+import things.aiPlugins.MidgeAround;
+import things.aiPlugins.Movement;
+import things.aiPlugins.Physics;
+import things.aiPlugins.PhysicsExtension;
+import things.aiPlugins.Riding;
+import things.aiPlugins.Speaking;
+import things.aiPlugins.WalkAround;
 import util.Color;
-import util.math.*;
-import world.*;
-import world.data.*;
-import world.generation.Biome.ThingSpawner.Spawner;
+import util.math.Rect;
+import util.math.Vec;
+import world.World;
+import world.data.Column;
+import world.data.WorldData;
+import world.generation.Spawner;
 
 public class ThingType {
 	
@@ -97,7 +117,7 @@ public class ThingType {
 			,new WalkAround()
 			,new Physics(1, 1, true, true, true, true, true, true)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
@@ -131,7 +151,7 @@ public class ThingType {
 			,new WalkAround()
 			,new Physics(1, 1)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 			if(extraData.length > 0)
 				t.aniSet = (int)extraData[0];
 		}
@@ -162,7 +182,7 @@ public class ThingType {
 			,new WalkAround()
 			,new Physics(1, 1)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
@@ -256,7 +276,7 @@ public class ThingType {
 			,new WalkAround()
 			,new Physics(1, 1)) {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData) {
-			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 		};
 
 		public void update(Thing t, double delta){
@@ -302,7 +322,7 @@ public class ThingType {
 			,new WalkAround()
 			,new Physics(1, 1)) {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData) {
-			t.accWalking = 750*(0.5*world.random.nextDouble()+0.75);
+			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 		};
 
 		public void update(Thing t, double delta){
@@ -411,7 +431,7 @@ public class ThingType {
 			,new Physics(1, 1000, true, false, true, false, true, false)){
 
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
-			t.box = new Rect(file.pixelCoords).scale(world.random.nextDouble() + 0.5);
+			t.box = new Rect(file.pixelCoords).scale(World.rand.nextDouble() + 0.5);
 			t.yOffset = 200 + World.rand.nextInt(100);
 			if(extraData.length > 0){
 				t.color.set((Color)extraData[0]);
@@ -476,8 +496,8 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
 			t.type.ani.setAnimation(t, "");
-			t.box.scale(0.5 + world.random.nextDouble());
-			t.size = 0.5 + world.random.nextDouble();
+			t.box.scale(0.5 + World.rand.nextDouble());
+			t.size = 0.5 + World.rand.nextDouble();
 //			t.box.set(t.ani.createBox());//
 			if(t.z == 0) t.z = -0.1;
 			else if(t.z == 0.1) t.z = 0.2;
@@ -528,7 +548,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
 			t.type.ani.setAnimation(t, "");
-			t.size = world.random.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5;
+			t.size = World.rand.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5;
 			if(t.box.size.y > 80){
 				t.z = -1;
 			}
@@ -632,7 +652,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
-			t.size = 0.5 + world.random.nextDouble();
+			t.size = 0.5 + World.rand.nextDouble();
 			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 		}};
 										static final Animation[][] plant_jungle = {
@@ -645,7 +665,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
-			t.box.set(new Rect(file.pixelCoords).scale(0.5 + world.random.nextDouble()));
+			t.box.set(new Rect(file.pixelCoords).scale(0.5 + World.rand.nextDouble()));
 			t.z = World.rand.nextBoolean() ? 1 : -1;
 		}};
 										static final Animation[][] cactus = {
@@ -656,7 +676,7 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
-			t.box.set(new Rect(file.pixelCoords).scale(0.5 + world.random.nextDouble()));
+			t.box.set(new Rect(file.pixelCoords).scale(0.5 + World.rand.nextDouble()));
 			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
 		}};
 										static final Animation[][] grave = {

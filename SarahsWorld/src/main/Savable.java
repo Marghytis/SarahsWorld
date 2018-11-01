@@ -1,6 +1,9 @@
 package main;
 
-public interface Savable {
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
+public abstract class Savable {
 
 	String world = 		"World";
 	String container =		"Container";
@@ -14,9 +17,9 @@ public interface Savable {
 	String object = 				"O";
 	String generator =		"Generator";
 	String layer =				"Layer";
-
-	public String save();
 	
-	public void load(String save);
+	public Savable(DataInputStream input) {}
+
+	public abstract void save(DataOutputStream output);
 	
 }

@@ -1,4 +1,4 @@
-package world;
+package world.render;
 
 import java.nio.ByteBuffer;
 
@@ -6,7 +6,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-import core.Core;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;

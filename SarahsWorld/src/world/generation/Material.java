@@ -1,4 +1,4 @@
-package world;
+package world.generation;
 
 import main.Res;
 import render.Texture;

@@ -7,14 +7,12 @@ import org.lwjgl.opengl.GL11;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
-import core.Window;
 import item.ItemType;
 import main.Main;
 import main.Res;
 import menu.Settings.Key;
 import render.Texture;
 import render.VAO;
-import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
 import util.Anim;
@@ -22,7 +20,6 @@ import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
 import world.World;
-import world.generation.Biome;
 
 public class Menu implements Updater, Renderer, Listener {
 	public static Texture MONEYBAG = Res.getTex("moneybag");
@@ -223,7 +220,6 @@ public class Menu implements Updater, Renderer, Listener {
 						}
 						, 0, 0.25, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(() -> {
-							Vec idle = new Vec(0, 1);
 							String s =  "Sarah: " + Main.world.avatar.vel + "\n" +
 										"box: " + Main.world.avatar.box.toString() + "\n" +
 										"tex width: " + Main.world.avatar.ani.tex.w + "\n" + 

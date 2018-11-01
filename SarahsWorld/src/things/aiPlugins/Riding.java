@@ -33,7 +33,9 @@ public class Riding extends AiPlugin {
 				rider.mountedThing.pos.set(rider.pos);
 				rider.mountedThing.vel.set(rider.vel);
 				rider.mountedThing.dir = rider.dir;
-				rider.link.add(rider.mountedThing);
+				rider.mountedThing.oldLink = rider.mountedThing.link;
+				rider.mountedThing.link = rider.link;
+				rider.mountedThing.applyLink();
 
 				rider.mountedThing = horse;
 				rider.pos.set(horse.pos);
@@ -57,7 +59,9 @@ public class Riding extends AiPlugin {
 			rider.mountedThing.vel.set(rider.vel);
 			rider.mountedThing.dir = rider.dir;
 			rider.mountedThing.where = rider.where;
-			rider.link.add(rider.mountedThing);
+			rider.mountedThing.oldLink = rider.mountedThing.link;
+			rider.mountedThing.link = rider.link;
+			rider.mountedThing.applyLink();
 			rider.mountedThing = null;
 			rider.type.ani.setAnimation(rider, "stand");
 			rider.type.file = rider.type.ani.animations[0][0].atlas;

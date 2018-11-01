@@ -5,7 +5,7 @@ import item.ItemType;
 import things.AttackType.AttackEffect;
 import things.AttackType.AttackSelected;
 import util.math.Vec;
-import world.WorldWindow;
+import world.render.WorldWindow;
 
 public class AttackSelectedSpell extends AttackSelected {
 

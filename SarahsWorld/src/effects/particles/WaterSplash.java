@@ -3,7 +3,7 @@ package effects.particles;
 import effects.particles.Particle.ParticleType;
 import main.Res;
 import util.math.Vec;
-import world.WorldWindow;
+import world.render.WorldWindow;
 
 public class WaterSplash implements ParticleEffect{
 

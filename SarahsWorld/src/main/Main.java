@@ -37,7 +37,7 @@ public class Main {
 	{
 		
 		initializeGame("Sarahs World");
-		
+
 		resetCoreLists();
 
 		core.coreLoop();
@@ -62,8 +62,8 @@ public class Main {
 
 		//create a menu object and load or create a world object
 		menu = new Menu();
-		if(Save.worldSaved()){
-			world = Save.loadWorld();
+		if(Save.worldSaved("worlds/world.sw")){//TODO make the path variable
+			world = Save.loadWorld("worlds/world.sw");
 		} else {
 			world = new World();
 		}

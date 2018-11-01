@@ -15,7 +15,7 @@ import util.Color;
 import util.math.Rect;
 import util.math.Vec;
 import world.World;
-import world.WorldWindow;
+import world.render.WorldWindow;
 
 public enum ItemType {
 

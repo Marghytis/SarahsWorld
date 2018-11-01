@@ -5,6 +5,8 @@ import menu.Settings;
 import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
+import world.data.Column;
+import world.data.Dir;
 
 public class Following extends AiPlugin{
 
@@ -50,8 +52,8 @@ public class Following extends AiPlugin{
 			Thing closest = null;
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
-				for(int col = 0; col < Main.world.window.landscape.columns.length; col++)
-				for(Thing t2 = Main.world.window.landscape.columns[col].things[targetClasses[type].ordinal]; t2 != null; t2 = t2.next){
+				for(Column c = Main.world.window.landscape.getEnd(Dir.l); c != Main.world.window.landscape.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r))
+				for(Thing t2 = c.things[targetClasses[type].ordinal]; t2 != null; t2 = t2.next){
 					double distSqu = t.pos.minus(t2.pos).lengthSquare();
 					if(distSqu < distanceSquare){
 						closest = t2;

@@ -1,7 +1,7 @@
 package things;
 
 import render.TexAtlas;
-import world.generation.Biome.ThingSpawner.Spawner;
+import world.generation.Spawner;
 
 public class FoliageType extends ThingType {
 

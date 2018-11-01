@@ -4,8 +4,9 @@ import effects.WorldEffect;
 import effects.particles.Particle.ParticleType;
 import main.Res;
 import util.math.Vec;
-import world.LandscapeWindow;
 import world.data.Column;
+import world.data.Dir;
+import world.render.LandscapeWindow;
 
 public class FogWorld implements ParticleEffect, WorldEffect {
 
@@ -49,7 +50,7 @@ public class FogWorld implements ParticleEffect, WorldEffect {
 	}
 	public void checkInside(LandscapeWindow lw) {
 		for(int i = 0; i < fog.particles.length; i++){
-			if(fog.particles[i].lived < fog.lifeSpan && (fog.particles[i].pos.x < lw.left.xReal - 2*Column.COLUMN_WIDTH || fog.particles[i].pos.x > lw.right.xReal + 2*Column.COLUMN_WIDTH)){
+			if(fog.particles[i].lived < fog.lifeSpan && (fog.particles[i].pos.x < lw.getEnd(Dir.l).xReal - 2*Column.COLUMN_WIDTH || fog.particles[i].pos.x > lw.getEnd(Dir.r).xReal + 2*Column.COLUMN_WIDTH)){
 				fog.destroy(fog.particles[i]);
 			}
 		}

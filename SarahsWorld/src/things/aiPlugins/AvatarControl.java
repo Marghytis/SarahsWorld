@@ -9,6 +9,7 @@ import menu.Settings.Key;
 import things.*;
 import util.math.Vec;
 import world.*;
+import world.render.WorldWindow;
 
 public  class AvatarControl extends AiPlugin implements Listener{
 
@@ -170,10 +171,10 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			World.world.avatar.pos.y -= 200;
 			World.world.avatar.where.g = false;
 		case LAYERCOUNT_UP:
-			LandscapeWindow.layersToDraw++;
+			Settings.LAYERS_TO_DRAW++;
 			break;
 		case LAYERCOUNT_DOWN:
-			LandscapeWindow.layersToDraw--;
+			Settings.LAYERS_TO_DRAW--;
 			break;
 		case ZOOM_IN:
 			World.world.window.zoom *= 1.25;

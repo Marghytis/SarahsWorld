@@ -1,4 +1,4 @@
-package world;
+package world.generation;
 
 
 public class Stratum {

@@ -150,7 +150,7 @@ public class Res {
 	static {readTexTable(Main.TEX_ATLAS_TABLE_PATH);}
 	
 	//togethers
-	public static final TexFile NPC_plus_Handheld_Items = new TexFile("res/creatures/NPC_and_handheld_Items.png");
+//	public static final TexFile NPC_plus_Handheld_Items = new TexFile("res/creatures/NPC_and_handheld_Items.png");
 	
 	//Static things (offsetY is location of point on floor)
 //	public static final TexAtlas cloud = new TexAtlas("res/objects/Cloud.png", 1, 1, -0.5f, 0);//-0.5

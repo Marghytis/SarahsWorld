@@ -7,7 +7,7 @@ import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
 
-public class Column {
+public class Column implements ListElement<Column> {
 	public static final double COLUMN_WIDTH = 20;
 	public Column left, right;
 	public Vertex[] vertices;
@@ -18,6 +18,7 @@ public class Column {
 	private double collisionYSolid, collisionYFluid;
 	public Biome biome;
 	public Color topColor, lowColor;
+	public int testInt;
 
 	public Column(int xIndex, Biome biome, Color top, Color low, Vertex[] vertices, double... collisionVecs){
 		this.xIndex = xIndex;
@@ -79,12 +80,28 @@ public class Column {
 		return this;
 	}
 	
+	public Column getRandomTopLocation(Random random, Vec posField, int dir){
+		topSolidVertex = findTopSolidVertex(vertices);
+		double fac = random.nextDouble();
+		if(dir == -1) {
+			posField.set(
+					xReal + (fac*(right.xReal - xReal)),
+					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+		} else if(dir == 1) {
+			posField.set(
+					xReal + (fac*(left.xReal - xReal)),
+					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+		} else {
+			new Exception("Unknown direction!").printStackTrace();
+		}
+		return this;
+	}
+	
 	/**
 	 * Disconnects the thing by itself
 	 * @param t
 	 */
 	public void add(Thing t){
-		t.disconnectFrom(t.oldLink);
 		int o = t.type.ordinal;
 		t.prev = null;
 		t.next = things[o];
@@ -93,13 +110,13 @@ public class Column {
 		t.link = this;
 		t.oldLink = this;
 	}
-	public void appear(boolean left, WorldData data){
+	public void appear(boolean left){
 		for(int i = 0; i < things.length; i++){
 			for(Thing t = things[i]; t != null; t = t.next){
 				t.setVisible(true);
 			}
 		}
-		biome.spawnEffects(data, this, left);
+		biome.spawnEffects(this, left);
 	}
 	
 	public void disappear(){
@@ -129,4 +146,13 @@ public class Column {
 	public final double getCollisionYFluid(){
 		return collisionYFluid;
 	}
+
+	public Column next(int index) {
+		switch(index) {
+		case 0 : return left;
+		case 1 : return right;
+		default: return null;
+		}
+	}
+
 }
