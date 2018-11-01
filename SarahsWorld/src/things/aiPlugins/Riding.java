@@ -39,14 +39,14 @@ public class Riding extends AiPlugin {
 
 				rider.mountedThing = horse;
 				rider.pos.set(horse.pos);
-				Main.world.window.deletionRequested.add(horse);
+				Main.world.window.requestDeletion(horse);
 				rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.type.ani.setAnimation(rider, "stand"));
 			});
 		} else {
 			rider.mountedThing = horse;
 			rider.pos.set(horse.pos);
 			rider.where = horse.where;
-			Main.world.window.deletionRequested.add(horse);
+			Main.world.window.requestDeletion(horse);
 			rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.type.ani.setAnimation(rider, "stand"));
 		}
 	}

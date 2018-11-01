@@ -9,9 +9,8 @@ import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
 import util.math.Vec;
-import world.*;
+import world.World;
 import world.data.WorldData;
-import world.render.WorldWindow;
 
 
 
@@ -63,8 +62,8 @@ public class Life extends AiPlugin {
 			}
 			for(ItemType item : t.fruits)
 				new Thing(ThingType.ITEM, Main.world.data, t.link, t.pos.copy(), item);
-			Main.world.window.deletionRequested.add(t);
-			WorldWindow.addEffect(new DeathDust(t.pos));
+			Main.world.window.requestDeletion(t);
+			Main.world.window.addEffect(new DeathDust(t.pos));
 		}
 	}
 	
@@ -76,7 +75,7 @@ public class Life extends AiPlugin {
 				tgt.reallyAir = true;
 			}
 			tgt.health -= damage;
-			WorldWindow.addEffect(new BloodSplash(tgt.pos));
+			Main.world.window.addEffect(new BloodSplash(tgt.pos));
 			return true;
 		}
 		return false;

@@ -6,10 +6,10 @@ import main.Main;
 import menu.Menu.Menus;
 import menu.Settings;
 import menu.Settings.Key;
-import things.*;
+import things.AiPlugin;
+import things.Thing;
 import util.math.Vec;
-import world.*;
-import world.render.WorldWindow;
+import world.World;
 
 public  class AvatarControl extends AiPlugin implements Listener{
 
@@ -62,7 +62,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 
 	@Override
 	public boolean pressed(int button, Vec mousePos) {
-		for(Effect e : WorldWindow.getEffects()){
+		for(Effect e : Main.world.window.getEffects()){
 			e.pressed(button, mousePos);
 		}
 		return false;
@@ -86,18 +86,16 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		case 2:
 			objectsClickedOn = Main.world.window.thingsAt(worldPos);
 			for(Thing t : objectsClickedOn){
-				if(t.selected){
-					Main.world.window.selected.remove(t);
+				if(t.selected()) {
+					Main.world.window.deselect(t);
 				} else {
-					Main.world.window.selected.add(t);
+					Main.world.window.select(t);
 				}
-				t.selected = !t.selected;
-				t.switchedSelected = true;
 			}
 			break;
 		}
 		
-		for(Effect e : WorldWindow.getEffects()){
+		for(Effect e : Main.world.window.getEffects()){
 			e.released(button, mousePos, pathSincePress);
 		}
 //		int hitThingLoc = -3;

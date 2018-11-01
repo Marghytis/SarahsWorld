@@ -1,18 +1,27 @@
 package things.aiPlugins;
 
 import effects.Effect;
-import main.*;
+import main.Main;
+import main.Res;
 import menu.Dialog;
 import menu.Menu.Menus;
-import quest.*;
-import render.*;
-import things.*;
-import util.*;
-import util.Anim.*;
-import util.math.*;
-import world.*;
+import quest.ActiveQuest;
+import quest.Strings;
+import render.Render;
+import render.TexAtlas;
+import render.Texture;
+import render.VAO;
+import things.AiPlugin;
+import things.Thing;
+import util.Anim;
+import util.Anim.AnimPart;
+import util.Anim.Func;
+import util.Anim.Value;
+import util.Color;
+import util.math.UsefulF;
+import util.math.Vec;
+import world.World;
 import world.data.WorldData;
-import world.render.WorldWindow;
 
 public class Speaking extends AiPlugin {
 	
@@ -122,7 +131,7 @@ public class Speaking extends AiPlugin {
 			if(!living){
 				living = true;
 				ani.time = 0;
-				WorldWindow.addEffect(this);
+				Main.world.window.addEffect(this);
 			}
 		}
 		

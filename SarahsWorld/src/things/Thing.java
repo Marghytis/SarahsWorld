@@ -1,17 +1,22 @@
 package things;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import item.*;
+import effects.WorldEffect;
+import item.ItemStack;
+import item.ItemType;
 import main.Main;
 import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
 import things.aiPlugins.Speaking.ThoughtBubble;
 import util.Color;
-import util.math.*;
-import world.*;
-import world.data.*;
+import util.math.Rect;
+import util.math.Vec;
+import world.World;
+import world.data.Column;
+import world.data.WorldData;
 
 public class Thing {
 	//DEBUG
@@ -49,6 +54,8 @@ public class Thing {
 	public List<ItemType> fruits = new ArrayList<>();
 	public ItemStack[] itemStacks;
 	public ThoughtBubble tb;
+	public WorldEffect effect;
+	public int effectTicket;
 	public boolean dir;
 	public boolean immortal;
 	public boolean isRiding;
@@ -102,10 +109,15 @@ public class Thing {
 	}
 	
 	public void setVisible(boolean visible){
-		if(this.visible && !visible){
-			World.world.window.vaos[type.ordinal].remove(this);
-		} else if(!this.visible && visible){
-			World.world.window.vaos[type.ordinal].add(this);
+		if(type.attachment != null) {
+			type.attachment.onVisibilityChange(this, visible);
+		}
+		if(type.ani != null) {
+			if(this.visible && !visible){
+				World.world.window.getVAO(type).remove(this);
+			} else if(!this.visible && visible){
+				World.world.window.getVAO(type).add(this);
+			}
 		}
 		this.visible = visible;
 	}
@@ -128,7 +140,11 @@ public class Thing {
 		}
 		type.setup(this, world, field, pos, extraData);
 	}
-
+	
+	public boolean selected() {
+		return selected;
+	}
+	
 	public void disconnectFrom(Column link) {
 		if(next != null) next.prev = prev;
 		if(prev != null) prev.next = next;
@@ -145,7 +161,7 @@ public class Thing {
 		for(AiPlugin plugin : type.plugins){
 			if(plugin != null) plugin.remove(this);
 		}
-		Main.world.window.vaos[type.ordinal].remove(this);
+		Main.world.window.getVAO(type).remove(this);
 	}
 	
 	public String save(){return "";};

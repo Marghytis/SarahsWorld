@@ -6,6 +6,7 @@ import java.util.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
+import main.Main;
 import main.Res;
 import menu.Settings;
 import render.*;
@@ -57,6 +58,57 @@ public class LandscapeWindow extends ArrayWorldWindow {
 						new VAP(4, GL11.GL_BYTE, true, 2*Float.BYTES)));//in_Color
 		
 		maxTextureUnits = GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS);
+	}
+	
+	public void renderLandscape(){
+		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+		layersDrawn = 0;
+
+		//LANDSCAPE
+		Res.landscapeShader.bind();//Yes, don't use scaleX, scaleY here, because the landscape gets rendered into a framebuffer
+		Res.landscapeShader.set("transform", Main.world.window.offsetX, Main.world.window.offsetY, Main.world.window.scaleX, Main.world.window.scaleY);
+		vao.bindStuff();
+			//draw normal quads
+			drawNormalQuads();
+			//draw quads for vertcal transition
+			if(Settings.DRAW_TRANSITIONS)
+				drawTransitionQuads();
+		vao.unbindStuff();
+		TexFile.bindNone();
+		Shader.bindNone();
+	}
+	
+	public void renderWater(){
+		//WATER
+		Res.landscapeShader.bind();
+		Res.landscapeShader.set("transform", Main.world.window.offsetX, Main.world.window.offsetY, Main.world.window.scaleX, Main.world.window.scaleY);
+		vao.bindStuff();
+			//draw normal quads
+			drawWater();
+		vao.unbindStuff();
+		TexFile.bindNone();
+		Shader.bindNone();
+	}
+	
+	public void renderBackground(){
+
+		//BACKGROUND
+		Res.darknessShader.bind();
+		Res.darknessShader.set("transform", Main.world.window.offsetX, 0, Main.world.window.scaleX, 1);
+		vaoColor.bindStuff();
+			drawBackground();
+		vao.unbindStuff();
+		Shader.bindNone();
+	}
+	
+	public void renderDarkness(){
+		//DARKNESS
+		Res.darknessShader.bind();
+		Res.darknessShader.set("transform", Main.world.window.offsetX, Main.world.window.offsetY, Main.world.window.scaleX, Main.world.window.scaleY);
+		vaoColor.bindStuff();
+			drawDarkness();
+		vao.unbindStuff();
+		Shader.bindNone();
 	}
 	
 	protected void letAppear(Column c, int iDir) {

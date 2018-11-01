@@ -33,7 +33,7 @@ public enum ItemType {
 			src.itemStacks[Main.world.avatar.selectedItem].item = ItemType.NOTHING;
 			if(src.mana + 2 <= Main.world.avatar.type.magic.maxMana){
 				src.mana += 2;
-				WorldWindow.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
+				Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
 				return true;
 			}
 			return false;
@@ -58,7 +58,7 @@ public enum ItemType {
 			pos = pos.copy();
 			src.link.getRandomTopLocation(World.rand, pos);
 			ThingType.CAKE.defaultSpawner.spawn(Main.world.data, src.link, pos);
-			WorldWindow.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
+			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
 			return true;
 		}
 	},
@@ -91,7 +91,7 @@ public enum ItemType {
 				} else if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE){
 					if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
 						src.type.inv.addItem(src, dest.itemBeing, 1);
-						Main.world.window.deletionRequested.add(dest);
+						Main.world.window.requestDeletion(dest);
 						success = true;
 					}
 				}

@@ -35,7 +35,7 @@ public class Inventory extends AiPlugin{
 		for(Column c = Main.world.window.landscape.getEnd(Dir.l); c != Main.world.window.landscape.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r))
 		for(Thing t2 = c.things[ThingType.COIN.ordinal]; t2 != null; t2 = t2.next){
 			if(t2.pos.minus(t.pos).lengthSquare() < 1000){
-				Main.world.window.deletionRequested.add(t2);
+				Main.world.window.requestDeletion(t2);
 				coinAmount++;
 			}
 		}

@@ -11,7 +11,7 @@ import world.render.LandscapeWindow;
 public class FogWorld implements ParticleEffect, WorldEffect {
 
 	public static final ParticleType FOG = new ParticleType(Res.getTex("fogParticle"));
-	public ParticleEmitter fog = new ParticleEmitter(400, 0, FOG, Float.MAX_VALUE, true){
+	public ParticleEmitter fog = new ParticleEmitter(500, 0, FOG, Float.MAX_VALUE, true){
 
 		float radius = 30, T = 10;
 		
@@ -37,13 +37,13 @@ public class FogWorld implements ParticleEffect, WorldEffect {
 	public FogWorld(int height){
 		this.height = height;
 	}
-	public int spawn(double x, double y, boolean left){
+	public int spawn(double x, double y){
 		pos.set(x, y);
 		return fog.emittParticle(0);
 	}
-	public void destroy(int index){
-		if(index != -1)
-		fog.destroy(fog.particles[index]);
+	public void despawn(int ticket) {
+		if(ticket != -1)
+		fog.destroy(fog.particles[ticket]);
 	}
 	public void update(double delta) {
 		fog.tick((float)delta);

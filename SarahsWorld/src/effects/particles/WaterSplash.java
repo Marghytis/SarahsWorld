@@ -2,11 +2,12 @@ package effects.particles;
 
 import effects.particles.Particle.ParticleType;
 import main.Res;
+import util.Color;
 import util.math.Vec;
-import world.render.WorldWindow;
 
 public class WaterSplash implements ParticleEffect{
 
+	public static Color waterColor = new Color(0.4f, 0.4f, 1f, 0.75f);
 	public static final ParticleType WATER_DROP = new ParticleType(Res.getTex("bloodParticle"));
 	
 	public ParticleEmitter drops = new ParticleEmitter(30, 1, WATER_DROP, 1){
@@ -14,7 +15,7 @@ public class WaterSplash implements ParticleEffect{
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x, pos.y);
 			p.vel.set((random.nextFloat() - 0.5f)*200f, (random.nextFloat() - 0.5f)*200f);//-0.8f
-			p.col.set(WorldWindow.waterColor);
+			p.col.set(waterColor);
 			p.rad = 0.5f;
 		}
 

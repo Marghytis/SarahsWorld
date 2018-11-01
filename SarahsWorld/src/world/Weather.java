@@ -1,7 +1,7 @@
 package world;
 
 import effects.particles.FogWorld;
-import world.render.WorldWindow;
+import main.Main;
 
 /**
  * Should contain wind, fog, rain, snow, clouds, sunshine, thunder and lightning
@@ -10,9 +10,9 @@ import world.render.WorldWindow;
  */
 public class Weather {
 
-	public FogWorld fog = new FogWorld(200);
+	public static FogWorld fog = new FogWorld(200);
 	
 	public void addEffects(){
-		WorldWindow.addEffect(fog);
+		Main.world.window.addEffect(fog);
 	}
 }

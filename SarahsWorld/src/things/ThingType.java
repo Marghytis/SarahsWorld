@@ -3,6 +3,7 @@ package things;
 import java.util.ArrayList;
 import java.util.List;
 
+import effects.WorldEffect;
 import item.ItemType;
 import item.ItemType.WeaponType;
 import main.Main;
@@ -11,6 +12,7 @@ import main.UsefulStuff;
 import render.Animation;
 import render.TexAtlas;
 import things.aiPlugins.Animating;
+import things.aiPlugins.Attachement;
 import things.aiPlugins.Attacking;
 import things.aiPlugins.AvatarControl;
 import things.aiPlugins.FlyAround;
@@ -309,7 +311,7 @@ public class ThingType {
 						UsefulStuff.colorFromHue(t.time, t.color);
 						t.z -= 0.001;
 						//update the color in the vbo
-						Main.world.window.vaos[t.type.ordinal].changeUnusual(t);
+						Main.world.window.getVAO(t.type).changeUnusual(t);
 						//return the color to normal in the next render cycle
 						t.needsUnusualRenderUpdate = true;
 					}
@@ -737,6 +739,23 @@ public class ThingType {
 			if(extraData.length > 1) t.vel.set((Vec) extraData[1]);
 		}
 	};
+	/**
+	 * should not be used as a local effect like fire. Another ThingType is needed for that.
+	 * 
+	 */
+	public static final ThingType WORLD_EFFECT = new ThingType("WORLD_EFFECT", TexAtlas.emptyAtlas, 30, true,
+			new Attachement() {
+				public void onVisibilityChange(Thing t, boolean visible){
+					if(!t.visible && visible) {
+						t.effectTicket = t.effect.spawn(t.pos.x, t.pos.y);
+					} else if(t.visible && !visible) {
+						t.effect.despawn(t.effectTicket);
+					}
+				}}) {
+		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData) {
+			t.effect = (WorldEffect) extraData[0];
+		}
+	};
 	
 	public static ThingType[] types = tempList.toArray(new ThingType[tempList.size()]);
 	
@@ -759,6 +778,7 @@ public class ThingType {
 	public WalkAround walkAround;//14
 	public MidgeAround midgeAround;//15
 	public PhysicsExtension physEx;//16
+	public Attachement attachment;//17
 	
 	public AiPlugin[] plugins;
 	public Spawner defaultSpawner;
@@ -778,7 +798,7 @@ public class ThingType {
 		this.file = file;
 		this.maxVisible = maxVisible;
 		this.alwaysUpdateVBO = alwaysUpdateVBO;
-		this.plugins = new AiPlugin[15];
+		this.plugins = new AiPlugin[16];
 		this.ordinal = index++;
 		tempList.add(this);
 		
@@ -813,6 +833,8 @@ public class ThingType {
 				midgeAround = (MidgeAround)plugin;
 			} else if(plugin instanceof PhysicsExtension){
 				physEx = (PhysicsExtension)plugin;
+			} else if(plugin instanceof Attachement){
+				attachment = (Attachement)plugin;
 			}
 			//...
 		}
@@ -835,6 +857,7 @@ public class ThingType {
 		this.plugins[i++] = movement;
 		this.plugins[i++] = magic;
 		this.plugins[i++] = midgeAround;
+		this.plugins[i++] = attachment;
 		//TODO go on
 		if(defaultSpawner == null) this.defaultSpawner = (w, p, f, ed) -> new Thing(this, w, p, f, ed);
 		else this.defaultSpawner = defaultSpawner;

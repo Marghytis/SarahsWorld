@@ -202,8 +202,8 @@ public class Menu implements Updater, Renderer, Listener {
 			public void setElements(){
 				elements = new Element[]{
 						new FlexibleTextField(() -> {
-							if(World.world.window.selected.size() != 1) return "";
-							Thing t = Main.world.window.selected.get(0);
+							if(World.world.window.selectionSize() != 1) return "";
+							Thing t = Main.world.window.getSelection(0);
 							String s = t.type.name + ": ";
 							if(t.type.physics != null)
 							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force;
@@ -211,8 +211,8 @@ public class Menu implements Updater, Renderer, Listener {
 						}
 						, 0, 0.5, 0.5, 1, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(() -> {
-							if(World.world.window.selected.size() != 1) return "";
-							Thing t = Main.world.window.selected.get(0);
+							if(World.world.window.selectionSize() != 1) return "";
+							Thing t = Main.world.window.getSelection(0);
 							String s = t.type.name + ": ";
 							if(t.type.physics != null)
 							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force;

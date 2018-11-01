@@ -173,7 +173,7 @@ public abstract class ParticleEmitter{
 		buffer.clear();
 		
 		for(int i = 0; i < particles.length; i++){
-			if(particles[i].lived <= lifeSpan){
+			if(particles[i].lived < lifeSpan){
 				buffer.put((byte)1);
 			} else {
 				buffer.put((byte)0);

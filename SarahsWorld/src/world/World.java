@@ -39,6 +39,7 @@ public class World {
 	
 	public World(){
 		world = this;
+		Main.world = this;
 
 		data = new WorldData(this);
 		editor = new WorldEditor(data);

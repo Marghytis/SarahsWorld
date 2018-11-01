@@ -9,6 +9,7 @@ import java.util.Random;
 import util.math.Vec;
 import world.data.Column;
 import world.data.WorldData;
+import world.generation.zones.Graveyard;
 import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
@@ -35,7 +36,7 @@ public class Generator implements GeneratorInterface {
 		this.world = world;
 		
 //		Biome startBiome = Biome.values()[world.random.nextInt(Biome.values().length)];//TODO make it random
-		Biome startBiome = Biome.JUNGLE;
+		Biome startBiome = Biome.GRAVEYARD;
 		
 		posL = 0;
 		posR = 0;
@@ -43,8 +44,8 @@ public class Generator implements GeneratorInterface {
 		biomeL = new BiomeManager(world, startBiome, true);
 		biomeR = new BiomeManager(world, startBiome, false);
 
-		zoneL = new Jungle(random, biomeL, 0, true);
-		zoneR = new Jungle(random, biomeR, 0, false);
+		zoneL = new Graveyard(random, biomeL, 0, true);
+		zoneR = new Graveyard(random, biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}

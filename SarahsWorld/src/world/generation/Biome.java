@@ -6,11 +6,11 @@ import things.ThingType;
 import util.Color;
 import util.math.Function;
 import util.math.Vec;
+import world.Weather;
 import world.World;
 import world.data.Column;
 import world.data.Vertex;
 import world.data.WorldData;
-import world.render.WorldWindow;
 
 public enum Biome {
 	DESERT(new Color(0.2f, 0.4f, 0.65f), new Color(0.73f, 0.84f, 0.95f),
@@ -125,12 +125,13 @@ public enum Biome {
 			new ThingSpawner[]{
 				new ThingSpawner(ThingType.TREE_GRAVE.defaultSpawner, 0.1),
 				new ThingSpawner(ThingType.ZOMBIE.defaultSpawner, 0.05),
-				new ThingSpawner(ThingType.GRAVE.defaultSpawner, 0.2)
+				new ThingSpawner(ThingType.GRAVE.defaultSpawner, 0.2),
+				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, w, c, pos, Weather.fog),1.5)
 	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Main.HALFSIZE.w, pos.yInt() + Main.HALFSIZE.h + 50, 100, 4, 50)); return null;}, 0.01),
 	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.weather.fog.emittFog(pos.x + Main.HALFSIZE.w, pos.y + Main.HALFSIZE.h); return null;}, 1)
 			},
 			new EffectSpawner[]{
-					new EffectSpawner(WorldWindow.weather.fog, 1.5)
+//					new EffectSpawner(Main.world.window.getWeather().fog, 1.5)
 			}),
 	MEADOW(new Color(0.65f, 0.83f, 1f), new Color(0.27f, 0.47f, 0.81f),
 			new Stratum[]{
@@ -388,12 +389,12 @@ public enum Biome {
 				prob -= greaterThanOne;
 				for(; greaterThanOne > 0; greaterThanOne--){
 					c.getRandomTopLocation(World.rand, posField);
-					effects[i].effect.spawn(posField.x, posField.y, left);
+					effects[i].effect.spawn(posField.x, posField.y);
 				}
 			}
 			if(World.rand.nextDouble() < prob){
 				c.getRandomTopLocation(World.rand, posField);
-				effects[i].effect.spawn(posField.x, posField.y, left);
+				effects[i].effect.spawn(posField.x, posField.y);
 			}
 		}
 	}
@@ -460,7 +461,8 @@ public enum Biome {
 		
 		Spawner spawner;
 		double probabilityOnFieldWidth;
-		
+		Object[] extraData;
+
 		public ThingSpawner(Spawner spawner, double probabilityOnFieldWidth){
 			this.spawner = spawner;
 			this.probabilityOnFieldWidth = probabilityOnFieldWidth;
