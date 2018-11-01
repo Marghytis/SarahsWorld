@@ -15,7 +15,6 @@ import util.Color;
 import util.math.Rect;
 import util.math.Vec;
 import world.World;
-import world.render.WorldWindow;
 
 public enum ItemType {
 
@@ -91,7 +90,7 @@ public enum ItemType {
 				} else if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE){
 					if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
 						src.type.inv.addItem(src, dest.itemBeing, 1);
-						Main.world.window.requestDeletion(dest);
+						Main.world.engine.requestDeletion(dest);
 						success = true;
 					}
 				}

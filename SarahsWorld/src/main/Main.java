@@ -76,6 +76,7 @@ public class Main {
 	{
 		Updater.updaters.clear();
 		Updater.updaters.add(menu);
+		Updater.updaters.add(world.engine);
 		Updater.updaters.add(world.window);
 
 		Renderer.renderers.clear();

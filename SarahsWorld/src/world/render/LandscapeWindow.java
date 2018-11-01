@@ -40,7 +40,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 	int layersDrawn = 0;
 	ArrayList<Patch> waterPatches = new ArrayList<>();
 
-	public LandscapeWindow(WorldData data, Column anchor, int columnRadius, int firstIndex){
+	public LandscapeWindow(Column anchor, int columnRadius){
 		super(anchor, columnRadius);
 		pointsX = columns.length;
 		vao = new VAO(

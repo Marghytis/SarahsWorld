@@ -23,7 +23,7 @@ public class ActiveQuest {
 		answer = number+1;
 	}
 
-	public boolean update(double delta){
+	public boolean update(){
 		if(eventFinished){
 			for(int i = 0; i < currentEvent.next.length; i++){
 				if((currentEvent.answerCondition[i] == 0 || currentEvent.answerCondition[i] == answer) && currentEvent.next[i].condition.isMet(this, Main.world.data)){

@@ -67,6 +67,7 @@ public class Settings{
 	public static double GENERATION_RADIUS = 1800;
 	public static Vec AVATAR_START_OFFSET = new Vec(100, 500);
 	public static int LAYERS_TO_DRAW = (Biome.layerCount-1)*6;
+	public static float ZOOM = 1;
 	
 	public static enum Key {
 		MAIN_MENU(GLFW_KEY_ESCAPE),

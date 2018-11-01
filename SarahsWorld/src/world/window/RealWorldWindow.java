@@ -1,5 +1,7 @@
 package world.window;
 
+import java.util.function.Consumer;
+
 import world.data.Column;
 import world.data.Dir;
 
@@ -7,6 +9,7 @@ public class RealWorldWindow {
 
 	protected int radius;
 	protected Column[] ends = new Column[2];
+	protected Column it;
 	
 	public RealWorldWindow(Column anchor, int radius) {
 		this.radius = radius;
@@ -17,6 +20,21 @@ public class RealWorldWindow {
 	
 	public Column getEnd(int iDir) {
 		return ends[iDir];
+	}
+	
+	public Column start() {
+		return ends[Dir.l];
+	}
+	
+	public Column end() {
+		return ends[Dir.r].next();
+	}
+	
+	public void forEachColumn(Consumer<Column> cons) {
+
+		for(Column c = ends[Dir.l]; c != ends[Dir.r].next(Dir.r); c = c.next(Dir.r)) {
+			cons.accept(c);
+		}
 	}
 	
 	public void moveToColumn(int xIndex) {

@@ -9,7 +9,9 @@ import java.util.function.Consumer;
 import quest.ActiveQuest;
 import quest.Quest;
 import things.Thing;
+import things.ThingType;
 import util.math.Vec;
+import world.Weather;
 import world.World;
 import world.generation.Biome;
 import world.generation.Spawner;
@@ -21,6 +23,7 @@ public class WorldData {
 	Column rightColumn, leftColumn;	
 	List<ActiveQuest> quests = new ArrayList<>();
 	List<Spawner> extraSpawners = new ArrayList<>();
+	Weather weather;
 	
 	World world;
 	
@@ -30,11 +33,24 @@ public class WorldData {
 	}
 	public WorldData(World world) {
 		this.world = world;
+		weather = new Weather();
+	}
+	
+	public Weather getWeather() {
+		return weather;
 	}
 	public void forEachQuest(Consumer<ActiveQuest> cons) {
 		for(ActiveQuest aq : quests){
 			cons.accept(aq);
 		}
+	}
+	public Thing findAvatar() {
+		for(Column c = leftColumn; c != rightColumn.right; c = c.right) {
+			if(c.things[ThingType.SARAH.ordinal] != null) {
+				return c.things[ThingType.SARAH.ordinal];
+			}
+		}
+		return null;
 	}
 	public Column getRightColumn() {
 		return rightColumn;

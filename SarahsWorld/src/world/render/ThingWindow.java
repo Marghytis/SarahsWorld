@@ -1,5 +1,10 @@
 package world.render;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
 import org.lwjgl.opengl.GL11;
 
 import item.ItemType;
@@ -9,12 +14,13 @@ import render.Shader;
 import render.TexFile;
 import things.Thing;
 import things.ThingType;
+import util.math.Vec;
 import world.data.Column;
-import world.data.Dir;
-import world.render.WorldWindow.Decider;
 import world.window.RealWorldWindow;
 
 public class ThingWindow extends RealWorldWindow {
+	//variables that should be local but are not, due to speed optimization
+	private List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
 
 	private ThingVAO[] vaos = new ThingVAO[ThingType.types.length];
 	
@@ -27,7 +33,15 @@ public class ThingWindow extends RealWorldWindow {
 	public ThingVAO getVAO(ThingType type) {
 		return vaos[type.ordinal];
 	}
-
+	
+	Consumer<Thing> boundingBoxRenderer = (t) -> {
+//		Render.bounds(t.ani.tex.pixelCoords, t.pos.x, t.pos.y + t.yOffset);TODO
+//		t.pos.drawPoint();
+	};
+	public void renderBoundingBoxes(){
+		forEach(boundingBoxRenderer);
+	}
+	
 	public void renderThings() {
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -61,18 +75,17 @@ public class ThingWindow extends RealWorldWindow {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 	}
 	
-	public void renderThings(Decider d){
+	public void renderThings(Predicate<ThingType> d){
 		renderThings(d, Res.thingShader);
 	}
 	
-	public void renderThings(Decider d, Shader shader){
+	public void renderThings(Predicate<ThingType> d, Shader shader){
 
 		//add things to the buffer that should be visible
 		for(int type = 0; type < ThingType.types.length; type++)
-		for(Column c = ends[Dir.l]; c != ends[Dir.r].next(Dir.r); c = c.next(Dir.r))
+		for(Column c = start(); c != end(); c = c.next())
 		for(Thing t = c.things[type]; t != null; t = t.next)
 			if(t.pos.x >= Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH && t.pos.x <= Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH) {
-				if(ThingType.types[type] == ThingType.WORLD_EFFECT)
 				t.setVisible(true);
 			}
 		//remove things from the buffer that should not be visible
@@ -86,16 +99,16 @@ public class ThingWindow extends RealWorldWindow {
 
 		shader.bind();
 		shader.set("scale", Main.world.window.scaleX, Main.world.window.scaleY);
-		shader.set("offset", -(float)Main.world.avatar.pos.x, -(float)Main.world.avatar.pos.y);
+		shader.set("offset", Main.world.window.offsetX, Main.world.window.offsetY);
 		
 		for(int type = 0; type < ThingType.types.length; type++) {
-			if(vaos[type].lastUsedIndex == -1 || !d.decide(ThingType.types[type])) continue;
+			if(vaos[type].lastUsedIndex == -1 || !d.test(ThingType.types[type])) continue;
 			//render Thing
 			ThingType.types[type].file.file.bind();
 
-			for(Column c = ends[Dir.l]; c != ends[Dir.r].next(Dir.r); c = c.next(Dir.r))
+			for(Column c = start(); c != end(); c = c.next())
 			for(Thing t = c.things[type]; t != null; t = t.next) {
-				if(d.decide(ThingType.types[type])){
+				if(d.test(ThingType.types[type])){
 					t.prepareRender();
 				}
 			}
@@ -107,9 +120,9 @@ public class ThingWindow extends RealWorldWindow {
 			if(ThingType.types[type].ani != null && ThingType.types[type].ani.secondFile != null){
 				ThingType.types[type].ani.secondFile.bind();
 
-				for(Column c = ends[Dir.l]; c != ends[Dir.r].next(Dir.r); c = c.next(Dir.r))
+				for(Column c = start(); c != end(); c = c.next())
 				for(Thing t = c.things[type]; t != null; t = t.next) {
-					if(d.decide(ThingType.types[type])){
+					if(d.test(ThingType.types[type])){
 						t.prepareSecondRender();
 					}
 				}
@@ -128,7 +141,7 @@ public class ThingWindow extends RealWorldWindow {
 		ItemType.handheldTex.bind();
 		for(int type = 0; type < ThingType.types.length; type++)
 		if(ThingType.types[type].inv != null)
-		for(Column c = ends[Dir.l]; c != ends[Dir.r].next(Dir.r); c = c.next(Dir.r))
+		for(Column c = start(); c != end(); c = c.next())
 		for(Thing cursor = c.things[type]; cursor != null; cursor = cursor.next){
 			cursor.itemStacks[cursor.selectedItem].item.renderHand(cursor, cursor.itemAni);
 		}
@@ -152,5 +165,49 @@ public class ThingWindow extends RealWorldWindow {
 //			t.ani.bindTex();
 //			GL11.glBegin(GL11.GL_QUADS);
 //		}
+	}
+	public void forEach(int type, Consumer<Thing> cons){
+
+		for(Column c = start(); c != end(); c = c.next())
+			for(Thing t = c.things[type]; t != null; t = t.next)
+				cons.accept(t);
+	}
+	
+	public void forEach(Consumer<Thing> cons) {
+		for(int type = 0; type < ThingType.types.length; type++)
+			forEach(type, cons);
+		
+	}
+	
+	public Thing[] livingsAt(Vec loc){
+		thingsAt.clear();
+		forEach(t -> 
+		{if(t.type.life != null && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y + t.yOffset, t.box.size.x, t.box.size.y)){
+			thingsAt.add(t);
+		}});
+		thingsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
+		return thingsAt.toArray(new Thing[thingsAt.size()]);
+	}
+
+	public Thing[] objectsAt(Vec loc){
+		objectsAt.clear();
+		forEach(t -> {
+			if(t.type.life == null && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y + t.yOffset, t.box.size.x, t.box.size.y)){
+				objectsAt.add(t);
+			}
+		});
+		objectsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
+		return objectsAt.toArray(new Thing[objectsAt.size()]);
+	}
+	
+	public Thing[] thingsAt(Vec loc){
+		objectsAt.clear();
+		forEach(t -> {
+			if(!t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y + t.yOffset, t.box.size.x, t.box.size.y)){
+				objectsAt.add(t);
+			}
+		});
+		objectsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
+		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 }

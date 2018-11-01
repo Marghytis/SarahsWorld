@@ -24,7 +24,7 @@ public class PhysicsExtension extends AiPlugin {
 	
 	public void update(Thing t1, double delta){
 		for(ThingType tt : typesToRepell){
-			Main.world.window.forEach(tt, (t) -> {
+			Main.world.thingWindow.forEach(tt.ordinal, (t) -> {
 				Vec conn = t.pos.minus(t1.pos);
 				double action = tt.physEx.radius + radius;
 				double distSq = conn.lengthSquare();

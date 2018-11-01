@@ -15,4 +15,8 @@ public class Weather {
 	public void addEffects(){
 		Main.world.window.addEffect(fog);
 	}
+	
+	public boolean update(double delta) {
+		return false;
+	}
 }

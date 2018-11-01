@@ -311,7 +311,7 @@ public class ThingType {
 						UsefulStuff.colorFromHue(t.time, t.color);
 						t.z -= 0.001;
 						//update the color in the vbo
-						Main.world.window.getVAO(t.type).changeUnusual(t);
+						Main.world.thingWindow.getVAO(t.type).changeUnusual(t);
 						//return the color to normal in the next render cycle
 						t.needsUnusualRenderUpdate = true;
 					}

@@ -62,16 +62,14 @@ public  class AvatarControl extends AiPlugin implements Listener{
 
 	@Override
 	public boolean pressed(int button, Vec mousePos) {
-		for(Effect e : Main.world.window.getEffects()){
-			e.pressed(button, mousePos);
-		}
+		Main.world.window.forEachEffect(e -> e.pressed(button, mousePos));
 		return false;
 	}
 
 	@Override
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
 		Vec worldPos = mousePos.minus(Main.SIZE.w/2, Main.SIZE.h/2).shift(Main.world.avatar.pos);
-		Thing[] livingsClickedOn = Main.world.window.livingsAt(worldPos);
+		Thing[] livingsClickedOn = Main.world.thingWindow.livingsAt(worldPos);
 		
 		switch(button){
 		case 0://ATTACK
@@ -80,11 +78,11 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			}
 			break;
 		case 1://USE
-			Thing[] objectsClickedOn = Main.world.window.thingsAt(worldPos);
+			Thing[] objectsClickedOn = Main.world.thingWindow.thingsAt(worldPos);
 			Main.world.avatar.type.inv.useSelectedItem(Main.world.avatar, worldPos, objectsClickedOn);
 			break;
 		case 2:
-			objectsClickedOn = Main.world.window.thingsAt(worldPos);
+			objectsClickedOn = Main.world.thingWindow.thingsAt(worldPos);
 			for(Thing t : objectsClickedOn){
 				if(t.selected()) {
 					Main.world.window.deselect(t);
@@ -95,9 +93,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			break;
 		}
 		
-		for(Effect e : Main.world.window.getEffects()){
-			e.released(button, mousePos, pathSincePress);
-		}
+		Main.world.window.forEachEffect(e -> e.released(button, mousePos, pathSincePress));
 //		int hitThingLoc = -3;
 //		Thing[] hitThing = new Thing[1];
 //		for(List<Thing> list : Main.world.objects) for(Thing t : list){
@@ -175,10 +171,10 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			Settings.LAYERS_TO_DRAW--;
 			break;
 		case ZOOM_IN:
-			World.world.window.zoom *= 1.25;
+			Settings.ZOOM *= 1.25;
 			break;
 		case ZOOM_OUT:
-			World.world.window.zoom *= 0.8;
+			Settings.ZOOM *= 0.8;
 			break;
 		default:
 		}

@@ -62,7 +62,7 @@ public class Life extends AiPlugin {
 			}
 			for(ItemType item : t.fruits)
 				new Thing(ThingType.ITEM, Main.world.data, t.link, t.pos.copy(), item);
-			Main.world.window.requestDeletion(t);
+			Main.world.engine.requestDeletion(t);
 			Main.world.window.addEffect(new DeathDust(t.pos));
 		}
 	}

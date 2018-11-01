@@ -149,10 +149,14 @@ public class Column implements ListElement<Column> {
 
 	public Column next(int index) {
 		switch(index) {
-		case 0 : return left;
-		case 1 : return right;
+		case Dir.l : return left;
+		case Dir.r : return right;
 		default: return null;
 		}
+	}
+
+	public Column next() {
+		return next(Dir.r);
 	}
 
 }

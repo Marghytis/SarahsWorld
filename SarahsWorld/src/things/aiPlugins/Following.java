@@ -52,7 +52,7 @@ public class Following extends AiPlugin{
 			Thing closest = null;
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
-				for(Column c = Main.world.window.landscape.getEnd(Dir.l); c != Main.world.window.landscape.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r))
+				for(Column c = Main.world.landscapeWindow.getEnd(Dir.l); c != Main.world.landscapeWindow.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r))
 				for(Thing t2 = c.things[targetClasses[type].ordinal]; t2 != null; t2 = t2.next){
 					double distSqu = t.pos.minus(t2.pos).lengthSquare();
 					if(distSqu < distanceSquare){

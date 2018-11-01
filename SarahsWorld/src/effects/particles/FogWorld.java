@@ -11,7 +11,7 @@ import world.render.LandscapeWindow;
 public class FogWorld implements ParticleEffect, WorldEffect {
 
 	public static final ParticleType FOG = new ParticleType(Res.getTex("fogParticle"));
-	public ParticleEmitter fog = new ParticleEmitter(500, 0, FOG, Float.MAX_VALUE, true){
+	public ParticleEmitter fog = new ParticleEmitter(600, 0, FOG, Float.MAX_VALUE, true){
 
 		float radius = 30, T = 10;
 		

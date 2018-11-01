@@ -16,7 +16,9 @@ import world.data.WorldData;
 import world.data.WorldEditor;
 import world.generation.Generator;
 import world.generation.GeneratorInterface;
-import world.render.WorldWindow;
+import world.render.LandscapeWindow;
+import world.render.ThingWindow;
+import world.render.WorldPainter;
 import world.window.GeneratingWorldWindow;
 import world.window.RealWorldWindow;
 
@@ -29,12 +31,13 @@ public class World {
 	WorldEditor editor;
 	public GeneratorInterface generator;
 	
-	GeneratingWorldWindow genWindow;
-	RealWorldWindow updateWindow;
-	RealWorldWindow drawWindow;
+	public GeneratingWorldWindow genWindow;
+	public RealWorldWindow updateWindow;
+	public LandscapeWindow landscapeWindow;
+	public ThingWindow thingWindow;
 	
-	WorldEngine engine;
-	public WorldWindow window;
+	public WorldEngine engine;
+	public WorldPainter window;
 	public Thing avatar;
 	
 	public World(){
@@ -71,13 +74,15 @@ public class World {
 		int drawRadius = (int)((Main.SIZE.w + 400)/Column.COLUMN_WIDTH);
 		genWindow = new GeneratingWorldWindow(anchor, drawRadius + 20, generator);
 		updateWindow    = new RealWorldWindow(anchor, drawRadius + 2);
-		drawWindow      = new RealWorldWindow(anchor, drawRadius);
 		
-		engine = new WorldEngine(data, editor, genWindow, updateWindow);
 		//generation happens here, because avatar and generator can't be accessed statically yet. might change..
-		generator.borders(avatar.pos.x - Settings.GENERATION_RADIUS, avatar.pos.x + Settings.GENERATION_RADIUS);
+//		generator.borders(avatar.pos.x - Settings.GENERATION_RADIUS, avatar.pos.x + Settings.GENERATION_RADIUS);
+		genWindow.moveToColumn((int)(avatar.pos.x/Column.COLUMN_WIDTH));
 
-		window = new WorldWindow(data, anchor, avatar.pos.x, (int)((Main.SIZE.w + 400)/Column.COLUMN_WIDTH));
+		thingWindow 	= new ThingWindow(anchor, drawRadius);
+		landscapeWindow = new LandscapeWindow(anchor, drawRadius);
+		engine = new WorldEngine(data, editor, genWindow, updateWindow, landscapeWindow, thingWindow);
+		window = new WorldPainter(data, thingWindow, landscapeWindow);
 	}
 	
 	public void save(DataOutputStream output) throws IOException {

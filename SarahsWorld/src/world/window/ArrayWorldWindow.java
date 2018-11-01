@@ -1,5 +1,6 @@
 package world.window;
 
+import main.Main;
 import world.data.Column;
 import world.data.Dir;
 
@@ -24,7 +25,7 @@ public class ArrayWorldWindow extends RealWorldWindow {
 			}
 		}
 		if(ends[Dir.l].xIndex > center-radius || ends[Dir.r].xIndex < center + radius){
-			new Exception("World data is not large enough yet").printStackTrace();
+			new Exception("World data is not large enough yet : (" + Main.world.genWindow.getEnd(Dir.l).xIndex + " - " + Main.world.genWindow.getEnd(Dir.r).xIndex + ")").printStackTrace();
 			System.exit(-1);
 		}
 	}

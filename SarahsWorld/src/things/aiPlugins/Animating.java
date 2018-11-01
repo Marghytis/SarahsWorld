@@ -72,14 +72,14 @@ public class Animating extends AiPlugin {
 	
 	public void prepareRender(Thing t){
 		if(t.type.alwaysUpdateVBO || t.needsRenderUpdate || t.switchedSelected){
-			Main.world.window.getVAO(t.type).changeUsual(t);
+			Main.world.thingWindow.getVAO(t.type).changeUsual(t);
 			if(t.switchedSelected || t.needsUnusualRenderUpdate){
 				if(t.selected){
 					t.color = new Color(1, 0, 0, 1);
-					Main.world.window.getVAO(t.type).changeUnusual(t);
+					Main.world.thingWindow.getVAO(t.type).changeUnusual(t);
 				} else {
 					t.color = new Color(1, 1, 1, 1);
-					Main.world.window.getVAO(t.type).changeUnusual(t);
+					Main.world.thingWindow.getVAO(t.type).changeUnusual(t);
 				}
 				t.switchedSelected = false;
 				t.needsUnusualRenderUpdate = false;

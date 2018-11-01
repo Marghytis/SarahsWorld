@@ -2,10 +2,13 @@ package things.aiPlugins;
 
 import main.Main;
 import menu.Settings;
-import things.*;
-import util.math.*;
-import world.*;
-import world.data.*;
+import things.AiPlugin;
+import things.Thing;
+import util.math.UsefulF;
+import util.math.Vec;
+import world.data.Column;
+import world.data.Dir;
+import world.data.Vertex;
 import world.generation.Material;
 
 public class Physics extends AiPlugin {
@@ -252,7 +255,7 @@ public class Physics extends AiPlugin {
 	
 	public boolean circleCollision(Thing t, Vec pos1, double r, boolean right){
 		Vec vec1 = new Vec(), vec2 = new Vec();
-		for(Column c = Main.world.window.landscape.getEnd(Dir.l); c != Main.world.window.landscape.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r)){
+		for(Column c = Main.world.landscapeWindow.getEnd(Dir.l); c != Main.world.landscapeWindow.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r)){
 			Vec[] output = UsefulF.circleIntersection(
 					vec1.set(c.xReal,c.getCollisionY()),
 					vec2.set(c.right.xReal, c.right.getCollisionY()),
@@ -276,7 +279,7 @@ public class Physics extends AiPlugin {
 		if(coll){
 			Vec vec1 = new Vec(), vec2 = new Vec();
 
-			for(Column c = Main.world.window.landscape.getEnd(Dir.l); c != Main.world.window.landscape.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r)){
+			for(Column c = Main.world.landscapeWindow.getEnd(Dir.l); c != Main.world.landscapeWindow.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r)){
 				if(UsefulF.intersectionLines2(
 						pos1,
 						velt,

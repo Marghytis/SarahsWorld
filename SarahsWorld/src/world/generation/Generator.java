@@ -8,6 +8,7 @@ import java.util.Random;
 
 import util.math.Vec;
 import world.data.Column;
+import world.data.Dir;
 import world.data.WorldData;
 import world.generation.zones.Graveyard;
 import world.generation.zones.Jungle;
@@ -116,15 +117,15 @@ public class Generator implements GeneratorInterface {
 
 		world.processNewColumn(nextColumnL, -1, zoneL.description);
 
-		zoneL.spawnThings(nextColumnL.right);
+		zoneL.spawnThings(nextColumnL);
 		
 		return true;
 	}
 	
 	public boolean extend(int iDir) {
 		switch(iDir) {
-		case 0 : return extendLeft();
-		case 1 : return extendRight();
+		case Dir.l : return extendLeft();
+		case Dir.r : return extendRight();
 		default: return false;
 		}
 	}

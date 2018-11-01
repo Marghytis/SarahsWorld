@@ -114,9 +114,9 @@ public class Thing {
 		}
 		if(type.ani != null) {
 			if(this.visible && !visible){
-				World.world.window.getVAO(type).remove(this);
+				World.world.thingWindow.getVAO(type).remove(this);
 			} else if(!this.visible && visible){
-				World.world.window.getVAO(type).add(this);
+				World.world.thingWindow.getVAO(type).add(this);
 			}
 		}
 		this.visible = visible;
@@ -161,7 +161,7 @@ public class Thing {
 		for(AiPlugin plugin : type.plugins){
 			if(plugin != null) plugin.remove(this);
 		}
-		Main.world.window.getVAO(type).remove(this);
+		Main.world.thingWindow.getVAO(type).remove(this);
 	}
 	
 	public String save(){return "";};

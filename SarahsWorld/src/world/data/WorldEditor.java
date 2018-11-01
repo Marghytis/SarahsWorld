@@ -1,8 +1,7 @@
 package world.data;
 
 import things.Thing;
-import things.ThingType;
-import world.window.RealWorldWindow;
+import world.render.ThingWindow;
 
 public class WorldEditor {
 
@@ -17,12 +16,8 @@ public class WorldEditor {
 		t.remove();
 	}
 
-	public void reLink(RealWorldWindow range) {
+	public void reLink(ThingWindow range) {
 		
-		for(int type = 0; type < ThingType.types.length; type++)
-		for(Column col = range.getEnd(0); col != range.getEnd(1).next(1); col = col.next(1))
-		for(Thing t = col.things[type]; t != null; t = t.next)
-			if(t.oldLink != t.link)
-				t.applyLink();
+		range.forEach(Thing::applyLink);
 	}
 }

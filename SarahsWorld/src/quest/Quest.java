@@ -12,7 +12,7 @@ import things.ThingType;
 import world.World;
 import world.data.WorldData;
 import world.generation.Zone.Attribute;
-import world.render.WorldWindow;
+import world.render.WorldPainter;
 
 public enum Quest {
 //	FIREFIGHTER("res/quest/Firefighter.txt"),
@@ -130,7 +130,7 @@ public enum Quest {
 			Objector leftSide = null;
 			switch(method[0]){
 			case "true": leftSide = (q, w) -> 1; break;
-			case "daytime": leftSide = (q, w) -> WorldWindow.getDayTime();break;
+			case "daytime": leftSide = (q, w) -> WorldPainter.getDayTime();break;
 			case "random": leftSide = (q, w) -> World.rand.nextInt(Integer.parseInt(args[0]));break;
 			case "distance": leftSide = (q, w) -> {
 				return q.characters.get(args[0]).pos.minus(q.characters.get(args[1]).pos).length();
