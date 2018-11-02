@@ -25,10 +25,10 @@ public class TextField extends Element {
 	
 	public void render() {
 		super.render();
-		if(text != null){
-			float xText = center? xCenter- (font.getWidth(text)/2) : this.x1+20;
+		if(text != null && visible()){
+			float xText = center? xCenter : this.x1+20;
 			float yText = yCenter - (font.getHeight("I")/2);
-			font.drawString(xText - Main.HALFSIZE.w, yText - Main.HALFSIZE.h, text, fontColor, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
+			font.drawString(xText - Main.HALFSIZE.w, yText - Main.HALFSIZE.h, text, fontColor, 1, 1, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, center ? TrueTypeFont.ALIGN_CENTER : TrueTypeFont.ALIGN_LEFT);
 		}
 	}
 

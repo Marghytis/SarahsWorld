@@ -1,6 +1,7 @@
 package menu;
 
 import java.awt.Font;
+import java.util.Stack;
 
 import org.lwjgl.opengl.GL11;
 
@@ -28,12 +29,14 @@ public class Menu implements Updater, Renderer, Listener {
 	public static Dialog dialog = new Dialog();
 
 	public Settings settings = new Settings();
+	Stack<Menus> history = new Stack<>();
 	public Menus open = Menus.EMPTY, last = Menus.EMPTY, next = Menus.EMPTY;
 	public Element[] elements;
 	
 	public void setMenu(Menus menu){
 		if(open != menu){
 			next = menu;
+			history.push(next);
 			open.close();
 		} else {
 			open.stopClosing();
@@ -45,6 +48,12 @@ public class Menu implements Updater, Renderer, Listener {
 			next = last;
 			open.close();
 		}
+	}
+	
+	public void goBack() {
+		history.pop();
+		next = history.peek();
+		open.close();
 	}
 	
 	private void setNext(){
@@ -69,7 +78,13 @@ public class Menu implements Updater, Renderer, Listener {
 	}
 	
 	public boolean pressed(int button, Vec mousePos) {
-		return false;
+		boolean success = false;
+		if(button == 0){
+			for(Element b : open.elements){
+				success = b.pressed(button, mousePos);
+			}
+		}
+		return success || open.blockWorld;
 	}
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
@@ -90,6 +105,19 @@ public class Menu implements Updater, Renderer, Listener {
 	public boolean charTyped(char ch) {
 		return open.charTyped(ch);
 	}
+	
+	static TextField continuePlaying = new FlexibleTextField(() -> "Press " + Key.MAIN_MENU.getName() + " to\ncontinue playing!", 0.9, 0.08, 0.9, 0.08,
+					Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+					new Color(1, 1, 1, 0), null, false);
+	static Button back = new Button("Back", 0.9, 0.9, 0.9, 0.9,
+			Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+			new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+			Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+		
+		public void released(int button) {
+			Main.menu.goBack();
+		}
+	};
 	
 	public enum Menus {
 		EMPTY(false, false) {
@@ -124,15 +152,85 @@ public class Menu implements Updater, Renderer, Listener {
 							});
 						}
 					},
-					new Button("Key bindings", 0.7, 0.5, 0.7, 0.5,
+					new Button("Options", 0.7, 0.5, 0.7, 0.5,
 							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
 							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
 							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
 						
 						public void released(int button) {
-							Main.menu.setMenu(Menus.KEY_BINDINGS);
+							Main.menu.setMenu(Menus.OPTIONS);
 						}
-					}
+					},
+					new Button("Credits", 0.1, 0.1, 0.1, 0.1,
+							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+						
+						public void released(int button) {
+							Main.menu.setMenu(Menus.CREDITS);
+						}
+					},
+					new Button("Continue", 0.5, 0.4, 0.5, 0.4,
+							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+						
+						public void released(int button) {
+							Main.menu.setMenu(Menus.EMPTY);
+						}
+					},
+					continuePlaying
+							
+				};
+			}
+		},
+		OPTIONS(false, false){
+
+			public void setElements() {
+
+				elements = new Element[]{
+					new Button("Key bindings", 0.1, 0.9, 0.1, 0.9,
+								Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+								new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+								Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+							
+							public void released(int button) {
+								Main.menu.setMenu(Menus.KEY_BINDINGS);
+							}
+						},
+					new ToggleButton("Sound off", "Sound on", 0.1, 0.8, 0.1, 0.8,
+							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
+							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.8f, 0.8f, 0.8f), new Color(0.7f, 0.7f, 0.7f),
+							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1], Button.button.texs[1]){
+						
+						public void toggled(boolean on) {
+							Settings.SOUND = on;
+						}
+						public boolean getRealValue() {
+							return Settings.SOUND;
+						}
+					},
+					new ToggleButton("Music off", "Music playing", 0.1, 0.8, 0.1, 0.8,
+							Button.button.pixelCoords[0] + Button.button.w1, Button.button.pixelCoords[1], Button.button.pixelCoords[2] + Button.button.w1, Button.button.pixelCoords[3],
+							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.8f, 0.8f, 0.8f), new Color(0.7f, 0.7f, 0.7f),
+							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1], Button.button.texs[1]){
+						public boolean visible() {
+							return Settings.SOUND;
+						}
+						public boolean getRealValue() {
+							return Settings.MUSIC;
+						}
+						public void toggled(boolean on) {
+							Settings.MUSIC = on;
+							if(on) {
+								Main.sound.getMusic().startMusic();
+							} else {
+								Main.sound.getMusic().stopMusic();
+							}
+						}
+					},
+					back,
+					continuePlaying
 				};
 			}
 		},
@@ -195,6 +293,7 @@ public class Menu implements Updater, Renderer, Listener {
 								Main.menu.setMenu(Menus.INFOS);
 							}
 						},
+						continuePlaying
 				};
 			}
 		},
@@ -226,14 +325,19 @@ public class Menu implements Updater, Renderer, Listener {
 										"dir: " + Main.world.avatar.dir;
 							return s;
 						}
-						, 0, 0, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false)
+						, 0, 0, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						back,
+						continuePlaying
 				};
 			}
 		},
 		KEY_BINDINGS(false, false){
 			public void setElements(){
 				Key[] values = Key.values();
-				elements = new Element[(values.length-1)*2];
+				int nElements = (values.length-1)*2;
+				elements = new Element[nElements+2];
+				elements[nElements+1] = back;
+				elements[nElements] = continuePlaying;
 				double x = 0.25, y = 0.9;
 				int i = 0, columns = 0;
 				for (; i < values.length-1; i++, y -= 0.06) {
@@ -247,15 +351,25 @@ public class Menu implements Updater, Renderer, Listener {
 				x = 0.1;
 				y = 0.9;
 				columns = 0;
-				for (; i < elements.length; i++, y -= 0.06) {
+				for (; i < nElements; i++, y -= 0.06) {
 					int j = i - values.length+1;
 					if(j/15 > columns){
 						columns++;
 						x += 0.3;
 						y = 0.9;
 					}
-					elements[i] = new TextField(values[i-(values.length-1)].name() + ":", x, y, x, y, -150, -30, 150, 30, new Color(0, 0, 0, 0.5f), null, true);
+					elements[i] = new TextField(values[i-(values.length-1)].toString() + ":", x, y, x, y, -150, -30, 150, 30, new Color(0, 0, 0, 0.5f), null, true);
 				}
+			}
+			
+		},
+		CREDITS(false, false){
+
+			public void setElements() {
+				elements = new Element[]{
+					new TextField("Graphics: Evelyn\n\nCode: Mario\n\nMusic: Urs & Vlad\n\nDocumentation: Elli", 0.1, 0.1, 0.9, 0.9, 0, 0, 0, 0, new Color(0, 0, 0, 0.6f), null, true),
+					back
+				};
 			}
 			
 		},

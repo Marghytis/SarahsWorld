@@ -1,17 +1,26 @@
 package world.render;
 
-import java.nio.*;
-import java.util.*;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 
-import main.Main;
 import main.Res;
 import menu.Settings;
-import render.*;
+import render.Render;
+import render.Shader;
+import render.TexFile;
+import render.VAO;
+import render.VBO;
 import render.VBO.VAP;
-import world.data.*;
+import world.data.Column;
+import world.data.Vertex;
 import world.generation.Biome;
 import world.generation.Material;
 import world.window.ArrayWorldWindow;
@@ -66,7 +75,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 
 		//LANDSCAPE
 		Res.landscapeShader.bind();//Yes, don't use scaleX, scaleY here, because the landscape gets rendered into a framebuffer
-		Res.landscapeShader.set("transform", Main.world.window.offsetX, Main.world.window.offsetY, Main.world.window.scaleX, Main.world.window.scaleY);
+		Res.landscapeShader.set("transform", Render.offsetX, Render.offsetY, Render.scaleX, Render.scaleY);
 		vao.bindStuff();
 			//draw normal quads
 			drawNormalQuads();
@@ -81,7 +90,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 	public void renderWater(){
 		//WATER
 		Res.landscapeShader.bind();
-		Res.landscapeShader.set("transform", Main.world.window.offsetX, Main.world.window.offsetY, Main.world.window.scaleX, Main.world.window.scaleY);
+		Res.landscapeShader.set("transform", Render.offsetX, Render.offsetY, Render.scaleX, Render.scaleY);
 		vao.bindStuff();
 			//draw normal quads
 			drawWater();
@@ -94,7 +103,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 
 		//BACKGROUND
 		Res.darknessShader.bind();
-		Res.darknessShader.set("transform", Main.world.window.offsetX, 0, Main.world.window.scaleX, 1);
+		Res.darknessShader.set("transform",  Render.offsetX, 0, Render.scaleX, 1);
 		vaoColor.bindStuff();
 			drawBackground();
 		vao.unbindStuff();
@@ -104,7 +113,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 	public void renderDarkness(){
 		//DARKNESS
 		Res.darknessShader.bind();
-		Res.darknessShader.set("transform", Main.world.window.offsetX, Main.world.window.offsetY, Main.world.window.scaleX, Main.world.window.scaleY);
+		Res.darknessShader.set("transform", Render.offsetX, Render.offsetY, Render.scaleX, Render.scaleY);
 		vaoColor.bindStuff();
 			drawDarkness();
 		vao.unbindStuff();

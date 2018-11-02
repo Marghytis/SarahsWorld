@@ -149,14 +149,14 @@ public class Speaking extends AiPlugin {
 				if(r >= 0){
 					double x = speaker.pos.x + shift.x*positions[i] - Main.world.avatar.pos.x;
 					double y = speaker.pos.y + shift.y*positions[i+1] + 60 - Main.world.avatar.pos.y;
-					Render.drawSingleQuad(quad, Color.WHITE, bubble1, x, y, Main.world.window.scaleX, Main.world.window.scaleY, true, 0, r);
+					Render.drawSingleQuad(quad, Color.WHITE, bubble1, x, y, Render.scaleX, Render.scaleY, true, 0, r);
 				}
 			}
 //			GL11.glEnd();
 			double bR = rs[4].v*(pressed ? 0.16 : 0.2);
 			bubbleR = bR;
 			if(bR >= 0){
-				Render.drawSingleQuad(quad, Color.WHITE, texs[tex], speaker.pos.x + shift.x - Main.world.avatar.pos.x, speaker.pos.y + shift.y+60 - Main.world.avatar.pos.y, Main.world.window.scaleX, Main.world.window.scaleY, true, 0, bR*texs[tex].w/2);
+				Render.drawSingleQuad(quad, Color.WHITE, texs[tex], speaker.pos.x + shift.x - Main.world.avatar.pos.x, speaker.pos.y + shift.y+60 - Main.world.avatar.pos.y, Render.scaleX, Render.scaleY, true, 0, bR*texs[tex].w/2);
 			}
 		}
 		public boolean living() {

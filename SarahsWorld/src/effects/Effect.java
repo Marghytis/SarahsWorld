@@ -1,7 +1,7 @@
 package effects;
 
 import core.Listener;
-import main.Main;
+import render.Render;
 
 public interface Effect extends Listener {
 
@@ -9,7 +9,7 @@ public interface Effect extends Listener {
 	
 	public void render(float scaleX, float scaleY);
 	
-	default public void render() {render(Main.world.window.scaleX, Main.world.window.scaleY);};
+	default public void render() {render(Render.scaleX, Render.scaleY);};
 	
 	public boolean living();
 	

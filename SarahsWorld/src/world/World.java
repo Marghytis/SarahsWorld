@@ -71,16 +71,16 @@ public class World {
 		Column anchor = data.getRightColumn();
 
 		//define ranges
-		int drawRadius = (int)((Main.SIZE.w + 400)/Column.COLUMN_WIDTH);
-		genWindow = new GeneratingWorldWindow(anchor, drawRadius + 20, generator);
-		updateWindow    = new RealWorldWindow(anchor, drawRadius + 2);
+		int windowRadius = (int)((Main.HALFSIZE.w )/Column.COLUMN_WIDTH);
+		genWindow = new GeneratingWorldWindow(anchor, windowRadius + 10, generator);
+		updateWindow    = new RealWorldWindow(anchor, windowRadius + 8);
 		
 		//generation happens here, because avatar and generator can't be accessed statically yet. might change..
 //		generator.borders(avatar.pos.x - Settings.GENERATION_RADIUS, avatar.pos.x + Settings.GENERATION_RADIUS);
 		genWindow.moveToColumn((int)(avatar.pos.x/Column.COLUMN_WIDTH));
 
-		thingWindow 	= new ThingWindow(anchor, drawRadius);
-		landscapeWindow = new LandscapeWindow(anchor, drawRadius);
+		thingWindow 	= new ThingWindow(anchor, windowRadius + 4);
+		landscapeWindow = new LandscapeWindow(anchor, windowRadius + 4);
 		engine = new WorldEngine(data, editor, genWindow, updateWindow, landscapeWindow, thingWindow);
 		window = new WorldPainter(data, thingWindow, landscapeWindow);
 	}

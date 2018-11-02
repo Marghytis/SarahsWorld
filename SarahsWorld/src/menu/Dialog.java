@@ -256,7 +256,7 @@ public class Dialog extends Element {
 		if(bubbleHeightR.v > 0.9){
 			double y = bubbleHeight/2 + (0.5*text1.length*line);
 			for(int i = 0; i < text1.length; i++){
-				font.drawString((int)(other.pos.x + shift.x - (width1[i]/2) + Main.world.window.offsetX), (float)(other.pos.y + shift.y + y - fontHeightHalf + Main.world.window.offsetY), text1[i], Color.WHITE, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
+				font.drawString((int)(other.pos.x + shift.x - (width1[i]/2) + Render.offsetX), (float)(other.pos.y + shift.y + y - fontHeightHalf + Render.offsetY), text1[i], Color.WHITE, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 				y -= line;
 			}
 		}
@@ -269,8 +269,8 @@ public class Dialog extends Element {
 	private void renderSpeechBubble2(Vec shift){
 		//bind shader and set uniforms
 		Res.usualShader.bind();
-		Res.usualShader.set("scale", Main.world.window.scaleX, Main.world.window.scaleY);
-		Res.usualShader.set("offset", (float)(shift.x + other.pos.x + Main.world.window.offsetX), (float)(shift.y + other.pos.y + Main.world.window.offsetY), -1);
+		Res.usualShader.set("scale", Render.scaleX, Render.scaleY);
+		Res.usualShader.set("offset", (float)(shift.x + other.pos.x + Render.offsetX), (float)(shift.y + other.pos.y + Render.offsetY), -1);
 		Res.usualShader.set("color", 1, 1, 1, 1);
 		speechBubbleVAO.bindStuff();
 		

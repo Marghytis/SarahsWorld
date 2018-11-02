@@ -68,35 +68,39 @@ public class Settings{
 	public static Vec AVATAR_START_OFFSET = new Vec(100, 500);
 	public static int LAYERS_TO_DRAW = (Biome.layerCount-1)*6;
 	public static float ZOOM = 1;
+	public static boolean SOUND = true;
+	public static boolean MUSIC = true;
 	
 	public static enum Key {
-		MAIN_MENU(GLFW_KEY_ESCAPE),
-		RIGHT(GLFW_KEY_D),
-		LEFT(GLFW_KEY_A),
-		JUMP(GLFW_KEY_SPACE),
-		INVENTORY(GLFW_KEY_TAB),
-		DEBUG(GLFW_KEY_F1),
-		STOP_GRAPH(GLFW_KEY_T),
-		SPRINT(GLFW_KEY_LEFT_SHIFT),
-		CROUCH(GLFW_KEY_S),
-		SUPERSPRINT(GLFW_KEY_W),
-		MEGASPRINT(GLFW_KEY_RIGHT),
-		ANTIGRAVITY(GLFW_KEY_R),
-		DISMOUNT(GLFW_KEY_E),
-		FASTER(GLFW_KEY_KP_ADD),
-		SLOWER(GLFW_KEY_MINUS),
-		FREEZE(GLFW_KEY_F),
-		JUMPDOWN(GLFW_KEY_J),
-		LAYERCOUNT_UP(GLFW_KEY_L),
-		LAYERCOUNT_DOWN(GLFW_KEY_K),
-		ZOOM_IN(GLFW_KEY_I),
-		ZOOM_OUT(GLFW_KEY_O),
-		NONE(0);
+		MAIN_MENU(GLFW_KEY_ESCAPE, "toggle menu"),
+		RIGHT(GLFW_KEY_D, "go right"),
+		LEFT(GLFW_KEY_A, "go left"),
+		JUMP(GLFW_KEY_SPACE, "jump!"),
+		INVENTORY(GLFW_KEY_TAB, "open inventory"),
+		DEBUG(GLFW_KEY_F1, "open debug screen"),
+		STOP_GRAPH(GLFW_KEY_T, "stop debug graph"),
+		SPRINT(GLFW_KEY_LEFT_SHIFT, "sprint"),
+		CROUCH(GLFW_KEY_S, "crouch"),
+		SUPERSPRINT(GLFW_KEY_W, "sprint faster"),
+		MEGASPRINT(GLFW_KEY_RIGHT, "sprint very fast"),
+		ANTIGRAVITY(GLFW_KEY_R, "antigravity"),
+		DISMOUNT(GLFW_KEY_E, "dismount a cow"),
+		FASTER(GLFW_KEY_KP_ADD, "faster"),
+		SLOWER(GLFW_KEY_MINUS, "slower"),
+		FREEZE(GLFW_KEY_F, "freeze Sarah"),
+		JUMPDOWN(GLFW_KEY_J, "jump down"),
+		LAYERCOUNT_UP(GLFW_KEY_L, "draw more layers"),
+		LAYERCOUNT_DOWN(GLFW_KEY_K, "draw less layers"),
+		ZOOM_IN(GLFW_KEY_I, "zoom in"),
+		ZOOM_OUT(GLFW_KEY_O, "zoom out"),
+		NONE(0, "");
 		
 		public int key;
+		String name;
 		
-		Key(int key){
+		Key(int key, String name){
 			this.key = key;
+			this.name = name;
 		}
 		
 		public String getName(){
@@ -114,6 +118,10 @@ public class Settings{
 				}
 			}
 			return NONE;
+		}
+		
+		public String toString() {
+			return name;
 		}
 	}
 

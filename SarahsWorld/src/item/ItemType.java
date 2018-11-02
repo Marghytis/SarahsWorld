@@ -7,6 +7,7 @@ import main.Main;
 import main.Res;
 import render.Animation;
 import render.Animator;
+import render.Render;
 import render.TexFile;
 import render.Texture;
 import things.Thing;
@@ -207,9 +208,9 @@ public enum ItemType {
 			handX = thingTex.w - handX;
 			handAngle = 180 -handAngle;
 		}
-		ani.quad.update(new Vec(handX + t.pos.x + thingTex.pixelCoords[0] + Main.world.window.offsetX, handY + t.pos.y + thingTex.pixelCoords[1] + Main.world.window.offsetY), (0 + handAngle)/360.0, 1, t.dir);
+		ani.quad.update(new Vec(handX + t.pos.x + thingTex.pixelCoords[0] + Render.offsetX, handY + t.pos.y + thingTex.pixelCoords[1] + Render.offsetY), (0 + handAngle)/360.0, 1, t.dir);
 	
-		ani.quad.render(new Vec(), -1, new Vec(Main.world.window.scaleX, Main.world.window.scaleY), Color.WHITE);
+		ani.quad.render(new Vec(), -1, new Vec(Render.scaleX, Render.scaleY), Color.WHITE);
 	}
 	
 	public static ItemType getRandomItem(Random random){

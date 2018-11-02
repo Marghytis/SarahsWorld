@@ -133,10 +133,10 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			}
 			break;
 		case MAIN_MENU:
-			if(Main.menu.open != Menus.MAIN){
-				Main.menu.setMenu(Menus.MAIN);
-			} else {
+			if(Main.menu.open != Menus.EMPTY){
 				Main.menu.setMenu(Menus.EMPTY);
+			} else {
+				Main.menu.setMenu(Menus.MAIN);
 			}
 			break;
 		case DEBUG:

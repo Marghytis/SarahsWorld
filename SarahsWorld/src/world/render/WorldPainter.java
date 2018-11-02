@@ -25,10 +25,6 @@ import world.data.WorldData;
 
 public class WorldPainter implements Updater, Renderer{
 	
-	
-	//quasi static variables that are used everywhere
-	public float scaleX, scaleY, offsetX, offsetY;
-	
 	private WorldData world;
 	
 	//tracking
@@ -84,17 +80,20 @@ public class WorldPainter implements Updater, Renderer{
 //		delta *= Settings.timeScale;
 		
 		effects.update(delta);
-		
-		scaleX = Settings.ZOOM/Main.HALFSIZE.w;
-		scaleY = Settings.ZOOM/Main.HALFSIZE.h;
-		offsetX = (float)-Main.world.avatar.pos.x;
-		offsetY = (float)-Main.world.avatar.pos.y;
-		ParticleEmitter.offset.set(offsetX, offsetY);
-		ParticleEffect.wind.set((Listener.getMousePos(Main.WINDOW).x - Main.HALFSIZE.w)*60f/Main.HALFSIZE.w, 0);
 		return false;
 	}
 	
+	public void updateTransform() {
+
+		Render.scaleX = Settings.ZOOM/Main.HALFSIZE.w;
+		Render.scaleY = Settings.ZOOM/Main.HALFSIZE.h;
+		Render.offsetX = (float)-Main.world.avatar.pos.x;
+		Render.offsetY = (float)-Main.world.avatar.pos.y;
+	}
+	
 	public void draw(){
+		
+		updateTransform();
 
 		landscape.renderBackground();
 		
@@ -133,8 +132,13 @@ public class WorldPainter implements Updater, Renderer{
 		if(Settings.SHOW_BOUNDING_BOX){
 //			renderBoundingBoxes();
 		}
+		
+		//effects
+		ParticleEmitter.offset.set(Render.offsetX, Render.offsetY);
+		ParticleEffect.wind.set((Listener.getMousePos(Main.WINDOW).x - Main.HALFSIZE.w)*60f/Main.HALFSIZE.w, 0);
 		effects.forEach(Effect::render);
-//
+
+		//quests
 		world.forEachQuest((aq) -> aq.render());
 	}
 

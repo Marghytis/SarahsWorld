@@ -74,7 +74,8 @@ public class Element {
 	
 	public void update(double delta){}
 	public void render(){
-		Shader.singleQuad.bind();
+		if(visible()) {
+			Shader.singleQuad.bind();
 			if(color != null) color.bind();
 			else Color.WHITE.bind();
 			if(tex != null){
@@ -91,11 +92,14 @@ public class Element {
 				GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_BYTE, 0);
 			vao.unbindStuff();
 		
-		TexFile.bindNone();
-		Shader.bindNone();
+			TexFile.bindNone();
+			Shader.bindNone();
+		}
 	}
 	
-	public void pressed(int button, Vec mousePos){}
+	public boolean visible() {return true;}
+	
+	public boolean pressed(int button, Vec mousePos){return false;}
 	
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){return false;}
 

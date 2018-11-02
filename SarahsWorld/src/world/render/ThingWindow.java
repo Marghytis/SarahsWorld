@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import item.ItemType;
 import main.Main;
 import main.Res;
+import render.Render;
 import render.Shader;
 import render.TexFile;
 import things.Thing;
@@ -98,8 +99,8 @@ public class ThingWindow extends RealWorldWindow {
 		}
 
 		shader.bind();
-		shader.set("scale", Main.world.window.scaleX, Main.world.window.scaleY);
-		shader.set("offset", Main.world.window.offsetX, Main.world.window.offsetY);
+		shader.set("scale", Render.scaleX, Render.scaleY);
+		shader.set("offset", Render.offsetX, Render.offsetY);
 		
 		for(int type = 0; type < ThingType.types.length; type++) {
 			if(vaos[type].lastUsedIndex == -1 || !d.test(ThingType.types[type])) continue;

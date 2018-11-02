@@ -12,6 +12,8 @@ import render.TexFile;
 import render.TexInfo;
 import render.Texture;
 import util.Color;
+import util.MultiSoundSource;
+import util.Sound;
 import util.TrueTypeFont;
 
 public class Res {
@@ -21,6 +23,10 @@ public class Res {
 
 //	public static final Sound music = new Sound("res/sound/Sarahs Welt Loop.wav", null);
 //	public static final Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.wav", null);TODO add these sounds back in
+	public static Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.ogg");
+	public static Sound musicStart = new Sound("res/sound/Sarahs Welt Anfang.ogg");
+	public static Sound musicLoop = new Sound("res/sound/Sarahs Welt Loop.ogg");
+	public static MultiSoundSource coinSoundSource = new MultiSoundSource(10, coinSound);
 
 	public static Shader landscapeShader = Shader.create("res/shader/material.vert", "res/shader/material.frag", "in_Position", "in_TextureCoords", "in_Alphas", "in_TransAlpha");
 	public static Shader thingShader = Shader.withGeometry("res/shader/thing.vert", "res/shader/thing.geom", "res/shader/thing.frag", "in_position", "in_rotation", "in_texCoords", "in_mirror", "in_color", "in_z", "in_size", "in_box", "in_texWH");

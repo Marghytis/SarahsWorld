@@ -11,6 +11,7 @@ import menu.Menu;
 import menu.Settings;
 import util.Color;
 import util.math.IntVec;
+import world.SoundManager;
 import world.World;
 
 /**
@@ -25,6 +26,7 @@ public class Main {
 	
 	public static Menu menu;
 	public static World world;
+	public static SoundManager sound;
 	public static Core core;
 	public static IntVec SIZE, HALFSIZE;
 	public static long WINDOW;
@@ -50,8 +52,8 @@ public class Main {
 	static void initializeGame(String worldName)
 	{
 		//create a core object
-		core = new Core("res/creatures/Meteor.png");
-		core.init(new Window("Sarahs World", true, 1, 1, true), Color.BLACK);
+		core = new Core("res/Titel.png");
+		core.init(new Window("Sarahs World", false, 1, 1, true), Color.BLACK);
 		if(Settings.DEBUG_LEVEL > 1)
 			System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		
@@ -67,6 +69,7 @@ public class Main {
 		} else {
 			world = new World();
 		}
+		sound = new SoundManager();
 	}
 	
 	/**
@@ -76,6 +79,7 @@ public class Main {
 	{
 		Updater.updaters.clear();
 		Updater.updaters.add(menu);
+		Updater.updaters.add(sound);
 		Updater.updaters.add(world.engine);
 		Updater.updaters.add(world.window);
 
