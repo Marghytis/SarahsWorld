@@ -7,7 +7,7 @@ import world.generation.*;
 public class WaterColumns extends Zone {
 
 	public WaterColumns(Random rand, BiomeManager biome, double originX, boolean left) {
-		super(rand, biome, originX, left, describe());
+		super(rand, null, biome, originX, left, describe());
 	}
 
 	public double deltaY() {

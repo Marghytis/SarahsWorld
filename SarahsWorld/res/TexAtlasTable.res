@@ -15,7 +15,7 @@ TexAtlas	bush_jungle		res/objects/JungleBush.png		d	d	d	d	1	1	-0.5f	0
 TexAtlas	plant_giant		res/objects/GiantPlant.png		d	d	d	d	1	4	-0.5f	0
 TexAtlas	grass_giant		res/objects/GiantGras.png		d	d	d	d	1	3	-0.5f	0
 TexAtlas	tree_palm		res/objects/PalmTree.png		d	d	d	d	1	3	-0.5f	0
-TexAtlas	tree_candy		res/objects/CandyTree.png		d	d	d	d	1	1	-0.5f	0
+TexAtlas	tree_candy		res/objects/CandyTree.png		d	d	d	d	1	1	-0.5f	-0.12
 TexAtlas	bamboo			res/objects/Bamboo.png			d	d	d	d	1	4	-0.5f	0
 TexAtlas	bush_normal		res/objects/Bush.png			d	d	d	d	1	2	-0.5f	0
 TexAtlas	bush_candy		res/objects/CandyBush.png		d	d	d	d	1	2	-0.5f	0
@@ -29,7 +29,7 @@ TexAtlas	flower_candy	res/objects/Candy.png			d	d	d	d	1	6	-0.5f	0
 TexAtlas 	cake			res/objects/BirthdayCake.png	d	d	d	d	1	1	-0.5f	-0.2f
 TexAtlas	crack			res/objects/Crack.png			d	d	d	d	1	4	-0.5f	0
 TexAtlas	fossil			res/objects/Fossil.png			d	d	d	d	1	3	-0.5f	0
-TexAtlas	grave			res/objects/Grave.png			d	d	d	d	1	7	-0.5f	0
+TexAtlas	grave			res/objects/Grave.png			d	d	d	d	1	7	-0.5f	-0.1
 TexAtlas	rainbow			res/objects/Rainbow.png			d	d	d	d	1	1	-0.5f	0f
 //	TexFile	flower_light	res/Light_dimmed.png
 	
@@ -44,23 +44,24 @@ TexInfo	sarah_HeadPos_onCow	res/creatures/Sarah_riding_cow_horn.txt
 TexInfo	sarah_HeadPos_dive	res/creatures/Sarah_dive_hand.txt
 TexInfo	sarah_HeadPos_swim	res/creatures/Sarah_dive_hand.txt
 TexInfo	villager_HandPos	res/creatures/NPC.txt
+TexInfo unicorn_mouth		res/creatures/UnicornMouth.txt
 
 TexFile		sarahFile		res/creatures/Sarah.png
-TexAtlas	sarah			@sarahFile							d	d	d	d	11	10	-0.5	-0.1	@sarah_HandPos	@sarah_HeadPos
+TexAtlas	sarah			@sarahFile							0	0	550	750	11	10	-0.5	-0.1	@sarah_HandPos	@sarah_HeadPos
 TexAtlas	sarah_dive		@sarahFile							50	0	400	75	5	1	-0.5	-0.1	@sarah_HandPos_dive	@sarah_HeadPos_dive
 TexAtlas	sarah_swim		@sarahFile							150	675	350	56	5	1	-0.5	-0.5	@sarah_HandPos_swim	@sarah_HeadPos_swim
-TexAtlas	sarah_onCow		res/creatures/Sarah_riding_cow.png	d	d	d	d	7	2	-0.5	-0.1	@sarah_HandPos_onCow	@sarah_HeadPos_onCow
+TexAtlas	sarah_onCow		@sarahFile							0	751	700	210	7	2	-0.5	-0.1	@sarah_HandPos_onCow	@sarah_HeadPos_onCow
 TexAtlas	sarah_death		res/creatures/Sarah_death.png		d	d	d	d	14	1	-0.5f	-0.5f
 TexAtlas	snail			res/creatures/Snail.png				d	d	d	d	7	3	-0.5f	-0.1f
 TexAtlas	butterfly		res/creatures/Butterfly.png			d	d	d	d	5	2	-0.5f	-0.5f
 TexAtlas	midge			res/creatures/Midge.png				d	d	d	d	1	1	-0.5f	-0.5f
 TexAtlas	heart			res/creatures/Heart.png				d	d	d	d	4	2	-0.5f	-0.2f
-TexAtlas	rabbit			res/creatures/Rabbit.png			d	d	d	d	5	3	-0.5f	-0.2f
+TexAtlas	rabbit			res/creatures/Rabbit.png			d	d	d	d	5	6	-0.5f	-0.2f
 TexAtlas	bird			res/creatures/Bird.png				d	d	d	d	5	4	-0.5f	-0.2f
 TexAtlas	panda			res/creatures/Panda.png				d	d	d	d	6	2	-0.5f	-0.1f
 TexAtlas	scorpion		res/creatures/Scorpion.png			d	d	d	d	7	2	-0.5f	-0.1f
 TexAtlas	cow				res/creatures/Cow.png				d	d	d	d	7	1	-0.5f	-0.1f
-TexAtlas	unicorn			res/creatures/Unicorn.png			d	d	d	d	6	3	-0.5f	-0.1f
+TexAtlas	unicorn			res/creatures/Unicorn.png			d	d	d	d	6	3	-0.5f	-0.1f	@unicorn_mouth
 TexAtlas	unicorn_hair	res/creatures/Unicorn_hair.png		d	d	d	d	6	3	-0.5f	-0.1f
 TexAtlas	trex			res/creatures/Trex.png				d	d	d	d	9	4	-0.5f	-0.05f
 TexAtlas	cat_giant		res/creatures/GiantCat.png			d	d	d	d	5	2	-0.5f	-0.05f

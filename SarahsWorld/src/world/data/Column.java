@@ -102,17 +102,15 @@ public class Column implements ListElement<Column> {
 	 * @param t
 	 */
 	public void add(Thing t){
-		int o = t.type.ordinal;
-		t.prev = null;
-		t.next = things[o];
-		if(things[o] != null) things[o].prev = t;
+		int o = t.getTypeOrdinal();
+		t.setPrevious(null);
+		t.setNext(things[o]);
+		if(things[o] != null) things[o].setPrevious(t);
 		things[o] = t;
-		t.link = this;
-		t.oldLink = this;
 	}
 	public void appear(boolean left){
 		for(int i = 0; i < things.length; i++){
-			for(Thing t = things[i]; t != null; t = t.next){
+			for(Thing t = things[i]; t != null; t = t.getNext()){
 				t.setVisible(true);
 			}
 		}
@@ -121,7 +119,7 @@ public class Column implements ListElement<Column> {
 	
 	public void disappear(){
 		for(int i = 0; i < things.length; i++){
-			for(Thing t = things[i]; t != null; t = t.next){
+			for(Thing t = things[i]; t != null; t = t.getNext()){
 				t.setVisible(false);
 			}
 		}

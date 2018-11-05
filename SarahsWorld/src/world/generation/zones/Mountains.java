@@ -17,8 +17,7 @@ public class Mountains extends Zone {
 	double offsetByLakes;
 
 	public Mountains(Random random, BiomeManager biome, double originX, boolean left) {
-		super(random, biome, originX, left, description);
-		biome.switchToBiome(Biome.FIR_FORREST);
+		super(random, Biome.FIR_FORREST, biome, originX, left, description);
 		
 		width =  40000 + random.nextInt(10000);
 		height = 1000 + random.nextInt(1000);
@@ -38,7 +37,7 @@ public class Mountains extends Zone {
 		
 		if(subZone instanceof Hills && ((Hills)subZone).reachedP2){
 			if(random.nextInt(100) < 50){
-				subZone = new Lake(random, biome, x, 500, subZone.ownHeight, left);
+				subZone = new Lake(random, biomeManager, x, 500, subZone.ownHeight, left);
 			}
 		}
 		
@@ -48,7 +47,7 @@ public class Mountains extends Zone {
 		} else if(subZone.end){
 			offsetByLakes += x - subZone.originX;
 			width += x - subZone.originX;
-			subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2*amplifier + 3, 20*amplifier + 1, width - x, description);
+			subZone = new Hills(random, biomeManager, x, left, subZone.ownHeight, 2*amplifier + 3, 20*amplifier + 1, width - x, description);
 		}
 		
 		//return height

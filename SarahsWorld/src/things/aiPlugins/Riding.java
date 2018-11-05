@@ -1,6 +1,5 @@
 package things.aiPlugins;
 
-import main.Main;
 import things.AiPlugin;
 import things.Thing;
 import util.math.Rect;
@@ -23,30 +22,26 @@ public class Riding extends AiPlugin {
 		
 		rider.isRiding = true;
 		
-		rider.type.file = rider.type.ani.animations[1][0].atlas;
 		rider.box = ridingBox;
 		rider.aniSet = 1;
 		rider.needsUnusualRenderUpdate = true;
 		
 		if(rider.mountedThing != null){//rider is already riding on something
 			rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount+1], () -> {
-				rider.mountedThing.pos.set(rider.pos);
-				rider.mountedThing.vel.set(rider.vel);
-				rider.mountedThing.dir = rider.dir;
-				rider.mountedThing.oldLink = rider.mountedThing.link;
-				rider.mountedThing.link = rider.link;
-				rider.mountedThing.applyLink();
+				
+				freeHorse(rider);
 
 				rider.mountedThing = horse;
 				rider.pos.set(horse.pos);
-				Main.world.engine.requestDeletion(horse);
+				rider.where = horse.where;
+				horse.hide();
 				rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.type.ani.setAnimation(rider, "stand"));
 			});
 		} else {
 			rider.mountedThing = horse;
 			rider.pos.set(horse.pos);
 			rider.where = horse.where;
-			Main.world.engine.requestDeletion(horse);
+			horse.hide();
 			rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.type.ani.setAnimation(rider, "stand"));
 		}
 	}
@@ -54,18 +49,21 @@ public class Riding extends AiPlugin {
 	public void dismount(Thing rider){
 		rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount+1], () -> {
 			rider.isRiding = false;
+			freeHorse(rider);
+			rider.aniSet = 0;
 			rider.box = normalBox;
-			rider.mountedThing.pos.set(rider.pos);
-			rider.mountedThing.vel.set(rider.vel);
-			rider.mountedThing.dir = rider.dir;
-			rider.mountedThing.where = rider.where;
-			rider.mountedThing.oldLink = rider.mountedThing.link;
-			rider.mountedThing.link = rider.link;
-			rider.mountedThing.applyLink();
-			rider.mountedThing = null;
+			rider.needsUnusualRenderUpdate = true;
 			rider.type.ani.setAnimation(rider, "stand");
-			rider.type.file = rider.type.ani.animations[0][0].atlas;
 		});
+	}
+	
+	public void freeHorse(Thing rider) {
+		rider.mountedThing.showUpAfterHiding(rider.link);
+		rider.mountedThing.pos.set(rider.pos);
+		rider.mountedThing.vel.set(rider.vel);
+		rider.mountedThing.dir = rider.dir;
+		rider.mountedThing.where = rider.where;
+		rider.mountedThing = null;
 	}
 
 	public boolean action(double delta) {

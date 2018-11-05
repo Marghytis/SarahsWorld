@@ -68,7 +68,7 @@ public class MatFriction extends AiPlugin{
 //			swimming = false;
 //		}
 //			
-//		if(!t.ground.g && Settings.FRICTION && vert != null){
+//		if(!t.ground.g && Settings.getBoolean("FRICTION") && vert != null){
 //				double frictionX = vert.mats.read.data.deceleration*t.vel.v.x*delta;
 //				if(t.acc.a.x == 0 && UsefulF.abs(frictionX*delta) > UsefulF.abs(t.vel.v.x)){
 //					t.vel.v.set(0, t.vel.v.y);

@@ -127,15 +127,15 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		case DEBUG:
 			if(Main.menu.open.stay) break;
 			if(Main.menu.open != Menus.DEBUG){
-				Settings.SHOW_BOUNDING_BOX = true;
+				Settings.set("SHOW_BOUNDING_BOX",true);
 				Main.menu.setMenu(Menus.DEBUG);
 			} else {
-				Settings.SHOW_BOUNDING_BOX = false;
+				Settings.set("SHOW_BOUNDING_BOX", false);
 				Main.menu.setLast();
 			}
 			break;
 		case STOP_GRAPH:
-			Settings.STOP_GRAPH = !Settings.STOP_GRAPH;
+			Settings.set("STOP_GRAPH", !Settings.getBoolean("STOP_GRAPH"));
 			break;
 		default:
 		}

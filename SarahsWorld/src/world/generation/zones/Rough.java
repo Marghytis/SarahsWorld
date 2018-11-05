@@ -15,8 +15,7 @@ public static boolean[] description = describe(Attribute.HILLY);
 	double offsetByLakes;
 
 	public Rough(Random random, BiomeManager biome, double originX, boolean left) {
-		super(random, biome, originX, left, description);
-		biome.switchToBiome(Biome.CANDY);
+		super(random, Biome.CANDY, biome, originX, left, description);
 		
 		width =  40000 + random.nextInt(10000);
 		
@@ -28,7 +27,7 @@ public static boolean[] description = describe(Attribute.HILLY);
 		if(subZone instanceof Hills && subZone.end) end = true;
 
 		if(subZone instanceof Hills && ((Hills)subZone).reachedP2){
-			subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2, 1, width - x, description);
+			subZone = new Hills(random, biomeManager, x, left, subZone.ownHeight, 2, 1, width - x, description);
 		}
 
 		return ownHeight;

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import render.Animation;
 import render.Shader;
 import render.TexAtlas;
 import render.TexFile;
@@ -26,6 +27,7 @@ public class Res {
 	public static Sound coinSound = new Sound("res/sound/coins_quick_movement_in_hand.ogg");
 	public static Sound musicStart = new Sound("res/sound/Sarahs Welt Anfang.ogg");
 	public static Sound musicLoop = new Sound("res/sound/Sarahs Welt Loop.ogg");
+	public static Sound deathSong = new Sound("res/sound/FuneralMarch.ogg");
 	public static MultiSoundSource coinSoundSource = new MultiSoundSource(10, coinSound);
 
 	public static Shader landscapeShader = Shader.create("res/shader/material.vert", "res/shader/material.frag", "in_Position", "in_TextureCoords", "in_Alphas", "in_TransAlpha");
@@ -154,6 +156,8 @@ public class Res {
 	}
 	
 	static {readTexTable(Main.TEX_ATLAS_TABLE_PATH);}
+	
+	public static Animation death = new Animation("death", Res.getAtlas("sarah_death"), 4, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 	
 	//togethers
 //	public static final TexFile NPC_plus_Handheld_Items = new TexFile("res/creatures/NPC_and_handheld_Items.png");

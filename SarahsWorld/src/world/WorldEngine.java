@@ -1,7 +1,9 @@
 package world;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import core.Updater;
 import quest.ActiveQuest;
@@ -27,7 +29,7 @@ public class WorldEngine implements Updater {
 	Thing avatar;
 
 	List<Spawner> spawnRequests = new ArrayList<>();
-	List<Thing> deletionRequests = new ArrayList<>();
+	Set<Thing> deletionRequests = new HashSet<>();
 	
 	
 	public WorldEngine(WorldData data, WorldEditor editor, GeneratingWorldWindow generatingWindow, RealWorldWindow updatingWindow, LandscapeWindow landscapeWindow, ThingWindow thingWindow) {
@@ -44,6 +46,11 @@ public class WorldEngine implements Updater {
 	public boolean update(double delta) {
 
 		//Delete dead things
+//		Set<Thing> set = new HashSet<>();
+//		for(Thing t : deletionRequests){
+//			set.add(t);
+//		}
+//		System.out.println(set.size() + "  " + deletionRequests.size());
 		for(Thing t : deletionRequests){
 			editor.delete(t);
 		}
@@ -57,7 +64,9 @@ public class WorldEngine implements Updater {
 		thingWindow.moveToColumn(newXIndex);
 		
 		//update all things
+		debug = true;
 		thingWindow.forEach(thing -> thing.update(delta));
+		debug = false;
 		editor.reLink(thingWindow);
 		
 		//update quests
@@ -67,6 +76,8 @@ public class WorldEngine implements Updater {
 		data.getWeather().update(delta);
 		return false;
 	}
+	
+	public static boolean debug = false;
 	
 	public void requestDeletion(Thing t) {
 		deletionRequests.add(t);

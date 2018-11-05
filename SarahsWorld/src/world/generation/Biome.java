@@ -1,12 +1,12 @@
 package world.generation;
 
 import effects.WorldEffect;
+import main.Main;
 import things.Thing;
 import things.ThingType;
 import util.Color;
 import util.math.Function;
 import util.math.Vec;
-import world.Weather;
 import world.World;
 import world.data.Column;
 import world.data.Vertex;
@@ -38,7 +38,7 @@ public enum Biome {
 			new Stratum[]{
 				null,
 				new Stratum(Material.GRASS, 10, 3.0, 0.15, 40, 5, 4),
-				new Stratum(Material.SAND, 40.0, 20.0, 5, 40, 5, 4),
+				new Stratum(Material.SAND, 40.0, 20.0, 3, 40, 5, 4),
 				new Stratum(Material.SANDSTONE, 50, 20.0, 20, 40, 5, 4),
 				new Stratum(Material.SANDSTONE2, 100, 20.0, 20, 40, 5, 4),
 				new Stratum(Material.SANDSTONE, 100, 20.0, 20, 40, 5, 4),
@@ -126,7 +126,7 @@ public enum Biome {
 				new ThingSpawner(ThingType.TREE_GRAVE.defaultSpawner, 0.1),
 				new ThingSpawner(ThingType.ZOMBIE.defaultSpawner, 0.05),
 				new ThingSpawner(ThingType.GRAVE.defaultSpawner, 0.2),
-				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, w, c, pos, Weather.fog),1.5)
+				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, w, c, pos, Main.world.data.getWeather().fog),1.5)
 	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Main.HALFSIZE.w, pos.yInt() + Main.HALFSIZE.h + 50, 100, 4, 50)); return null;}, 0.01),
 	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.weather.fog.emittFog(pos.x + Main.HALFSIZE.w, pos.y + Main.HALFSIZE.h); return null;}, 1)
 			},
@@ -146,9 +146,11 @@ public enum Biome {
 				null
 			},
 			new ThingSpawner[]{
-				new ThingSpawner(ThingType.PYRAMID.defaultSpawner, 0.03),
-				new ThingSpawner(ThingType.CACTUS.defaultSpawner, 0.05),
-				new ThingSpawner(ThingType.GRASS.defaultSpawner, 0.5)
+				new ThingSpawner(ThingType.GRASS.defaultSpawner, 0.5),
+				new ThingSpawner(ThingType.COW.defaultSpawner, 0.01),
+				new ThingSpawner(ThingType.FLOWER_NORMAL.defaultSpawner, 0.1),
+				new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.1),
+				new ThingSpawner(ThingType.BUSH_NORMAL.defaultSpawner, 0.01)
 			},
 			new EffectSpawner[]{
 			}),
@@ -189,7 +191,7 @@ public enum Biome {
 			new ThingSpawner[]{
 				new ThingSpawner(ThingType.TREE_FIR_SNOW.defaultSpawner, 0.3)
 				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
-				,new ThingSpawner(ThingType.RABBIT.defaultSpawner, 0.01)
+				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.RABBIT, w, c, pos, 1), 0.01)
 				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.HEART, w, c, pos, 1), 0.04)
 //				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.VILLAGER, w,p, f), 0.01)	
 			},

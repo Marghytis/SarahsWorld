@@ -5,8 +5,8 @@ import java.util.Random;
 
 public abstract class Zone2 extends Zone {
 	
-	public Zone2(Random random, BiomeManager biome, double originX, boolean left, boolean[] description){
-		super(random, biome, originX, left, description);
+	public Zone2(Random random, Biome startBiome, BiomeManager biome, double originX, boolean left, boolean[] description){
+		super(random, startBiome, biome, originX, left, description);
 	}
 	
 	public abstract double getHeight(double x);
@@ -32,7 +32,7 @@ public abstract class Zone2 extends Zone {
 			startNextSection(x);
 		}
 		
-		biome.step();
+		biomeManager.step();
 		//the input x is relative to originX, for zone2 we need to shift that
 		return step(x + originX);
 	}

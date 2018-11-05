@@ -1,6 +1,5 @@
 package menu;
 
-import core.Window;
 import item.ItemStack;
 import item.ItemType;
 import main.Main;
@@ -8,6 +7,8 @@ import main.Res;
 import render.TexAtlas;
 import render.TexFile;
 import render.Texture;
+import util.Color;
+import util.TrueTypeFont;
 import util.math.Vec;
 
 public class ItemContainer extends Element {
@@ -36,8 +37,8 @@ public class ItemContainer extends Element {
 			super.render();
 		}
 		TexFile.bindNone();
-		Menu.fontColor.bind();
-		Menu.font.drawString(x2 - 30 - Main.HALFSIZE.w, y2 - 30 - Main.HALFSIZE.h, Main.world.avatar.itemStacks[ordinal].count + "", 1, 1);
+
+		Menu.font.drawString(x2 - 30 - Main.HALFSIZE.w, y2 - 30 - Main.HALFSIZE.h, Main.world.avatar.itemStacks[ordinal].count + "", Menu.fontColor, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 	}
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){

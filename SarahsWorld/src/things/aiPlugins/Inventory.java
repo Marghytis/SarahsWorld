@@ -10,7 +10,6 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
-import world.data.Dir;
 import world.data.WorldData;
 
 public class Inventory extends AiPlugin{
@@ -36,7 +35,7 @@ public class Inventory extends AiPlugin{
 			stack.update(delta);
 		}
 		int coinAmount = 0;
-		for(Column c = Main.world.landscapeWindow.getEnd(Dir.l); c != Main.world.landscapeWindow.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r))
+		for(Column c = Main.world.thingWindow.start(); c != Main.world.thingWindow.end(); c = c.next())
 		for(Thing t2 = c.things[ThingType.COIN.ordinal]; t2 != null; t2 = t2.next){
 			if(t2.pos.minus(t.pos).lengthSquare() < 1000){
 				Main.world.engine.requestDeletion(t2);
@@ -44,6 +43,7 @@ public class Inventory extends AiPlugin{
 			}
 		}
 		if(coinAmount > 0){
+			
 			t.coins += coinAmount;
 			Res.coinSoundSource.play();
 		}
@@ -77,9 +77,14 @@ public class Inventory extends AiPlugin{
 
 	public void useSelectedItem(Thing src, Vec worldPos, Thing[] thingsAtThatLocation) {
 		ItemStack selected = src.itemStacks[src.selectedItem];
+		ItemType item = selected.item;//might change during specialUse due to collecting stuff, so have to store it in variable here
 		if(selected.coolDown <= 0){
 			if(selected.item.specialUse(src, worldPos, thingsAtThatLocation)){
-				selected.coolDown = selected.item.coolDownLength;
+				if(item.oneWay) {
+					selected.remove(1);
+				} else {
+					selected.coolDown = item.coolDownLength;
+				}
 			}
 		}
 	}

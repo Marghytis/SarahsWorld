@@ -1,0 +1,21 @@
+boolean	SHOW_WORLD_FIELD_BORDERS			false
+boolean AGGRESSIVE_CREATURES				false
+boolean SHOW_BOUNDING_BOX					false
+boolean SPLIT_STRENGTH_ON_MULTIPLE_TARGETS	true
+boolean FRICTION							true
+boolean DARKNESS							true
+boolean FREEZE								false
+int 	DRAW								4
+boolean DRAW_TRANSITIONS					true
+boolean SHOW_NAME_TAGS						true
+boolean STOP_GRAPH							false
+boolean printSarahPhysics					true
+double	timeScale							1
+int		DEBUG_LEVEL							0
+double	GENERATION_RADIUS					1800
+Vec		AVATAR_START_OFFSET					100		500
+int		LAYERS_TO_DRAW						48
+double	ZOOM								1
+boolean	SOUND								true
+boolean	MUSIC								false
+boolean	DEBUGGING						true

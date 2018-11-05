@@ -80,7 +80,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 			//draw normal quads
 			drawNormalQuads();
 			//draw quads for vertcal transition
-			if(Settings.DRAW_TRANSITIONS)
+			if(Settings.getBoolean("DRAW_TRANSITIONS"))
 				drawTransitionQuads();
 		vao.unbindStuff();
 		TexFile.bindNone();
@@ -173,7 +173,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 			if(i == Material.WATER.ordinal() && !water) continue;
 			else if(i != Material.WATER.ordinal() && water) continue;
 			Material.values()[i].tex.file.bind();
-			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.LAYERS_TO_DRAW; y--){//draw from the bottom up
+			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
 				int started = -1, index = 0, column = indexShift();
 				do {//while(column != indexShift), loop through all columns
 					if(started == -1){
@@ -201,7 +201,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 		//for each material every patch of this material gets rendered.
 		int oneBeforeStart = (indexShift()+columns.length-1)%columns.length;
 		Patch[] currentPatches = new Patch[Vertex.maxMatCount];
-		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.LAYERS_TO_DRAW; y--){//draw from the bottom up
+		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
 			int  column = indexShift(), matIndex = columns[column].vertices[y].firstMatIndex;
 			do {//while(column != indexShift), loop through all columns
 				for(int i = 0; i < Vertex.maxMatCount; i++){
@@ -270,8 +270,8 @@ public class LandscapeWindow extends ArrayWorldWindow {
 				size2 = (end - 0)*indicesPerQuad;
 			}
 			GL20.glUniform1i(Res.landscapeShader.uniformLoc("matSlot"), index);
-			/*draw patch*/  GL11.glDrawElements(Settings.DRAW, size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
-			if(size2 != 0)	GL11.glDrawElements(Settings.DRAW, size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
+			/*draw patch*/  GL11.glDrawElements(Settings.getInt("DRAW"), size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
+			if(size2 != 0)	GL11.glDrawElements(Settings.getInt("DRAW"), size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
 	}
 	
 	public void drawDarkness(){

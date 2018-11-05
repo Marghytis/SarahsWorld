@@ -23,6 +23,7 @@ public class Main {
 	
 	//configuration parameters. TODO: read from a file
 	final static String TEX_ATLAS_TABLE_PATH = "res/TexAtlasTable.res";
+	public final static String SETTINGS_PATH = "res/Settings.txt";
 	
 	public static Menu menu;
 	public static World world;
@@ -54,7 +55,7 @@ public class Main {
 		//create a core object
 		core = new Core("res/Titel.png");
 		core.init(new Window("Sarahs World", false, 1, 1, true), Color.BLACK);
-		if(Settings.DEBUG_LEVEL > 1)
+		if(Settings.getInt("DEBUG_LEVEL") > 1)
 			System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		
 		SIZE = core.SIZE;

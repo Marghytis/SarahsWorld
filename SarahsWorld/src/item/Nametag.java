@@ -24,7 +24,7 @@ public class Nametag implements Effect {
 	}
 
 	public void render(float scaleX, float scaleY) {
-		if(Settings.SHOW_NAME_TAGS){
+		if(Settings.getBoolean("SHOW_NAME_TAGS")){
 //			Color.BLACK.bind();
 //			Res.light2.file.bind();
 //			Main.world.window.forEach(ThingType.ITEM, (t) -> {

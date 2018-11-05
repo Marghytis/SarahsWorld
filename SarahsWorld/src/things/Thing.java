@@ -31,6 +31,7 @@ public class Thing {
 	public double accWalking = 1000, accSwimming = 250, accFlying;//accWalking is different from snail to snail for example
 	public double z, size = 1;
 	public Rect box = new Rect();//NOT USED FOR DRAWING!!!
+	public OnInteraction onRightClick = (src, pos, dest) -> {};
 
 	//dynamically changing values
 	public Thing prev, next;
@@ -70,13 +71,15 @@ public class Thing {
 	/**
 	 * It's the column next left to the things position
 	 */
-	public Column link, oldLink;
+	public Column link;
+	private Column realLink;
 	public int selectedItem;
 	public int aniSet;
 	public Where where = new Where();
 	public Where whereBefore = new Where();
 	public int coins;
 	public int health;
+	public double healthTimer;
 	public int mana;
 	public int armor;
 	public int amount;//for coins or items
@@ -95,7 +98,7 @@ public class Thing {
 		if(pos != null)
 		this.pos = pos;
 		link = field;
-		oldLink = field;
+		realLink = field;
 		applyLink();
 		
 		setup(world, field, pos, extraData);
@@ -108,15 +111,20 @@ public class Thing {
 		}
 	}
 	
+	public Column getRealLink() {
+		return realLink;
+	}
+	
 	public void setVisible(boolean visible){
 		if(type.attachment != null) {
 			type.attachment.onVisibilityChange(this, visible);
 		}
 		if(type.ani != null) {
 			if(this.visible && !visible){
-				World.world.thingWindow.getVAO(type).remove(this);
+				if(type == ThingType.COIN) System.out.println("test");
+				World.world.thingWindow.remove(this);
 			} else if(!this.visible && visible){
-				World.world.thingWindow.getVAO(type).add(this);
+				World.world.thingWindow.add(this);
 			}
 		}
 		this.visible = visible;
@@ -148,24 +156,56 @@ public class Thing {
 	public void disconnectFrom(Column link) {
 		if(next != null) next.prev = prev;
 		if(prev != null) prev.next = next;
-		if(link.things[type.ordinal] == this) link.things[type.ordinal] = null;
+		if(link.things[type.ordinal] == this) link.things[type.ordinal] = next;
+		linked = false;
 	}
 	public void applyLink() {
-		if(oldLink != link || !linked) {
-			disconnectFrom(oldLink);
+		if(realLink != link || !linked) {
+			disconnectFrom(realLink);
 			link.add(this);
 			linked = true;
+			realLink = link;
 		}
 	}
 	public void remove() {
 		for(AiPlugin plugin : type.plugins){
 			if(plugin != null) plugin.remove(this);
 		}
-		Main.world.thingWindow.getVAO(type).remove(this);
+		Main.world.thingWindow.remove(this);
+	}
+	public void showUpAfterHiding(Column link) {
+		this.realLink = link;
+		this.link = link;
+		applyLink();
+		setVisible(true);
+	}
+	public void hide() {
+		setVisible(false);
+		if(linked) disconnectFrom(link);
 	}
 	
 	public String save(){return "";};
 	
 	public void load(String save){}
+
+	public void setNext(Thing t) {
+		next = t;
+	}
+
+	public void setPrevious(Thing t) {
+		prev = t;
+	}
+
+	public Thing getNext() {
+		return next;
+	}
+
+	public Thing getPrevious() {
+		return prev;
+	}
+
+	public int getTypeOrdinal() {
+		return type.ordinal;
+	}
 
 }

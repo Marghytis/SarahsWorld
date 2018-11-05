@@ -1,28 +1,29 @@
 package things.aiPlugins;
 
 import core.Listener;
-import effects.Effect;
 import main.Main;
 import menu.Menu.Menus;
 import menu.Settings;
 import menu.Settings.Key;
 import things.AiPlugin;
 import things.Thing;
+import things.ThingType;
 import util.math.Vec;
 import world.World;
 
-public  class AvatarControl extends AiPlugin implements Listener{
+public  class AvatarControl extends AiPlugin implements Listener {
 
 	public boolean action(Thing t, double delta) {
-		t.maxWalkingSpeed = t.accWalking/5;
+		double cowFactor = t.isRiding ? 2 : 1;
+		t.maxWalkingSpeed = t.accWalking*cowFactor/5;
 		
 		double a = 0;
 		if(t.where.g)
-			if(t.where.water < 0.5) a = t.accWalking;
-			else a = t.accSwimming;
+			if(t.where.water < 0.5) a = t.accWalking*cowFactor;
+			else a = t.accSwimming/cowFactor;
 		else if(t.where.water > 0)
-			a = t.accSwimming;
-		else a = t.accFlying;
+			a = t.accSwimming/cowFactor;
+		else a = t.accFlying*cowFactor;
 		
 		int walkingDir = 0;
 		if(Listener.isKeyDown(Main.WINDOW, Key.RIGHT.key)){
@@ -31,13 +32,14 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		if(Listener.isKeyDown(Main.WINDOW, Key.LEFT.key)){
 			walkingDir--;
 		}
+		boolean debugging = Settings.getBoolean("DEBUGGING");
 		if(walkingDir != 0 && Listener.isKeyDown(Main.WINDOW, Key.SPRINT.key)){
 			walkingDir *= 2;
 			t.maxWalkingSpeed *= 2;
-			if(Listener.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key)){
+			if(debugging && Listener.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key)){
 				walkingDir *= 4;
 				t.maxWalkingSpeed *= 4;
-				if(Listener.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key)){
+				if(debugging && Listener.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key)){
 					walkingDir *= 4;
 					t.maxWalkingSpeed *= 4;
 				}
@@ -45,13 +47,22 @@ public  class AvatarControl extends AiPlugin implements Listener{
 		}
 		t.type.movement.setAni(t, walkingDir);
 		t.walkingForce = walkingDir*a;
-		if(Listener.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
-			t.force.shift(0, 10000);
+		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
+			t.force.shift(0, 5000);
+		}
+		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.SUPERGRAVITY.key)){
+			t.force.shift(0, -5000);
+		}
+		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.FLY_RIGHT.key)){
+			t.force.shift(5000, 1100);
+		}
+		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.FLY_LEFT.key)){
+			t.force.shift(-5000, 1100);
 		}
 		
 		//Scroll through inventory
-		int scroll = Listener.getDWheel(Main.WINDOW);
-		t.selectedItem += -scroll/120;
+		double scroll = Listener.getDWheel(Main.WINDOW);
+		t.selectedItem += -scroll;
 		if(t.selectedItem < 0){
 			t.selectedItem %= t.itemStacks.length;
 			t.selectedItem += t.itemStacks.length;
@@ -62,12 +73,14 @@ public  class AvatarControl extends AiPlugin implements Listener{
 
 	@Override
 	public boolean pressed(int button, Vec mousePos) {
+		if(Main.world.avatar.health <= 0) return false;
 		Main.world.window.forEachEffect(e -> e.pressed(button, mousePos));
 		return false;
 	}
 
 	@Override
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
+		if(Main.world.avatar.health <= 0) return false;
 		Vec worldPos = mousePos.minus(Main.SIZE.w/2, Main.SIZE.h/2).shift(Main.world.avatar.pos);
 		Thing[] livingsClickedOn = Main.world.thingWindow.livingsAt(worldPos);
 		
@@ -118,6 +131,7 @@ public  class AvatarControl extends AiPlugin implements Listener{
 
 	@Override
 	public boolean keyPressed(int key) {
+		if(Main.world.avatar.health <= 0) return false;
 		
 		Key bind = Key.getBinding(key);
 		
@@ -141,53 +155,67 @@ public  class AvatarControl extends AiPlugin implements Listener{
 			break;
 		case DEBUG:
 			if(Main.menu.open.stay) break;
-			if(Main.menu.open != Menus.DEBUG){
-				Settings.SHOW_BOUNDING_BOX = true;
+			if(Main.menu.open != Menus.DEBUG && Settings.getBoolean("DEBUGGING")){
+				Settings.set("SHOW_BOUNDING_BOX",true);
 				Main.menu.setMenu(Menus.DEBUG);
 			} else {
-				Settings.SHOW_BOUNDING_BOX = false;
+				Settings.set("SHOW_BOUNDING_BOX",false);
 				Main.menu.setLast();
 			}
 			break;
 		case STOP_GRAPH:
-			Settings.STOP_GRAPH = !Settings.STOP_GRAPH;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("STOP_GRAPH",!Settings.getBoolean("STOP_GRAPH"));
 			break;
 		case FASTER:
-			Settings.timeScale *= 1.1;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("timeScale", Settings.getDouble("timeScale")*1.25);
 			break;
 		case SLOWER:
-			Settings.timeScale *= 0.9;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("timeScale", Settings.getDouble("timeScale")*0.8);
 			break;
 		case FREEZE:
-			Settings.FREEZE = !Settings.FREEZE;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("FREEZE",!Settings.getBoolean("FREEZE"));
 			break;
 		case JUMPDOWN:
-			World.world.avatar.pos.y -= 200;
-			World.world.avatar.where.g = false;
+			if(Settings.getBoolean("DEBUGGING")) {
+				World.world.avatar.pos.y -= 200;
+				World.world.avatar.where.g = false;
+			}
 		case LAYERCOUNT_UP:
-			Settings.LAYERS_TO_DRAW++;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("LAYERS_TO_DRAW", Settings.getDouble("LAYERS_TO_DRAW") + 1);
 			break;
 		case LAYERCOUNT_DOWN:
-			Settings.LAYERS_TO_DRAW--;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("LAYERS_TO_DRAW", Settings.getDouble("LAYERS_TO_DRAW") - 1);
 			break;
 		case ZOOM_IN:
-			Settings.ZOOM *= 1.25;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("ZOOM", Settings.getDouble("ZOOM")*1.25);
 			break;
 		case ZOOM_OUT:
-			Settings.ZOOM *= 0.8;
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("ZOOM", Settings.getDouble("ZOOM")*0.8);
+			break;
+		case TOSS_COIN:
+			if(Settings.getBoolean("DEBUGGING"))
+				new Thing(ThingType.COIN, Main.world.data, Main.world.avatar.link, Main.world.window.toWorldPos(Listener.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));
 			break;
 		default:
 		}
 		//No, don't add if-clauses here!! Add the keys legally!!
 		return false;
 	}
-	@Override
 	public boolean keyReleased(int key) {
+		if(Main.world.avatar.health <= 0) return false;
 		return false;
 	}
 
-	@Override
 	public boolean charTyped(char ch) {
+		if(Main.world.avatar.health <= 0) return false;
 		return false;
 	}
 

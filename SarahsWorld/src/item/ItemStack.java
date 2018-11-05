@@ -1,17 +1,11 @@
 package item;
 
 import main.Main;
-import main.Res;
-import render.TexAtlas;
-import render.Texture;
 import things.aiPlugins.Inventory;
 import util.math.Rect;
 
 
 public class ItemStack extends Rect{
-	public static final TexAtlas INVENTORY = Res.getAtlas("inventory");
-	public static final Texture NOT_SELECTED = INVENTORY.tex(0, 0);
-	public static final Texture SELECTED = INVENTORY.tex(0, 1);
 
 	public ItemType item;
 	public int count = 0;
@@ -23,7 +17,7 @@ public class ItemStack extends Rect{
 		super((slot+1)*(Main.SIZE.w/7) -50, Main.SIZE.h/5 -50, 100, 100);
 		this.slot = slot;
 		this.inv = inventory2;
-		this.item = ItemType.NOTHING;
+		this.item = inv.defaultItem;
 	}
 	
 	public void update(double delta){
@@ -36,8 +30,25 @@ public class ItemStack extends Rect{
 		}
 	}
 	
+	public void remove(int n) {
+		count -= n;
+		if(count <= 0) {
+			count = 0;
+			item = inv.defaultItem;
+		}
+	}
+	
+	public boolean add(ItemType item) {
+		if(this.item == item || this.item == inv.defaultItem) {
+			count++;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public String toString(){
-		if(item != null && item != ItemType.NOTHING){
+		if(item != null && item != inv.defaultItem){
 			return item.name + "\nValue: " + item.value;
 		} else {
 			return "Noooothing!!!";

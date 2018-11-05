@@ -25,7 +25,6 @@ public abstract class ToggleButton extends Button {
 	public void pressed(int button) {
 		visualState = PUSHED;
 		hooked = !hooked;
-		System.out.println("press " + hooked);
 		if(hooked) {
 			toggle(true);
 		}
@@ -33,7 +32,6 @@ public abstract class ToggleButton extends Button {
 
 	public void released(int button) {
 		visualState = HOVER;
-		System.out.println("release " + hooked);
 		if(!hooked) {
 			toggle(false);
 		}

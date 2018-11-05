@@ -6,7 +6,6 @@ import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
 import world.data.Column;
-import world.data.Dir;
 
 public class Following extends AiPlugin{
 
@@ -22,7 +21,7 @@ public class Following extends AiPlugin{
 	}
 
 	public boolean action(Thing t, double delta) {
-		if(Settings.AGGRESSIVE_CREATURES){
+		if(Settings.getBoolean("AGGRESSIVE_CREATURES")){
 			findTarget(t);
 			int acc = 0;
 			if(t.target != null){
@@ -43,16 +42,18 @@ public class Following extends AiPlugin{
 					return true;
 				}
 			}
+		} else {
+			t.target = null;
 		}
 		return false;
 	}
 	
 	public void findTarget(Thing t){
-		if(t.target == null || t.target.pos.minus(t.pos).lengthSquare() > maxDistanceSquare){
+		if(t.target == null || t.target.pos.minus(t.pos).lengthSquare() > maxDistanceSquare || t.target.health <= 0){
 			Thing closest = null;
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
-				for(Column c = Main.world.landscapeWindow.getEnd(Dir.l); c != Main.world.landscapeWindow.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r))
+				for(Column c = Main.world.landscapeWindow.start(); c != Main.world.landscapeWindow.end(); c = c.next())
 				for(Thing t2 = c.things[targetClasses[type].ordinal]; t2 != null; t2 = t2.next){
 					double distSqu = t.pos.minus(t2.pos).lengthSquare();
 					if(distSqu < distanceSquare){

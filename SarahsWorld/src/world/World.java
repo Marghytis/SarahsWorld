@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import main.Main;
+import menu.Menu.Menus;
 import menu.Settings;
 import things.Thing;
 import things.ThingType;
@@ -26,6 +27,7 @@ public class World {
 
 	public static Random rand = new Random();
 	public static World world;
+	
 	
 	public WorldData data;
 	WorldEditor editor;
@@ -49,10 +51,10 @@ public class World {
 		generator = new Generator(data);
 
 		
-		Settings.GENERATION_RADIUS = Main.SIZE.w + 800;//TODO is this value used?
+		Settings.set("GENERATION_RADIUS",Main.SIZE.w + 800);//TODO is this value used?
 
 		Vertex v = data.getRightColumn().getTopSolidVertex();
-		Vec pos = new Vec(Settings.AVATAR_START_OFFSET.x, v.y + Settings.AVATAR_START_OFFSET.y);
+		Vec pos = new Vec(Settings.getVec("AVATAR_START_OFFSET").x, v.y + Settings.getVec("AVATAR_START_OFFSET").y);
 		avatar = new Thing(ThingType.SARAH, data, v.parent, pos);
 		
 		init();
@@ -76,13 +78,23 @@ public class World {
 		updateWindow    = new RealWorldWindow(anchor, windowRadius + 8);
 		
 		//generation happens here, because avatar and generator can't be accessed statically yet. might change..
-//		generator.borders(avatar.pos.x - Settings.GENERATION_RADIUS, avatar.pos.x + Settings.GENERATION_RADIUS);
+//		generator.borders(avatar.pos.x - Settings.get("GENERATION_RADIUS"), avatar.pos.x + Settings.get("GENERATION_RADIUS"));
 		genWindow.moveToColumn((int)(avatar.pos.x/Column.COLUMN_WIDTH));
 
 		thingWindow 	= new ThingWindow(anchor, windowRadius + 4);
 		landscapeWindow = new LandscapeWindow(anchor, windowRadius + 4);
 		engine = new WorldEngine(data, editor, genWindow, updateWindow, landscapeWindow, thingWindow);
 		window = new WorldPainter(data, thingWindow, landscapeWindow);
+	}
+	
+	public void gameOver() {
+		data.setGameOver();
+		Main.menu.setMenu(Menus.EMPTY);
+		Main.sound.playFuneralMarch();
+	}
+	
+	public boolean isGameOver() {
+		return data.isGameOver();
 	}
 	
 	public void save(DataOutputStream output) throws IOException {

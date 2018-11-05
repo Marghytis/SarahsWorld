@@ -17,8 +17,7 @@ public class MountainRange extends Zone {
 	double borderWidth;
 	
 	public MountainRange(Random random, BiomeManager biome, double originX, boolean left) {
-		super(random, biome, originX, left, null);
-		biome.switchToBiome(Biome.FIR_FORREST);
+		super(random, Biome.FIR_FORREST, biome, originX, left, null);
 		
 		width = 20000 + (Math.random()*1000);
 		height = 5000 + (Math.random()*1000);

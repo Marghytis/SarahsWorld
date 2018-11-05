@@ -15,8 +15,7 @@ public static boolean[] description = describe(Attribute.LONELY, Attribute.MOIST
 	double offsetX;
 
 	public Graveyard(Random random, BiomeManager biome, double originX, boolean left) {
-		super(random, biome, originX, left, description);
-		biome.switchToBiome(Biome.GRAVEYARD);
+		super(random, Biome.GRAVEYARD, biome, originX, left, description);
 		
 		width =  4000 + random.nextInt(1000);
 		
@@ -28,7 +27,7 @@ public static boolean[] description = describe(Attribute.LONELY, Attribute.MOIST
 		if(subZone instanceof Hills && subZone.end) end = true;
 		
 		if(subZone instanceof Hills && ((Hills)subZone).reachedP2){
-			subZone = new Hills(random, biome, x, left, subZone.ownHeight, 2, 1, width - x, description);
+			subZone = new Hills(random, biomeManager, x, left, subZone.ownHeight, 2, 1, width - x, description);
 		}
 		
 		return ownHeight;

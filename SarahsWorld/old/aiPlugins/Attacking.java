@@ -45,7 +45,7 @@ public class Attacking extends AiPlugin {
 	 * @param targets
 	 */
 	public void attack(ItemType weapon, Thing... targets){
-		if(!attacking && (Settings.AGGRESSIVE_CREATURES || t.type == ThingType.SARAH)){
+		if(!attacking && (Settings.getBoolean("AGGRESSIVE_CREATURES") || t.type == ThingType.SARAH)){
 			ItemType item = null;
 			if(weapon != null){
 				item = weapon;
@@ -56,7 +56,7 @@ public class Attacking extends AiPlugin {
 			}
 			attacking = true;
 			
-			double strength = Settings.SPLIT_STRENGTH_ON_MULTIPLE_TARGETS ? (double)this.strength/targets.length : this.strength;
+			double strength = Settings.getBoolean("SPLIT_STRENGTH_ON_MULTIPLE_TARGETS") ? (double)this.strength/targets.length : this.strength;
 			int[] damage = new int[targets.length];
 			for(int i = 0; i < targets.length; i++){
 				damage[i] = calculateDamage(targets[i], item, strength);

@@ -23,7 +23,7 @@ public class Following extends AiPlugin{
 	}
 	
 	public boolean action(double delta) {
-		if(Settings.AGGRESSIVE_CREATURES){
+		if(Settings.get("AGGRESSIVE_CREATURES")){
 			if(t.ground.g){
 				findTarget();
 				double acc = 0;

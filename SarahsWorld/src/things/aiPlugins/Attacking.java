@@ -41,7 +41,7 @@ public class Attacking extends AiPlugin {
 	 * @param targets
 	 */
 	public boolean attack(Thing t, WeaponType weapon, ItemType item, String attackType, Thing... targets){
-		if(!t.attacking && (Settings.AGGRESSIVE_CREATURES || t.type == ThingType.SARAH)){
+		if(!t.attacking && (Settings.getBoolean("AGGRESSIVE_CREATURES") || t.type == ThingType.SARAH)){
 			
 			if(weapon == null && item != null){
 				weapon = item.weaponType;

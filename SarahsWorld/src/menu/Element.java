@@ -82,7 +82,7 @@ public class Element {
 				tex.file.bind();
 				Shader.singleQuad.set("texCoords", tex.texCoords[0], tex.texCoords[1], tex.texCoords[2] - tex.texCoords[0], tex.texCoords[3] - tex.texCoords[1]);
 			}
-			Shader.singleQuad.set("texture", tex != null);
+			Shader.singleQuad.set("textured", tex != null);
 			Shader.singleQuad.set("scale", 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
 			Shader.singleQuad.set("offset", 0f, 0f);
 			Shader.singleQuad.set("size", 1f);

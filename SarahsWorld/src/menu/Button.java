@@ -28,7 +28,7 @@ public abstract class Button extends TextField {
 		super(text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, color1, tex1, true);
 		this.colors = new Color[] {color1,color2};
 		this.textures = new Texture[] {tex1,tex2};
-		nStates = 3;
+		nStates = 2;
 	}
 	
 	public Button(String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Object... colsAndTexs) {

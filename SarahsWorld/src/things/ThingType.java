@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import effects.WorldEffect;
+import effects.particles.Hearts;
 import item.ItemType;
 import item.ItemType.WeaponType;
 import main.Main;
@@ -26,6 +27,7 @@ import things.aiPlugins.Physics;
 import things.aiPlugins.PhysicsExtension;
 import things.aiPlugins.Riding;
 import things.aiPlugins.Speaking;
+import things.aiPlugins.StateChangement;
 import things.aiPlugins.WalkAround;
 import util.Color;
 import util.math.Rect;
@@ -196,7 +198,7 @@ public class ThingType {
 	};
 										static final Animation[] cow = {
 											new Animation("chew", Res.getAtlas("cow"), 10, 0, /**/0, 1, 2, 3, 4, 5, 6)};
-	public static final ThingType COW = new ThingType("COW", Res.getAtlas("cow"), 20, true
+	public static final ThingType COW = new ThingType("COW", Res.getAtlas("cow"), 20, true, (w, p, f, ed) -> new Thing(ThingType.COW, w,p, f.shift(0, 100))
 			,new Animating(cow[0], new Rect(Res.getAtlas("cow").pixelCoords), 0, 0, 1, false, cow)
 			,new Life(4, 3, 1, new ItemType[]{ItemType.COWHIDE, ItemType.COW_LEG}, 0.4, 0.4)
 			,new Movement("chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew")
@@ -210,7 +212,7 @@ public class ThingType {
 											new Animation("stand", Res.getAtlas("butterfly"), 0, 1),
 											new Animation("flap", Res.getAtlas("butterfly"), 16, 1, /**/1, 2, 3, 2, 1),
 											new Animation("fly", Res.getAtlas("butterfly"), 2, 1)}};
-	public static final ThingType BUTTERFLY = new ThingType("BUTTERFLY", Res.getAtlas("butterfly"), 80, true, (w, p, f, ed) -> new Thing(ThingType.BUTTERFLY, w,p, f.shift(0, 90))
+	public static final ThingType BUTTERFLY = new ThingType("BUTTERFLY", Res.getAtlas("butterfly"), 80, true, (w, p, f, ed) -> new Thing(ThingType.BUTTERFLY, w,p, f.shift(0, 100))
 			,new Animating(butterfly[0][2], new Rect(Res.getAtlas("butterfly").pixelCoords), 0, 0, 3, false, butterfly)
 			,new Life(1, 1, 0)
 			,new Movement("stand", "stand", "stand", "stand", "stand", "flap", "stand", "fly", "stand", "fly")
@@ -311,7 +313,7 @@ public class ThingType {
 						UsefulStuff.colorFromHue(t.time, t.color);
 						t.z -= 0.001;
 						//update the color in the vbo
-						Main.world.thingWindow.getVAO(t.type).changeUnusual(t);
+						Main.world.thingWindow.changeUnusual(t);
 						//return the color to normal in the next render cycle
 						t.needsUnusualRenderUpdate = true;
 					}
@@ -398,16 +400,32 @@ public class ThingType {
 			}
 		}
 	};
-	
+	static void test() {
+//		System.out.println("ttest");
+	}
 	static final Animation[][] heart = {
 			{new Animation("hover", Res.getAtlas("heart"), 10, 0, /**/0, 1, 2, 3, 2, 1)},
 			{new Animation("hover", Res.getAtlas("heart"), 10, 1, /**/0, 1, 2, 3, 2, 1)}};
 	public static final ThingType HEART = new ThingType("HEART", Res.getAtlas("heart"), 300, true
-			,new Animating(heart[0][0], new Rect(Res.getAtlas("heart").pixelCoords), 0, 0, 1, false, heart)) {
+			,new Animating(heart[0][0], new Rect(Res.getAtlas("heart").pixelCoords), 0, 0, 1, false, heart),
+			new Life(300, 0, 0),
+			new StateChangement((t,delta) -> {
+				t.healthTimer += delta*25;
+				t.health -= (int)t.healthTimer;
+				t.healthTimer %= 1;
+				t.yOffset = 80*t.health/(double)t.type.life.maxHealth;
+				test();
+			})) {
 
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.ani.pos = (int)extraData[0];
-			t.yOffset = 80;
+			t.onRightClick = (src, p, dest) -> {
+				if(src.type.life != null) {
+					src.type.life.heal(src, 5*dest.health/t.type.life.maxHealth);
+					Main.world.window.addEffect(new Hearts(dest.pos.shift(0, dest.yOffset)));
+					Main.world.engine.requestDeletion(dest);
+				}
+					};
 		}
 	};
 //	public static final ThingType BIRD_NORMAL = new ThingType(Res.bird){
@@ -498,14 +516,18 @@ public class ThingType {
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
 			t.type.ani.setAnimation(t, "");
-			t.box.scale(0.5 + World.rand.nextDouble());
 			t.size = 0.5 + World.rand.nextDouble();
+			t.box.scale(t.size);
 //			t.box.set(t.ani.createBox());//
 			if(t.z == 0) t.z = -0.1;
 			else if(t.z == 0.1) t.z = 0.2;
-			int stickAmount = World.rand.nextInt(6);
-			for(int i = 0; i < stickAmount; i++)
-				t.fruits.add(ItemType.STICK);
+			int stickAmount = World.rand.nextInt((int)(5*t.size));
+			for(int i = 0; i < stickAmount; i++) {
+				if(t.type == ThingType.TREE_CANDY)
+					t.fruits.add(ItemType.CANDY_CANE);
+				else
+					t.fruits.add(ItemType.STICK);
+			}
 		}};
 	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.getAtlas("tree_fir"), 50, new Animating(tree_fir[0][0], new Rect(Res.getAtlas("tree_fir").pixelCoords), 0, 1, 1, false, tree_fir)){
 		public void setup(Thing t, WorldData world, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, world, field, pos, extraData);}};
@@ -779,6 +801,7 @@ public class ThingType {
 	public MidgeAround midgeAround;//15
 	public PhysicsExtension physEx;//16
 	public Attachement attachment;//17
+	public StateChangement state;//18
 	
 	public AiPlugin[] plugins;
 	public Spawner defaultSpawner;
@@ -798,7 +821,7 @@ public class ThingType {
 		this.file = file;
 		this.maxVisible = maxVisible;
 		this.alwaysUpdateVBO = alwaysUpdateVBO;
-		this.plugins = new AiPlugin[16];
+		this.plugins = new AiPlugin[17];
 		this.ordinal = index++;
 		tempList.add(this);
 		
@@ -835,6 +858,8 @@ public class ThingType {
 				physEx = (PhysicsExtension)plugin;
 			} else if(plugin instanceof Attachement){
 				attachment = (Attachement)plugin;
+			} else if(plugin instanceof StateChangement){
+				state = (StateChangement)plugin;
 			}
 			//...
 		}
@@ -858,6 +883,7 @@ public class ThingType {
 		this.plugins[i++] = magic;
 		this.plugins[i++] = midgeAround;
 		this.plugins[i++] = attachment;
+		this.plugins[i++] = state;
 		//TODO go on
 		if(defaultSpawner == null) this.defaultSpawner = (w, p, f, ed) -> new Thing(this, w, p, f, ed);
 		else this.defaultSpawner = defaultSpawner;

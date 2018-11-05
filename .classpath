@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="SarahsWorld/old"/>
+	<classpathentry kind="src" path="SarahsWorld/src"/>
+	<classpathentry kind="lib" path="SarahsWorld/LWJGL-Core.jar"/>
+	<classpathentry kind="lib" path="/LWJGL-Core/LWJGL-Core/LWJGL 3.2/lwjgl/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL-Core/LWJGL 3.2/natives"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/LWJGL-Core/LWJGL-Core/LWJGL 3.2/lwjgl-glfw/lwjgl-glfw.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL-Core/LWJGL 3.2/natives"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/LWJGL-Core/LWJGL-Core/LWJGL 3.2/lwjgl-openal/lwjgl-openal.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL-Core/LWJGL 3.2/natives"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/LWJGL-Core/LWJGL-Core/LWJGL 3.2/lwjgl-opengl/lwjgl-opengl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL-Core/LWJGL 3.2/natives"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/LWJGL-Core/LWJGL-Core/LWJGL 3.2/lwjgl-stb/lwjgl-stb.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL-Core/LWJGL-Core/LWJGL 3.2/natives"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="SarahsWorld/bin"/>
+</classpath>

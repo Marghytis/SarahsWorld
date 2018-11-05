@@ -43,7 +43,7 @@ public class Debugger extends Element {
 
 	FloatBuffer updater = BufferUtils.createFloatBuffer(1);
 	public void update(double delta) {
-		if(!Settings.STOP_GRAPH){
+		if(!Settings.getBoolean("STOP_GRAPH")){
 			data2[dataIndex] = (float)(Time.delta[1]*scale);
 			updater.put(data2[dataIndex]); updater.flip();
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.vbos[1].handle);

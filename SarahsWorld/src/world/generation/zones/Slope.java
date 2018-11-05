@@ -17,7 +17,7 @@ public class Slope extends Zone {
 	/**Start and end points of curve segment*/
 	
 	public Slope(Random random, BiomeManager biome, double originX, boolean left) {
-		super(random, biome, originX, left, Slope.description);
+		super(random, null, biome, originX, left, Slope.description);
 		
 		this.aimWidth = 10000000;
 	}

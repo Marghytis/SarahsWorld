@@ -31,7 +31,7 @@ public class Animating extends AiPlugin{
 		} else {
 			animator.fillBash(box, t.pos.x, t.pos.y, 0);
 		}
-		if(Settings.SHOW_BOUNDING_BOX){
+		if(Settings.get("SHOW_BOUNDING_BOX")){
 			TexFile.bindNone();
 			Color.RED.bindKeepAlpha();
 			box.outline();

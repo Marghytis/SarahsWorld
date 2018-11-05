@@ -14,12 +14,15 @@ import effects.particles.ParticleEffect;
 import effects.particles.ParticleEmitter;
 import item.Nametag;
 import main.Main;
+import main.Res;
 import menu.Settings;
+import render.Animator;
 import render.Framebuffer;
 import render.Render;
 import render.VAO;
 import things.Thing;
 import util.Color;
+import util.math.Vec;
 import world.World;
 import world.data.WorldData;
 
@@ -37,6 +40,8 @@ public class WorldPainter implements Updater, Renderer{
 	private LandscapeWindow landscape;
 	private ThingWindow things;
 	
+	//others
+	Animator death = new Animator(Res.death, () -> {}, false);
 	
 	public WorldPainter(WorldData l, ThingWindow things, LandscapeWindow landscape) {
 		this.world = l;
@@ -52,6 +57,13 @@ public class WorldPainter implements Updater, Renderer{
 		effects = new EffectManager();
 		addEffect(new Nametag());
 		l.getWeather().addEffects();
+	}
+	
+	public Vec toWorldPos(Vec windowPos) {
+		windowPos.shift(-Main.HALFSIZE.w, -Main.HALFSIZE.h);
+		windowPos.scale(1/Settings.getDouble("ZOOM"));
+		windowPos.shift(-Render.offsetX, -Render.offsetY);
+		return windowPos;
 	}
 	
 	public void select(Thing t) {
@@ -80,13 +92,17 @@ public class WorldPainter implements Updater, Renderer{
 //		delta *= Settings.timeScale;
 		
 		effects.update(delta);
+		
+		if(world.isGameOver()) {
+			death.update(delta);
+		}
 		return false;
 	}
 	
 	public void updateTransform() {
 
-		Render.scaleX = Settings.ZOOM/Main.HALFSIZE.w;
-		Render.scaleY = Settings.ZOOM/Main.HALFSIZE.h;
+		Render.scaleX = (float)(Settings.getDouble("ZOOM")/Main.HALFSIZE.w);
+		Render.scaleY = (float)(Settings.getDouble("ZOOM")/Main.HALFSIZE.h);
 		Render.offsetX = (float)-Main.world.avatar.pos.x;
 		Render.offsetY = (float)-Main.world.avatar.pos.y;
 	}
@@ -124,12 +140,12 @@ public class WorldPainter implements Updater, Renderer{
 //		renderAuras();
 
 		//draw the darkness which is crouching out of the earth
-		if(Settings.DARKNESS){
+		if(Settings.getBoolean("DARKNESS")){
 			landscape.renderDarkness();
 		}
 //
 		//draw bounding boxes of all things and their anchor points
-		if(Settings.SHOW_BOUNDING_BOX){
+		if(Settings.getBoolean("SHOW_BOUNDING_BOX")){
 //			renderBoundingBoxes();
 		}
 		
@@ -140,6 +156,16 @@ public class WorldPainter implements Updater, Renderer{
 
 		//quests
 		world.forEachQuest((aq) -> aq.render());
+		
+		if(world.isGameOver()) {
+
+			Render.drawSingleQuad(completeWindow, Color.BLACK, null, 0, 0, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, false, 0);
+			GL11.glEnable(GL11.GL_ALPHA_TEST);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			death.bindTex();
+			death.quad.render(new Vec(), Render.scaleX);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
+		}
 	}
 
 	public void forEachEffect(Consumer<Effect> cons) {
@@ -161,4 +187,5 @@ public class WorldPainter implements Updater, Renderer{
 	public String debugName() {
 		return "World Window";
 	}
+
 }

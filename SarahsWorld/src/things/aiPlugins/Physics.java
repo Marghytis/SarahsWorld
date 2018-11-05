@@ -50,7 +50,7 @@ public class Physics extends AiPlugin {
 	}
 	
 	public void update(Thing t, double delta){
-		if(Settings.FREEZE){
+		if(Settings.getBoolean("FREEZE")){
 			return;
 		}
 		

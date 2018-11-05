@@ -49,7 +49,7 @@ public class Life extends AiPlugin {
 	}
 
 	public void update(Thing t, double delta) {
-		if(t.health < 0 && !t.immortal){
+		if(t.health <= 0 && !t.immortal){
 			if(t.itemStacks != null){
 				for(ItemStack item : t.itemStacks){
 					for(int i = 0; i < item.count; i++){
@@ -64,7 +64,16 @@ public class Life extends AiPlugin {
 				new Thing(ThingType.ITEM, Main.world.data, t.link, t.pos.copy(), item);
 			Main.world.engine.requestDeletion(t);
 			Main.world.window.addEffect(new DeathDust(t.pos));
+			if(t == Main.world.avatar) {
+				Main.world.gameOver();
+			}
 		}
+	}
+	
+	public void heal(Thing t, int healthPoints) {
+		t.health += healthPoints;
+		if(t.health > maxHealth)
+			t.health = maxHealth;
 	}
 	
 	public boolean getHit(Thing tgt, Thing src, int damage){

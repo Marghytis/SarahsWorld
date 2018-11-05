@@ -10,7 +10,7 @@ import main.Main;
  */
 public class Weather {
 
-	public static FogWorld fog = new FogWorld(200);
+	public FogWorld fog = new FogWorld(200);
 	
 	public void addEffects(){
 		Main.world.window.addEffect(fog);

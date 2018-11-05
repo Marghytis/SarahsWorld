@@ -11,11 +11,10 @@ public static boolean[] description = describe(Attribute.MOIST);
 	
 	double aimWidth;
 	
-	public Ocean(Random random, BiomeManager biome, double originX, boolean left, double startHeight, double amplifierX, double amplifierY, double aimWidth) {
-		super(random, biome, originX, left, description);
-		biome.switchToBiome(Biome.OCEAN);
+	public Ocean(Random random, BiomeManager biome, double originX, boolean left) {
+		super(random, Biome.OCEAN, biome, originX, left, description);
 		
-		this.aimWidth = aimWidth;
+		this.aimWidth = 4000;
 	}
 	
 	public double step(double x) {

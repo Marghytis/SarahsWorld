@@ -22,7 +22,6 @@ public class Bar extends Element {
 	public void render(){
 		TexFile.bindNone();
 		double value = valueGetter.getValue();
-		color.bind();
 		if(showX){
 			x2 = (int)(x1 + value*w);
 		} else {

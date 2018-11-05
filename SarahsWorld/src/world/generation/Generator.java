@@ -10,7 +10,8 @@ import util.math.Vec;
 import world.data.Column;
 import world.data.Dir;
 import world.data.WorldData;
-import world.generation.zones.Graveyard;
+import world.generation.Zone.ZoneType;
+import world.generation.zones.Desert;
 import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
@@ -37,7 +38,8 @@ public class Generator implements GeneratorInterface {
 		this.world = world;
 		
 //		Biome startBiome = Biome.values()[world.random.nextInt(Biome.values().length)];//TODO make it random
-		Biome startBiome = Biome.GRAVEYARD;
+		ZoneType startZone = ZoneType.values()[random.nextInt(ZoneType.values().length)];
+		Biome startBiome = startZone.startBiome;
 		
 		posL = 0;
 		posR = 0;
@@ -45,8 +47,8 @@ public class Generator implements GeneratorInterface {
 		biomeL = new BiomeManager(world, startBiome, true);
 		biomeR = new BiomeManager(world, startBiome, false);
 
-		zoneL = new Graveyard(random, biomeL, 0, true);
-		zoneR = new Graveyard(random, biomeR, 0, false);
+		zoneL = startZone.supply.get(random, biomeL, 0, true);
+		zoneR = startZone.supply.get(random, biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}
@@ -87,11 +89,14 @@ public class Generator implements GeneratorInterface {
 //		world.addRight(nextColumnR);
 		
 		if(zoneR.end){
-			switch(random.nextInt(3)){
-				case 0 : zoneR = new Mountains(random, zoneR.biome, posR, false);break;
-				case 1 : zoneR = new Meadow(random, zoneR.biome, posR, false);break;
-				case 2 : zoneR = new Jungle(random, zoneR.biome, posR, false);break;
-			}
+//			switch(random.nextInt(2)){
+//				case 0 : zoneR = new Mountains(random, zoneR.biomeManager, posR, false);break;
+//				case 1 : zoneR = new Meadow(random, zoneR.biomeManager, posR, false);break;
+//				case 2 : zoneR = new Jungle(random, zoneR.biomeManager, posR, false);break;
+//				case 3 : zoneR = new Desert(random, zoneR.biomeManager, posR, false); break;
+//			}
+//			zoneR = new Jungle(random, zoneR.biome, posR, false);
+			zoneR = newZone(zoneR.biomeManager, posR, false);
 		}
 		zoneR.stepColumn(nextColumnR);
 
@@ -110,7 +115,7 @@ public class Generator implements GeneratorInterface {
 //		world.addLeft(nextColumnL);
 
 		if(zoneL.end){
-			zoneL = new Mountains(random, zoneL.biome, -posL, true);
+			zoneL = new Mountains(random, zoneL.biomeManager, -posL, true);
 		}
 		
 		zoneL.stepColumn(nextColumnL);
@@ -120,6 +125,11 @@ public class Generator implements GeneratorInterface {
 		zoneL.spawnThings(nextColumnL);
 		
 		return true;
+	}
+	
+	public Zone newZone(BiomeManager biomeM, double originX, boolean left) {
+		ZoneType startZone = ZoneType.values()[random.nextInt(ZoneType.values().length)];
+		return startZone.supply.get(random, biomeM, originX, left);
 	}
 	
 	public boolean extend(int iDir) {

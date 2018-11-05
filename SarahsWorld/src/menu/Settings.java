@@ -3,6 +3,7 @@ package menu;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_0;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_1;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_E;
@@ -21,6 +22,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_F6;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F7;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F8;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_F9;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_G;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_H;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_I;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_J;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_K;
@@ -38,69 +41,152 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_T;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_TAB;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_V;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_W;
 import static org.lwjgl.glfw.GLFW.glfwGetKeyName;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Hashtable;
 
-import org.lwjgl.opengl.GL11;
-
+import main.Main;
 import util.math.Vec;
-import world.generation.Biome;
 
-public class Settings{
+public class Settings {
 
-	public static boolean SHOW_WORLD_FIELD_BORDERS = false;
-	public static boolean AGGRESSIVE_CREATURES = false;
-	public static boolean SHOW_BOUNDING_BOX = false;
-	public static boolean SPLIT_STRENGTH_ON_MULTIPLE_TARGETS = true;
-	public static boolean FRICTION = true;
-	public static boolean DARKNESS = true;
-	public static boolean FREEZE = false;//freeze all movement
-	public static int DRAW = GL11.GL_TRIANGLES;//GL_TRIANGLES
-	public static boolean DRAW_TRANSITIONS = true;
-	public static boolean SHOW_NAME_TAGS = true;
-	public static boolean STOP_GRAPH = false;
-	public static boolean printSarahPhysics = true;
-	public static double timeScale = 1;
-	public static int DEBUG_LEVEL = 0;
-	public static double GENERATION_RADIUS = 1800;
-	public static Vec AVATAR_START_OFFSET = new Vec(100, 500);
-	public static int LAYERS_TO_DRAW = (Biome.layerCount-1)*6;
-	public static float ZOOM = 1;
-	public static boolean SOUND = true;
-	public static boolean MUSIC = true;
+	static Hashtable<String, Boolean> booleans = new Hashtable<>();
+	static Hashtable<String, Integer> ints = new Hashtable<>();
+	static Hashtable<String, Double> doubles = new Hashtable<>();
+	static Hashtable<String, Vec>	vecs = new Hashtable<>();
 	
+	public static boolean getBoolean(String setting) {
+		Boolean out = booleans.get(setting);
+		if(out == null) {
+			new Exception("Setting not found: " + setting + "!").printStackTrace();
+			System.exit(-1);
+		}
+		return out;
+	}
+	public static int getInt(String setting) {
+		Integer out = ints.get(setting);
+		if(out == null) {
+			new Exception("Setting not found: " + setting + "!").printStackTrace();
+			System.exit(-1);
+		}
+		return out;
+	}
+	public static double getDouble(String setting) {
+		Double out = doubles.get(setting);
+		if(out == null) {
+			new Exception("Setting not found: " + setting + "!").printStackTrace();
+			System.exit(-1);
+		}
+		return out;
+	}
+	public static Vec getVec(String setting) {
+		Vec out = vecs.get(setting);
+		if(out == null) {
+			new Exception("Setting not found: " + setting + "!").printStackTrace();
+			System.exit(-1);
+		}
+		return out;
+	}
+	public static void set(String setting, boolean value) {
+		booleans.put(setting, value);
+	}
+	public static void set(String setting, int value) {
+		ints.put(setting, value);
+	}
+	public static void set(String setting, double value) {
+		doubles.put(setting, value);
+	}
+	public static void set(String setting, Vec value) {
+		vecs.put(setting, value);
+	}
+	
+	static {
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(Main.SETTINGS_PATH));
+			String line = reader.readLine();
+			while (line != null) {
+
+				String[] words = line.split("\\s+");
+				
+				if(words.length != 0 && words.length != 1 && !words[0].startsWith("//")) {
+				
+					int i = 0;
+					String type = words[i++];
+					String name = words[i++];
+					
+					switch(type) {
+					
+					case "boolean" :booleans.put(name, Boolean.parseBoolean(words[i++]));
+									break;
+									
+					case "int" :	ints.put(name, Integer.parseInt(words[i++]));
+									break;
+
+					case "double" :	doubles.put(name, Double.parseDouble(words[i++]));
+									break;
+									
+					case "Vec" :	vecs.put(name, new Vec(Double.parseDouble(words[i++]), Double.parseDouble(words[i++])));
+									break;
+					}
+				}
+				
+				// read next line
+				line = reader.readLine();
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static int firstDebugKey;
 	public static enum Key {
 		MAIN_MENU(GLFW_KEY_ESCAPE, "toggle menu"),
 		RIGHT(GLFW_KEY_D, "go right"),
 		LEFT(GLFW_KEY_A, "go left"),
 		JUMP(GLFW_KEY_SPACE, "jump!"),
 		INVENTORY(GLFW_KEY_TAB, "open inventory"),
-		DEBUG(GLFW_KEY_F1, "open debug screen"),
-		STOP_GRAPH(GLFW_KEY_T, "stop debug graph"),
 		SPRINT(GLFW_KEY_LEFT_SHIFT, "sprint"),
 		CROUCH(GLFW_KEY_S, "crouch"),
-		SUPERSPRINT(GLFW_KEY_W, "sprint faster"),
-		MEGASPRINT(GLFW_KEY_RIGHT, "sprint very fast"),
-		ANTIGRAVITY(GLFW_KEY_R, "antigravity"),
-		DISMOUNT(GLFW_KEY_E, "dismount a cow"),
-		FASTER(GLFW_KEY_KP_ADD, "faster"),
-		SLOWER(GLFW_KEY_MINUS, "slower"),
-		FREEZE(GLFW_KEY_F, "freeze Sarah"),
-		JUMPDOWN(GLFW_KEY_J, "jump down"),
-		LAYERCOUNT_UP(GLFW_KEY_L, "draw more layers"),
-		LAYERCOUNT_DOWN(GLFW_KEY_K, "draw less layers"),
 		ZOOM_IN(GLFW_KEY_I, "zoom in"),
 		ZOOM_OUT(GLFW_KEY_O, "zoom out"),
+		//debugging
+		FASTER(GLFW_KEY_KP_ADD, "faster", true),
+		SLOWER(GLFW_KEY_MINUS, "slower"),
+		LAYERCOUNT_UP(GLFW_KEY_L, "draw more layers"),
+		LAYERCOUNT_DOWN(GLFW_KEY_K, "draw less layers"),
+		TOSS_COIN(GLFW_KEY_C, "toss a coin"),
+		FREEZE(GLFW_KEY_V, "freeze Sarah"),
+		JUMPDOWN(GLFW_KEY_J, "jump down"),
+		MEGASPRINT(GLFW_KEY_RIGHT, "sprint very fast"),
+		ANTIGRAVITY(GLFW_KEY_T, "antigravity"),
+		SUPERGRAVITY(GLFW_KEY_G, "supergravity"),
+		FLY_RIGHT(GLFW_KEY_H, "fly right"),
+		FLY_LEFT(GLFW_KEY_F, "fly left"),
+		DISMOUNT(GLFW_KEY_E, "dismount a cow"),
+		SUPERSPRINT(GLFW_KEY_W, "sprint faster"),
+		STOP_GRAPH(GLFW_KEY_R, "stop debug graph"),
+		DEBUG(GLFW_KEY_F1, "open debug screen"),
 		NONE(0, "");
 		
 		public int key;
 		String name;
-		
+
 		Key(int key, String name){
+			this(key, name, false);
+		}
+		Key(int key, String name, boolean isFirstDebugKey){
 			this.key = key;
 			this.name = name;
+			if(isFirstDebugKey) {
+				firstDebugKey = ordinal();
+			}
 		}
 		
 		public String getName(){

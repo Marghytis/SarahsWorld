@@ -22,7 +22,7 @@ public class Following extends AiPlugin{
 	public void setup(ThingProps t) {}
 	
 	public boolean update(ThingProps t, double delta) {
-		if(Settings.AGGRESSIVE_CREATURES){
+		if(Settings.getBoolean("AGGRESSIVE_CREATURES")){
 			findTarget(t);
 			double acc = 0;
 			if(t.target != null){

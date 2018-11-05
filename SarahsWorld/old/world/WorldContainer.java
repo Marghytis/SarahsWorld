@@ -182,7 +182,7 @@ public class WorldContainer implements Savable {
 					GL11.glEnd();
 				}
 				
-				if(Settings.SHOW_WORLD_FIELD_BORDERS){
+				if(Settings.get("SHOW_WORLD_FIELD_BORDERS")){
 					Color.WHITE.bind();
 	
 					GL11.glBegin(GL11.GL_LINE_LOOP);
@@ -193,7 +193,7 @@ public class WorldContainer implements Savable {
 					GL11.glEnd();
 				}
 			}
-			if(Settings.SHOW_WORLD_FIELD_BORDERS){
+			if(Settings.get("SHOW_WORLD_FIELD_BORDERS")){
 				Color.bind(1, 0, 0, 1);
 
 				GL11.glBegin(GL11.GL_LINES);

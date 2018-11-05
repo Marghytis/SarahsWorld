@@ -29,7 +29,7 @@ public class Lake extends Zone {
 	 * @param left
 	 */
 	public Lake(Random random, BiomeManager biome, double originX, double width, double height, boolean left, Biome lakeBiome) {
-		super(random, biome, originX, left, null);
+		super(random, null, biome, originX, left, null);
 		before = biome.biome;
 		biome.switchToBiome(lakeBiome);
 		if(biome.ants[0].state == State.NOTHING) biome.ants[0].switchTo(lake, 0);
@@ -45,11 +45,11 @@ public class Lake extends Zone {
 	public double step(double x) {
 		if(!endReached && x >= width){
 			endReached = true;
-			biome.ants[0].resize(0, 0, lake.sizingSpeed);
+			biomeManager.ants[0].resize(0, 0, lake.sizingSpeed);
 		}
-		if(endReached && biome.ants[0].reachedSize){
+		if(endReached && biomeManager.ants[0].reachedSize){
 			end = true;
-			biome.switchToBiome(before);
+			biomeManager.switchToBiome(before);
 		}
 		return ownHeight;
 	}

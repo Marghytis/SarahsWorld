@@ -15,6 +15,10 @@ public class KeyBinding extends FlexibleTextField {
 		this.key = key;
 	}
 	
+	public boolean visible() {
+		return Settings.getBoolean("DEBUGGING") || key.ordinal() < Settings.firstDebugKey;
+	}
+	
 	public void update(double delta){
 		if(selected){
 			text = "";

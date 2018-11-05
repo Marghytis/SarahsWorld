@@ -1,5 +1,7 @@
 package world.data;
 
+import static org.lwjgl.opengl.GL11.GL_DOMAIN;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class WorldData {
 	List<ActiveQuest> quests = new ArrayList<>();
 	List<Spawner> extraSpawners = new ArrayList<>();
 	Weather weather;
+	boolean gameOver = false;
 	
 	World world;
 	
@@ -34,6 +37,14 @@ public class WorldData {
 	public WorldData(World world) {
 		this.world = world;
 		weather = new Weather();
+	}
+	
+	public boolean isGameOver() {
+		return gameOver;
+	}
+	
+	public void setGameOver() {
+		gameOver = true;
 	}
 	
 	public Weather getWeather() {

@@ -7,9 +7,10 @@ import world.generation.BiomeManager;
 
 
 public class Meadow extends Hills {
+	
+	Attribute[] descr = {Attribute.HILLY, Attribute.EVELYN, Attribute.TREES};
 
 	public Meadow(Random random, BiomeManager biome, double originX, boolean left) {
-		super(random, biome, originX, left, 0, 3, 1, 40000, null);
-		biome.switchToBiome(Biome.MEADOW);
+		super(random, Biome.MEADOW, biome, originX, left, 0, 3, 1, 4000, null);
 	}
 }

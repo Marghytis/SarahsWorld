@@ -13,7 +13,7 @@ public class Birthday extends Useful {
 	
 	public Birthday(Random random, BiomeManager biome, double originX, boolean left, double startHeight,
 			double amplifierX, double amplifierY, double aimWidth, boolean[] description) {
-		super(random, biome, originX, aimWidth, startHeight, left);
+		super(random, null, biome, originX, aimWidth, startHeight, left);
 		sections = new Section[]{};
 	}
 	

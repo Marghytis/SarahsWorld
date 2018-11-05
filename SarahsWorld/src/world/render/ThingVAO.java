@@ -14,25 +14,50 @@ import things.ThingType;
 
 public class ThingVAO {
 	
-	static int[] 		bytesUpdated = new int[2];
-	static ByteBuffer[] changer = new ByteBuffer[2];
-	VBO[] 				vbo = new VBO[2];
-	Changer[]			changerMethod = new Changer[2];
-	VBOContent[][]		contents = new VBOContent[2][];
+	private static int[] 		bytesUpdated = new int[2];
+	private static ByteBuffer[] changer = new ByteBuffer[2];
+	protected VBO[] 				vbo = new VBO[2];
+	private VBOContent[][]		contents = new VBOContent[2][];
 	
-	ThingType type;
-	public VAO vao;
-	int capacity;
-	short lastUsedIndex = -1;
-	Thing[] things;
+	private VAO vao;
+	protected int capacity;
+	private short lastUsedIndex = -1;
+	protected Thing[] things;
 	
-	private interface Changer {
-		public void change(Thing t);
+	protected int size() {
+		return lastUsedIndex + 1;
 	}
 	
-	public ThingVAO(ThingType type){
-		this.type = type;
-		this.capacity = type.maxVisible;
+	protected int end() {
+		return lastUsedIndex;
+	}
+	
+	protected int start() {
+		return 0;
+	}
+	
+	protected int nextUsedIndex(int i) {
+		return i+1;
+	}
+	
+	protected boolean empty() {
+		return lastUsedIndex <= -1;
+	}
+	
+	protected void bindStuff() {
+		vao.bindStuff();
+	}
+	
+	protected void unbindStuff() {
+		vao.unbindStuff();
+	}
+	
+	protected Thing getThing(int index) {
+		return things[index];
+	}
+	
+	public ThingVAO(int capacity){
+		this.capacity = capacity;
 		this.things = new Thing[capacity];
 
 		//Create VBO with data usually updated every tick
@@ -126,33 +151,57 @@ public class ThingVAO {
 
 		lastUsedIndex++;
 		if(lastUsedIndex >= capacity){
-			System.err.println("Not enough space for " + type.name + "s! Current capacity: " + capacity + " quads. Default: " + type.maxVisible);
+			System.err.println("Not enough space for " + t.type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.type.maxVisible);
 			enlarge();
 		}
 		things[lastUsedIndex] = t;
 		t.index = lastUsedIndex;
+		if(t.type == ThingType.SARAH)
+			System.out.println("Sarah's Thing index: " + t.index);
 		changeUsual(t);
 		changeUnusual(t);
 	}
 	
 	public void remove(Thing t){
 		if(lastUsedIndex < 0){
-			new Exception("You removed one Thing too much!!!!").printStackTrace();
-			System.exit(-1);
+			new Exception("You removed one " + t.type.name + " too much!!!!").printStackTrace();
+			return;
 		}
+		if(t.index == -1) {
+			new Exception("This " + t.type.name + " is already deleted in the VAO!!");
+			return;
+		}
+		
+		//move last thing in the list to t's location and update lastUsedIndex
+		moveThing(lastUsedIndex, t.index);
+		lastUsedIndex--;
+		
+		t.index = -1;
+		if(t.type == ThingType.SARAH)
+			System.out.println("Sarah is dead! :(");
+		
+	}
+	
+	protected void copyVBOdata(int iFrom, int iTo) {
 		for(int i = 0; i < vbo.length; i++){
+			//move data from last thing to the removed things position
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo[i].handle);
-			GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, lastUsedIndex*bytesUpdated[i], changer[i]);
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, t.index*bytesUpdated[i], changer[i]);
+			GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, iFrom*bytesUpdated[i], changer[i]);
+			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, iTo*bytesUpdated[i], changer[i]);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 		}
-		short index = t.index;
-		things[index] = things[lastUsedIndex];
-		things[index].index = index;
-		things[lastUsedIndex] = null;
-		t.index = -1;
-		
-		lastUsedIndex--;
+	}
+	
+	protected void copyThing(int iFrom, int iTo) {
+		copyVBOdata(iFrom, iTo);
+		int index = iTo;
+		things[index] = things[iFrom];
+		things[index].index = (short) iTo;
+	}
+	
+	protected void moveThing(int iFrom, int iTo) {
+		copyThing(iFrom, iTo);
+		things[iFrom] = null;
 	}
 	
 	public void enlarge(){

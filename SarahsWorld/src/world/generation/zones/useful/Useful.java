@@ -15,8 +15,8 @@ public class Useful extends Zone2 {
 	
 	double aimWidth;
 	
-	public Useful(Random random, BiomeManager biome, double originX, double aimWidth, double startHeight, boolean left, Attribute... attribs) {
-		super(random, biome, originX, left, attribs.length > 0 ? describe(attribs) : Useful.description);
+	public Useful(Random random, Biome startBiome, BiomeManager biome, double originX, double aimWidth, double startHeight, boolean left, Attribute... attribs) {
+		super(random, startBiome, biome, originX, left, attribs.length > 0 ? describe(attribs) : Useful.description);
 		
 		this.aimWidth = aimWidth;
 		this.ownHeight = startHeight;
@@ -42,6 +42,6 @@ public class Useful extends Zone2 {
 	}
 	
 	protected Column createColumn(double x){
-		return new Column(0, biome.biome, biome.getTop(), biome.getLow(), biome.createVertices(lastHeight), baseHeight);
+		return new Column(0, biomeManager.biome, biomeManager.getTop(), biomeManager.getLow(), biomeManager.createVertices(lastHeight), baseHeight);
 	}
 }
