@@ -327,6 +327,7 @@ public class Menu implements Updater, Renderer, Listener {
 		INFOS(false, false){
 			public void setElements(){
 				elements = new Element[]{
+						new TextField("Select a single thing using the middle mouse button", 0, 1, 0.5, 0.9, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(() -> {
 							if(World.world.window.selectionSize() != 1) return "";
 							Thing t = Main.world.window.getSelection(0);
