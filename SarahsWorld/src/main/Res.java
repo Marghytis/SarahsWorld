@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import item.ItemType;
 import render.Animation;
 import render.Shader;
 import render.TexAtlas;
@@ -37,39 +38,41 @@ public class Res {
 	public static Shader backgroundShader = Shader.create("res/shader/colorBackground.vert", "res/shader/colorBackground.frag", "in_Position");
 	public static Shader usualShader = Shader.create("res/shader/usual.vert", "res/shader/usual.frag", "in_position", "in_texCoords");
 
+	static Hashtable<String, TexFile> texFiles = new Hashtable<>();
+	static Hashtable<String, TexInfo> texInfos = new Hashtable<>();
+	static Hashtable<String, Texture> textures = new Hashtable<>();
+	static Hashtable<String, TexAtlas> texAtlases = new Hashtable<>();
+	
+	static Hashtable<String, ItemType> itemTypes = new Hashtable<>();
+
 	public static TexAtlas getAtlas(String key) {
 		TexAtlas out = texAtlases.get(key);
 		if(out == null) {
-			new Exception("TexAtlas not found!").printStackTrace();
+			new Exception("TexAtlas not found! " + key).printStackTrace();
 		}
 		return out;
 	}
 	public static Texture getTex(String key) {
 		Texture out = textures.get(key);
 		if(out == null) {
-			new Exception("Texture not found!").printStackTrace();
+			new Exception("Texture not found! " + key).printStackTrace();
 		}
 		return out;
 	}
 	public static TexInfo getInfo(String key) {
 		TexInfo out = texInfos.get(key);
 		if(out == null) {
-			new Exception("TexInfo not found!").printStackTrace();
+			new Exception("TexInfo not found! " + key).printStackTrace();
 		}
 		return out;
 	}
 	public static TexFile getFile(String key) {
 		TexFile out = texFiles.get(key);
 		if(out == null) {
-			new Exception("TexFile not found!").printStackTrace();
+			new Exception("TexFile not found! " + key).printStackTrace();
 		}
 		return out;
 	}
-
-	static Hashtable<String, TexFile> texFiles = new Hashtable<>();
-	static Hashtable<String, TexInfo> texInfos = new Hashtable<>();
-	static Hashtable<String, Texture> textures = new Hashtable<>();
-	static Hashtable<String, TexAtlas> texAtlases = new Hashtable<>();
 	
 	public static void readTexTable(String tablePath)
 	{
@@ -80,7 +83,7 @@ public class Res {
 		
 		BufferedReader reader;
 		try {
-			reader = new BufferedReader(new FileReader(Main.TEX_ATLAS_TABLE_PATH));
+			reader = new BufferedReader(new FileReader(tablePath));
 			int lineIndex = 0;
 			String line = reader.readLine();
 			while (line != null) {
@@ -159,6 +162,10 @@ public class Res {
 	
 	public static Animation death = new Animation("death", Res.getAtlas("sarah_death"), 4, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 	
+	
+	public static void readItemType(String itemTypesFilePath) {
+		
+	}
 	//togethers
 //	public static final TexFile NPC_plus_Handheld_Items = new TexFile("res/creatures/NPC_and_handheld_Items.png");
 	

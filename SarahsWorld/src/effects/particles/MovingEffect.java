@@ -1,20 +1,21 @@
 package effects.particles;
 
-import effects.particles.BasicMagicEffect.Factory;
 import util.math.Vec;
 
-public abstract class MovingEffect implements ParticleEffect{
+public abstract class MovingEffect implements ParticleEffect {
 
-	Vec lastPos;
-	Factory<Vec> pos;
+	Vec movingPos = new Vec();
 	
-	public MovingEffect(Factory<Vec> pos){
-		this.lastPos = pos.produce();
-		this.pos = pos;
+	public MovingEffect(){
 	}
 	
-	@Override
+	public void setPos(Vec newPos) {
+		setPos(newPos.x, newPos.y);
+	}
+	public void setPos(double x, double y) {
+		movingPos.set(x, y);
+	}
+	
 	public void update(double delta) {
-		lastPos = pos.produce();
 	}
 }

@@ -10,7 +10,6 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.World;
-import world.data.WorldData;
 
 
 
@@ -37,7 +36,7 @@ public class Life extends AiPlugin {
 		this.fruitProperties = fruitProperties;
 	}
 	
-	public void setup(Thing t, WorldData world){
+	public void setup(Thing t){
 		t.health = maxHealth;
 		t.coins = startCoins;
 		t.armor = armor;
@@ -53,15 +52,15 @@ public class Life extends AiPlugin {
 			if(t.itemStacks != null){
 				for(ItemStack item : t.itemStacks){
 					for(int i = 0; i < item.count; i++){
-						new Thing(ThingType.ITEM, Main.world.data, t.link, t.pos.copy(), item.item);
+						new Thing(ThingType.ITEM, t.link, t.pos.copy(), item.item);
 					}
 				}
 			}
 			for(int i = 0; i < t.coins; i++){
-				new Thing(ThingType.COIN, Main.world.data, t.link, t.pos.copy(), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));//World.rand.nextInt(401)-200, 400
+				new Thing(ThingType.COIN, t.link, t.pos.copy(), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));//World.rand.nextInt(401)-200, 400
 			}
 			for(ItemType item : t.fruits)
-				new Thing(ThingType.ITEM, Main.world.data, t.link, t.pos.copy(), item);
+				new Thing(ThingType.ITEM, t.link, t.pos.copy(), item);
 			Main.world.engine.requestDeletion(t);
 			Main.world.window.addEffect(new DeathDust(t.pos));
 			if(t == Main.world.avatar) {

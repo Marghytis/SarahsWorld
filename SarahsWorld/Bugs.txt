@@ -1,13 +1,15 @@
 open bugs
 _Flies landing on water are stuck -> good, but they should fear the water
 _There is no fog, if you go far to the right (left not tested)
-_Sometimes Sarah and other creatures can't move in water, after they were leaving and returning to the water, e.g. if sarah went swimming with a cow
+_Sometimes Sarah and other creatures can't move in water, after they were leaving and returning to the water, e.g. if Sarah went swimming with a cow
 _very strange physics after swimming with a cow, especially in water...
-_when riding a cow it moves faster, but also slides further on grass
+_when riding a cow it moves faster, but also slides further on grass -> when pressing supersprint and megasprint, Sarah slides further
 _candy biome is too long
 _speech bubbles scale faulty when zooming
-_there is an error with the generator radius
-
+_sky has different color at origin when using generator2
+_creatures swim back and forth very quickly in water
 
 fixed
 _Hearts live shorter than they should
+_there is an error with the generator radius
+_scorpions walk to the origin

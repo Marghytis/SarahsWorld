@@ -2,7 +2,6 @@ package things.aiPlugins;
 
 import things.AiPlugin;
 import things.Thing;
-import world.data.WorldData;
 
 
 
@@ -16,7 +15,7 @@ public class Magic extends AiPlugin {
 		this.maxMana = maxMana;
 	}
 	
-	public void setup(Thing t, WorldData world){
+	public void setup(Thing t){
 		t.mana = startMana;
 	}
 }

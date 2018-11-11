@@ -1,6 +1,8 @@
 package things.aiPlugins;
 
+import core.Listener;
 import main.Main;
+import menu.Settings.Key;
 import things.*;
 import util.math.*;
 import world.data.Column;
@@ -9,10 +11,10 @@ import world.data.Column;
 
 public class Movement extends AiPlugin {
 	
-	public String stand, sneak, walk1, walk2, fly, plunge, swim;
+	public String stand, sneak, walk1, walk2, fly, plunge, swim, sneakyStand;
 	public String liftOf, land, dive;
 
-	public Movement(String stand, String walk0, String walk1, String walk2, String swim, String jump, String land, String fly, String dive, String plunge){
+	public Movement(String stand, String walk0, String walk1, String walk2, String swim, String jump, String land, String fly, String dive, String plunge, String sneakyStand){
 		this.stand = stand;
 		this.sneak = walk0;
 		this.walk1 = walk1;
@@ -23,9 +25,10 @@ public class Movement extends AiPlugin {
 		this.fly = fly;
 		this.dive = dive;
 		this.plunge = plunge;
+		this.sneakyStand = sneakyStand;
 	}
 
-	public void setAni(Thing t, int acc) {
+	public void setAni(Thing t, double acc) {
 		if(t.ani.endTask != null){
 			return;
 		}
@@ -37,11 +40,17 @@ public class Movement extends AiPlugin {
 				if(acc != 0){
 					if(Math.abs(acc) > 1){
 						t.type.ani.setAnimation(t, walk2);
-					} else {
+					} else if(Math.abs(acc) == 1){
 						t.type.ani.setAnimation(t, walk1);
+					} else {
+						t.type.ani.setAnimation(t, sneak);
 					}
 				} else {
-					t.type.ani.setAnimation(t, stand);
+					if(Listener.isKeyDown(Main.WINDOW, Key.CROUCH.key)) {
+						t.type.ani.setAnimation(t, sneakyStand);
+					} else {
+						t.type.ani.setAnimation(t, stand);
+					}
 				}
 			}
 			else if(t.where.water < 0.3 && t.ani.ani.name != swim){

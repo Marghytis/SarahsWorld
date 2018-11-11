@@ -12,7 +12,10 @@ public class GeneratingWorldWindow extends RealWorldWindow {
 		this.gen = gen;
 	}
 
+	int[] count = {0, 0};
+	
 	public boolean dirOkay(int index) {
+		count[index]++;
 		if(ends[index].next(index) == null)
 			return gen.extend(index);
 		else

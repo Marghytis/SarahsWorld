@@ -21,11 +21,10 @@ import util.Color;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.World;
-import world.data.WorldData;
 
 public class Speaking extends AiPlugin {
 	
-	public void setup(Thing t, WorldData world){
+	public void setup(Thing t){
 		t.tb = new ThoughtBubble(t);
 	}
 	

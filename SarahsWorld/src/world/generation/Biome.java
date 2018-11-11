@@ -10,7 +10,6 @@ import util.math.Vec;
 import world.World;
 import world.data.Column;
 import world.data.Vertex;
-import world.data.WorldData;
 
 public enum Biome {
 	DESERT(new Color(0.2f, 0.4f, 0.65f), new Color(0.73f, 0.84f, 0.95f),
@@ -104,9 +103,9 @@ public enum Biome {
 				new ThingSpawner(spawnBetween(ThingType.BUSH_CANDY, -5, -15), 0.1),
 				new ThingSpawner(spawnBetween(ThingType.FLOWER_CANDY, -5, -10), 0.2),
 				new ThingSpawner(spawnBetween(ThingType.TREE_CANDY, -20, -30), 0.06),
-				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.HEART, w, c, pos, 1), 0.04),
+				new ThingSpawner((c, pos, ed) -> new Thing(ThingType.HEART, c, pos, 1), 0.04),
 				new ThingSpawner(ThingType.UNICORN.defaultSpawner, 0.01),
-				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CLOUD, w, c, pos, new Color(0.9f, 0.68f, 0.9f)), 0.06),
+				new ThingSpawner((c, pos, ed) -> new Thing(ThingType.CLOUD, c, pos, new Color(0.9f, 0.68f, 0.9f)), 0.06),
 			},
 			new EffectSpawner[]{
 			}),
@@ -126,7 +125,7 @@ public enum Biome {
 				new ThingSpawner(ThingType.TREE_GRAVE.defaultSpawner, 0.1),
 				new ThingSpawner(ThingType.ZOMBIE.defaultSpawner, 0.05),
 				new ThingSpawner(ThingType.GRAVE.defaultSpawner, 0.2),
-				new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, w, c, pos, Main.world.data.getWeather().fog),1.5)
+				new ThingSpawner((c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, c, pos, Main.world.data.getWeather().fog),1.5)
 	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Main.HALFSIZE.w, pos.yInt() + Main.HALFSIZE.h + 50, 100, 4, 50)); return null;}, 0.01),
 	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.weather.fog.emittFog(pos.x + Main.HALFSIZE.w, pos.y + Main.HALFSIZE.h); return null;}, 1)
 			},
@@ -191,8 +190,8 @@ public enum Biome {
 			new ThingSpawner[]{
 				new ThingSpawner(ThingType.TREE_FIR_SNOW.defaultSpawner, 0.3)
 				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
-				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.RABBIT, w, c, pos, 1), 0.01)
-				,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.HEART, w, c, pos, 1), 0.04)
+				,new ThingSpawner((c, pos, ed) -> new Thing(ThingType.RABBIT, c, pos, 1), 0.01)
+				,new ThingSpawner((c, pos, ed) -> new Thing(ThingType.HEART, c, pos, 1), 0.04)
 //				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.VILLAGER, w,p, f), 0.01)	
 			},
 			new EffectSpawner[]{
@@ -226,7 +225,7 @@ public enum Biome {
 					null
 				},
 				new ThingSpawner[]{
-						new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 2.0, 0.9), 0.5),
+						new ThingSpawner((c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, c, pos, 2.0, 0.9), 0.5),
 						new ThingSpawner(spawnZ(ThingType.TREE_JUNGLE, 0.2),		0.5),
 						new ThingSpawner(spawnZ(ThingType.FERN, 			0.1,	0.2),	0.05),
 						new ThingSpawner(spawnZ(ThingType.BAMBOO, 			0.1,	0.2),	0.1),
@@ -250,8 +249,8 @@ public enum Biome {
 //					,new ThingSpawner(posSpawner(ThingType.FLOWER_NORMAL, 0, 0.1, 0), 0.1)
 //					,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
 					
-					new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.CRACK, w, c, pos.shift(0, -100 - World.rand.nextInt(1000))), 0.3),
-					new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.FOSSIL, w, c, pos.shift(0, -200 - World.rand.nextInt(1000))), 0.1)
+					new ThingSpawner((c, pos, ed) -> new Thing(ThingType.CRACK, c, pos.shift(0, -100 - World.rand.nextInt(1000))), 0.3),
+					new ThingSpawner((c, pos, ed) -> new Thing(ThingType.FOSSIL, c, pos.shift(0, -200 - World.rand.nextInt(1000))), 0.1)
 //					,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
 					,new ThingSpawner(ThingType.SNAIL.defaultSpawner, 0.01)
 					,new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.05)
@@ -367,19 +366,23 @@ public enum Biome {
 	
 	Vec posField = new Vec();
 	
-	public void spawnThings(WorldData world, Column c){
+	public void spawnThings(Column c){
 		for(ThingSpawner ts : spawners){
-			double prob = ts.probabilityOnFieldWidth;
-			if(prob >= 1){
-				int greaterThanOne = (int) prob;
-				prob -= greaterThanOne;
-				for(; greaterThanOne > 0; greaterThanOne--){
-					ts.spawner.spawn(world, c.getRandomTopLocation(World.rand, posField), posField.copy());
-				}
+			applySpawner(c, ts);
+		}
+	}
+	
+	public void applySpawner(Column c, ThingSpawner ts) {
+		double prob = ts.probabilityOnFieldWidth;
+		if(prob >= 1){
+			int greaterThanOne = (int) prob;
+			prob -= greaterThanOne;
+			for(; greaterThanOne > 0; greaterThanOne--){
+				ts.spawner.spawn(c.getRandomTopLocation(World.rand, posField), posField.copy());
 			}
-			if(World.rand.nextDouble() < prob){
-				ts.spawner.spawn(world, c.getRandomTopLocation(World.rand, posField), posField.copy());
-			}
+		}
+		if(World.rand.nextDouble() < prob){
+			ts.spawner.spawn(c.getRandomTopLocation(World.rand, posField), posField.copy());
 		}
 	}
 	
@@ -413,16 +416,16 @@ public enum Biome {
 	}
 	
 	public static Spawner spawnZ(ThingType type, double z){
-		return (w, c, pos, ed) -> {
-			Thing t = new Thing(type, w, c, pos.copy(), ed);
+		return (c, pos, ed) -> {
+			Thing t = new Thing(type, c, pos.copy(), ed);
 			t.z = z;
 			return t;
 		};
 	}
 	
 	public static Spawner spawnZ(ThingType type, double z1, double z2){
-		return (w, c, pos, ed) -> {
-			Thing t = new Thing(type, w, c, pos.copy(), ed);
+		return (c, pos, ed) -> {
+			Thing t = new Thing(type, c, pos.copy(), ed);
 			t.z = z1 + World.rand.nextDouble()*(z2-z1);
 			return t;
 		};
@@ -437,8 +440,8 @@ public enum Biome {
 	}
 	
 	public static Spawner spawnBetween(ThingType type, double y1, double y2, boolean randomSide, boolean front){
-		return (w, c, pos, ed) -> {
-			Thing t = new Thing(type, w, c, pos.copy(), ed);
+		return (c, pos, ed) -> {
+			Thing t = new Thing(type, c, pos.copy(), ed);
 			t.yOffset = y1 + World.rand.nextDouble()*(y2-y1);
 			boolean frontLocal = front;
 			if(randomSide) frontLocal = World.rand.nextBoolean();

@@ -7,7 +7,6 @@ import java.util.Hashtable;
 
 import item.ItemStack;
 import item.ItemType;
-import main.Main;
 import things.ThingType;
 import world.World;
 import world.data.WorldData;

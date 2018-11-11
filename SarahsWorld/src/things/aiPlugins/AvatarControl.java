@@ -14,32 +14,63 @@ import world.World;
 public  class AvatarControl extends AiPlugin implements Listener {
 
 	public boolean action(Thing t, double delta) {
+		
+		boolean riding = t.isRiding;
+		boolean debugging = Settings.getBoolean("DEBUGGING");
+
+		boolean walk_right = Listener.isKeyDown(Main.WINDOW, Key.RIGHT.key);
+		boolean walk_left = Listener.isKeyDown(Main.WINDOW, Key.LEFT.key);
+		boolean crouch = Listener.isKeyDown(Main.WINDOW, Key.CROUCH.key);
+		boolean sprint = Listener.isKeyDown(Main.WINDOW, Key.SPRINT.key);
+		boolean super_sprint = debugging && Listener.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key);
+		boolean mega_sprint = debugging && Listener.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key);
+		
+		
+		
 		double cowFactor = t.isRiding ? 2 : 1;
 		t.maxWalkingSpeed = t.accWalking*cowFactor/5;
 		
 		double a = 0;
 		if(t.where.g)
-			if(t.where.water < 0.5) a = t.accWalking*cowFactor;
-			else a = t.accSwimming/cowFactor;
-		else if(t.where.water > 0)
+			if(t.where.water < 0.5) {//normal walking
+				a = t.accWalking*cowFactor;
+			} else {//walking under water
+				a = t.accSwimming/cowFactor;
+				t.maxWalkingSpeed = t.accWalking/cowFactor/5;
+			}
+		else if(t.where.water > 0) {//swimming
 			a = t.accSwimming/cowFactor;
-		else a = t.accFlying*cowFactor;
+			t.maxWalkingSpeed = t.accWalking/cowFactor/5;
+		} else {//flying
+			a = t.accFlying*cowFactor;
+		}
 		
-		int walkingDir = 0;
-		if(Listener.isKeyDown(Main.WINDOW, Key.RIGHT.key)){
+		double walkingDir = 0;
+		if(walk_right )
+		{
 			walkingDir++;
 		}
-		if(Listener.isKeyDown(Main.WINDOW, Key.LEFT.key)){
+		if(walk_left )
+		{
 			walkingDir--;
 		}
-		boolean debugging = Settings.getBoolean("DEBUGGING");
-		if(walkingDir != 0 && Listener.isKeyDown(Main.WINDOW, Key.SPRINT.key)){
+		if(!riding && crouch )
+		{
+			a *= 2;
+			walkingDir *= 0.5;
+			t.maxWalkingSpeed *= 0.5;
+		}
+		
+		if(sprint )
+		{
 			walkingDir *= 2;
 			t.maxWalkingSpeed *= 2;
-			if(debugging && Listener.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key)){
+			if(super_sprint )
+			{
 				walkingDir *= 4;
 				t.maxWalkingSpeed *= 4;
-				if(debugging && Listener.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key)){
+				if(mega_sprint )
+				{
 					walkingDir *= 4;
 					t.maxWalkingSpeed *= 4;
 				}
@@ -47,17 +78,19 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		}
 		t.type.movement.setAni(t, walkingDir);
 		t.walkingForce = walkingDir*a;
-		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
-			t.force.shift(0, 5000);
-		}
-		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.SUPERGRAVITY.key)){
-			t.force.shift(0, -5000);
-		}
-		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.FLY_RIGHT.key)){
-			t.force.shift(5000, 1100);
-		}
-		if(debugging && Listener.isKeyDown(Main.WINDOW, Key.FLY_LEFT.key)){
-			t.force.shift(-5000, 1100);
+		if(debugging) {
+			if(Listener.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
+				t.force.shift(0, 5000);
+			}
+			if(Listener.isKeyDown(Main.WINDOW, Key.SUPERGRAVITY.key)){
+				t.force.shift(0, -5000);
+			}
+			if(Listener.isKeyDown(Main.WINDOW, Key.FLY_RIGHT.key)){
+				t.force.shift(5000, 1100);
+			}
+			if(Listener.isKeyDown(Main.WINDOW, Key.FLY_LEFT.key)){
+				t.force.shift(-5000, 1100);
+			}
 		}
 		
 		//Scroll through inventory
@@ -186,11 +219,11 @@ public  class AvatarControl extends AiPlugin implements Listener {
 			}
 		case LAYERCOUNT_UP:
 			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("LAYERS_TO_DRAW", Settings.getDouble("LAYERS_TO_DRAW") + 1);
+				Settings.set("LAYERS_TO_DRAW", Settings.getInt("LAYERS_TO_DRAW") + 1);
 			break;
 		case LAYERCOUNT_DOWN:
 			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("LAYERS_TO_DRAW", Settings.getDouble("LAYERS_TO_DRAW") - 1);
+				Settings.set("LAYERS_TO_DRAW", Settings.getInt("LAYERS_TO_DRAW") - 1);
 			break;
 		case ZOOM_IN:
 			if(Settings.getBoolean("DEBUGGING"))
@@ -202,7 +235,7 @@ public  class AvatarControl extends AiPlugin implements Listener {
 			break;
 		case TOSS_COIN:
 			if(Settings.getBoolean("DEBUGGING"))
-				new Thing(ThingType.COIN, Main.world.data, Main.world.avatar.link, Main.world.window.toWorldPos(Listener.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));
+				new Thing(ThingType.COIN, Main.world.avatar.link, Main.world.window.toWorldPos(Listener.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));
 			break;
 		default:
 		}

@@ -1,11 +1,12 @@
 package item;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import effects.particles.BerryEat;
 import main.Main;
 import main.Res;
-import render.Animation;
 import render.Animator;
 import render.Render;
 import render.TexFile;
@@ -13,22 +14,46 @@ import render.Texture;
 import things.Thing;
 import things.ThingType;
 import util.Color;
-import util.math.Rect;
 import util.math.Vec;
 import world.World;
 
-public enum ItemType {
+public class ItemType {
 
-//				Texture texWorld,			Texture texHand,					Texture texinv,			Rect boxWorld,				Rect boxHand,	String name, int coolDownStart, int value, WeaponType weaponType,	ItemUsageType useType, 	BodyPos bodyPos,int attackStrength, double crit,double critProb, boolean needsTarget
-//				Texture World           	|Texture on creature				|Texture inventory	 	|Box world					|Box on creature|Name			|Cooldown						
-	SWORD(		Res.getAtlas("items_inv").sfA(0, 0),	Res.getAtlas("items_weapons").tex(0, 0),		Res.getAtlas("items_inv").tex(0, 0), new int[]{-25, -2, 50, 50}, "Sword",		500,			20, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	4, 					6, 			0.1,			false,	false),
-	AXE(		Res.getAtlas("items_inv").sfA(1, 0),	Res.getAtlas("items_weapons").tex(1, 0),		Res.getAtlas("items_inv").tex(1, 0), new int[]{-25, -2, 50, 50}, "Axe",			1000,			100, 		WeaponType.STRIKE,		ItemUsageType.FIST,		BodyPos.HAND, 	10, 				14,			0.1,			false,	false),
-	STICK(		Res.getAtlas("items_inv").sfA(2, 0),	Res.getAtlas("items_weapons").tex(2, 0),		Res.getAtlas("items_inv").tex(3, 0), new int[]{-25, -2, 50, 50}, "Stick",		500,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2, 					2, 			0,				false,	false),
-	CANDY_CANE(	Res.getAtlas("items_inv").sfA(3, 0),	Res.getAtlas("items_weapons").tex(3, 0),		Res.getAtlas("items_inv").tex(7, 0), new int[]{-25, -2, 50, 50}, "Candy cane",	1000,			2, 			WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	2,					2,			0,				false,	false),
-	SHOVEL(		Res.getAtlas("items_inv").sfA(4, 0),	Res.getAtlas("items_weapons").tex(4, 0),		Res.getAtlas("items_inv").tex(4, 0), new int[]{-25, -2, 50, 50}, "Shovel",		700,			70, 		WeaponType.STRIKE,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.1,			false,	false),
-	UNICORN_HORN(Res.getAtlas("items_inv").sfA(5, 0),	Res.getAtlas("items_weapons").tex(1, 1),		Res.getAtlas("items_inv").tex(5, 0), new int[]{-25, -2, 50, 50}, "Unicorn horn",1000,			200,		WeaponType.SPELL,		ItemUsageType.FIST,		BodyPos.HEAD,	10,					2,			0.03,			false,	false),
+	private static List<ItemType> tempList = new ArrayList<>();
+	private static int index;
+	private static ItemTypeBuilder builder = new ItemTypeBuilder("res/ItemTypes.txt");
+
+	public static final ItemType SWORD			= new ItemType(builder.readItemType("SWORD"));
+	public static final ItemType AXE			= new ItemType(builder.readItemType("AXE"));
+	public static final ItemType STICK			= new ItemType(builder.readItemType("STICK"));
+	public static final ItemType CANDY_CANE		= new ItemType(builder.readItemType("CANDY_CANE"));
+	public static final ItemType SHOVEL			= new ItemType(builder.readItemType("SHOVEL"));
+	public static final ItemType UNICORN_HORN	= new ItemType(builder.readItemType("UNICORN_HORN"));
+	
 //	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.getAtlas("items_inv").tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
-	BERRY(		Res.getAtlas("items_inv").sfA(6, 0),	Res.getAtlas("items_weapons").tex(7, 0),		Res.getAtlas("items_inv").tex(6, 0), new int[]{-25, -2, 50, 50}, "Berry",		0,				8, 			WeaponType.PUNCH,		ItemUsageType.FIST, 	BodyPos.HAND, 	3,					4,			0.3,			false,	true){
+	public static final ItemType SNAILS_EYE 	= new ItemType(builder.readItemType("SNAILS_EYE"));
+	public static final ItemType SNAIL_SHELL 	= new ItemType(builder.readItemType("SNAIL_SHELL"));
+	public static final ItemType RABBITS_FOOT 	= new ItemType(builder.readItemType("RABBITS_FOOT"));
+	public static final ItemType TREX_TOOTH 	= new ItemType(builder.readItemType("TREX_TOOTH"));
+	public static final ItemType COW_LEG 		= new ItemType(builder.readItemType("COW_LEG"));
+	public static final ItemType COWHIDE 		= new ItemType(builder.readItemType("COWHIDE"));
+	public static final ItemType WITCH_HAT 		= new ItemType(builder.readItemType("WITCH_HAT"));
+	public static final ItemType SCORPION_STING = new ItemType(builder.readItemType("SCORPION_STING"));
+	public static final ItemType SCORPION_CLAW 	= new ItemType(builder.readItemType("SCORPION_CLAW"));
+	public static final ItemType RAINBOW_HAIR 	= new ItemType(builder.readItemType("RAINBOW_HAIR"));
+	public static final ItemType ZOMBIE_EYE 	= new ItemType(builder.readItemType("ZOMBIE_EYE"));
+	public static final ItemType ZOMBIE_BRAIN 	= new ItemType(builder.readItemType("ZOMBIE_BRAIN"));
+	public static final ItemType ZOMBIE_FLESH 	= new ItemType(builder.readItemType("ZOMBIE_FLESH"));
+	public static final ItemType BIRTHDAY_CAKE 	= new ItemType(builder.readItemType("BIRTHDAY_CAKE")) {
+		public boolean use(Thing src, Vec pos){
+			pos = pos.copy();
+			src.link.getRandomTopLocation(World.rand, pos);
+			ThingType.CAKE.defaultSpawner.spawn(src.link, pos);
+			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
+			return true;
+		}
+	};
+	public static final ItemType BERRY 			= new ItemType(builder.readItemType("BERRY")) {
 		public boolean use(Thing src, Vec pos){
 			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
 			if(src.type.magic != null) {
@@ -40,33 +65,11 @@ public enum ItemType {
 			}
 			return true;
 		}
-	},
-	SNAILS_EYE(	Res.getAtlas("items_inv").sfA(0, 1),	Res.getAtlas("items_weapons").tex(0, 4),		Res.getAtlas("items_inv").tex(0, 1), new int[]{-25, -2, 50, 50},	"Snails eye",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.EAT,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	SNAIL_SHELL(Res.getAtlas("items_inv").sfA(1, 1),	Res.getAtlas("items_weapons").tex(1, 4),		Res.getAtlas("items_inv").tex(1, 1), new int[]{-25, -2, 50, 50},	"Snail shell",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	RABBITS_FOOT(Res.getAtlas("items_inv").sfA(2, 1),	Res.getAtlas("items_weapons").tex(2, 4),		Res.getAtlas("items_inv").tex(2, 1), new int[]{-25, -2, 50, 50},	"Rabbits foot",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	TREX_TOOTH(	Res.getAtlas("items_inv").sfA(3, 1),	Res.getAtlas("items_weapons").tex(3, 4),		Res.getAtlas("items_inv").tex(3, 1), new int[]{-25, -2, 50, 50},	"TRex tooth",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	COW_LEG(	Res.getAtlas("items_inv").sfA(4, 1),	Res.getAtlas("items_weapons").tex(4, 4),		Res.getAtlas("items_inv").tex(4, 1), new int[]{-25, -2, 50, 50},	"Cow leg",		1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	COWHIDE(	Res.getAtlas("items_inv").sfA(5, 1),	Res.getAtlas("items_weapons").tex(0, 5),		Res.getAtlas("items_inv").tex(5, 1), new int[]{-25, -2, 50, 50},	"Cowhide",		1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	WITCH_HAT(	Res.getAtlas("items_inv").sfA(6, 1),	Res.getAtlas("items_weapons").tex(1, 5),		Res.getAtlas("items_inv").tex(6, 1), new int[]{-25, -2, 50, 50},	"Witch hat",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	SCORPION_STING(Res.getAtlas("items_inv").sfA(7, 1),	Res.getAtlas("items_weapons").tex(2, 5),		Res.getAtlas("items_inv").tex(7, 1), new int[]{-25, -2, 50, 50}, 	"Scorpion sting",1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	SCORPION_CLAW(Res.getAtlas("items_inv").sfA(8, 1),	Res.getAtlas("items_weapons").tex(3, 5),		Res.getAtlas("items_inv").tex(8, 1), new int[]{-25, -2, 50, 50}, 	"Scorpion claw",1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	RAINBOW_HAIR(Res.getAtlas("items_inv").sfA(9, 1),	Res.getAtlas("items_weapons").tex(4, 5),		Res.getAtlas("items_inv").tex(9, 1), new int[]{-25, -2, 50, 50}, 	"Rainbow hair",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	ZOMBIE_EYE(	Res.getAtlas("items_inv").sfA(10, 1),	Res.getAtlas("items_weapons").tex(0, 6),		Res.getAtlas("items_inv").tex(10, 1),new int[]{-25, -2, 50, 50}, 	"Zombie eye",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	ZOMBIE_BRAIN(Res.getAtlas("items_inv").sfA(11, 1),	Res.getAtlas("items_weapons").tex(1, 6),		Res.getAtlas("items_inv").tex(11, 1),new int[]{-25, -2, 50, 50}, 	"Zombie brain",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	ZOMBIE_FLESH(Res.getAtlas("items_inv").sfA(12, 1),	Res.getAtlas("items_weapons").tex(2, 6),		Res.getAtlas("items_inv").tex(12, 1),new int[]{-25, -2, 50, 50}, 	"Zombie flesh",	1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true),
-	BIRTHDAY_CAKE(Res.getAtlas("items_inv").sfA(14, 1),	Res.getAtlas("items_weapons").tex(4, 6),		Res.getAtlas("items_inv").tex(14, 1),new int[]{-25, -2, 50, 50}, 	"Birthday cake",1000,			40,			WeaponType.PUNCH,		ItemUsageType.FIST,		BodyPos.HAND,	1,					2,			0.03,			false,	true){
-		public boolean use(Thing src, Vec pos){
-			pos = pos.copy();
-			src.link.getRandomTopLocation(World.rand, pos);
-			ThingType.CAKE.defaultSpawner.spawn(Main.world.data, src.link, pos);
-			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
-			return true;
-		}
-	},
+	};
 	
 	//Item types below this line won't appear in traders inventories
-	MOUTH(null, Texture.emptyTexture, Texture.emptyTexture, new int[4], "Mouth", 1, 0, WeaponType.BITE, ItemUsageType.EAT, BodyPos.HEAD, 1, 2, 0.03, true, false),
-	NOTHING(null, Texture.emptyTexture, Texture.emptyTexture, new int[4], "Fist", 1, 0, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 1, 2, 0.03, true, false){
+	public static final ItemType MOUTH 			= new ItemType(builder.readItemType("MOUTH"));
+	public static final ItemType NOTHING 		= new ItemType(builder.readItemType("NOTHING")) {
 		public boolean specialUse(Thing src, Vec pos, Thing[] dest){
 			for (int i = 0; i < dest.length; i++) {
 				if(dest[i].type == ThingType.ITEM){
@@ -101,74 +104,67 @@ public enum ItemType {
 			}
 			return success;
 		}
-	},
-	COIN(new Animation("coin", Res.getAtlas("coin"), 0, 0, 0), Res.getAtlas("coin").texs[0], Res.getAtlas("coin").texs[0], Res.getAtlas("coin").pixelCoords, "Coin", 0, 1, WeaponType.PUNCH, ItemUsageType.FIST, BodyPos.HAND, 0, 0, 0, false, true);
-	
-	public static ItemType[] values = values();
+	};
+	public static final ItemType COIN = new ItemType(builder.readItemType("COIN"));
+
+	public static ItemType[] values = tempList.toArray(new ItemType[tempList.size()]);
 	public static TexFile handheldTex = Res.getAtlas("items_weapons").file;
 	
-	public Animation texWorld;
-	public Texture texHand;
-	public BodyPos bodyPos;
-	public Texture texInv;
-	public int[] boxWorld;
-	public Rect boxHand;
-	
-	public int defaultRotationHand;
-	
+	public final int ordinal;
 	public String name;
-	public int id;
-	public int value;
-	public int coolDownLength;
-	public WeaponType weaponType;
-	public ItemUsageType useType;
-	public int attackStrength;
-	public double crit;
-	public double critProb;
-	public boolean needsTarget;
+	
+	//rendering
+	public Texture texWorld;//Texture shown if the item lies around
+	public Texture texHand;//Texture shown, if the item is held
+	public Texture texInv;//Texture of the item in the inventory
+	public BodyPos bodyPos;//A TexFileInfo giving the location of the item in each frame, if its held
+	public int[] boxWorld;//The box the item has lying around
+	public int defaultRotationHand;//The rotation the item already has in the texture in degrees. 0 would be horizontal to the right
+	
+	//usable
 	public boolean oneWay;
-
-	/**
-	 * 
-	 * @param texWorld Texture shown if the item lies around
-	 * @param texHand Texture shown, if the item is held
-	 * @param texinv Texture of the item in the inventory
-	 * @param boxWorld The box the item has lying around
-	 * @param defaultRotationHand The rotation the item already has in the texture 0� would be horizontal to the right
-	 * @param name The name the item shows in inventory
-	 * @param coolDownStart Length of the cool down after usage
-	 * @param value Value when trading
-	 * @param weaponType determines the animation, which is used to attack with this item (left click)
-	 * @param useType determines the animation played on usage (right click)
-	 * @param bodyPos A TexFileInfo giving the location of the item in each frame, if its held
-	 * @param attackStrength The default attack strength of the item
-	 * @param crit The attack strength when landing a critical hit
-	 * @param critProb The default probability of landing a critical hit
-	 * @param needsTarget If the item needs a thing target to use it or not
-	 */
-	ItemType(Animation texWorld, Texture texHand, Texture texinv, int[] boxWorld, String name, int coolDownStart, int value, WeaponType weaponType, ItemUsageType useType, BodyPos bodyPos, int attackStrength, double crit, double critProb, boolean needsTarget, boolean oneWay) {
-		this.texWorld = texWorld;
-		this.texHand = texHand;
-		this.texInv = texinv;
-		this.boxWorld = boxWorld;
+	public boolean needsTarget;//Whether the item needs a thing target to use it or not
+	public int coolDownTime;//Length of the cool down after usage
+	public ItemUsageType useType;//determines the animation played on usage (right click)
+	
+	//weapon
+	public WeaponType weaponType;//determines the animation that is used to attack with this item (left click)
+	public int attackStrength;//The default attack strength of the item
+	public double crit;//The attack strength when landing a critical hit
+	public double critProb;//The default probability of landing a critical hit
+	
+	//misc
+	public int value;//Value when trading
+	public String nameInv;//The name the item shows in the inventory
+	
+	
+	ItemType(ItemTypeBuilder builder){
+		this.texWorld = builder.texWorld;
+		this.texHand = builder.texHand;
+		this.texInv = builder.texInventory;
+		this.boxWorld = builder.boxWorld;
 		if(texHand.info != null){
-			this.texHand.pixelCoords[0] = -texHand.info[0][0];
-			this.texHand.pixelCoords[1] = -texHand.info[0][1];
+			this.texHand.pixelCoords[0] = -builder.texHand.info[0][0];
+			this.texHand.pixelCoords[1] = -builder.texHand.info[0][1];
 			this.texHand.pixelCoords[2] = this.texHand.pixelCoords[0] + this.texHand.w;
 			this.texHand.pixelCoords[3] = this.texHand.pixelCoords[1] + this.texHand.h;
-			this.defaultRotationHand = texHand.info[0][2]+180;
+			this.defaultRotationHand = builder.texHand.info[0][2]+180;
 		}
-		this.name = name;
-		this.value = value;
-		this.coolDownLength = coolDownStart;
-		this.weaponType = weaponType;
-		this.useType = useType;
-		this.bodyPos = bodyPos;
-		this.attackStrength = attackStrength;
-		this.crit = crit;
-		this.critProb = critProb;
-		this.needsTarget = needsTarget;
-		this.oneWay = oneWay;
+		this.name = builder.name;
+		this.nameInv = builder.nameInv;
+		this.value = builder.coinValue;
+		this.coolDownTime = builder.coolDownTime;
+		this.weaponType = builder.weaponType;
+		this.useType = builder.useType;
+		this.bodyPos = builder.bodyPos;
+		this.attackStrength = builder.attackStrength;
+		this.crit = builder.crit;
+		this.critProb = builder.critProb;
+		this.needsTarget = builder.needsTarget;
+		this.oneWay = builder.oneWay;
+		
+		this.ordinal = index++;
+		tempList.add(this);
 	}
 	
 	public boolean specialUse(Thing src, Vec pos, Thing[] dest){
@@ -220,6 +216,15 @@ public enum ItemType {
 	
 	public static ItemType getRandomItem(Random random){
 		return values[random.nextInt(values.length-1)];
+	}
+	
+	public static ItemType valueOf(String name){
+		for(ItemType type : values){
+			if(type.name.equals(name)){
+				return type;
+			}
+		}
+		return null;
 	}
 
 	public static enum ItemUsageType {FIST, EAT}

@@ -11,9 +11,6 @@ import world.data.Column;
 import world.data.Dir;
 import world.data.WorldData;
 import world.generation.Zone.ZoneType;
-import world.generation.zones.Desert;
-import world.generation.zones.Jungle;
-import world.generation.zones.Meadow;
 import world.generation.zones.Mountains;
 
 
@@ -44,8 +41,8 @@ public class Generator implements GeneratorInterface {
 		posL = 0;
 		posR = 0;
 		
-		biomeL = new BiomeManager(world, startBiome, true);
-		biomeR = new BiomeManager(world, startBiome, false);
+		biomeL = new BiomeManager(startBiome, true);
+		biomeR = new BiomeManager(startBiome, false);
 
 		zoneL = startZone.supply.get(random, biomeL, 0, true);
 		zoneR = startZone.supply.get(random, biomeR, 0, false);

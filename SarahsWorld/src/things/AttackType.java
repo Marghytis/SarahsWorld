@@ -45,7 +45,7 @@ public class AttackType {
 		this(name, rX, rYd, rYu, wp, maxTargets, damageMultiplier, extraCooldown, new AttackSelectedDefault(rX, rYd, rYu, damageMultiplier, standardEffect), standardEffect);
 	}
 	
-	public static class AttackSelectedDefault extends AttackSelected {
+	public static class AttackSelectedDefault implements AttackSelected {
 		private double rangeX, rangeYdown, rangeYup, damageMultiplier;
 		private AttackEffect effect;
 		
@@ -96,8 +96,8 @@ public class AttackType {
 			}
 		}
 	}
-	public static abstract class AttackSelected {
-		public abstract void attackSelected(Thing t, Thing[] targets, int amount, ItemType item);
+	public static interface AttackSelected {
+		public void attackSelected(Thing t, Thing[] targets, int amount, ItemType item);
 	}
 	
 	public interface AttackEffect {

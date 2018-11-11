@@ -32,7 +32,7 @@ public class RealWorldWindow {
 	
 	public void forEachColumn(Consumer<Column> cons) {
 
-		for(Column c = ends[Dir.l]; c != ends[Dir.r].next(Dir.r); c = c.next(Dir.r)) {
+		for(Column c = start(); c != end(); c = c.next()) {
 			cons.accept(c);
 		}
 	}

@@ -10,9 +10,8 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
-import world.data.WorldData;
 
-public class Inventory extends AiPlugin{
+public class Inventory extends AiPlugin {
 
 	public int itemAmount;
 	public ItemType defaultItem;
@@ -22,7 +21,7 @@ public class Inventory extends AiPlugin{
 		this.itemAmount = itemAmount;
 	}
 	
-	public void setup(Thing t, WorldData world){
+	public void setup(Thing t){
 		t.itemStacks = new ItemStack[itemAmount];
 		t.itemAni =  new Animator(defaultItem.texHand);
 		for(int i = 0; i < itemAmount; i++){
@@ -81,9 +80,10 @@ public class Inventory extends AiPlugin{
 		if(selected.coolDown <= 0){
 			if(selected.item.specialUse(src, worldPos, thingsAtThatLocation)){
 				if(item.oneWay) {
-					selected.remove(1);
+					if(item == selected.item)
+						selected.remove(1);
 				} else {
-					selected.coolDown = item.coolDownLength;
+					selected.coolDown = item.coolDownTime;
 				}
 			}
 		}

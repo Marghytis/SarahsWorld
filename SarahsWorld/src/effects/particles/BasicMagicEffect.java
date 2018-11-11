@@ -12,14 +12,14 @@ public class BasicMagicEffect extends MovingEffect{
 			
 		@Override
 		public void makeParticle(Particle p) {
-			p.pos.set(lastPos);
+			p.pos.set(movingPos);
 			p.col.set(1, 0, 0);
 			p.rad = 0.3f;
 		}
 
 		@Override
 		public void velocityInterpolator(Particle p, float delta) {
-			p.pos.set(lastPos);
+			p.pos.set(movingPos);
 		}
 		
 		@Override
@@ -35,7 +35,7 @@ public class BasicMagicEffect extends MovingEffect{
 
 		@Override
 		public void makeParticle(Particle p) {
-			p.pos.set(lastPos);
+			p.pos.set(movingPos);
 			float angle = random.nextFloat()*(float)(Math.PI*2);
 			
 			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*100), (float)Math.sin(angle)*(random.nextFloat()*100));//-0.8f
@@ -63,14 +63,12 @@ public class BasicMagicEffect extends MovingEffect{
 	
 	double life, lived;
 	
-	public BasicMagicEffect(Factory<Vec> source, double duration){
-		super(source);
+	public BasicMagicEffect(double duration){
 		life = duration;
 		lived = 0;
 		light.emittParticle(0);
 	}
 	
-	@Override
 	public void update(double delta) {
 		super.update(delta);
 		light.tick((float)delta);
@@ -78,13 +76,11 @@ public class BasicMagicEffect extends MovingEffect{
 		lived += delta;
 	}
 
-	@Override
 	public void render(float scaleX, float scaleY) {
 		light.render(scaleX, scaleY);
 		sparkle.render(scaleX, scaleY);
 	}
 	
-	@Override
 	public void terminate(){
 		light.terminate();
 		sparkle.terminate();

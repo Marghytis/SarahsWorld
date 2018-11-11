@@ -1,0 +1,27 @@
+//name			nameInv				value	texWorld		texHand				texInv			BodyPos	oneWay	target	coolDown	weaponType	strength	crit	critProb
+SWORD			Sword				20		d  0 0			d  0 0				d  0 0			HAND	false	false	500			STRIKE		4			6		0.1
+AXE				Axe					100		d  1 0			d  1 0				d  1 0 			HAND	false	false	1000		STRIKE		10			14		0.1	
+STICK			Stick				2 		d  2 0			d  2 0				d  3 0 			HAND	false	false	500 		STRIKE		2			2		0
+CANDY_CANE		Candy_cane			2 		d  3 0			d  3 0				d  7 0 			HAND	false	false	1000		STRIKE		2			2		0
+SHOVEL			Shovel				70		d  4 0			d  4 0				d  4 0 			HAND	false	false	700 		STRIKE		3			4		0.1
+UNICORN_HORN	Unicorn_horn		200		d  5 0			d  1 1				d  5 0 			HEAD	true 	false	1000		SPELL		0			2		0.03
+
+BERRY 			Berry				8 		d  6 0			d  7 0				d  6 0			HAND	false	true	0			PUNCH		3			4		0.3
+SNAILS_EYE 		Snails_eye			40		d  0 1			d  0 4				d  0 1			HAND	false	true	1000		PUNCH		1			2		0.03
+SNAIL_SHELL 	Snail_shell			40		d  1 1			d  1 4				d  1 1			HAND	false	true	1000		PUNCH		1			2		0.03
+RABBITS_FOOT 	Rabbits_foot		40		d  2 1			d  2 4				d  2 1			HAND	false	true	1000		PUNCH		1			2		0.03
+TREX_TOOTH 		TRex_tooth			40		d  3 1			d  3 4				d  3 1			HAND	false	true	1000		PUNCH		1			2		0.03
+COW_LEG 		Cow_leg				40		d  4 1			d  4 4				d  4 1			HAND	false	true	1000		PUNCH		1			2		0.03
+COWHIDE 		Cowhide				40		d  5 1			d  0 5				d  5 1			HAND	false	true	1000		PUNCH		1			2		0.03
+WITCH_HAT 		Witch_hat			40		d  6 1			d  1 5				d  6 1			HAND	false	true	1000		PUNCH		1			2		0.03
+SCORPION_STING 	Scorpion_sting		40		d  7 1			d  2 5				d  7 1			HAND	false	true	1000		PUNCH		1			2		0.03
+SCORPION_CLAW 	Scorpion_claw		40		d  8 1			d  3 5				d  8 1			HAND	false	true	1000		PUNCH		1			2		0.03
+RAINBOW_HAIR 	Rainbow_hair		40		d  9 1			d  4 5				d  9 1			HAND	false	true	1000		PUNCH		1			2		0.03
+ZOMBIE_EYE 		Zombie_eye			40		d 10 1			d  0 6				d 10 1			HAND	false	true	1000		PUNCH		1			2		0.03
+ZOMBIE_BRAIN 	Zombie_brain		40		d 11 1			d  1 6				d 11 1			HAND	false	true	1000		PUNCH		1			2		0.03
+ZOMBIE_FLESH 	Zombie_flesh		40		d 12 1			d  2 6				d 12 1			HAND	false	true	1000		PUNCH		1			2		0.03
+BIRTHDAY_CAKE 	Birthday_cake		40		d 14 1			d  4 6				d 14 1			HAND	false	true	1000		PUNCH		1			2		0.03
+
+MOUTH			Mouth				0		e 				e  					e 				HEAD	false	false	1			BITE		1			2		0.03
+NOTHING			Fist				0		e				e 					e 				HAND	false	true	1			PUNCH		1			2		0.03
+COIN			Coin				1		coin 0 0		coin 0 0			coin 0 0		HAND	false	true	0			PUNCH		0			0		0			coin

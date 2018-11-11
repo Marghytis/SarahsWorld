@@ -338,7 +338,7 @@ public class Menu implements Updater, Renderer, Listener {
 								s += "health: " + t.health + "\n";
 							return s;
 						}
-						, 0, 0.5, 0.5, 1, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						, 0, 0.7, 0.5, 0.9, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 //						new FlexibleTextField(() -> {
 //							if(World.world.window.selectionSize() != 1) return "";
 //							Thing t = Main.world.window.getSelection(0);
@@ -353,11 +353,12 @@ public class Menu implements Updater, Renderer, Listener {
 										"box: " + Main.world.avatar.box.toString() + "\n" +
 										"tex width: " + Main.world.avatar.ani.tex.w + "\n" + 
 										"dir: " + Main.world.avatar.dir + "\n" +
-										"riding: " + Main.world.avatar.isRiding + "\n" + 
+										"riding: " + Main.world.avatar.isRiding + "\n" +
+										"where.water: " + Main.world.avatar.where.water + "\n" +
 										"Biome: " + Main.world.avatar.link.biome.toString();
 							return s;
 						}
-						, 0, 0, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						, 0, 0, 0.5, 0.7, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						back,
 						continuePlaying
 				};
@@ -438,9 +439,9 @@ public class Menu implements Updater, Renderer, Listener {
 					elements[i] = new Button(values[j].name, x, y, x, y, -170, -30, 170, 30, Color.BROWN, Color.GRAY, null, null){
 						public void released(int button) {
 							if(values[j] == ThingType.ITEM){
-								values[j].defaultSpawner.spawn(Main.world.data, Main.world.avatar.link, Main.world.avatar.pos.copy().shift(0, 1), ItemType.valueOf(((TextField)elements[j]).text));
+								values[j].defaultSpawner.spawn(Main.world.avatar.link, Main.world.avatar.pos.copy().shift(0, 1), ItemType.valueOf(((TextField)elements[j]).text));
 							} else {
-								values[j].defaultSpawner.spawn(Main.world.data, Main.world.avatar.link, Main.world.avatar.pos.copy());
+								values[j].defaultSpawner.spawn(Main.world.avatar.link, Main.world.avatar.pos.copy());
 							}
 							((TextInput)DEBUG_SPAWNER.elements[j]).selected = false;
 						}

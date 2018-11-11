@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import world.data.Column;
 import world.data.Dir;
 import world.data.WorldData;
+import world.generation.Biome;
 import world.generation.GeneratorInterface;
 
 public class Generator2 implements GeneratorInterface {
@@ -16,6 +17,12 @@ public class Generator2 implements GeneratorInterface {
 	
 	public Generator2(WorldData worldData) {
 		this.worldData = worldData;
+		Biome startBiome = Biome.DESERT;
+		environments[0] = new Example(startBiome);
+		environments[1] = new Example(environments[0].getLastVertices(), startBiome);
+		
+		Column firstColumn = environments[0].createColumn();
+		worldData.addFirst(firstColumn);
 	}
 
 	public boolean borders(double d, double e) {
@@ -42,16 +49,18 @@ public class Generator2 implements GeneratorInterface {
 		//attach the column to the world
 		//returns the column to the worldWindow, where quests are tried to be started
 		worldData.processNewColumn(column, Dir.s[iEnv], environments[iEnv].getDescription());
+		//spawn things on top of the column
+		environments[iEnv].populate(column);
 		
 		return true;
 	}
 
 	public boolean extendRight() {
-		return extend(1);
+		return extend(Dir.r);
 	}
 
 	public boolean extendLeft() {
-		return extend(0);
+		return extend(Dir.l);
 	}
 	
 	

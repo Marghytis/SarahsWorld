@@ -1,9 +1,5 @@
 package things;
 
-import world.data.WorldData;
-
-
-
 public abstract class AiPlugin {
 	
 	public String recon;
@@ -28,7 +24,7 @@ public abstract class AiPlugin {
 	 */
 	public boolean action(Thing t, double delta){return false;};
 	
-	public void setup(Thing t, WorldData world){};
+	public void setup(Thing t){};
 	
 	public void remove(Thing t) {}
 	

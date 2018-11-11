@@ -3,7 +3,7 @@ package things;
 import java.util.ArrayList;
 import java.util.List;
 
-import effects.WorldEffect;
+import effects.Effect;
 import item.ItemStack;
 import item.ItemType;
 import main.Main;
@@ -16,7 +16,6 @@ import util.math.Rect;
 import util.math.Vec;
 import world.World;
 import world.data.Column;
-import world.data.WorldData;
 
 public class Thing {
 	//DEBUG
@@ -43,8 +42,8 @@ public class Thing {
 	public Column collisionC = null;
 	public double airTime;
 	public boolean reallyAir, willLandInWater;
-	public double walkingForce, speed, maxWalkingSpeed;
-	public double rotation, aniRotation;
+	public double walkingForce, speed, maxWalkingSpeed, buoyancyForce;
+	public double rotation, aniRotation, yOffsetToBalanceRotation;
 	public Vec orientation = new Vec(0, 1);
 	public double time;//just for unicorns at this point. Can be used to animate certain effects
 	public int testInt;
@@ -55,7 +54,7 @@ public class Thing {
 	public List<ItemType> fruits = new ArrayList<>();
 	public ItemStack[] itemStacks;
 	public ThoughtBubble tb;
-	public WorldEffect effect;
+	public Effect effect;
 	public int effectTicket;
 	public boolean dir;
 	public boolean immortal;
@@ -93,7 +92,7 @@ public class Thing {
 	public double xDestMin, xDestMax;//for walking around
 	public double splashCooldown1, splashCooldown2, otherCooldown;
 	
-	public Thing(ThingType type, WorldData world, Column field, Vec pos, Object... extraData){
+	public Thing(ThingType type, Column field, Vec pos, Object... extraData){
 		this.type = type;
 		if(pos != null)
 		this.pos = pos;
@@ -101,7 +100,7 @@ public class Thing {
 		realLink = field;
 		applyLink();
 		
-		setup(world, field, pos, extraData);
+		setup(field, pos, extraData);
 	}
 	
 	public void update(double delta){
@@ -121,7 +120,6 @@ public class Thing {
 		}
 		if(type.ani != null) {
 			if(this.visible && !visible){
-				if(type == ThingType.COIN) System.out.println("test");
 				World.world.thingWindow.remove(this);
 			} else if(!this.visible && visible){
 				World.world.thingWindow.add(this);
@@ -142,11 +140,11 @@ public class Thing {
 		}
 	}
 	
-	public void setup(WorldData world, Column field, Vec pos, Object... extraData){
+	public void setup(Column field, Vec pos, Object... extraData){
 		for(AiPlugin plugin : type.plugins){
-			if(plugin != null) plugin.setup(this, world);
+			if(plugin != null) plugin.setup(this);
 		}
-		type.setup(this, world, field, pos, extraData);
+		type.setup(this, field, pos, extraData);
 	}
 	
 	public boolean selected() {

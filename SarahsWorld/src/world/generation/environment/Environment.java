@@ -7,8 +7,8 @@ import util.Color;
 import world.data.Column;
 import world.data.Vertex;
 import world.generation.Biome;
-import world.generation.Spawner;
-import world.generation.environment.ModularTerrainManager.Module;
+import world.generation.Zone.Attribute;
+import world.generation.environment.modules.Module;
 
 /**
  * An environment is a large area of a world, normally there is one for the right hand side and one for the left.
@@ -24,13 +24,23 @@ public abstract class Environment {
 	public ThingManager things;
 	public SkyManager sky;
 	double distanceGenerated = 0;
+	boolean[] description;
 	
-	public Environment(Vertex[] startVertices){
+	public Environment(Vertex[] startVertices, boolean[] description){
 		terrain = new ModularTerrainManager(startVertices);
 		terrainModules = new ArrayList<>();
 		materials = new MaterialManager();
 		things = new ThingManager();
 		sky = new SkyManager();
+		this.description = description;
+	}
+
+	public void addModule(Module module) {
+		terrain.addModule(module);
+	}
+	
+	public Vertex[] getLastVertices() {
+		return terrain.lastVertices;
 	}
 	
 	public double getDistanceGenerated() {
@@ -38,7 +48,7 @@ public abstract class Environment {
 	}
 	
 	public boolean[] getDescription() {
-		return null;//TODO
+		return description;
 	}
 	
 	public void step(){
@@ -48,15 +58,15 @@ public abstract class Environment {
 		
 		distanceGenerated += Column.COLUMN_WIDTH;
 	}
-	
-	public void spawnExtra(List<Spawner> spawners) {
-		things.spawnExtra(spawners);
+
+	public Biome getBiome() {
+		return null;
 	}
 	
 	public Column createColumn(){
 		
 		//create the vertices and define the biome of this column
-		Biome biome = terrain.getBiome();
+		Biome biome = getBiome();
 		Vertex[] vertices = terrain.createVertices();
 		double collisionHeight = terrain.getCollisionY();
 		
@@ -67,10 +77,19 @@ public abstract class Environment {
 		//create the column with the information gathered
 		Column column = new Column(0, biome, topColor, lowColor, vertices, collisionHeight);
 		
-		//spawn things on top of the column
-		things.populate(column);
-		
 		return column;
+	}
+	
+	public void populate(Column c) {
+		things.populate(c);
+	}
+	
+	public static boolean[] describe(Attribute... attributes){
+		boolean[] out = new boolean[Attribute.values().length];
+		for(Attribute attr : attributes){
+			out[attr.ordinal()] = true;
+		}
+		return out;
 	}
 	
 }

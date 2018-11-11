@@ -111,21 +111,28 @@ public class Physics extends AiPlugin {
 	}
 	
 	public void updateRotation(Thing t, double delta){
+		t.yOffsetToBalanceRotation = 0;
+		t.rotation = 0;
 		if(!t.where.g){
 			if(t.where.water > 0.3){
-				double v = t.vel.length();
-				if(v > 10 && (t.force.y != 0 || t.force.x != 0)){
+//				Vec ori = t.vel.copy();
+//				double speed = ori.length();
+//				ori.shift(0, 70);
+//				t.rotation = Math.atan2(ori.x, ori.y);
+//				t.yOffsetToBalanceRotation = 0.65*t.box.size.y*(1-Math.cos(t.rotation));
+//				double v = t.vel.length();
+//				if(v > 10 && (t.force.y != 0 || t.force.x != 0)){
 //					if(t.vel.dot(t.orientation) >= 0){
 //						t.orientation.set(t.vel).shift(1, 0);
 //					} else {
 //						t.orientation.set(t.vel).scale(-1).shift(1, 0);
 //					}
 //					t.rotation = t.orientation.angle() + Math.PI/2;
-
-					t.rotation = Math.atan2(t.vel.x, t.vel.y);
-				} else {
-					t.rotation = 0;
-				}
+//
+//					t.rotation = Math.atan2(t.vel.x, t.vel.y);
+//				} else {
+//					t.rotation = 0;
+//				}
 			} else if(t.willLandInWater){
 				t.rotation = Math.atan2(t.vel.x, t.vel.y);
 			}
@@ -209,10 +216,10 @@ public class Physics extends AiPlugin {
 	public void updateForceNextVelAndNextPos(Thing t, Vec constantForce, Vec topLine, double delta, boolean applyWalkingForce){
 		t.force.set(constantForce);
 		checkWater(t.force, t.pos, t);
-		if(t.where.water > 0.5)
-			t.force.shift(t.walkingForce, 0);
-		else if(t.where.g)
+		if(t.where.g)
 			t.force.shift(topLine, t.walkingForce);
+		else if(t.where.water > 0.5)
+			t.force.shift(t.walkingForce, 0);
 		
 		t.nextVel.set(t.vel).shift(t.force, delta/mass);
 		applyDynamicFriction(t, t.nextVel, delta);
@@ -300,11 +307,19 @@ public class Physics extends AiPlugin {
 	 * @param t
 	 */
 	public void checkWater(Vec force, Vec pos, Thing t){
+		t.buoyancyForce = 0;
+		//check, if the column the thing is in contains water:
 		if(t.link.getTopSolidVertex() != t.link.getTopFluidVertex() && t.link.right.getTopSolidVertex() != t.link.right.getTopFluidVertex()){
+			//get vertex of water surface
 			Vertex waterVertex = t.link.getTopFluidVertex();
+
+			//check if at least part of the thing is under water
 			if(waterVertex.y > pos.y + t.box.pos.y){
+				//calculate how deep the thing is in the water in units of it's height
 				t.where.water = Math.min((waterVertex.y - (pos.y + t.box.pos.y))/t.box.size.y, 1);//+20
-				force.shift(new Vec(0, waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/)));
+				//apply a buoyancy force
+				t.buoyancyForce = waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/);
+				force.shift(0, t.buoyancyForce);
 				
 			}
 		}

@@ -64,7 +64,7 @@ public class ThingVAO {
 		VBO vboUsual = createVBO(new VBOContent[]{
 			new VBOContent(2, GL11.GL_FLOAT, false,//vec2 in_position
 					(t) -> (float)t.pos.x,
-					(t) -> (float)(t.pos.y + t.yOffset)),
+					(t) -> (float)(t.pos.y + t.yOffset + t.yOffsetToBalanceRotation)),
 			
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_rotation
 					(t) -> (float)(t.rotation + t.aniRotation)),

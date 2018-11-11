@@ -31,9 +31,12 @@ public class ParticleTest implements Listener, Renderer, Updater{
 //		effects.add(rain);
 //		effects.add(fog);
 //		effects.add(new Snow(new Vec(-core.SIZE_HALF.w, core.SIZE_HALF.h+20), core.SIZE.w, 1));
-//		effects.add(new BasicMagicEffect(() -> {
-//			return Listener.getMousePos(core.getWindow().getHandle()).copy().shift(-core.SIZE_HALF.w, -core.SIZE_HALF.h);
-//		}, 100));
+		effects.add(new BasicMagicEffect(100) {
+			public void update(double delta) {
+				setPos(Listener.getMousePos(core.getWindow().getHandle()).copy().shift(-core.SIZE_HALF.w, -core.SIZE_HALF.h));
+				super.update(delta);
+			}
+		});
 	}
 	
 	public boolean update(double delta) {

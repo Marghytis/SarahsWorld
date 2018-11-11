@@ -11,22 +11,19 @@ import util.math.Vec;
 import world.World;
 import world.data.Column;
 import world.data.Vertex;
-import world.data.WorldData;
 
 public class BiomeManager {
 
 	public Biome biome;
 	public Ant[] ants;
 	public Column lastColumn;//for the old vertices to change
-	public WorldData world;
 	public boolean left;
 	/**
 	 * 
 	 * @param normal : necessary to prevent errors later
 	 */
-	public BiomeManager(WorldData world, Biome normal, boolean left){
+	public BiomeManager(Biome normal, boolean left){
 		this.left = left;
-		this.world = world;
 		ants = new Ant[Biome.layerCount];
 		for(int yIndx = 0; yIndx < ants.length; yIndx++){
 			ants[yIndx] = new Ant(normal.stratums[yIndx]);
@@ -43,9 +40,9 @@ public class BiomeManager {
 	 * @param c
 	 */
 	public void spawnThings(Column c){
-		c.biome.spawnThings(world, c);
+		c.biome.spawnThings(c);
 		for(Spawner sp : extraSpawns){
-			sp.spawn(world, c.getRandomTopLocation(World.rand, posField), posField.copy());
+			sp.spawn(c.getRandomTopLocation(World.rand, posField), posField.copy());
 		}
 		extraSpawns.clear();
 	}

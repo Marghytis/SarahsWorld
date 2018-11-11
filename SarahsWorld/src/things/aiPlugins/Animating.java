@@ -51,7 +51,7 @@ public class Animating extends AiPlugin {
 		this(defaultTex, box, z, zRange, 0, aniCount, useTexBox, animations);
 	}
 	
-	public void setup(Thing t, WorldData world){
+	public void setup(Thing t){
 		t.z = World.rand.nextDouble()*zRange + z - (zRange/2);
 		t.dir = World.rand.nextBoolean();
 		t.ani = new Animator(defaultAni);

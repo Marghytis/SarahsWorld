@@ -7,7 +7,7 @@ import things.AttackType.AttackEffect;
 import things.AttackType.AttackSelected;
 import util.math.Vec;
 
-public class AttackSelectedSpell extends AttackSelected {
+public class AttackSelectedSpell implements AttackSelected {
 
 	AttackEffect effect;
 	double damageMultiplier;

@@ -18,4 +18,4 @@ int		LAYERS_TO_DRAW						48
 double	ZOOM								1
 boolean	SOUND								true
 boolean	MUSIC								false
-boolean	DEBUGGING						true
+boolean	DEBUGGING							true

@@ -4,6 +4,8 @@ import world.generation.Material;
 
 public class Vertex {
 		public static final int maxMatCount = 4;
+		public static final Material[] emptyMats = {Material.AIR, Material.AIR, Material.AIR, Material.AIR};
+		public static final double[] emptyAlphas = {1, 0, 0, 0};
 		public double y;
 		public Material[] mats;
 		public double averageSolidity, averageDeceleration, averageBouyancy;
@@ -15,6 +17,18 @@ public class Vertex {
 		
 		public boolean prepared;
 		public float[] texCoordsPrepared = new float[4];
+		
+		//empty
+		public Vertex(int yIndex) {
+			this.yIndex = yIndex;
+			this.firstMatIndex = 0;
+			this.lastMatIndex = 0;
+			this.transitionHeight = 0;
+			this.y = 0;
+			this.mats = emptyMats;
+			this.alphas = emptyAlphas;
+			calculateAverage();
+		}
 		
 		public Vertex(int yIndex, Material[] copy, double[] alphas, int firstMatIndex, int lastMatIndex, double transitionHeight, double y) {
 			this.yIndex = yIndex;
@@ -31,6 +45,12 @@ public class Vertex {
 		}
 		public Vertex(Vertex toCopy){
 			this(toCopy, toCopy.y);
+		}
+		public double getY() {
+			return y;
+		}
+		public void setNewY(double y) {
+			this.y = y;
 		}
 		public Material[] mats(){return mats;}
 		public void enqueueMat(Material mat, double alpha, boolean below){
@@ -72,7 +92,7 @@ public class Vertex {
 		}
 		public boolean empty(){
 			for(int i = 0; i < maxMatCount; i++)
-				if(alphas[i] != 0)
+				if(alphas[i] != 0 && mats[i].tranparency < 0.7)
 					return false;
 			return true;
 		}

@@ -1,7 +1,5 @@
 package world.data;
 
-import static org.lwjgl.opengl.GL11.GL_DOMAIN;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
@@ -88,7 +86,7 @@ public class WorldData {
 		//spawners added during the column processing are applied
 		Vec pos = new Vec();
 		for(int i = 0; i < extraSpawners.size(); i++){
-			Thing t =  extraSpawners.get(i).spawn(this, c.getRandomTopLocation(World.rand, pos, dir), pos.copy());
+			Thing t =  extraSpawners.get(i).spawn(c.getRandomTopLocation(World.rand, pos, dir), pos.copy());
 			if(t != null) {
 				extraSpawners.remove(i);
 				i--;
@@ -115,10 +113,12 @@ public class WorldData {
 		}
 	}
 	
+	public void addFirst(Column c) {
+		leftColumn = c;
+		rightColumn = c;
+	}
 	public void addFirst(Biome biome, Vertex... vertices){
-		Column f = new Column(0, biome, biome.topColor, biome.lowColor, vertices);
-		leftColumn = f;
-		rightColumn = f;
+		addFirst(new Column(0, biome, biome.topColor, biome.lowColor, vertices));
 	}
 	
 	public Column addLeft(Column l){

@@ -49,7 +49,7 @@ public class ItemStack extends Rect{
 	
 	public String toString(){
 		if(item != null && item != inv.defaultItem){
-			return item.name + "\nValue: " + item.value;
+			return item.nameInv + "\nValue: " + item.value;
 		} else {
 			return "Noooothing!!!";
 		}

@@ -74,9 +74,15 @@ public class Column implements ListElement<Column> {
 	public Column getRandomTopLocation(Random random, Vec posField){
 		topSolidVertex = findTopSolidVertex(vertices);
 		double fac = random.nextDouble();
-		posField.set(
-				xReal + (fac*(right.xReal - xReal)),
-				topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+		if(right != null) {
+			posField.set(	
+					xReal + (fac*(right.xReal - xReal)),
+					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+		} else {
+			posField.set(	
+					xReal + (fac*(left.xReal - xReal)),
+					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+		}
 		return this;
 	}
 	

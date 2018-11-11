@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import item.ItemType;
 import main.Main;
 import menu.Menu.Menus;
 import menu.Settings;
@@ -17,6 +18,7 @@ import world.data.WorldData;
 import world.data.WorldEditor;
 import world.generation.Generator;
 import world.generation.GeneratorInterface;
+import world.generation.environment.Generator2;
 import world.render.LandscapeWindow;
 import world.render.ThingWindow;
 import world.render.WorldPainter;
@@ -55,7 +57,8 @@ public class World {
 
 		Vertex v = data.getRightColumn().getTopSolidVertex();
 		Vec pos = new Vec(Settings.getVec("AVATAR_START_OFFSET").x, v.y + Settings.getVec("AVATAR_START_OFFSET").y);
-		avatar = new Thing(ThingType.SARAH, data, v.parent, pos);
+		avatar = new Thing(ThingType.SARAH, v.parent, pos);
+		avatar.type.inv.addItem(avatar, ItemType.UNICORN_HORN, 1);
 		
 		init();
 	}
@@ -79,10 +82,14 @@ public class World {
 		
 		//generation happens here, because avatar and generator can't be accessed statically yet. might change..
 //		generator.borders(avatar.pos.x - Settings.get("GENERATION_RADIUS"), avatar.pos.x + Settings.get("GENERATION_RADIUS"));
-		genWindow.moveToColumn((int)(avatar.pos.x/Column.COLUMN_WIDTH));
+		int startX = (int)(avatar.pos.x/Column.COLUMN_WIDTH);
+		genWindow.moveToColumn(startX);
+		updateWindow.moveToColumn(startX);//not necessary, but like this all windows start at the same place and are built up
+		while(anchor.xIndex < startX) anchor = anchor.right;
+		while(anchor.xIndex > startX) anchor = anchor.left;
 
 		thingWindow 	= new ThingWindow(anchor, windowRadius + 4);
-		landscapeWindow = new LandscapeWindow(anchor, windowRadius + 4);
+		landscapeWindow = new LandscapeWindow(anchor, windowRadius + 6);
 		engine = new WorldEngine(data, editor, genWindow, updateWindow, landscapeWindow, thingWindow);
 		window = new WorldPainter(data, thingWindow, landscapeWindow);
 	}
