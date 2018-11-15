@@ -39,6 +39,8 @@ public class ItemContainer extends Element {
 		TexFile.bindNone();
 
 		Menu.font.drawString(x2 - 30 - Main.HALFSIZE.w, y2 - 30 - Main.HALFSIZE.h, Main.world.avatar.itemStacks[ordinal].count + "", Menu.fontColor, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
+		if(Main.world.avatar.selectedItem == ordinal && Main.world.avatar.itemStacks[ordinal].item != Main.world.avatar.type.inv.defaultItem)
+			Menu.font.drawString((x1+x2)/2  - Main.HALFSIZE.w, y1 - 30 - Main.HALFSIZE.h, Main.world.avatar.itemStacks[ordinal].item.nameInv, Menu.fontColor, 1, 1, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, TrueTypeFont.ALIGN_CENTER);
 	}
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){

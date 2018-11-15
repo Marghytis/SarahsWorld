@@ -78,7 +78,7 @@ public class Inventory extends AiPlugin {
 		ItemStack selected = src.itemStacks[src.selectedItem];
 		ItemType item = selected.item;//might change during specialUse due to collecting stuff, so have to store it in variable here
 		if(selected.coolDown <= 0){
-			if(selected.item.specialUse(src, worldPos, thingsAtThatLocation)){
+			if(selected.item.use(src, worldPos, thingsAtThatLocation)){
 				if(item.oneWay) {
 					if(item == selected.item)
 						selected.remove(1);

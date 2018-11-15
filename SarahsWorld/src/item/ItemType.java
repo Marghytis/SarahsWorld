@@ -45,7 +45,7 @@ public class ItemType {
 	public static final ItemType ZOMBIE_BRAIN 	= new ItemType(builder.readItemType("ZOMBIE_BRAIN"));
 	public static final ItemType ZOMBIE_FLESH 	= new ItemType(builder.readItemType("ZOMBIE_FLESH"));
 	public static final ItemType BIRTHDAY_CAKE 	= new ItemType(builder.readItemType("BIRTHDAY_CAKE")) {
-		public boolean use(Thing src, Vec pos){
+		public boolean useAt(Thing src, Vec pos){
 			pos = pos.copy();
 			src.link.getRandomTopLocation(World.rand, pos);
 			ThingType.CAKE.defaultSpawner.spawn(src.link, pos);
@@ -54,7 +54,7 @@ public class ItemType {
 		}
 	};
 	public static final ItemType BERRY 			= new ItemType(builder.readItemType("BERRY")) {
-		public boolean use(Thing src, Vec pos){
+		public boolean useAt(Thing src, Vec pos){
 			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
 			if(src.type.magic != null) {
 				src.mana += 2;
@@ -70,17 +70,17 @@ public class ItemType {
 	//Item types below this line won't appear in traders inventories
 	public static final ItemType MOUTH 			= new ItemType(builder.readItemType("MOUTH"));
 	public static final ItemType NOTHING 		= new ItemType(builder.readItemType("NOTHING")) {
-		public boolean specialUse(Thing src, Vec pos, Thing[] dest){
+		public boolean use(Thing src, Vec pos, Thing[] dest){
 			for (int i = 0; i < dest.length; i++) {
 				if(dest[i].type == ThingType.ITEM){
-					if(use(src, pos, dest[i])){
+					if(useOn(src, pos, dest[i])){
 						return true;
 					}
 				}
 			}
-			return super.specialUse(src, pos, dest);
+			return super.use(src, pos, dest);
 		}
-		public boolean use(Thing src, Vec pos, Thing dest){
+		public boolean useOn(Thing src, Vec pos, Thing dest){
 			boolean success = false;
 			if(dest.fruits != null && !dest.fruits.isEmpty() && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
 				int index = World.rand.nextInt(dest.fruits.size());
@@ -167,21 +167,21 @@ public class ItemType {
 		tempList.add(this);
 	}
 	
-	public boolean specialUse(Thing src, Vec pos, Thing[] dest){
+	public boolean use(Thing src, Vec pos, Thing[] dest){
 		if(needsTarget){
 			for(Thing t : dest){
-				if(use(src, pos, t)){
+				if(useOn(src, pos, t)){
 					return true;
 				}
 			}
 		} else {
-			return use(src, pos);
+			return useAt(src, pos);
 		}
 		return false;
 	}
 
-	public boolean use(Thing src, Vec pos, Thing dest){return false;}
-	public boolean use(Thing src, Vec pos){return false;}
+	public boolean useOn(Thing src, Vec pos, Thing dest){return false;}
+	public boolean useAt(Thing src, Vec pos){return false;}
 	
 	/**
 	 * Translates and rotates the model matrix. Matrix origin should be at bottom left corner of the things texture.
