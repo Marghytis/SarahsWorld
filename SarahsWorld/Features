@@ -1,7 +1,6 @@
 to add
 _add particle effects to the spell attack
-_Readd inventory nametags
-_improve swimming animations(not urgent)
+_improve swimming animations (not urgent)
 _load and save world
 _improve the biome transition in BiomeManager
 _for debug add again rendering of boundingboxes (when it's needed?)
@@ -23,3 +22,4 @@ _frozen lakes in winter biome
 
 Ideas:
 _Landscape with lots of rocks and small grass pits with flowers
+_Readd inventory nametags
