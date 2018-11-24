@@ -1,6 +1,5 @@
 package menu;
 
-import core.Listener;
 import main.Main;
 import render.Texture;
 import util.Color;
@@ -60,9 +59,9 @@ public abstract class ToggleButton extends Button {
 	}
 	
 	public void determineStateClassically() {
-		if(		 (visualState == NORMAL || visualState == RELEASED) && contains(Listener.getMousePos(Main.WINDOW))){
+		if(		 (visualState == NORMAL || visualState == RELEASED) && contains(Main.input.getMousePos(Main.WINDOW))){
 			visualState = HOVER;
-		} else if((visualState == HOVER || visualState == PUSHED) && !contains(Listener.getMousePos(Main.WINDOW))){
+		} else if((visualState == HOVER || visualState == PUSHED) && !contains(Main.input.getMousePos(Main.WINDOW))){
 			if(hooked) {
 				visualState = RELEASED;
 			} else {

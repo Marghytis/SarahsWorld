@@ -1,20 +1,34 @@
 package menu;
 
 import java.awt.Font;
-import java.nio.*;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 
-import core.*;
-import main.*;
+import main.Main;
+import main.Res;
 import quest.ActiveQuest;
-import render.*;
+import render.Render;
+import render.Shader;
+import render.TexAtlas;
+import render.TexFile;
+import render.Texture;
+import render.VAO;
+import render.VBO;
 import render.VBO.VAP;
 import things.Thing;
-import util.*;
-import util.Anim.*;
-import util.math.*;
+import util.Anim;
+import util.Anim.AnimPart;
+import util.Anim.Func;
+import util.Anim.Value;
+import util.Color;
+import util.TrueTypeFont;
+import util.math.Graph;
+import util.math.UsefulF;
+import util.math.Vec;
 
 public class Dialog extends Element {
 	public static Texture answersTex = Res.getTex("answers");
@@ -310,7 +324,7 @@ public class Dialog extends Element {
 
 		for(int i = 0; i < answers.length; i++){
 			if(answerWidths[i].v > 0){
-				if(UsefulF.contains(Listener.getMousePos(Main.WINDOW).x, Listener.getMousePos(Main.WINDOW).y, Main.HALFSIZE.w + answersTex.pixelCoords[0], Main.HALFSIZE.h + ys[i], Main.HALFSIZE.w + answersTex.pixelCoords[2], Main.HALFSIZE.h + ys[i] + Res.menuFont.getHeight())){
+				if(UsefulF.contains(Main.input.getMousePos(Main.WINDOW).x, Main.input.getMousePos(Main.WINDOW).y, Main.HALFSIZE.w + answersTex.pixelCoords[0], Main.HALFSIZE.h + ys[i], Main.HALFSIZE.w + answersTex.pixelCoords[2], Main.HALFSIZE.h + ys[i] + Res.menuFont.getHeight())){
 					drawQuadCheaty(justAQuad, Res.getTex("light2"), new Color(1, 1, 1, 0.5f), - widthsH[i], ys[i]-10, + widthsH[i], ys[i] + Res.menuFont.getHeight() + 10);
 				}
 				String string = answers[i].substring(0, (int)(answers[i].length()*answerWidths[i].v));

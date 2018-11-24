@@ -3,13 +3,12 @@ package main;
 import org.lwjgl.opengl.GL11;
 
 import core.Core;
-import core.Listener;
-import core.Renderer;
-import core.Updater;
+import core.Game;
+import core.Input;
+import core.Speaker;
 import core.Window;
 import menu.Menu;
 import menu.Settings;
-import util.Color;
 import util.math.IntVec;
 import world.SoundManager;
 import world.World;
@@ -19,12 +18,13 @@ import world.World;
  * @author Mario
  *
  */
-public class Main {
+public class Main implements Game {
 	
 	//configuration parameters. TODO: read from a file
 	final static String TEX_ATLAS_TABLE_PATH = "res/TexAtlasTable.res";
 	public final static String SETTINGS_PATH = "res/Settings.txt";
 	
+	public static Input input;
 	public static Menu menu;
 	public static World world;
 	public static SoundManager sound;
@@ -38,12 +38,11 @@ public class Main {
 	 */
 	public static void main(String[] args)
 	{
+		Window.showSplashScreen("res/Titel.png");
 		
 		initializeGame("Sarahs World");
 
-		resetCoreLists();
-
-		core.coreLoop();
+		core.start();
 	}
 	
 	/**
@@ -52,17 +51,21 @@ public class Main {
 	 */
 	static void initializeGame(String worldName)
 	{
+		input = new Input();
+		Window window = new Window("Sarahs World", false, 1, 1, true, true, input);
+		Speaker speaker = new Speaker();
+		Game game = new Main();
 		//create a core object
-		core = new Core("res/Titel.png");
-		core.init(new Window("Sarahs World", false, 1, 1, true), Color.BLACK);
+		core = new Core(window, speaker, game, 60);
 		if(Settings.getInt("DEBUG_LEVEL") > 1)
 			System.out.println("OpenGL version: " + GL11.glGetString(GL11.GL_VERSION));
 		
 		SIZE = core.SIZE;
 		HALFSIZE = core.SIZE_HALF;
-		WINDOW = core.getWindow().getHandle();
-		
+	}
 
+	public void init() {
+		WINDOW = core.getWindow().getHandle();
 		//create a menu object and load or create a world object
 		menu = new Menu();
 		if(Save.worldSaved("worlds/world.sw")){//TODO make the path variable
@@ -71,6 +74,8 @@ public class Main {
 			world = new World();
 		}
 		sound = new SoundManager();
+
+		resetCoreLists();
 	}
 	
 	/**
@@ -78,19 +83,19 @@ public class Main {
 	 */
 	public static void resetCoreLists()
 	{
-		Updater.updaters.clear();
-		Updater.updaters.add(menu);
-		Updater.updaters.add(sound);
-		Updater.updaters.add(world.engine);
-		Updater.updaters.add(world.window);
+		core.setUpdaters(
+				menu,
+				sound,
+				world.engine,
+				world.window);
 
-		Renderer.renderers.clear();
-		Renderer.renderers.add(world.window);
-		Renderer.renderers.add(menu);
+		core.getWindow().setRenderers(
+				world.window,
+				menu);
 
-		Listener.listeners.clear();
-		Listener.listeners.add(menu);
-		Listener.listeners.add(world.avatar.type.avatar);
+		core.getWindow().setListeners(
+				menu,
+				world.avatar.type.avatar);
 	}
 	
 }

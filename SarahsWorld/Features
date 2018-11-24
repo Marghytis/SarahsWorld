@@ -13,12 +13,14 @@ _more biomes (Bamboo, giant, forest, mountains)
 _more things (sloth, witch, trex, panda, meteor, giant cat, birds, tumbleweed, rainbow, witch house, normal tree)
 _tutorial for beginners
 _moving clouds
-_weather update (rain, thunder, lightning, day + night)
+_weather update (rain, thunder, lightning, day + night, candy rain)
 _magic
 _camp fire (e.g. when hitting a stack of sticks with a magic spell)
 _frozen lakes in winter biome
+_throw away items -> take every item -> einblenden, dass man was bekommen hat
 
-
+debug:
+_set next biome
 
 Ideas:
 _Landscape with lots of rocks and small grass pits with flowers

@@ -91,7 +91,7 @@ public class ThingType {
 			new Life(20, 0, 1),
 			new Magic(20, 20),
 			new Attacking(4, 0.01, new AttackType[]{
-					 new AttackType("punch", 100, 50, 100, WeaponType.PUNCH, 1, 1, 0.5)//punch
+					 new AttackType("punch", 100, -50, 100, WeaponType.PUNCH, 1, 1, 0.5)//punch
 					,new AttackType("kick", 200, -30, 50, WeaponType.KICK, 2, 1, 1)//kick
 					,new AttackType("strike", 400, -200, 300, WeaponType.STRIKE, 5, 2, 0.7)//strike
 					,new AttackType("spell", 1000, -1000, 1000, WeaponType.SPELL, 1, 1, 1, 
@@ -241,7 +241,7 @@ public class ThingType {
 	};
 										static final Animation[][] midge =  {{
 											new Animation("stand", Res.getAtlas("midge"), 0, 0)}};
-	public static final ThingType MIDGE = new ThingType("MIDGE", Res.getAtlas("midge"), 200, true, (p, f, ed) -> new Thing(ThingType.MIDGE, p, f.shift(0, 90))
+	public static final ThingType MIDGE = new ThingType("MIDGE", Res.getAtlas("midge"), 1300, true, (p, f, ed) -> new Thing(ThingType.MIDGE, p, f.shift(0, 90))
 	,new Animating(midge[0][0], new Rect(Res.getAtlas("midge").pixelCoords), 0, 1, 1, false, midge)
 	,new Life(1, 1, 0)
 	,new Movement("stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand")
@@ -430,7 +430,9 @@ public class ThingType {
 			})) {
 
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.ani.pos = (int)extraData[0];
+			if(extraData.length > 0 && extraData[0] != null) {
+				t.ani.pos = (int)extraData[0];
+			}
 			t.onRightClick = (src, p, dest) -> {
 				if(src.type.life != null) {
 					src.type.life.heal(src, 5*dest.health/t.type.life.maxHealth);
@@ -475,7 +477,7 @@ public class ThingType {
 	};
 	
 										static final Animation[] grass = {new Animation("waving", Res.getAtlas("grasstuft"), 5, 0, /**/0, 1, 2, 3, 2, 1)};
-	public static final ThingType GRASS = new ThingType("GRASS", Res.getAtlas("grasstuft"), 300, true
+	public static final ThingType GRASS = new ThingType("GRASS", Res.getAtlas("grasstuft"), 550, true
 			,new Animating(grass[0], new Rect(Res.getAtlas("grasstuft").pixelCoords), 0, 0, 1, false, grass)) {
 
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
@@ -487,7 +489,7 @@ public class ThingType {
 											{new Animation(Res.getAtlas("grass_giant"), 0, 0)},
 											{new Animation(Res.getAtlas("grass_giant"), 0, 1)},
 											{new Animation(Res.getAtlas("grass_giant"), 0, 2)}};
-	public static final ThingType GIANT_GRASS = new ThingType("GIANT_GRASS", Res.getAtlas("grass_giant"), 60
+	public static final ThingType GIANT_GRASS = new ThingType("GIANT_GRASS", Res.getAtlas("grass_giant"), 75
 			,new Animating(grass_giant[0][0], new Rect(Res.getAtlas("grass_giant").pixelCoords), 0, 0, 1, false, grass_giant)) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
@@ -551,7 +553,7 @@ public class ThingType {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
 	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.getAtlas("tree_palm"), 50, new Animating(tree_palm[0][0], new Rect(Res.getAtlas("tree_palm").pixelCoords), 0, 1, 1, false, tree_palm)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.getAtlas("tree_jungle"), 150, new Animating(tree_jungle[0][0], new Rect(Res.getAtlas("tree_jungle").pixelCoords), 0, 0.1, 1, false, tree_jungle)){
+	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.getAtlas("tree_jungle"), 250, new Animating(tree_jungle[0][0], new Rect(Res.getAtlas("tree_jungle").pixelCoords), 0, 0.1, 1, false, tree_jungle)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, field, pos, extraData);}};
 		
 		
@@ -578,7 +580,7 @@ public class ThingType {
 										static final Animation[][] bush_candy = {
 											{new Animation(Res.getAtlas("bush_candy"), 0, 0)},
 											{new Animation(Res.getAtlas("bush_candy"), 0, 1)}};
-	public static final ThingType BUSH_NORMAL = new ThingType("BUSH_NORMAL", Res.getAtlas("bush_normal"), 50
+	public static final ThingType BUSH_NORMAL = new ThingType("BUSH_NORMAL", Res.getAtlas("bush_normal"), 120
 			,new Animating(bush_normal[0][0], new Rect(Res.getAtlas("bush_normal").pixelCoords), 0, 0, 1, false, bush_normal)) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
@@ -599,7 +601,7 @@ public class ThingType {
 					t.fruits.add(ItemType.BERRY);
 			}
 		}};
-	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.getAtlas("bush_jungle"), 80,new Animating(bush_jungle[0][0], new Rect(Res.getAtlas("bush_jungle").pixelCoords), 0, 0, 1, false, bush_jungle)){
+	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.getAtlas("bush_jungle"), 350,new Animating(bush_jungle[0][0], new Rect(Res.getAtlas("bush_jungle").pixelCoords), 0, 0, 1, false, bush_jungle)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, field, pos, extraData);}};
 	public static final ThingType BUSH_CANDY = new ThingType("BUSH_CANDY", Res.getAtlas("bush_candy"), 30 ,new Animating(bush_candy[0][0], new Rect(Res.getAtlas("bush_candy").pixelCoords), 0, 0, 1, false, bush_candy)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, field, pos, extraData);}};
@@ -632,7 +634,7 @@ public class ThingType {
 		}};
 	public static final ThingType FLOWER_CANDY = new ThingType("FLOWER_CANDY", Res.getAtlas("flower_candy") , 50, new Animating(flower_candy[0][0], new Rect(Res.getAtlas("flower_candy").pixelCoords), 0, 0, 1, false, flower_candy)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ FLOWER_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType FLOWER_JUNGLE = new ThingType("FLOWER_JUNGLE", Res.getAtlas("flower_jungle"), 90, new Animating(flower_jungle[0][0], new Rect(Res.getAtlas("flower_jungle").pixelCoords), 0, 0, 1, false, flower_jungle)){
+	public static final ThingType FLOWER_JUNGLE = new ThingType("FLOWER_JUNGLE", Res.getAtlas("flower_jungle"), 600, new Animating(flower_jungle[0][0], new Rect(Res.getAtlas("flower_jungle").pixelCoords), 0, 0, 1, false, flower_jungle)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ FLOWER_NORMAL.setup(t, field, pos, extraData);}};
 			
 
@@ -697,7 +699,7 @@ public class ThingType {
 											{new Animation(Res.getAtlas("plant_jungle") ,0, 2)},
 											{new Animation(Res.getAtlas("plant_jungle") ,0, 3)},
 											{new Animation(Res.getAtlas("plant_jungle") ,0, 4)}};
-	public static final ThingType FERN = new ThingType("FERN", Res.getAtlas("plant_jungle") ,120, new Animating(plant_jungle[0][0], new Rect(Res.getAtlas("plant_jungle").pixelCoords), 0, 0.05, 1, false, plant_jungle)){
+	public static final ThingType FERN = new ThingType("FERN", Res.getAtlas("plant_jungle") ,350, new Animating(plant_jungle[0][0], new Rect(Res.getAtlas("plant_jungle").pixelCoords), 0, 0.05, 1, false, plant_jungle)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
 			ani.setAnimation(t, "");
@@ -726,6 +728,7 @@ public class ThingType {
 	public static final ThingType GRAVE = new ThingType("GRAVE", Res.getAtlas("grave"), 80,new Animating(grave[0][0], new Rect(Res.getAtlas("grave").pixelCoords), 0.5, 0, 1, false, grave)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.dir = false;
 			ani.setAnimation(t, "");
 			t.fruits.add(ItemType.ZOMBIE_FLESH);
 		}};
@@ -734,7 +737,7 @@ public class ThingType {
 											{new Animation(Res.getAtlas("crack") , 0, 1)},
 											{new Animation(Res.getAtlas("crack") , 0, 2)},
 											{new Animation(Res.getAtlas("crack") , 0, 3)}};
-		public static final ThingType CRACK = new ThingType("CRACK", Res.getAtlas("crack") , 70, new Animating(crack[0][0], new Rect(Res.getAtlas("crack").pixelCoords), 0, 0, 1, false, crack)){
+		public static final ThingType CRACK = new ThingType("CRACK", Res.getAtlas("crack") , 200, new Animating(crack[0][0], new Rect(Res.getAtlas("crack").pixelCoords), 0, 0, 1, false, crack)){
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
 				t.aniSet = World.rand.nextInt(ani.animations.length);
 				ani.setAnimation(t, "");
@@ -744,7 +747,7 @@ public class ThingType {
 											{new Animation(Res.getAtlas("fossil"), 0, 0)},
 											{new Animation(Res.getAtlas("fossil"), 0, 1)},
 											{new Animation(Res.getAtlas("fossil"), 0, 2)}};
-		public static final ThingType FOSSIL = new ThingType("FOSSIL", Res.getAtlas("fossil"), 30,new Animating(fossil[0][0], new Rect(Res.getAtlas("fossil").pixelCoords), 0, 0, 1, false, fossil)){
+		public static final ThingType FOSSIL = new ThingType("FOSSIL", Res.getAtlas("fossil"), 75,new Animating(fossil[0][0], new Rect(Res.getAtlas("fossil").pixelCoords), 0, 0, 1, false, fossil)){
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
 				t.aniSet = World.rand.nextInt(ani.animations.length);
 				ani.setAnimation(t, "");
@@ -757,7 +760,11 @@ public class ThingType {
 			,new Animating(item[0], new Rect(Res.getAtlas("items_world").pixelCoords), 0, 0, 1, false, item)
 			,new Physics(1, 1)) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			ItemType type = (ItemType)extraData[0];
+			ItemType type = ItemType.values[0];
+			if(extraData.length > 0 && extraData[0] != null) {
+				type = (ItemType)extraData[0];
+			}
+				
 			t.ani.setTexture(type.texWorld);
 			
 			t.box.set(type.texWorld.pixelCoords);

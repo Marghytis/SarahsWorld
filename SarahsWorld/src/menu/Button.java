@@ -1,9 +1,11 @@
 package menu;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
 
-import core.Listener;
-import main.*;
+import main.Main;
+import main.Res;
 import render.TexAtlas;
 import render.Texture;
 import util.Color;
@@ -62,7 +64,7 @@ public abstract class Button extends TextField {
 	public abstract void released(int button);
 
 	public void determineState() {
-		if(contains(Listener.getMousePos(Main.WINDOW))){
+		if(contains(Main.input.getMousePos(Main.WINDOW))){
 			if(nStates >= 3 && glfwGetMouseButton(Main.WINDOW, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS){
 				visualState = 2;
 			} else {

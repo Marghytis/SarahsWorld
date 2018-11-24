@@ -15,7 +15,7 @@ public class Debugger extends Element {
 	String fps = "Frame time:";
 	int stringLength = /*font.getWidth(fps)*/0;
 	
-	float scale = 4000;
+	float scale = 4000/3.0f;//4000 for 60 fps
 	Color highColor = Color.RED, lowColor = Color.GREEN;
 	float highValue = scale/60;//ms scaled
 	float zero = Main.SIZE.h/4, sixty = zero + highValue;//vertices pixels

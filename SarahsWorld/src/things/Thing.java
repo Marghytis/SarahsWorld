@@ -35,7 +35,7 @@ public class Thing {
 	//dynamically changing values
 	public Thing prev, next;
 	public short index = -1;
-	public Vec pos = new Vec(), nextPos = new Vec();
+	public Vec pos = new Vec(), nextPos = new Vec(), lastPos = new Vec();
 	public Vec vel = new Vec(), nextVelAvDelta = new Vec(), nextVel = new Vec();
 	public Vec force = new Vec(), noFricForce = new Vec(), flyForce = new Vec();//flyForce is mainly for butterflies
 	public double phi;

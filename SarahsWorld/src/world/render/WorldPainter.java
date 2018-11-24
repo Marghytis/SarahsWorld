@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import org.lwjgl.opengl.GL11;
 
-import core.Listener;
 import core.Renderer;
 import core.Updater;
 import effects.Effect;
@@ -99,17 +98,24 @@ public class WorldPainter implements Updater, Renderer{
 		return false;
 	}
 	
-	public void updateTransform() {
+	Vec lastAvatarPos = new Vec(), avatarPos = new Vec(), offset = new Vec();
+	public void updateTransform(double interpolationShift) {
 
 		Render.scaleX = (float)(Settings.getDouble("ZOOM")/Main.HALFSIZE.w);
 		Render.scaleY = (float)(Settings.getDouble("ZOOM")/Main.HALFSIZE.h);
-		Render.offsetX = (float)-Main.world.avatar.pos.x;
-		Render.offsetY = (float)-Main.world.avatar.pos.y;
+		
+		lastAvatarPos.set(Main.world.engine.lastAvatarPosition).set(Main.world.avatar.pos);
+		avatarPos.set(Main.world.avatar.pos);
+		
+		offset.set(avatarPos).shift(avatarPos.shift(lastAvatarPos, -1), interpolationShift);
+		
+		Render.offsetX = (float)-offset.x;
+		Render.offsetY = (float)-offset.y;
 	}
 	
-	public void draw(){
+	public void draw(double interpolationShift){
 		
-		updateTransform();
+		updateTransform(interpolationShift);
 
 		landscape.renderBackground();
 		
@@ -151,7 +157,7 @@ public class WorldPainter implements Updater, Renderer{
 		
 		//effects
 		ParticleEmitter.offset.set(Render.offsetX, Render.offsetY);
-		ParticleEffect.wind.set((Listener.getMousePos(Main.WINDOW).x - Main.HALFSIZE.w)*60f/Main.HALFSIZE.w, 0);
+		ParticleEffect.wind.set((Main.input.getMousePos(Main.WINDOW).x - Main.HALFSIZE.w)*60f/Main.HALFSIZE.w, 0);
 		effects.forEach(Effect::render);
 
 		//quests

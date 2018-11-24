@@ -75,7 +75,7 @@ public class Menu implements Updater, Renderer, Listener {
 		return open.blockWorld;
 	}
 
-	public void draw() {
+	public void draw(double beta) {
 		for(Element e : open.elements){
 			e.render();
 		}

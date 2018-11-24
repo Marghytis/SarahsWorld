@@ -18,12 +18,12 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		boolean riding = t.isRiding;
 		boolean debugging = Settings.getBoolean("DEBUGGING");
 
-		boolean walk_right = Listener.isKeyDown(Main.WINDOW, Key.RIGHT.key);
-		boolean walk_left = Listener.isKeyDown(Main.WINDOW, Key.LEFT.key);
-		boolean crouch = Listener.isKeyDown(Main.WINDOW, Key.CROUCH.key);
-		boolean sprint = Listener.isKeyDown(Main.WINDOW, Key.SPRINT.key);
-		boolean super_sprint = debugging && Listener.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key);
-		boolean mega_sprint = debugging && Listener.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key);
+		boolean walk_right = Main.input.isKeyDown(Main.WINDOW, Key.RIGHT.key);
+		boolean walk_left = Main.input.isKeyDown(Main.WINDOW, Key.LEFT.key);
+		boolean crouch = Main.input.isKeyDown(Main.WINDOW, Key.CROUCH.key);
+		boolean sprint = Main.input.isKeyDown(Main.WINDOW, Key.SPRINT.key);
+		boolean super_sprint = debugging && Main.input.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key);
+		boolean mega_sprint = debugging && Main.input.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key);
 		
 		
 		
@@ -79,22 +79,22 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		t.type.movement.setAni(t, walkingDir);
 		t.walkingForce = walkingDir*a;
 		if(debugging) {
-			if(Listener.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
+			if(Main.input.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
 				t.force.shift(0, 5000);
 			}
-			if(Listener.isKeyDown(Main.WINDOW, Key.SUPERGRAVITY.key)){
+			if(Main.input.isKeyDown(Main.WINDOW, Key.SUPERGRAVITY.key)){
 				t.force.shift(0, -5000);
 			}
-			if(Listener.isKeyDown(Main.WINDOW, Key.FLY_RIGHT.key)){
+			if(Main.input.isKeyDown(Main.WINDOW, Key.FLY_RIGHT.key)){
 				t.force.shift(5000, 1100);
 			}
-			if(Listener.isKeyDown(Main.WINDOW, Key.FLY_LEFT.key)){
+			if(Main.input.isKeyDown(Main.WINDOW, Key.FLY_LEFT.key)){
 				t.force.shift(-5000, 1100);
 			}
 		}
 		
 		//Scroll through inventory
-		double scroll = Listener.getDWheel(Main.WINDOW);
+		double scroll = Main.input.getDWheel(Main.WINDOW);
 		t.selectedItem += -scroll;
 		if(t.selectedItem < 0){
 			t.selectedItem %= t.itemStacks.length;
@@ -128,12 +128,14 @@ public  class AvatarControl extends AiPlugin implements Listener {
 			Main.world.avatar.type.inv.useSelectedItem(Main.world.avatar, worldPos, objectsClickedOn);
 			break;
 		case 2:
-			objectsClickedOn = Main.world.thingWindow.thingsAt(worldPos);
-			for(Thing t : objectsClickedOn){
-				if(t.selected()) {
-					Main.world.window.deselect(t);
-				} else {
-					Main.world.window.select(t);
+			if(Settings.getBoolean("DEBUGGING")) {
+				objectsClickedOn = Main.world.thingWindow.thingsAt(worldPos);
+				for(Thing t : objectsClickedOn){
+					if(t.selected()) {
+						Main.world.window.deselect(t);
+					} else {
+						Main.world.window.select(t);
+					}
 				}
 			}
 			break;
@@ -235,7 +237,7 @@ public  class AvatarControl extends AiPlugin implements Listener {
 			break;
 		case TOSS_COIN:
 			if(Settings.getBoolean("DEBUGGING"))
-				new Thing(ThingType.COIN, Main.world.avatar.link, Main.world.window.toWorldPos(Listener.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));
+				new Thing(ThingType.COIN, Main.world.avatar.link, Main.world.window.toWorldPos(Main.input.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));
 			break;
 		default:
 		}

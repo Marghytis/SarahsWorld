@@ -3,7 +3,6 @@ package world.render;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -48,6 +47,7 @@ public class LandscapeWindow extends ArrayWorldWindow {
 	//Variables that are local in nature, but are defined once to save time.
 	int layersDrawn = 0;
 	ArrayList<Patch> waterPatches = new ArrayList<>();
+	Patch[] currentPatches;
 
 	public LandscapeWindow(Column anchor, int columnRadius){
 		super(anchor, columnRadius);
@@ -67,6 +67,11 @@ public class LandscapeWindow extends ArrayWorldWindow {
 						new VAP(4, GL11.GL_BYTE, true, 2*Float.BYTES)));//in_Color
 		
 		maxTextureUnits = GL11.glGetInteger(GL20.GL_MAX_TEXTURE_IMAGE_UNITS);
+		
+		currentPatches = new Patch[Vertex.maxMatCount];
+		for(int i = 0; i < currentPatches.length; i++) {
+			currentPatches[i] = new Patch(0, 0, 0, null);
+		}
 	}
 	
 	public void renderLandscape(){
@@ -200,21 +205,22 @@ public class LandscapeWindow extends ArrayWorldWindow {
 	void drawPatches2(int indicesOffset, boolean water){
 		//for each material every patch of this material gets rendered.
 		int oneBeforeStart = (indexShift()+columns.length-1)%columns.length;
-		Patch[] currentPatches = new Patch[Vertex.maxMatCount];
+		for(Patch p : currentPatches)
+			p.deactivate();
 		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
 			int  column = indexShift(), matIndex = columns[column].vertices[y].firstMatIndex;
 			do {//while(column != indexShift), loop through all columns
 				for(int i = 0; i < Vertex.maxMatCount; i++){
-					if(currentPatches[i] != null && currentPatches[i].end == column){
-						currentPatches[i] = null;
+					if(currentPatches[i].active() && currentPatches[i].end == column){
+						currentPatches[i].deactivate();
 					}
-					if((currentPatches[i] == null || currentPatches[i].end == -1) && columns[column].vertices[y].mats[i] != Material.AIR){
-						currentPatches[i] = new Patch(y, i, column, columns[column].vertices[y].mats[i]);
+					if((!currentPatches[i].active() || currentPatches[i].end == -1) && columns[column].vertices[y].mats[i] != Material.AIR){
+						currentPatches[i].set(y, i, column, columns[column].vertices[y].mats[i]);
 					}
 				}
 				int matIndex2 = matIndex;
 				do {
-					if(currentPatches[matIndex2] != null){
+					if(currentPatches[matIndex2].active()){
 						for(int column2 = column; currentPatches[matIndex2].end == -1; column2 = (column2+1)%pointsX){//if end != 1, the patch has been drawn
 							//the current patch ends here. if there is an open patch it gets rendered cut (after one layer currentPatches[i] = null for all i)
 							if(columns[column2].vertices[y].mats[matIndex2] != currentPatches[matIndex2].mat || column2 == oneBeforeStart)
@@ -226,19 +232,39 @@ public class LandscapeWindow extends ArrayWorldWindow {
 				matIndex = matIndex2;
 				column = (column+1)%columns.length;
 			} while(column != indexShift());
-			Arrays.fill(currentPatches, null);
+			for(Patch p : currentPatches)
+				p.deactivate();
 		}
 		layersDrawn += pointsY;
 	}
 	
-	public class Patch{
-		public int start, end = -1, yIndex, matIndex;
+	public static class Patch {
+		public int start, end, yIndex, matIndex;
 		public Material mat;
+		boolean active = false;
 		public Patch(int yIndex, int matIndex, int start, Material mat) {
 			this.yIndex = yIndex;
 			this.matIndex = matIndex;
 			this.start = start;
 			this.mat = mat;
+			this.end = -1;
+		}
+		
+		public void set(int yIndex, int matIndex, int start, Material mat) {
+			this.yIndex = yIndex;
+			this.matIndex = matIndex;
+			this.start = start;
+			this.mat = mat;
+			this.end = -1;
+			active = true;
+		}
+		
+		public boolean active() {
+			return active;
+		}
+		
+		public void deactivate() {
+			active = false;
 		}
 	}
 	

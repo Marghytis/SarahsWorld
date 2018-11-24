@@ -84,23 +84,24 @@ public class ThingWindow extends RealWorldWindow {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 	}
-	
+
+//	@SuppressWarnings(value = { "deprecation" })
 	private void updateVisibility() {
-		//add things to the buffer that should be visible
-		for(int type = 0; type < ThingType.types.length; type++)
-		for(Column c = start(); c != end(); c = c.next())
-		for(Thing t = c.things[type]; t != null; t = t.next)
-			if(t.pos.x >= Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH && t.pos.x <= Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH) {
-				t.setVisible(true);
-			}
-		//remove things from the buffer that should not be visible
-		for(int type = 0; type < ThingType.types.length; type++) {
-			for(int t = vaos[type].start(); t < vaos[type].end(); t = vaos[type].nextUsedIndex(t)){
-				if(vaos[type].getThing(t).pos.x < Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH || vaos[type].getThing(t).pos.x > Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH){
-					vaos[type].getThing(t).setVisible(false);
-				}
-			}
-		}
+//		//add things to the buffer that should be visible
+//		for(int type = 0; type < ThingType.types.length; type++)
+//		for(Column c = start(); c != end(); c = c.next())
+//		for(Thing t = c.things[type]; t != null; t = t.next)
+//			if(t.pos.x >= Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH && t.pos.x <= Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH) {
+//				t.setVisible(true);
+//			}
+//		//remove things from the buffer that should not be visible
+//		for(int type = 0; type < ThingType.types.length; type++) {
+//			for(int t = vaos[type].start(); t < vaos[type].end(); t = vaos[type].nextUsedIndex(t)){
+//				if(vaos[type].getThing(t).pos.x < Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH || vaos[type].getThing(t).pos.x > Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH){
+//					vaos[type].getThing(t).setVisible(false);
+//				}
+//			}
+//		}
 	}
 	
 	public void renderOutlines() {

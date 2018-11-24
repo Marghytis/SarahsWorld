@@ -1,10 +1,11 @@
 package things.aiPlugins;
 
-import core.Listener;
 import main.Main;
 import menu.Settings.Key;
-import things.*;
-import util.math.*;
+import things.AiPlugin;
+import things.Thing;
+import util.math.Function;
+import util.math.Vec;
 import world.data.Column;
 
 
@@ -46,7 +47,7 @@ public class Movement extends AiPlugin {
 						t.type.ani.setAnimation(t, sneak);
 					}
 				} else {
-					if(Listener.isKeyDown(Main.WINDOW, Key.CROUCH.key)) {
+					if(Main.input.isKeyDown(Main.WINDOW, Key.CROUCH.key)) {
 						t.type.ani.setAnimation(t, sneakyStand);
 					} else {
 						t.type.ani.setAnimation(t, stand);
@@ -83,27 +84,22 @@ public class Movement extends AiPlugin {
 	 * @param t
 	 */
 	public void jump(Thing t){
-		if(t.willLandInWater = willLandInWater(t)){
-			t.type.ani.setAnimation(t,  liftOf, () -> {
-				if(Main.world.avatar.where.g){
-					t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));
-					t.reallyAir = true;
-					t.where.g = false;
+		t.type.ani.setAnimation(t,  liftOf, () -> {
+			if(Main.world.avatar.where.g){
+				t.willLandInWater = willLandInWater(t);
+				t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));//ortho(t.vel.x > 0)
+				t.reallyAir = true;
+				t.where.g = false;
+				if(t.willLandInWater){
 					t.type.ani.setAnimation(t,  dive, () -> {
 						t.type.ani.setAnimation(t, plunge);
 					});
 				} else {
 					t.willLandInWater = false;
+					t.type.ani.setAnimation(t, fly);
 				}
-			});
-		} else 
-		t.type.ani.setAnimation(t,  liftOf, () -> {
-			if(Main.world.avatar.where.g){
-				t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));//ortho(t.vel.x > 0)
-	//			t.type.phys.leaveGround(Math.cos(Math.atan(t.link.parent.getTopLine(topLine).slope()))*t.vel.length(), 400.0);
-				t.reallyAir = true;
-				t.type.ani.setAnimation(t, fly);
-				t.where.g = false;
+			} else {
+				t.willLandInWater = false;
 			}
 		});
 	}

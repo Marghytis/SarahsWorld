@@ -1,2 +1,2 @@
 @echo on
-java -Djava.library.path="natives/" -jar SarahsWorld.JAR
+java -Xprof -Djava.library.path="natives/" -jar SarahsWorld.JAR
