@@ -1,4 +1,4 @@
-package world.render;
+package world.window;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,27 +17,103 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
-import world.window.RealWorldWindow;
+import world.render.DoubleThingVAO;
 
 public class ThingWindow extends RealWorldWindow {
+	
 	//variables that should be local but are not, due to speed optimization
 	private List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
 
 	private DoubleThingVAO[] vaos = new DoubleThingVAO[ThingType.types.length];
 	
-	public ThingWindow(Column anchor, int radius) {
-		super(anchor, radius);
+	private ThingPreparationWindow prepare;
+	
+	int prepareInterval;
+	
+	public ThingWindow(Column anchor, int updateRadius, int renderPrepareRadius) {
+		super(anchor, updateRadius);
+		
+		prepareInterval = renderPrepareRadius - updateRadius;
+		
 		for(int i = 0; i < ThingType.types.length; i++){
 			vaos[i] = new DoubleThingVAO(ThingType.types[i].maxVisible);
 		}
+		this.prepare = new ThingPreparationWindow(anchor, renderPrepareRadius, vaos);
+	}
+	
+	@Override
+	protected void shiftOutwards(int end) {
+		super.shiftOutwards(end);
+
+		for(int type = 0; type < ThingType.types.length; type++){
+			boolean addNeeded = false;
+			if(ThingType.types[type].ani != null) {
+				for(Thing t = ends[end].firstThing(type); t != null; t = t.next()) {
+					if(!t.addedToVAO) {
+						addNeeded = true;
+						if(t.visibilityTicket == -1) {
+							prepare.prepare(t, end);
+						}
+					}
+				}
+			}
+			if(addNeeded) {
+				prepare.addPreparedThings(type, end);
+			}
+		}
+
+//		int i = 0;
+//		for(Column c = ends[end]; i < prepareInterval; c = c.next(end), i++) {
+//			for(int type = 0; type < ends[end].things.length; type++){
+//				if(ThingType.types[type].ani != null && ends[end].things[type] != null) {
+//					prepare.addPreparedThings(type, end);
+//				}
+//			}
+//		}
+	}
+
+	@Override
+	protected void shiftInwards(int end) {
+		
+		for(int i = 0; i < ThingType.types.length; i++){
+			if(ThingType.types[i].ani != null)
+			for(Thing t = ends[end].firstThing(i); t != null; t = t.next()){
+				remove(t, end);
+			}
+		}
+
+		super.shiftInwards(end);
+	}
+	
+	@Override
+	public void moveToColumn(int xIndex) {
+		prepare.moveToColumn(xIndex);
+		super.moveToColumn(xIndex);
 	}
 	
 	public void add(Thing t) {
-		vaos[t.type.ordinal].add(t);
+
+		vaos[t.getTypeOrdinal()].add(t, false);
+		t.onVisibilityChange(true);
+		t.visibilityTicket = -1;
+		System.out.println("Thing added not from terrain generation!");
+//		if(!addLazyly(t))
+//			addLazylyCollected(t.getTypeOrdinal());
 	}
 	
 	public void remove(Thing t) {
+		if(t == prepare.firstThing) {
+			System.out.println("removing thing....");
+		}
 		vaos[t.type.ordinal].remove(t);
+	}
+	
+	public void remove(Thing t, int iDir) {
+		remove(t);
+		if(!prepare.prepare(t, iDir)) {
+			System.out.println();
+		}
+//		removePreparation(t, iDir);
 	}
 	
 	public void changeUsual(Thing t) {
@@ -120,6 +196,10 @@ public class ThingWindow extends RealWorldWindow {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 	}
 	
+	public void updateThings(double delta) {
+		forEach(thing -> thing.update(delta));
+	}
+	
 	public void renderThings(Predicate<ThingType> d, int side){
 		renderThings(d, Res.thingShader, side);
 	}
@@ -136,7 +216,7 @@ public class ThingWindow extends RealWorldWindow {
 			ThingType.types[type].file.file.bind();
 
 			for(Column c = start(); c != end(); c = c.next())
-			for(Thing t = c.things[type]; t != null; t = t.next) {
+			for(Thing t = c.firstThing(type); t != null; t = t.next()) {
 				t.prepareRender();
 			}
 
@@ -148,7 +228,7 @@ public class ThingWindow extends RealWorldWindow {
 				ThingType.types[type].ani.secondFile.bind();
 
 				for(Column c = start(); c != end(); c = c.next())
-				for(Thing t = c.things[type]; t != null; t = t.next) {
+				for(Thing t = c.firstThing(type); t != null; t = t.next()) {
 					t.prepareSecondRender();
 				}
 
@@ -167,7 +247,7 @@ public class ThingWindow extends RealWorldWindow {
 		for(int type = 0; type < ThingType.types.length; type++)
 		if(ThingType.types[type].inv != null)
 		for(Column c = start(); c != end(); c = c.next())
-		for(Thing cursor = c.things[type]; cursor != null; cursor = cursor.next){
+		for(Thing cursor = c.firstThing(type); cursor != null; cursor = cursor.next()){
 			cursor.itemStacks[cursor.selectedItem].item.renderHand(cursor, cursor.itemAni);
 		}
 		Shader.bindNone();
@@ -193,13 +273,13 @@ public class ThingWindow extends RealWorldWindow {
 	}
 	public void forEach(int type, Consumer<Thing> cons){
 		for(Column c = start(); c != end(); c = c.next()) {
-			for(Thing t = c.things[type]; t != null; t = t.next) {
+			for(Thing t = c.firstThing(type); t != null; t = t.next()) {
 				cons.accept(t);
 			}
 		}
 	}
 	
-	public void forEach(Consumer<Thing> cons) {
+	private void forEach(Consumer<Thing> cons) {
 		for(int type = 0; type < ThingType.types.length; type++)
 			forEach(type, cons);
 		
@@ -235,5 +315,9 @@ public class ThingWindow extends RealWorldWindow {
 		});
 		objectsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
 		return objectsAt.toArray(new Thing[objectsAt.size()]);
+	}
+
+	public void relinkThings() {
+		forEach(Thing::applyLink);
 	}
 }

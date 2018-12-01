@@ -48,21 +48,8 @@ public class Attacking extends AiPlugin {
 			}
 			
 			//select attack type
-			int type = -1;
-			for(int i = 0; i < attacks.length; i++){
-				if(t.type.ani.get(t, attacks[i].name).duration + attacks[i].extraCooldown <= t.attackCooldown){
-					if(attacks[i].name.equals(attackType)){
-						type = i;
-						break;
-					} else if(weapon == null || attacks[i].wp == weapon){
-						if(type == -1){
-							type = i;
-						} else if(World.rand.nextBoolean()){
-							type = i;
-						}
-					}
-				}
-			}
+			int type = getAttackIndex(t, attackType, weapon);
+			
 			if(type == -1){
 				return false;
 			}
@@ -87,6 +74,13 @@ public class Attacking extends AiPlugin {
 		return false;
 	}
 	
+	public void cancelAttack(Thing t) {
+		if(t.attacking) {
+			t.type.movement.setBackgroundAni(t);
+			t.attacking = false;
+		}
+	}
+	
 	public int calculateDamage(Thing target, ItemType item, double damageMultiplier){
 		double crit = World.rand.nextDouble() > item.critProb + critProb ? 1 : item.crit;
 		int baseDamage = (int)(crit*damageMultiplier*(strength + item.attackStrength));
@@ -94,5 +88,26 @@ public class Attacking extends AiPlugin {
 	}
 	public int calculateDamage(Thing target, ItemType item, AttackType attack){
 		return calculateDamage(target, item, attack.damageMultiplier);
+	}
+	
+	private int getAttackIndex(Thing t, String attackType, WeaponType weapon) {
+		int type = -1;
+		for(int i = 0; i < attacks.length; i++){
+			if(t.type.ani.get(t, attacks[i].name).duration + attacks[i].extraCooldown <= t.attackCooldown){
+				if(attacks[i].name.equals(attackType)){
+					type = i;
+					break;
+				} else if(weapon == null || attacks[i].wp == weapon){
+					if(type == -1){
+						type = i;
+						break;
+					} else if(World.rand.nextBoolean()){
+						type = i;
+						break;
+					}
+				}
+			}
+		}
+		return type;
 	}
 }

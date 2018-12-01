@@ -4,13 +4,13 @@ import things.Thing;
 
 public class DoubleThingVAO extends ThingVAO {
 
-	static int BACK = 0, FRONT = 1;
-	static int lowerSide = BACK, higherSide = FRONT;
-	static int[] dirs = new int[2];
+	public static int BACK = 0, FRONT = 1;
+	public static int lowerSide = BACK, higherSide = FRONT;
+	public static int[] dirs = new int[2];
 	static {dirs[lowerSide] = 1; dirs[higherSide] = -1;}
 	
-	int[] lastUsedIndices = new int[2];
-	int[] ends = new int[2];
+	private int[] lastUsedIndices = new int[2];
+	private int[] ends = new int[2];
 	
 	public DoubleThingVAO(int capacity) {
 		super(capacity);
@@ -20,23 +20,23 @@ public class DoubleThingVAO extends ThingVAO {
 		lastUsedIndices[higherSide] = ends[higherSide]-dirs[higherSide];
 	}
 
-	protected int end(int side) {
+	public int end(int side) {
 		return Math.max(ends[side], lastUsedIndices[side]);
 	}
 	
-	protected int start(int side) {
+	public int start(int side) {
 		return Math.min(ends[side], lastUsedIndices[side]);
 	}
 	
-	protected int size(int side) {
+	public int size(int side) {
 		return (lastUsedIndices[side] - ends[side])*dirs[side]+1;
 	}
 	
-	protected boolean empty(int side) {
+	public boolean empty(int side) {
 		return lastUsedIndices[side]*dirs[side] < ends[side]*dirs[side];
 	}
 	
-	protected boolean empty() {
+	public boolean empty() {
 		return empty(BACK) && empty(FRONT);
 	}
 	
@@ -62,11 +62,11 @@ public class DoubleThingVAO extends ThingVAO {
 		return super.getThing(index);
 	}
 	
-	int whichSide(Thing t) {
+	public static int whichSide(Thing t) {
 		return t.z < 0 ? FRONT : BACK;
 	}
-	
-	public void add(Thing t){
+
+	public void add(Thing t, boolean inBatch){
 		
 		int side = whichSide(t);
 
@@ -77,8 +77,11 @@ public class DoubleThingVAO extends ThingVAO {
 		lastUsedIndices[side] += dirs[side];
 		things[lastUsedIndices[side]] = t;
 		t.index = (short) lastUsedIndices[side];
-		changeUsual(t);
-		changeUnusual(t);
+		t.addedToVAO = true;
+		if(!inBatch) {
+			changeUsual(t, inBatch);
+			changeUnusual(t, inBatch);
+		}
 	}
 	
 	public void remove(Thing t){
@@ -97,6 +100,7 @@ public class DoubleThingVAO extends ThingVAO {
 		lastUsedIndices[side] -= dirs[side];
 		
 		t.index = -1;
+		t.addedToVAO = false;
 	}
 	
 	public void enlarge(){

@@ -42,7 +42,7 @@ public class Main implements Game {
 		
 		initializeGame("Sarahs World");
 
-		core.start();
+		core.start(true);
 	}
 	
 	/**

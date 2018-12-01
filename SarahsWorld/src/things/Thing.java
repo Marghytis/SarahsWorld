@@ -11,13 +11,15 @@ import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
 import things.aiPlugins.Speaking.ThoughtBubble;
+import things.interfaces.StructureThing;
 import util.Color;
 import util.math.Rect;
 import util.math.Vec;
 import world.World;
 import world.data.Column;
+import world.data.DefaultListElement;
 
-public class Thing {
+public class Thing extends DefaultListElement<Thing> implements StructureThing<Thing> {
 	//DEBUG
 	public boolean selected;
 	public boolean switchedSelected;
@@ -33,7 +35,6 @@ public class Thing {
 	public OnInteraction onRightClick = (src, pos, dest) -> {};
 
 	//dynamically changing values
-	public Thing prev, next;
 	public short index = -1;
 	public Vec pos = new Vec(), nextPos = new Vec(), lastPos = new Vec();
 	public Vec vel = new Vec(), nextVelAvDelta = new Vec(), nextVel = new Vec();
@@ -51,17 +52,18 @@ public class Thing {
 	//Values that change, if needed
 	public Animator ani;
 	public Animator itemAni;
+	public String backgroundAnimation = "";
 	public List<ItemType> fruits = new ArrayList<>();
 	public ItemStack[] itemStacks;
 	public ThoughtBubble tb;
 	public Effect effect;
-	public int effectTicket;
+	public int effectTicket, visibilityTicket = -1;
 	public boolean dir;
 	public boolean immortal;
 	public boolean isRiding;
 	public boolean attacking;
 	public boolean speaking;
-	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible;
+	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible, addedToVAO;
 	public boolean linked = false;
 	
 	public Thing target;
@@ -114,16 +116,9 @@ public class Thing {
 		return realLink;
 	}
 	
-	public void setVisible(boolean visible){
+	public void onVisibilityChange(boolean visible) {
 		if(type.attachment != null) {
 			type.attachment.onVisibilityChange(this, visible);
-		}
-		if(type.ani != null) {
-			if(this.visible && !visible){
-				World.world.thingWindow.remove(this);
-			} else if(!this.visible && visible){
-				World.world.thingWindow.add(this);
-			}
 		}
 		this.visible = visible;
 	}
@@ -151,15 +146,9 @@ public class Thing {
 		return selected;
 	}
 	
-	public void disconnectFrom(Column link) {
-		if(next != null) next.prev = prev;
-		if(prev != null) prev.next = next;
-		if(link.things[type.ordinal] == this) link.things[type.ordinal] = next;
-		linked = false;
-	}
 	public void applyLink() {
 		if(realLink != link || !linked) {
-			disconnectFrom(realLink);
+			realLink.remove(this);
 			link.add(this);
 			linked = true;
 			realLink = link;
@@ -175,35 +164,38 @@ public class Thing {
 		this.realLink = link;
 		this.link = link;
 		applyLink();
-		setVisible(true);
+		if(type.ani != null && !this.visible){
+			World.world.thingWindow.add(this);
+		}
+		onVisibilityChange(true);
 	}
 	public void hide() {
-		setVisible(false);
-		if(linked) disconnectFrom(link);
+
+		if(type.ani != null && this.visible){
+			World.world.thingWindow.remove(this);
+		}
+		onVisibilityChange(false);
+		if(linked) link.remove(this);
 	}
 	
 	public String save(){return "";};
 	
 	public void load(String save){}
 
-	public void setNext(Thing t) {
-		next = t;
-	}
-
-	public void setPrevious(Thing t) {
-		prev = t;
-	}
-
-	public Thing getNext() {
-		return next;
-	}
-
-	public Thing getPrevious() {
-		return prev;
-	}
-
 	public int getTypeOrdinal() {
 		return type.ordinal;
+	}
+	public void free() {
+		if(next != null) next.prev = prev;
+		if(prev != null) prev.next = next;
+	}
+
+	public ThingType type() {
+		return type;
+	}
+
+	public void setLinked(boolean linked) {
+		this.linked = linked;
 	}
 
 }

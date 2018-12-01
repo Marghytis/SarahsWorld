@@ -14,7 +14,8 @@ import things.ThingType;
 
 public class ThingVAO {
 	
-	private static int[] 		bytesUpdated = new int[2];
+	public static final int USUAL = 0, UNUSUAL = 1;
+	public static int[] 		bytesUpdated = new int[2];
 	private static ByteBuffer[] changer = new ByteBuffer[2];
 	protected VBO[] 				vbo = new VBO[2];
 	private VBOContent[][]		contents = new VBOContent[2][];
@@ -44,11 +45,11 @@ public class ThingVAO {
 		return lastUsedIndex <= -1;
 	}
 	
-	protected void bindStuff() {
+	public void bindStuff() {
 		vao.bindStuff();
 	}
 	
-	protected void unbindStuff() {
+	public void unbindStuff() {
 		vao.unbindStuff();
 	}
 	
@@ -126,28 +127,56 @@ public class ThingVAO {
 	}
 
 	public void changeUsual(Thing t){
-		change(t, 0);
+		changeUsual(t, false);
 	}
 	public void changeUnusual(Thing t){
-		change(t, 1);
+		changeUnusual(t, false);
+	}
+	public void changeUsual(Thing t, boolean inBatch) {
+		change(t, 0, inBatch);
+	}
+	public void changeUnusual(Thing t, boolean inBatch) {
+		change(t, 1, inBatch);
+	}
+
+	private void change(Thing t, int index, boolean inBatch){
+		if(!inBatch)
+			startBatchAdder(index);
+		
+		changeNoBinding(t, index);
+		
+		if(!inBatch)
+			endBatchAdder();
 	}
 	
-	private void change(Thing t, int index){
+	public void updateVBO(Thing firstThing, ByteBuffer buffer, int index) {
+		startBatchAdder(index);
+			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, firstThing.index*bytesUpdated[index], buffer);
+		endBatchAdder();
+	}
+	
+	public void updateVBOBatch(Thing firstThing, ByteBuffer buffer, int index) {
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, firstThing.index*bytesUpdated[index], buffer);	
+	}
+	
+	public void fillBuffer(Thing t, ByteBuffer buffer, int index) {
 		if(t.index == -1){
 			(new Exception("Thing is not registered")).printStackTrace();
 			return;
 		}
-		changer[index].clear();
 		for(int i = 0; i < contents[index].length; i++){
-			contents[index][i].change(changer[index], t);
+			contents[index][i].change(buffer, t);
 		}
-		changer[index].flip();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo[index].handle);
-		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, t.index*bytesUpdated[index], changer[index]);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
-	public void add(Thing t){
+	private void changeNoBinding(Thing t, int index) {
+		changer[index].clear();
+			fillBuffer(t, changer[index], index);
+		changer[index].flip();
+		updateVBOBatch(t, changer[index], index);
+	}
+
+	public void add(Thing t, boolean inBatch){
 
 		lastUsedIndex++;
 		if(lastUsedIndex >= capacity){
@@ -158,8 +187,25 @@ public class ThingVAO {
 		t.index = lastUsedIndex;
 		if(t.type == ThingType.SARAH)
 			System.out.println("Sarah's Thing index: " + t.index);
-		changeUsual(t);
-		changeUnusual(t);
+		if(!inBatch) {
+			changeUsual(t);
+			changeUnusual(t);
+		}
+	}
+	
+	public void startBatchAdderUsual() {
+		startBatchAdder(0);
+	}
+	public void startBatchAdderUnusual() {
+		startBatchAdder(1);
+	}
+	
+	private void startBatchAdder(int type) {
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo[type].handle);
+	}
+	
+	public void endBatchAdder() {
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
 	public void remove(Thing t){

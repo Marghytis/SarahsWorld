@@ -332,10 +332,14 @@ public class Menu implements Updater, Renderer, Listener {
 							if(World.world.window.selectionSize() != 1) return "";
 							Thing t = Main.world.window.getSelection(0);
 							String s = t.type.name + ": \n";
+							s += "position: " + t.pos + "\n";
 							if(t.type.physics != null)
 							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force + "\n";
 							if(t.type.life != null)
 								s += "health: " + t.health + "\n";
+							if(t.link != null)
+								s += "link x index: " + t.link.xIndex + "\n";
+							
 							return s;
 						}
 						, 0, 0.7, 0.5, 0.9, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
@@ -355,6 +359,8 @@ public class Menu implements Updater, Renderer, Listener {
 										"dir: " + Main.world.avatar.dir + "\n" +
 										"riding: " + Main.world.avatar.isRiding + "\n" +
 										"where.water: " + Main.world.avatar.where.water + "\n" +
+										"left column: " + Main.world.landscapeWindow.start().xIndex + "\n" +
+										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().xIndex : "null") + "\n" +
 										"Biome: " + Main.world.avatar.link.biome.toString();
 							return s;
 						}

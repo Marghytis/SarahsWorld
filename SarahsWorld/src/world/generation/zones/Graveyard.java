@@ -6,13 +6,11 @@ import world.generation.Biome;
 import world.generation.BiomeManager;
 import world.generation.Zone;
 
-
 public class Graveyard extends Zone {
 
 public static boolean[] description = describe(Attribute.LONELY, Attribute.MOIST, Attribute.TREES, Attribute.FLAT);
 	
 	double width;
-	double offsetX;
 
 	public Graveyard(Random random, BiomeManager biome, double originX, boolean left) {
 		super(random, Biome.GRAVEYARD, biome, originX, left, description);

@@ -1,6 +1,6 @@
 package effects;
 
-import world.render.LandscapeWindow;
+import world.window.TerrainWindow;
 
 public interface WorldEffect extends Effect {
 
@@ -12,5 +12,5 @@ public interface WorldEffect extends Effect {
 	 */
 	public void despawn(int ticket);
 	
-	public void checkInside(LandscapeWindow lw);
+	public void checkInside(TerrainWindow lw);
 }

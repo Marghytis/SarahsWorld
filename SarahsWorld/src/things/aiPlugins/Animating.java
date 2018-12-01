@@ -22,7 +22,7 @@ public class Animating extends AiPlugin {
 	public double z, zRange, frontRange;
 	public boolean useTexBox;
 	public TexFile secondFile = null;//ports the information if the thing has to be rendered twice (see unicorn)
-	
+
 	/**
 	 * 
 	 * @param defaultTex

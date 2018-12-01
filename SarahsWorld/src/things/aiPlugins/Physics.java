@@ -106,8 +106,8 @@ public class Physics extends AiPlugin {
 		//UPDATE WORLD LINK
 
 		int column = (int)Math.floor(t.pos.x/Column.COLUMN_WIDTH);
-		while(t.link.xIndex < column) t.link = t.link.right;
-		while(t.link.xIndex > column) t.link = t.link.left;
+		while(t.link.xIndex < column && t.link.right() != null) t.link = t.link.right();
+		while(t.link.xIndex > column && t.link.left() != null) t.link = t.link.left();
 	}
 	
 	public void updateRotation(Thing t, double delta){
@@ -262,10 +262,10 @@ public class Physics extends AiPlugin {
 	
 	public boolean circleCollision(Thing t, Vec pos1, double r, boolean right){
 		Vec vec1 = new Vec(), vec2 = new Vec();
-		for(Column c = Main.world.landscapeWindow.getEnd(Dir.l); c != Main.world.landscapeWindow.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r)){
+		for(Column c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
 			Vec[] output = UsefulF.circleIntersection(
 					vec1.set(c.xReal,c.getCollisionY()),
-					vec2.set(c.right.xReal, c.right.getCollisionY()),
+					vec2.set(c.right().xReal, c.right().getCollisionY()),
 					pos1,
 					r);
 			if(right && output[1] != null){
@@ -286,12 +286,12 @@ public class Physics extends AiPlugin {
 		if(coll){
 			Vec vec1 = new Vec(), vec2 = new Vec();
 
-			for(Column c = Main.world.landscapeWindow.getEnd(Dir.l); c != Main.world.landscapeWindow.getEnd(Dir.r).next(Dir.r); c = c.next(Dir.r)){
+			for(Column c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
 				if(UsefulF.intersectionLines2(
 						pos1,
 						velt,
 						vec1.set(c.xReal, c.getCollisionY()),
-						vec2.set(c.right.xReal, c.right.getCollisionY()), collisionVec)){
+						vec2.set(c.right().xReal, c.right().getCollisionY()), collisionVec)){
 					t.collisionC = c;
 					return true;//can only collide with one vertex
 				}
@@ -309,7 +309,7 @@ public class Physics extends AiPlugin {
 	public void checkWater(Vec force, Vec pos, Thing t){
 		t.buoyancyForce = 0;
 		//check, if the column the thing is in contains water:
-		if(t.link.getTopSolidVertex() != t.link.getTopFluidVertex() && t.link.right.getTopSolidVertex() != t.link.right.getTopFluidVertex()){
+		if(t.link.getTopSolidVertex() != t.link.getTopFluidVertex() && t.link.right() != null && t.link.right().getTopSolidVertex() != t.link.right().getTopFluidVertex()){
 			//get vertex of water surface
 			Vertex waterVertex = t.link.getTopFluidVertex();
 
@@ -328,7 +328,7 @@ public class Physics extends AiPlugin {
 //	public Vertex findWater(Column c, double yMin, double yMax){
 //		boolean empty = true;
 //		for(int index = 0; index < c.vertices.length; index++){
-//			if(c.vertices[index].y > yMin && c.vertices[index].mats.read.data == Material.WATER){
+//			if(c.vertices(index).y > yMin && c.vertices(index).mats.read.data == Material.WATER){
 //				
 //			}
 //		}
@@ -339,9 +339,9 @@ public class Physics extends AiPlugin {
 		try {
 			int yIndex = -1;
 			//get the material the thing is located in
-			while(c.vertices[yIndex+1].y > y) yIndex++;
+			while(c.vertices(yIndex+1).y > y) yIndex++;
 			
-			if(yIndex != -1 && !c.vertices[yIndex].empty()) vert = c.vertices[yIndex];
+			if(yIndex != -1 && !c.vertices(yIndex).empty()) vert = c.vertices(yIndex);
 		} catch(IndexOutOfBoundsException e){
 			//not being in any material
 		}

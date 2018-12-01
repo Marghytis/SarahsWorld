@@ -6,7 +6,7 @@ import main.Res;
 import util.math.Vec;
 import world.data.Column;
 import world.data.Dir;
-import world.render.LandscapeWindow;
+import world.window.TerrainWindow;
 
 public class FogWorld implements ParticleEffect, WorldEffect {
 
@@ -48,7 +48,7 @@ public class FogWorld implements ParticleEffect, WorldEffect {
 	public void update(double delta) {
 		fog.tick((float)delta);
 	}
-	public void checkInside(LandscapeWindow lw) {
+	public void checkInside(TerrainWindow lw) {
 		for(int i = 0; i < fog.particles.length; i++){
 			if(fog.particles[i].lived < fog.lifeSpan && (fog.particles[i].pos.x < lw.getEnd(Dir.l).xReal - 2*Column.COLUMN_WIDTH || fog.particles[i].pos.x > lw.getEnd(Dir.r).xReal + 2*Column.COLUMN_WIDTH)){
 				fog.destroy(fog.particles[i]);

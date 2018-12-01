@@ -61,7 +61,7 @@ public class BiomeManager {
 	public void switchToBiome(Biome newBiome){
 		dx = colorTransition/2;
 		if(!first){
-			for(Column c = lastColumn;dx >= 0 && c != null; dx--, c = left? c.right : c.left){
+			for(Column c = lastColumn;dx >= 0 && c != null; dx--, c = left? c.right() : c.left()){
 				c.topColor = newBiome.topColor.minus(biome.topColor).scale((float)dx/colorTransition).add(biome.topColor);
 				c.lowColor = newBiome.lowColor.minus(biome.lowColor).scale((float)dx/colorTransition).add(biome.lowColor);
 			}
@@ -226,15 +226,15 @@ public class BiomeManager {
 						if(left){//if left, add mat below and lower the other mats alphas
 							for(int i = 0; i < index.size; i++){
 								if(i != index.current){
-									c.vertices[yIndex].alphas[i] *= 0.5f*(1 - (float)x/transition);//x is in [-transition, -1] < 0
+									c.vertices(yIndex).alphas[i] *= 0.5f*(1 - (float)x/transition);//x is in [-transition, -1] < 0
 								}
 							}
-							c.vertices[yIndex].enqueueMat(stratum.material, 1, left);
+							c.vertices(yIndex).enqueueMat(stratum.material, 1, left);
 						} else {//if right, add mat on top and let its alpha rise
 							float alpha = transitions[index.current].get(x + iX);
-							c.vertices[yIndex].enqueueMat(stratum.material, alpha, left);
+							c.vertices(yIndex).enqueueMat(stratum.material, alpha, left);
 						}
-						c = left ? c.right : c.left;
+						c = left ? c.right() : c.left();
 					}
 				}
 				this.stratum = stratum;

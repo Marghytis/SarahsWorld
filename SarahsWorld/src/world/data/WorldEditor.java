@@ -1,7 +1,7 @@
 package world.data;
 
 import things.Thing;
-import world.render.ThingWindow;
+import world.window.ThingWindow;
 
 public class WorldEditor {
 
@@ -12,12 +12,12 @@ public class WorldEditor {
 	}
 
 	public void delete(Thing t) {
-		t.disconnectFrom(t.link);
+		t.link.remove(t);
 		t.remove();
 	}
 
 	public void reLink(ThingWindow range) {
 		
-		range.forEach(Thing::applyLink);
+		range.relinkThings();
 	}
 }

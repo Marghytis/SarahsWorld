@@ -4,16 +4,16 @@ _There are no particle effects, if you go far to the right (left not tested)
 _sometimes Sarah and other creatures can't move in water, after they were leaving and returning to the water, e.g. if Sarah went swimming with a cow
 _very strange physics after swimming with a cow, especially in water...
 _when riding a cow it moves faster, but also slides further on grass -> when pressing supersprint and megasprint, Sarah slides further
-_candy biome is too long
 _speech bubbles scale faulty when zooming
 _sky has different color at origin when using generator2
 _creatures swim back and forth very quickly in water
 _trees grow in water
 _magic effect doesn't work
-_right click for mounting cows or
+_right click for mounting cows or interaction in general
 _cows fall through the ground
 _item positions are not correct when rotating
 _after giving Evelyn a cake, I can give other evelyns a cake too, even though I don't have one
+_click position is wrong when zoomed
 
 optional
 _schweben bei antigravity etc.
@@ -29,3 +29,4 @@ _punching does nothing
 _crash when trying to spawn an item
 _crash when spawning heart
 _Sarah does head dive when changing direction after pressing SPACE
+_candy biome is too long

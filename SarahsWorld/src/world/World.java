@@ -18,12 +18,12 @@ import world.data.WorldData;
 import world.data.WorldEditor;
 import world.generation.Generator;
 import world.generation.GeneratorInterface;
-import world.generation.environment.Generator2;
-import world.render.LandscapeWindow;
-import world.render.ThingWindow;
 import world.render.WorldPainter;
+import world.window.BackgroundWindow;
 import world.window.GeneratingWorldWindow;
 import world.window.RealWorldWindow;
+import world.window.TerrainWindow;
+import world.window.ThingWindow;
 
 public class World {
 
@@ -37,7 +37,7 @@ public class World {
 	
 	public GeneratingWorldWindow genWindow;
 	public RealWorldWindow updateWindow;
-	public LandscapeWindow landscapeWindow;
+	public TerrainWindow landscapeWindow;
 	public ThingWindow thingWindow;
 	
 	public WorldEngine engine;
@@ -77,21 +77,20 @@ public class World {
 
 		//define ranges
 		int windowRadius = (int)((Main.HALFSIZE.w )/Column.COLUMN_WIDTH);
-		genWindow = new GeneratingWorldWindow(anchor, windowRadius + 10, generator);
-		updateWindow    = new RealWorldWindow(anchor, windowRadius + 8);
+		genWindow = new GeneratingWorldWindow(anchor, windowRadius + 25, generator);
 		
 		//generation happens here, because avatar and generator can't be accessed statically yet. might change..
 //		generator.borders(avatar.pos.x - Settings.get("GENERATION_RADIUS"), avatar.pos.x + Settings.get("GENERATION_RADIUS"));
 		int startX = (int)(avatar.pos.x/Column.COLUMN_WIDTH);
 		genWindow.moveToColumn(startX);
-		updateWindow.moveToColumn(startX);//not necessary, but like this all windows start at the same place and are built up
-		while(anchor.xIndex < startX) anchor = anchor.right;
-		while(anchor.xIndex > startX) anchor = anchor.left;
+		while(anchor.xIndex < startX && anchor.right() != null) anchor = anchor.right();
+		while(anchor.xIndex > startX && anchor.left() != null) anchor = anchor.left();
 
-		thingWindow 	= new ThingWindow(anchor, windowRadius + 4);
-		landscapeWindow = new LandscapeWindow(anchor, windowRadius + 6);
-		engine = new WorldEngine(data, editor, genWindow, updateWindow, landscapeWindow, thingWindow);
-		window = new WorldPainter(data, thingWindow, landscapeWindow);
+		thingWindow 	= new ThingWindow(anchor, windowRadius + 4, windowRadius + 24);
+		landscapeWindow = new TerrainWindow(anchor, windowRadius + 6);
+		BackgroundWindow backgroundRenderingWindow    = new BackgroundWindow(anchor, windowRadius + 6);
+		engine = new WorldEngine(data, editor, thingWindow, genWindow, landscapeWindow, backgroundRenderingWindow, thingWindow);
+		window = new WorldPainter(data, thingWindow, landscapeWindow, backgroundRenderingWindow);
 	}
 	
 	public void gameOver() {

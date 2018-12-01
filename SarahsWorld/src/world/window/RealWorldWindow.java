@@ -41,7 +41,7 @@ public class RealWorldWindow {
 		//keep this order! It prevents overtaking for generating world windows.
 		//increase size
 		for(int end = 0; end < Dir.s.length; end++) {
-			while(Dir.s[end]*(ends[end].xIndex - xIndex) < radius && dirOkay(end)) {
+			while(Dir.s[end]*(ends[end].xIndex - xIndex) < radius && dirOkay(end) && ends[end].next(end) != null) {
 				shiftOutwards(end);
 			}
 		}
@@ -61,6 +61,11 @@ public class RealWorldWindow {
 		ends[end] = ends[end].next(1-end);
 	}
 	
+	/**
+	 * Is overridden by GeneratingWorldWindow
+	 * @param index
+	 * @return
+	 */
 	protected boolean dirOkay(int index) {
 		return ends[index].next(index) != null;
 	}

@@ -94,19 +94,22 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		}
 		
 		//Scroll through inventory
-		double scroll = Main.input.getDWheel(Main.WINDOW);
-		t.selectedItem += -scroll;
-		if(t.selectedItem < 0){
-			t.selectedItem %= t.itemStacks.length;
-			t.selectedItem += t.itemStacks.length;
-		}
-		t.selectedItem %= t.itemStacks.length;
+		int scroll = (int)Main.input.getDWheel(Main.WINDOW);
+
+		int selectedItem = t.selectedItem - scroll;
+		selectedItem -= Math.floorDiv(selectedItem, t.itemStacks.length);//accounts for large negative scrolls
+		if(t.itemStacks[t.selectedItem].item.ordinal != t.itemStacks[selectedItem].item.ordinal)
+			Main.world.avatar.type.attack.cancelAttack(Main.world.avatar);
+		t.selectedItem = selectedItem;
 		return true;
 	}
 
+	Vec worldPos = new Vec();
 	@Override
 	public boolean pressed(int button, Vec mousePos) {
 		if(Main.world.avatar.health <= 0) return false;
+		worldPos.set(mousePos);
+		Main.world.window.toWorldPos(worldPos);
 		Main.world.window.forEachEffect(e -> e.pressed(button, mousePos));
 		return false;
 	}
@@ -114,7 +117,10 @@ public  class AvatarControl extends AiPlugin implements Listener {
 	@Override
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
 		if(Main.world.avatar.health <= 0) return false;
-		Vec worldPos = mousePos.minus(Main.SIZE.w/2, Main.SIZE.h/2).shift(Main.world.avatar.pos);
+//		Vec worldPos = mousePos.minus(Main.SIZE.w/2, Main.SIZE.h/2).shift(Main.world.avatar.pos);
+
+		worldPos.set(mousePos);
+		Main.world.window.toWorldPos(worldPos);
 		Thing[] livingsClickedOn = Main.world.thingWindow.livingsAt(worldPos);
 		
 		switch(button){
@@ -237,7 +243,7 @@ public  class AvatarControl extends AiPlugin implements Listener {
 			break;
 		case TOSS_COIN:
 			if(Settings.getBoolean("DEBUGGING"))
-				new Thing(ThingType.COIN, Main.world.avatar.link, Main.world.window.toWorldPos(Main.input.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100));
+				Main.world.thingWindow.add(new Thing(ThingType.COIN, Main.world.avatar.link, Main.world.window.toWorldPos(Main.input.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
 			break;
 		default:
 		}

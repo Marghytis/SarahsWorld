@@ -2,16 +2,16 @@ package world.data;
 
 import java.util.Random;
 
-import things.*;
+import things.Thing;
+import things.ThingType;
 import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
 
-public class Column implements ListElement<Column> {
+public class Column extends DirListElement<Column> {
 	public static final double COLUMN_WIDTH = 20;
-	public Column left, right;
-	public Vertex[] vertices;
-	public Thing[] things;//these are the anchors. may be null
+	private Vertex[] vertices;
+	private Thing[] things;//these are the anchors. may be null
 	public int xIndex;
 	public double xReal;
 	private Vertex topSolidVertex, topFluidVertex;
@@ -19,6 +19,16 @@ public class Column implements ListElement<Column> {
 	public Biome biome;
 	public Color topColor, lowColor;
 	public int testInt;
+	
+	public Thing firstThing(ThingType type) {
+		return firstThing(type.ordinal);
+	}
+	public Thing firstThing(int type) {
+		return things[type];
+	}
+	public Vertex vertices(int index) {
+		return vertices[index];
+	}
 
 	public Column(int xIndex, Biome biome, Color top, Color low, Vertex[] vertices, double... collisionVecs){
 		this.xIndex = xIndex;
@@ -109,26 +119,16 @@ public class Column implements ListElement<Column> {
 	 */
 	public void add(Thing t){
 		int o = t.getTypeOrdinal();
-		t.setPrevious(null);
+		t.setPrev(null);
 		t.setNext(things[o]);
-		if(things[o] != null) things[o].setPrevious(t);
+		if(things[o] != null) things[o].setPrev(t);
 		things[o] = t;
 	}
-	public void appear(boolean left){
-		for(int i = 0; i < things.length; i++){
-			for(Thing t = things[i]; t != null; t = t.getNext()){
-				t.setVisible(true);
-			}
-		}
-		biome.spawnEffects(this, left);
-	}
 	
-	public void disappear(){
-		for(int i = 0; i < things.length; i++){
-			for(Thing t = things[i]; t != null; t = t.getNext()){
-				t.setVisible(false);
-			}
-		}
+	public void remove(Thing t) {
+		t.free();
+		if(things[t.type().ordinal] == t) things[t.type().ordinal] = t.next();
+		t.setLinked(false);
 	}
 	
 	public Vec getTopLine(Vec topLine){
@@ -149,18 +149,6 @@ public class Column implements ListElement<Column> {
 	}
 	public final double getCollisionYFluid(){
 		return collisionYFluid;
-	}
-
-	public Column next(int index) {
-		switch(index) {
-		case Dir.l : return left;
-		case Dir.r : return right;
-		default: return null;
-		}
-	}
-
-	public Column next() {
-		return next(Dir.r);
 	}
 
 }

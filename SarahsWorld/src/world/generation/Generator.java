@@ -99,7 +99,7 @@ public class Generator implements GeneratorInterface {
 
 		world.processNewColumn(nextColumnR, 1, zoneR.description);
 
-		zoneR.spawnThings(nextColumnR.left);
+		zoneR.spawnThings(nextColumnR.left());
 		
 		return true;
 	}

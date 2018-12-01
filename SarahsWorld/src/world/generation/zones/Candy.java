@@ -11,8 +11,6 @@ public class Candy extends Zone {
 public static boolean[] description = describe(Attribute.SWEET);
 	
 	double width;
-	double height;
-	double offsetByLakes;
 
 	public Candy(Random random, BiomeManager biome, double originX, boolean left) {
 		super(random, Biome.CANDY, biome, originX, left, description);

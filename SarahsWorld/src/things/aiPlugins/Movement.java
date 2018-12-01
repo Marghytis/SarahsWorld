@@ -28,53 +28,64 @@ public class Movement extends AiPlugin {
 		this.plunge = plunge;
 		this.sneakyStand = sneakyStand;
 	}
+	
+	public void setBackgroundAni(Thing t) {
+		t.type.ani.setAnimation(t, t.backgroundAnimation, null);
+	}
 
 	public void setAni(Thing t, double acc) {
-		if(t.ani.endTask != null){
-			return;
-		}
-		if(acc > 0) t.dir = false;
-		else if(acc < 0) t.dir = true;
 //		String aniName = t.ani.ani.name;
+		String foregroundRequest = "";
 		if(t.where.g){
 			if(t.where.water < 0.3){
 				if(acc != 0){
 					if(Math.abs(acc) > 1){
-						t.type.ani.setAnimation(t, walk2);
+						t.backgroundAnimation = walk2;
 					} else if(Math.abs(acc) == 1){
-						t.type.ani.setAnimation(t, walk1);
+						t.backgroundAnimation = walk1;
 					} else {
-						t.type.ani.setAnimation(t, sneak);
+						t.backgroundAnimation = sneak;
 					}
 				} else {
 					if(Main.input.isKeyDown(Main.WINDOW, Key.CROUCH.key)) {
-						t.type.ani.setAnimation(t, sneakyStand);
+						t.backgroundAnimation = sneakyStand;
 					} else {
-						t.type.ani.setAnimation(t, stand);
+						t.backgroundAnimation = stand;
 					}
 				}
 			}
 			else if(t.where.water < 0.3 && t.ani.ani.name != swim){
-				t.type.ani.setAnimation(t, dive, () -> t.type.ani.setAnimation(t, swim));
+				foregroundRequest = dive;
+				t.backgroundAnimation = swim;
 			}
 		} else {
 			if(t.where.water > 0){
 				if(acc != 0){
-					t.type.ani.setAnimation(t, swim);
+					t.backgroundAnimation = swim;
 					//TODO add animation for keeping itself at the surface and possibly a transition with rotation
 				} else {
-					t.type.ani.setAnimation(t, fly);
+					t.backgroundAnimation = fly;
 				}
 			} else if(!t.willLandInWater){
 				if(t.reallyAir){
-					t.type.ani.setAnimation(t, fly);
+					t.backgroundAnimation = fly;
 				}
 			} else {
-				t.type.ani.setAnimation(t, plunge);
+				t.backgroundAnimation = plunge;
 			}
 		}
-		t.whereBefore.water = t.where.water;
-		t.whereBefore.g = t.where.g;
+
+		if(t.ani.endTask == null){
+			if(acc > 0) t.dir = false;
+			else if(acc < 0) t.dir = true;
+			t.whereBefore.water = t.where.water;
+			t.whereBefore.g = t.where.g;
+			if(foregroundRequest != "") {
+				t.type.ani.setAnimation(t, foregroundRequest, () -> t.type.ani.setAnimation(t, t.backgroundAnimation));
+			} else if(t.backgroundAnimation != ""){
+				t.type.ani.setAnimation(t, t.backgroundAnimation);
+			}
+		}
 	}
 	
 	//TRANSITIONS
@@ -97,6 +108,7 @@ public class Movement extends AiPlugin {
 				} else {
 					t.willLandInWater = false;
 					t.type.ani.setAnimation(t, fly);
+					t.backgroundAnimation = fly;
 				}
 			} else {
 				t.willLandInWater = false;
@@ -127,7 +139,7 @@ public class Movement extends AiPlugin {
 			} else {
 				lastOne = false;
 			}
-			cursor = t.vel.x > 0 ? cursor.right :  cursor.left;
+			cursor = t.vel.x > 0 ? cursor.right() :  cursor.left();
 		}
 		return false;
 	}
@@ -139,6 +151,7 @@ public class Movement extends AiPlugin {
 	public void land(Thing t) {
 		t.type.ani.setAnimation(t, land, () -> {
 			t.type.ani.setAnimation(t, stand);
+			t.backgroundAnimation = stand;
 		});
 	}
 	
@@ -149,6 +162,7 @@ public class Movement extends AiPlugin {
 	public void liftOf(Thing t) {
 		t.type.ani.setAnimation(t, liftOf, () -> {
 			t.type.ani.setAnimation(t, fly);
+			t.backgroundAnimation = fly;
 		});
 	}
 	

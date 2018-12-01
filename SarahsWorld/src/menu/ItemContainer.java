@@ -45,6 +45,9 @@ public class ItemContainer extends Element {
 
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){
 		if(contains(mousePos)){
+			if(Main.world.avatar.selectedItem != ordinal)
+				Main.world.avatar.type.attack.cancelAttack(Main.world.avatar);
+			
 			Main.world.avatar.selectedItem = ordinal;
 			return true;
 		}

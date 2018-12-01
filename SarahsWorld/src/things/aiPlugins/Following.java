@@ -54,7 +54,7 @@ public class Following extends AiPlugin{
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
 				for(Column c = Main.world.landscapeWindow.start(); c != Main.world.landscapeWindow.end(); c = c.next())
-				for(Thing t2 = c.things[targetClasses[type].ordinal]; t2 != null; t2 = t2.next){
+				for(Thing t2 = c.firstThing(targetClasses[type].ordinal); t2 != null; t2 = t2.next()){
 					double distSqu = t.pos.minus(t2.pos).lengthSquare();
 					if(distSqu < distanceSquare){
 						closest = t2;

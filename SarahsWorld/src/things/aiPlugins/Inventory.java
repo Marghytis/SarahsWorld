@@ -35,7 +35,7 @@ public class Inventory extends AiPlugin {
 		}
 		int coinAmount = 0;
 		for(Column c = Main.world.thingWindow.start(); c != Main.world.thingWindow.end(); c = c.next())
-		for(Thing t2 = c.things[ThingType.COIN.ordinal]; t2 != null; t2 = t2.next){
+		for(Thing t2 = c.firstThing(ThingType.COIN); t2 != null; t2 = t2.next()){
 			if(t2.pos.minus(t.pos).lengthSquare() < 1000){
 				Main.world.engine.requestDeletion(t2);
 				coinAmount++;

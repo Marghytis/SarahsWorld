@@ -24,6 +24,9 @@ import util.Color;
 import util.math.Vec;
 import world.World;
 import world.data.WorldData;
+import world.window.BackgroundWindow;
+import world.window.TerrainWindow;
+import world.window.ThingWindow;
 
 public class WorldPainter implements Updater, Renderer{
 	
@@ -36,17 +39,19 @@ public class WorldPainter implements Updater, Renderer{
 	//rendering
 	private VAO completeWindow;
 	private Framebuffer landscapeBuffer;
-	private LandscapeWindow landscape;
+	private TerrainWindow terrain;
+	private BackgroundWindow background;
 	private ThingWindow things;
 	
 	//others
 	Animator death = new Animator(Res.death, () -> {}, false);
 	
-	public WorldPainter(WorldData l, ThingWindow things, LandscapeWindow landscape) {
+	public WorldPainter(WorldData l, ThingWindow things, TerrainWindow landscape, BackgroundWindow background) {
 		this.world = l;
 		World.world.window = this;
 		this.things = things;
-		this.landscape = landscape;
+		this.terrain = landscape;
+		this.background = background;
 
 		landscapeBuffer = new Framebuffer("Landscape", Main.SIZE.w, Main.SIZE.h);
 		this.completeWindow = Render.quadInScreen(-Main.HALFSIZE.w, Main.HALFSIZE.h, Main.HALFSIZE.w, -Main.HALFSIZE.h);
@@ -117,12 +122,12 @@ public class WorldPainter implements Updater, Renderer{
 		
 		updateTransform(interpolationShift);
 
-		landscape.renderBackground();
+		background.renderBackground();
 		
 		landscapeBuffer.bind();
 		
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-			landscape.renderLandscape();
+			terrain.renderLandscape();
 		
 		Framebuffer.bindNone();
 
@@ -137,7 +142,7 @@ public class WorldPainter implements Updater, Renderer{
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
-		landscape.renderWater();
+		terrain.renderWater();
 
 		//Outlines of living things
 		things.renderOutlines();
@@ -147,7 +152,7 @@ public class WorldPainter implements Updater, Renderer{
 
 		//draw the darkness which is crouching out of the earth
 		if(Settings.getBoolean("DARKNESS")){
-			landscape.renderDarkness();
+			background.renderDarkness();
 		}
 //
 		//draw bounding boxes of all things and their anchor points

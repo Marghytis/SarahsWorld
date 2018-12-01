@@ -54,9 +54,9 @@ public class WorldData {
 		}
 	}
 	public Thing findAvatar() {
-		for(Column c = leftColumn; c != rightColumn.right; c = c.right) {
-			if(c.things[ThingType.SARAH.ordinal] != null) {
-				return c.things[ThingType.SARAH.ordinal];
+		for(Column c = leftColumn; c != rightColumn.right(); c = c.right()) {
+			if(c.firstThing(ThingType.SARAH.ordinal) != null) {
+				return c.firstThing(ThingType.SARAH.ordinal);
 			}
 		}
 		return null;
@@ -123,16 +123,16 @@ public class WorldData {
 	
 	public Column addLeft(Column l){
 		l.setX(leftColumn.xIndex-1);
-		l.right = leftColumn;
-		leftColumn.left = l;
+		l.setRight(leftColumn);
+		leftColumn.setLeft(l);
 		leftColumn = l;
 		return l;
 	}
 	
 	public Column addRight(Column r){
 		r.setX(rightColumn.xIndex+1);
-		r.left = rightColumn;
-		rightColumn.right = r;
+		r.setLeft(rightColumn);
+		rightColumn.setRight(r);
 		rightColumn = r;
 		return r;
 	}
