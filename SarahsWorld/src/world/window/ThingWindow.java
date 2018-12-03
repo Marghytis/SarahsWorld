@@ -28,61 +28,18 @@ public class ThingWindow extends RealWorldWindow {
 	
 	private ThingPreparationWindow prepare;
 	
-	int prepareInterval;
 	
-	public ThingWindow(Column anchor, int updateRadius, int renderPrepareRadius) {
-		super(anchor, updateRadius);
-		
-		prepareInterval = renderPrepareRadius - updateRadius;
+	public ThingWindow(Column anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare) {
+		super(anchor, rVisibility);
 		
 		for(int i = 0; i < ThingType.types.length; i++){
 			vaos[i] = new DoubleThingVAO(ThingType.types[i].maxVisible);
 		}
-		this.prepare = new ThingPreparationWindow(anchor, renderPrepareRadius, vaos);
+		this.prepare = new ThingPreparationWindow(anchor, rObservation, rPreparation, rVisibility, rDontCare, vaos);
 	}
 	
-	@Override
-	protected void shiftOutwards(int end) {
-		super.shiftOutwards(end);
-
-		for(int type = 0; type < ThingType.types.length; type++){
-			boolean addNeeded = false;
-			if(ThingType.types[type].ani != null) {
-				for(Thing t = ends[end].firstThing(type); t != null; t = t.next()) {
-					if(!t.addedToVAO) {
-						addNeeded = true;
-						if(t.visibilityTicket == -1) {
-							prepare.prepare(t, end);
-						}
-					}
-				}
-			}
-			if(addNeeded) {
-				prepare.addPreparedThings(type, end);
-			}
-		}
-
-//		int i = 0;
-//		for(Column c = ends[end]; i < prepareInterval; c = c.next(end), i++) {
-//			for(int type = 0; type < ends[end].things.length; type++){
-//				if(ThingType.types[type].ani != null && ends[end].things[type] != null) {
-//					prepare.addPreparedThings(type, end);
-//				}
-//			}
-//		}
-	}
-
-	@Override
-	protected void shiftInwards(int end) {
-		
-		for(int i = 0; i < ThingType.types.length; i++){
-			if(ThingType.types[i].ani != null)
-			for(Thing t = ends[end].firstThing(i); t != null; t = t.next()){
-				remove(t, end);
-			}
-		}
-
-		super.shiftInwards(end);
+	public void loadCenter() {
+		prepare.loadCenter();
 	}
 	
 	@Override
@@ -92,28 +49,15 @@ public class ThingWindow extends RealWorldWindow {
 	}
 	
 	public void add(Thing t) {
-
 		vaos[t.getTypeOrdinal()].add(t, false);
-		t.onVisibilityChange(true);
-		t.visibilityTicket = -1;
-		System.out.println("Thing added not from terrain generation!");
-//		if(!addLazyly(t))
-//			addLazylyCollected(t.getTypeOrdinal());
 	}
 	
+	/**
+	 * forces the instant removal of the thind.
+	 * @param t
+	 */
 	public void remove(Thing t) {
-		if(t == prepare.firstThing) {
-			System.out.println("removing thing....");
-		}
 		vaos[t.type.ordinal].remove(t);
-	}
-	
-	public void remove(Thing t, int iDir) {
-		remove(t);
-		if(!prepare.prepare(t, iDir)) {
-			System.out.println();
-		}
-//		removePreparation(t, iDir);
 	}
 	
 	public void changeUsual(Thing t) {

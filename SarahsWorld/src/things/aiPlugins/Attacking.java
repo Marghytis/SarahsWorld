@@ -4,9 +4,10 @@ import item.ItemType;
 import item.ItemType.WeaponType;
 import menu.Settings;
 import things.AiPlugin;
-import things.AttackType;
+import things.Technique;
 import things.Thing;
 import things.ThingType;
+import util.math.Vec;
 import world.World;
 
 
@@ -14,7 +15,7 @@ public class Attacking extends AiPlugin {
 	
 	public int strength;
 	public double critProb;
-	AttackType[] attacks;
+	Technique[] attacks;
 	
 	/**
 	 * 
@@ -25,7 +26,7 @@ public class Attacking extends AiPlugin {
 	 * @param radius
 	 * @param attacks one attack Animation for each WeaponType
 	 */
-	public Attacking(int strength, double critProb, AttackType[] attacks){
+	public Attacking(int strength, double critProb, Technique[] attacks){
 		this.strength = strength;
 		this.critProb = critProb;
 		this.attacks = attacks;
@@ -34,41 +35,30 @@ public class Attacking extends AiPlugin {
 	public void update(Thing t, double delta){
 		t.attackCooldown += delta;
 	}
-	
+	public boolean attack(Thing src, ItemType item, Vec worldPos, Thing... targets) {
+		return attack(src, item, getRandomTechnique(src, item.weaponType), worldPos, targets);
+	}
+	public boolean attack(Thing src, String attackType, Thing... targets) {
+		return attack(src, ItemType.NOTHING, attackType, targets);
+	}
+	public boolean attack(Thing src, ItemType item, String attackType, Thing... targets) {
+		return attack(src, item, getTechnique(attackType), null, targets);
+	}
 	/**
 	 * 
 	 * @param weapon null for default weapon
 	 * @param targets
 	 */
-	public boolean attack(Thing t, WeaponType weapon, ItemType item, String attackType, Thing... targets){
-		if(!t.attacking && (Settings.getBoolean("AGGRESSIVE_CREATURES") || t.type == ThingType.SARAH)){
+	public boolean attack(Thing source, ItemType item, Technique technique, Vec worldPos, Thing... targets){
+		if(!source.attacking && (Settings.getBoolean("AGGRESSIVE_CREATURES") || source.type == ThingType.SARAH) && technique != null && 
+				source.type.ani.get(source, technique.name).duration + technique.extraCooldown <= source.attackCooldown){
 			
-			if(weapon == null && item != null){
-				weapon = item.weaponType;
+			if(technique.execute(source, item, worldPos, targets)) {
+				source.attacking = true;
+				source.attackCooldown = 0;
+				source.attackCooldown = -source.ani.ani.duration;
 			}
 			
-			//select attack type
-			int type = getAttackIndex(t, attackType, weapon);
-			
-			if(type == -1){
-				return false;
-			}
-			
-			AttackType at = attacks[type];
-			int amount = Math.min(attacks[type].maxTargets, targets.length);
-			
-			t.attacking = true;
-			t.attackCooldown = 0;
-			t.type.ani.setAnimation(t, at.name,  () -> {
-					
-					at.attack.attackSelected(t, targets, amount, item);
-				
-					t.attacking = false;
-					t.ani.setLast();
-					t.lastAttack = at;
-				});
-			
-			t.attackCooldown = -t.ani.ani.duration;
 			return true;
 		}
 		return false;
@@ -81,33 +71,50 @@ public class Attacking extends AiPlugin {
 		}
 	}
 	
-	public int calculateDamage(Thing target, ItemType item, double damageMultiplier){
-		double crit = World.rand.nextDouble() > item.critProb + critProb ? 1 : item.crit;
-		int baseDamage = (int)(crit*damageMultiplier*(strength + item.attackStrength));
-		return baseDamage - target.armor;
-	}
-	public int calculateDamage(Thing target, ItemType item, AttackType attack){
-		return calculateDamage(target, item, attack.damageMultiplier);
+	public int calculateDamage(Thing src, Thing target, ItemType item, String attack){
+		return calculateDamage(target, item, getTechnique(attack));
 	}
 	
-	private int getAttackIndex(Thing t, String attackType, WeaponType weapon) {
+	public int calculateDamage(Thing target, ItemType item, Technique attack){
+		double crit = World.rand.nextDouble() > item.critProb + critProb ? 1 : item.crit;
+		int baseDamage = (int)(crit*attack.damageMultiplier*(strength + item.attackStrength));
+		return baseDamage - target.armor;
+	}
+	
+	public Technique getTechnique(String attackType) {
 		int type = -1;
 		for(int i = 0; i < attacks.length; i++){
-			if(t.type.ani.get(t, attacks[i].name).duration + attacks[i].extraCooldown <= t.attackCooldown){
-				if(attacks[i].name.equals(attackType)){
-					type = i;
-					break;
-				} else if(weapon == null || attacks[i].wp == weapon){
+			if(attacks[i].name.equals(attackType)){
+				type = i;
+				break;
+			}
+		}
+		if(type == -1)
+			return null;
+		return attacks[type];
+	}
+	
+	/**
+	 * weaponType is not a primary key, so we choose a random attack here
+	 * @param t
+	 * @param weapon
+	 * @return
+	 */
+	private Technique getRandomTechnique(Thing t, WeaponType weapon) {
+		int type = -1;
+		for(int i = 0; i < attacks.length; i++){
+			if(t.type.ani.get(t, attacks[i].name).duration + attacks[i].extraCooldown <= t.attackCooldown){//additional cooldown-if, to choose only a technique that may be used.
+				if(attacks[i].wp == weapon){//weapon == null || 
 					if(type == -1){
 						type = i;
-						break;
 					} else if(World.rand.nextBoolean()){
 						type = i;
-						break;
 					}
 				}
 			}
 		}
-		return type;
+		if(type == -1)
+			return null;
+		return attacks[type];
 	}
 }

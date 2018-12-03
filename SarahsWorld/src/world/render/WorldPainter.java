@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import org.lwjgl.opengl.GL11;
 
+import core.Core;
 import core.Renderer;
 import core.Updater;
 import effects.Effect;
@@ -21,6 +22,7 @@ import render.Render;
 import render.VAO;
 import things.Thing;
 import util.Color;
+import util.Time;
 import util.math.Vec;
 import world.World;
 import world.data.WorldData;
@@ -119,6 +121,13 @@ public class WorldPainter implements Updater, Renderer{
 	}
 	
 	public void draw(double interpolationShift){
+		
+//		if(Core.updatedToLong) {
+//			for(int i = 0; i < Main.world.engine.timeIndex; i++) {
+//				System.out.println(Main.world.engine.lastTimes[0][i] + "  " + Main.world.engine.lastTimes[1][i] + "  " + Main.world.engine.lastTimes[2][i] + "  " + Main.world.engine.lastTimes[3][i]);
+//			}
+//		}
+//		Main.world.engine.timeIndex = 0;
 		
 		updateTransform(interpolationShift);
 

@@ -286,9 +286,9 @@ public class Menu implements Updater, Renderer, Listener {
 		DEBUG(false, false){
 			public void setElements(){
 				elements = new Element[]{new Debugger(),
-						new FlexibleButton(() -> Main.world.avatar.immortal? "Mortal" : "Immortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.8f), new Color(0.4f, 0.3f, 0.6f), null, null){
+						new FlexibleButton(() -> Settings.getBoolean("IMMORTAL")? "Immortal" : "Mortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.8f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
-								Main.world.avatar.immortal = !Main.world.avatar.immortal;
+								Settings.set("IMMORTAL",!Settings.getBoolean("IMMORTAL"));
 							}
 						},
 						new FlexibleButton(() -> Settings.getBoolean("AGGRESSIVE_CREATURES")? "Disable agressive creatures" : "Enable agressive creatures", 0.7, 0.2, 0.7, 0.2, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){

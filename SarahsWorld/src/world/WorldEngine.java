@@ -7,6 +7,7 @@ import java.util.Set;
 
 import core.Core;
 import core.Updater;
+import main.Main;
 import quest.ActiveQuest;
 import things.Thing;
 import util.Time;
@@ -42,7 +43,12 @@ public class WorldEngine implements Updater {
 		
 		this.avatar = data.findAvatar();
 	}
+	
+	double lastUpdateTime;
 
+	public double[][] lastTimes = new double[4][100];
+	public int timeIndex;
+	
 	public boolean update(double delta) {
 		lastAvatarPosition.set(avatar.pos);
 		//Delete dead things
@@ -55,24 +61,30 @@ public class WorldEngine implements Updater {
 			editor.delete(t);
 		}
 		deletionRequests.clear();
+		
 
 		//move all the world windows (generate new terrain, spawn particle effects, make things visible, etc.)
 		int newXIndex = (int)(avatar.pos.x/Column.COLUMN_WIDTH);
+		int i = 0;
+		Time.update(10);
 		for(RealWorldWindow window : worldWindows) {
+			if(i == 3)
+				Time.update(11);
 			window.moveToColumn(newXIndex);
+			if(i == 3) {
+				Time.update(11);
+//				lastTimes[0][timeIndex] = Time.delta[11];
+			}
+			i++;
 		}
-		
+		Time.update(10);
+		timeIndex++;
+
 		//update all things
 		debug = true;
 		thingWindow.updateThings(delta);
 		debug = false;
 		editor.reLink(thingWindow);
-		Time.update(9);
-		
-		if(Core.updatedToLong && Time.delta[9] > 0.005) {
-			System.out.println(Time.delta[5] + "  " + Time.delta[6] + "  " + Time.delta[7] + "  " + Time.delta[8]);
-		}
-		
 		//update quests
 		data.forEachQuest(ActiveQuest::update);
 		

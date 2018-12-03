@@ -1,6 +1,7 @@
 package menu;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_0;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_1;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
@@ -156,6 +157,7 @@ public class Settings {
 		CROUCH(GLFW_KEY_S, "crouch"),
 		ZOOM_IN(GLFW_KEY_I, "zoom in"),
 		ZOOM_OUT(GLFW_KEY_O, "zoom out"),
+		THROW_ITEM(GLFW_KEY_Q, "throw item"),
 		//debugging
 		FASTER(GLFW_KEY_KP_ADD, "faster", true),
 		SLOWER(GLFW_KEY_MINUS, "slower"),

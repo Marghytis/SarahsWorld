@@ -86,7 +86,9 @@ public class World {
 		while(anchor.xIndex < startX && anchor.right() != null) anchor = anchor.right();
 		while(anchor.xIndex > startX && anchor.left() != null) anchor = anchor.left();
 
-		thingWindow 	= new ThingWindow(anchor, windowRadius + 4, windowRadius + 24);
+		thingWindow 	= new ThingWindow(anchor, windowRadius + 28, windowRadius + 24, windowRadius + 4, windowRadius + 0);
+		thingWindow.moveToColumn(startX);
+		thingWindow.loadCenter();
 		landscapeWindow = new TerrainWindow(anchor, windowRadius + 6);
 		BackgroundWindow backgroundRenderingWindow    = new BackgroundWindow(anchor, windowRadius + 6);
 		engine = new WorldEngine(data, editor, thingWindow, genWindow, landscapeWindow, backgroundRenderingWindow, thingWindow);

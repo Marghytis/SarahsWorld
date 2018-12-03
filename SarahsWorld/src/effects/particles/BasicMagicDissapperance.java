@@ -1,6 +1,7 @@
 package effects.particles;
 
 import effects.particles.Particle.ParticleType;
+import main.Main;
 import main.Res;
 import util.math.Vec;
 
@@ -15,7 +16,7 @@ public class BasicMagicDissapperance implements ParticleEffect {
 			p.pos.set(pos.x, pos.y);
 			float angle = random.nextFloat()*(float)(Math.PI*2);
 			
-			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f).scale(ParticleTest.core.SIZE_HALF.w,ParticleTest.core.SIZE_HALF.h);//-0.8f
+			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f).scale(Main.HALFSIZE.w,Main.HALFSIZE.h);//-0.8f
 			p.col.set(1f, 0.7f, 0.0f, 0.8f);
 			p.rad = 0.5f;
 			p.lived = lifeSpan;
@@ -43,7 +44,7 @@ public class BasicMagicDissapperance implements ParticleEffect {
 			p.pos.set(pos.x, pos.y);
 			float angle = random.nextFloat()*(float)(Math.PI*2);
 			
-			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f).scale(ParticleTest.core.SIZE_HALF.w,ParticleTest.core.SIZE_HALF.h);//-0.8f
+			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f).scale(Main.HALFSIZE.w,Main.HALFSIZE.h);//-0.8f
 			p.col.set(1, 0, 0, 0.1f);
 			p.rot = random.nextBoolean() ? 0.1f : -0.1f;
 			p.rad = 1;

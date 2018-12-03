@@ -1,6 +1,7 @@
 package things.aiPlugins;
 
 import core.Listener;
+import item.ItemType;
 import main.Main;
 import menu.Menu.Menus;
 import menu.Settings;
@@ -14,6 +15,8 @@ import world.World;
 public  class AvatarControl extends AiPlugin implements Listener {
 
 	public boolean action(Thing t, double delta) {
+		
+		t.immortal = Settings.getBoolean("IMMORTAL");
 		
 		boolean riding = t.isRiding;
 		boolean debugging = Settings.getBoolean("DEBUGGING");
@@ -99,7 +102,7 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		int selectedItem = t.selectedItem - scroll;
 		selectedItem -= Math.floorDiv(selectedItem, t.itemStacks.length);//accounts for large negative scrolls
 		if(t.itemStacks[t.selectedItem].item.ordinal != t.itemStacks[selectedItem].item.ordinal)
-			Main.world.avatar.type.attack.cancelAttack(Main.world.avatar);
+			Main.world.avatar.type.attacking.cancelAttack(Main.world.avatar);
 		t.selectedItem = selectedItem;
 		return true;
 	}
@@ -125,8 +128,8 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		
 		switch(button){
 		case 0://ATTACK
-			if(livingsClickedOn.length > 0 && Main.world.avatar.where.water == 0){
-				Main.world.avatar.type.attack.attack(Main.world.avatar, null, Main.world.avatar.type.inv.getSelectedItem(Main.world.avatar), "", livingsClickedOn);
+			if(Main.world.avatar.where.water == 0){
+				Main.world.avatar.type.attacking.attack(Main.world.avatar, Main.world.avatar.type.inv.getSelectedItem(Main.world.avatar), worldPos, livingsClickedOn);
 			}
 			break;
 		case 1://USE
@@ -244,6 +247,13 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		case TOSS_COIN:
 			if(Settings.getBoolean("DEBUGGING"))
 				Main.world.thingWindow.add(new Thing(ThingType.COIN, Main.world.avatar.link, Main.world.window.toWorldPos(Main.input.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
+			break;
+		case THROW_ITEM:
+			ItemType type = Main.world.avatar.type.inv.getSelectedItem(Main.world.avatar);
+			if(type != null) {
+				Main.world.thingWindow.add(new Thing(ThingType.ITEM, Main.world.avatar.link, Main.world.avatar.pos.copy().shift(0, 60), type, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
+				Main.world.avatar.type.inv.addItem(Main.world.avatar, type, -1);
+			}
 			break;
 		default:
 		}

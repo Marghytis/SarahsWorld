@@ -11,6 +11,7 @@ import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
 import things.aiPlugins.Speaking.ThoughtBubble;
+import things.interfaces.Listable;
 import things.interfaces.StructureThing;
 import util.Color;
 import util.math.Rect;
@@ -19,7 +20,7 @@ import world.World;
 import world.data.Column;
 import world.data.DefaultListElement;
 
-public class Thing extends DefaultListElement<Thing> implements StructureThing<Thing> {
+public class Thing extends DefaultListElement<Thing> implements StructureThing<Thing>, Listable {
 	//DEBUG
 	public boolean selected;
 	public boolean switchedSelected;
@@ -36,6 +37,7 @@ public class Thing extends DefaultListElement<Thing> implements StructureThing<T
 
 	//dynamically changing values
 	public short index = -1;
+	public int[] indices = {-1,-1,-1,-1,-1};//for diverse lists of things
 	public Vec pos = new Vec(), nextPos = new Vec(), lastPos = new Vec();
 	public Vec vel = new Vec(), nextVelAvDelta = new Vec(), nextVel = new Vec();
 	public Vec force = new Vec(), noFricForce = new Vec(), flyForce = new Vec();//flyForce is mainly for butterflies
@@ -45,6 +47,7 @@ public class Thing extends DefaultListElement<Thing> implements StructureThing<T
 	public boolean reallyAir, willLandInWater;
 	public double walkingForce, speed, maxWalkingSpeed, buoyancyForce;
 	public double rotation, aniRotation, yOffsetToBalanceRotation;
+	public double damageCooldown;
 	public Vec orientation = new Vec(0, 1);
 	public double time;//just for unicorns at this point. Can be used to animate certain effects
 	public int testInt;
@@ -63,12 +66,12 @@ public class Thing extends DefaultListElement<Thing> implements StructureThing<T
 	public boolean isRiding;
 	public boolean attacking;
 	public boolean speaking;
-	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible, addedToVAO;
+	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible, addedToVAO, freeToMakeInvisible;
 	public boolean linked = false;
 	
 	public Thing target;
 	public Thing mountedThing;
-	public AttackType lastAttack;
+	public Technique lastAttack;
 	/**
 	 * It's the column next left to the things position
 	 */
@@ -196,6 +199,16 @@ public class Thing extends DefaultListElement<Thing> implements StructureThing<T
 
 	public void setLinked(boolean linked) {
 		this.linked = linked;
+	}
+
+	@Override
+	public int getIndex(int indexIndex) {
+		return indices[indexIndex];
+	}
+
+	@Override
+	public void setIndex(int indexIndex, int index) {
+		indices[indexIndex] = index;
 	}
 
 }

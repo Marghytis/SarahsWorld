@@ -19,3 +19,4 @@ double	ZOOM								1
 boolean	SOUND								true
 boolean	MUSIC								false
 boolean	DEBUGGING							true
+boolean IMMORTAL							true

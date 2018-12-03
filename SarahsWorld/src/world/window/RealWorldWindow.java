@@ -2,6 +2,8 @@ package world.window;
 
 import java.util.function.Consumer;
 
+import main.Main;
+import util.Time;
 import world.data.Column;
 import world.data.Dir;
 
@@ -40,16 +42,24 @@ public class RealWorldWindow {
 	public void moveToColumn(int xIndex) {
 		//keep this order! It prevents overtaking for generating world windows.
 		//increase size
+		Time.update(12);
 		for(int end = 0; end < Dir.s.length; end++) {
 			while(Dir.s[end]*(ends[end].xIndex - xIndex) < radius && dirOkay(end) && ends[end].next(end) != null) {
 				shiftOutwards(end);
 			}
 		}
+		Time.update(12);
+		Time.update(13);
 		//decrease size
 		for(int end = 0; end < Dir.s.length; end++) {
 			while(Dir.s[end]*(ends[end].xIndex - xIndex) > radius && ends[end].next(1-end) != null) {
 				shiftInwards(end);
 			}
+		}
+		Time.update(13);
+		if(this instanceof ThingWindow) {
+//			Main.world.engine.lastTimes[1][Main.world.engine.timeIndex] = Time.delta[12];
+//			Main.world.engine.lastTimes[2][Main.world.engine.timeIndex] = Time.delta[13];
 		}
 	}
 

@@ -1,10 +1,16 @@
 package effects.particles;
 
+import java.util.List;
+
 import effects.particles.Particle.ParticleType;
+import item.ItemType;
+import main.Main;
 import main.Res;
+import things.Technique;
+import things.Thing;
 import util.math.Vec;
 
-public class BasicMagicEffect extends MovingEffect{
+public class BasicMagicEffect extends MovingEffect {
 	
 	public static final ParticleType LIGHT = new ParticleType(Res.getTex("fireParticle"));
 	
@@ -19,6 +25,16 @@ public class BasicMagicEffect extends MovingEffect{
 
 		@Override
 		public void velocityInterpolator(Particle p, float delta) {
+			if(targets != null){
+				for(Thing target : targets){
+					if(target.box.copy().shift(target.pos).contains(p.pos)){
+						spell.hitEffect.start(source, source.type.attacking.calculateDamage(target, ItemType.NOTHING, spell), target);
+						Main.world.window.addEffect(new BasicMagicDissapperance(target.pos.copy().shift(0, p.pos.y - target.pos.y + target.yOffset)));
+						end();
+						break;
+					}
+				}
+			}
 			p.pos.set(movingPos);
 		}
 		
@@ -62,11 +78,17 @@ public class BasicMagicEffect extends MovingEffect{
 	}
 	
 	double life, lived;
+	Thing source;
+	List<Thing> targets;
+	Technique spell;
 	
-	public BasicMagicEffect(double duration){
+	public BasicMagicEffect(double duration, Thing source, List<Thing> targets, Technique spell){
 		life = duration;
 		lived = 0;
 		light.emittParticle(0);
+		this.source = source;
+		this.targets = targets;
+		this.spell = spell;
 	}
 	
 	public void update(double delta) {
@@ -79,6 +101,10 @@ public class BasicMagicEffect extends MovingEffect{
 	public void render(float scaleX, float scaleY) {
 		light.render(scaleX, scaleY);
 		sparkle.render(scaleX, scaleY);
+	}
+	
+	public void end() {
+		Main.world.window.removeEffect(this);
 	}
 	
 	public void terminate(){

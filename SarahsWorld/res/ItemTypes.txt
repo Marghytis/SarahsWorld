@@ -1,8 +1,8 @@
 //name			nameInv				value	texWorld		texHand				texInv			BodyPos	oneWay	target	coolDown	weaponType	strength	crit	critProb
 SWORD			Sword				20		d  0 0			d  0 0				d  0 0			HAND	false	false	500			STRIKE		4			6		0.1
 AXE				Axe					100		d  1 0			d  1 0				d  1 0 			HAND	false	false	1000		STRIKE		10			14		0.1	
-STICK			Stick				2 		d  2 0			d  2 0				d  3 0 			HAND	false	false	500 		STRIKE		2			2		0
-CANDY_CANE		Candy_cane			2 		d  3 0			d  3 0				d  7 0 			HAND	false	false	1000		STRIKE		2			2		0
+STICK			Stick				2 		d  3 0			d  2 0				d  3 0 			HAND	false	false	500 		STRIKE		2			2		0
+CANDY_CANE		Candy_cane			2 		d  7 0			d  3 0				d  7 0 			HAND	false	false	1000		STRIKE		2			2		0
 SHOVEL			Shovel				70		d  4 0			d  4 0				d  4 0 			HAND	false	false	700 		STRIKE		3			4		0.1
 UNICORN_HORN	Unicorn_horn		200		d  5 0			d  1 1				d  5 0 			HEAD	true 	false	1000		SPELL		0			2		0.03
 

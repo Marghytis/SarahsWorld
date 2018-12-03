@@ -102,24 +102,26 @@ public class ThingVAO {
 		vao = new VAO(null, vboUsual, vboUnusual);
 	}
 	
+	private ByteBuffer[] vboBuffers = new ByteBuffer[2];
+	
 	/**
 	 * Create a VBO with the given data types
 	 * @param params {amount[], type[], normalized[], changer[]}
 	 */
-	private VBO createVBO(VBOContent[] params, int index){
-		contents[index] = params;
+	private VBO createVBO(VBOContent[] params, int type){
+		contents[type] = params;
 		VAP[] vaps = new VAP[params.length];
 		int shift = 0;
 		for(int i = 0; i < vaps.length; i++){
 			vaps[i] = new VAP(params[i].amount, params[i].type, params[i].normalized, shift);
 			shift += params[i].getBytes()*params[i].amount;
 		}
-		bytesUpdated[index] = shift;
-		changer[index] = BufferUtils.createByteBuffer(bytesUpdated[index]);
-		ByteBuffer bufferTemp = BufferUtils.createByteBuffer(capacity*bytesUpdated[index]);
-		vbo[index] = new VBO(bufferTemp,  index == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW, bytesUpdated[index], vaps);
+		bytesUpdated[type] = shift;
+		changer[type] = BufferUtils.createByteBuffer(bytesUpdated[type]);
+		vboBuffers[type] = BufferUtils.createByteBuffer(capacity*bytesUpdated[type]);
+		vbo[type] = new VBO(vboBuffers[type],  type == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW, bytesUpdated[type], vaps);
 		
-		return vbo[index];
+		return vbo[type];
 	}
 	
 	public interface Getter {
@@ -151,7 +153,15 @@ public class ThingVAO {
 	
 	public void updateVBO(Thing firstThing, ByteBuffer buffer, int index) {
 		startBatchAdder(index);
-			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, firstThing.index*bytesUpdated[index], buffer);
+			updateVBOBatch(firstThing, buffer, index);
+		endBatchAdder();
+	}
+	
+	public void updateVBOs(Thing firstThing) {
+		startBatchAdder(0);
+			updateVBOBatch(firstThing, vboBuffers[0], 0);
+		startBatchAdder(1);
+			updateVBOBatch(firstThing, vboBuffers[1], 1);
 		endBatchAdder();
 	}
 	
@@ -160,16 +170,35 @@ public class ThingVAO {
 	}
 	
 	public void fillBuffer(Thing t, ByteBuffer buffer, int index) {
-		if(t.index == -1){
-			(new Exception("Thing is not registered")).printStackTrace();
-			return;
-		}
 		for(int i = 0; i < contents[index].length; i++){
 			contents[index][i].change(buffer, t);
 		}
 	}
 	
+	public void clearBuffers() {
+		vboBuffers[0].clear();
+		vboBuffers[1].clear();
+	}
+	
+	public void flipBuffers() {
+		vboBuffers[0].flip();
+		vboBuffers[1].flip();
+	}
+	
+	public void fillBuffers(Thing t) {
+		fillBuffers(t, vboBuffers[0], vboBuffers[1]);
+	}
+	
+	public void fillBuffers(Thing t, ByteBuffer bufferUsual, ByteBuffer bufferUnusual) {
+		fillBuffer(t, bufferUsual, USUAL);
+		fillBuffer(t, bufferUnusual, UNUSUAL);
+	}
+	
 	private void changeNoBinding(Thing t, int index) {
+		if(t != null && t.index == -1){
+			(new Exception("Thing is not registered")).printStackTrace();
+			return;
+		}
 		changer[index].clear();
 			fillBuffer(t, changer[index], index);
 		changer[index].flip();
@@ -178,15 +207,18 @@ public class ThingVAO {
 
 	public void add(Thing t, boolean inBatch){
 
+		if(lastUsedIndex+1 >= capacity){
+			removeFreedThings();
+		}
 		lastUsedIndex++;
-		if(lastUsedIndex >= capacity){
+		if(lastUsedIndex >= capacity){//yes, same if!!
 			System.err.println("Not enough space for " + t.type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.type.maxVisible);
 			enlarge();
 		}
+		t.onVisibilityChange(true);
 		things[lastUsedIndex] = t;
 		t.index = lastUsedIndex;
-		if(t.type == ThingType.SARAH)
-			System.out.println("Sarah's Thing index: " + t.index);
+		t.addedToVAO = true;
 		if(!inBatch) {
 			changeUsual(t);
 			changeUnusual(t);
@@ -209,6 +241,10 @@ public class ThingVAO {
 	}
 	
 	public void remove(Thing t){
+		remove(t, true);
+	}
+	
+	public void remove(Thing t, boolean vboAsWell) {
 		if(lastUsedIndex < 0){
 			new Exception("You removed one " + t.type.name + " too much!!!!").printStackTrace();
 			return;
@@ -217,15 +253,15 @@ public class ThingVAO {
 			new Exception("This " + t.type.name + " is already deleted in the VAO!!");
 			return;
 		}
+		t.onVisibilityChange(false);
 		
 		//move last thing in the list to t's location and update lastUsedIndex
-		moveThing(lastUsedIndex, t.index);
+		moveThing(lastUsedIndex, t.index, vboAsWell);
 		lastUsedIndex--;
 		
 		t.index = -1;
-		if(t.type == ThingType.SARAH)
-			System.out.println("Sarah is dead! :(");
-		
+		t.addedToVAO = false;
+		t.freeToMakeInvisible = false;//reset this flag
 	}
 	
 	protected void copyVBOdata(int iFrom, int iTo) {
@@ -238,30 +274,50 @@ public class ThingVAO {
 		}
 	}
 	
-	protected void copyThing(int iFrom, int iTo) {
-		copyVBOdata(iFrom, iTo);
+	protected void refillBuffers() {
+		for(int type = 0; type <= 1; type++) {
+			vboBuffers[type].clear();
+			for(int index = 0; index < things.length; index++) {
+				fillBuffer(things[index], vboBuffers[type], type);
+			}
+			vboBuffers[type].flip();
+			vbo[type].update();
+		}
+	}
+	
+	protected void copyThing(int iFrom, int iTo, boolean vboAsWell) {
+		if(vboAsWell) copyVBOdata(iFrom, iTo);
 		int index = iTo;
 		things[index] = things[iFrom];
 		things[index].index = (short) iTo;
 	}
 	
-	protected void moveThing(int iFrom, int iTo) {
-		copyThing(iFrom, iTo);
+	protected void moveThing(int iFrom, int iTo, boolean vboAsWell) {
+		copyThing(iFrom, iTo, vboAsWell);
 		things[iFrom] = null;
+	}
+	
+	protected void removeFreedThings() {
+		for(int i = 0; i < things.length; i++){
+			if(things[i] != null && things[i].freeToMakeInvisible) {
+				remove(things[i], false);
+			}
+		}
+		refillBuffers();
 	}
 	
 	public void enlarge(){
 		capacity *= 1.5;
 		for(int i = 0; i < vbo.length; i++){
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo[i].handle);
-			GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vbo[i].buffer);
-			ByteBuffer bufferTemp = BufferUtils.createByteBuffer((int)(capacity*bytesUpdated[i]));
-			bufferTemp.put(vbo[i].buffer);
-			bufferTemp.put(new byte[bufferTemp.capacity()-vbo[i].buffer.capacity()]);
-			bufferTemp.flip();
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, bufferTemp, i == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW);
+			GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vboBuffers[i]);
+			ByteBuffer temp = vboBuffers[i];
+			vboBuffers[i] = BufferUtils.createByteBuffer((int)(capacity*bytesUpdated[i]));
+			vboBuffers[i].put(temp);
+			vboBuffers[i].put(new byte[vboBuffers[i].capacity()-temp.capacity()]);
+			vboBuffers[i].flip();
+			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vboBuffers[i], i == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-			vbo[i].buffer = bufferTemp;
 		}
 		
 		Thing[] newThings = new Thing[capacity];
@@ -286,22 +342,54 @@ public class ThingVAO {
 		}
 		
 		public void change(ByteBuffer buffer, Thing t){
+			
+			if(t == null) {
+				fillWith0(buffer);
+			} else {
+				fillWithThing(buffer, t);
+			}
+		}
+		
+		private void fillWithThing(ByteBuffer buffer, Thing t) {
 			switch(type){
 			case GL11.GL_FLOAT:
-				for(int i = 0; i < getters.length; i++)		buffer.putFloat((float)getters[i].get(t)); break;
+				for(int i = 0; i < getters.length; i++)		buffer.putFloat((float)get(t, i)); break;
 				
 			case GL11.GL_BYTE:
-				for(int i = 0; i < getters.length; i++)		buffer.put((byte)getters[i].get(t)); break;
+				for(int i = 0; i < getters.length; i++)		buffer.put((byte)get(t, i)); break;
 				
 			case GL11.GL_SHORT:
-				for(int i = 0; i < getters.length; i++)		buffer.putShort((short)getters[i].get(t)); break;
+				for(int i = 0; i < getters.length; i++)		buffer.putShort((short)get(t, i)); break;
 				
 			case GL11.GL_INT:
-				for(int i = 0; i < getters.length; i++)		buffer.putInt((int)getters[i].get(t)); break;
+				for(int i = 0; i < getters.length; i++)		buffer.putInt((int)get(t, i)); break;
 				
 			default:
 				new Exception("Unknown data type!!!").printStackTrace();
 			}
+		}
+		
+		private void fillWith0(ByteBuffer buffer) {
+			switch(type){
+			case GL11.GL_FLOAT:
+				for(int i = 0; i < getters.length; i++)		buffer.putFloat((float)0); break;
+				
+			case GL11.GL_BYTE:
+				for(int i = 0; i < getters.length; i++)		buffer.put((byte)0); break;
+				
+			case GL11.GL_SHORT:
+				for(int i = 0; i < getters.length; i++)		buffer.putShort((short)0); break;
+				
+			case GL11.GL_INT:
+				for(int i = 0; i < getters.length; i++)		buffer.putInt((int)0); break;
+				
+			default:
+				new Exception("Unknown data type!!!").printStackTrace();
+			}
+		}
+		
+		private Object get(Thing t, int i) {
+			return getters[i].get(t);
 		}
 		
 		public int getBytes(){

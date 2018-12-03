@@ -48,6 +48,8 @@ public class Life extends AiPlugin {
 	}
 
 	public void update(Thing t, double delta) {
+		t.damageCooldown -= delta;
+		
 		if(t.health <= 0 && !t.immortal){
 			if(t.itemStacks != null){
 				for(ItemStack item : t.itemStacks){
@@ -76,7 +78,8 @@ public class Life extends AiPlugin {
 	}
 	
 	public boolean getHit(Thing tgt, Thing src, int damage){
-		if(damage > 0){
+		if(tgt.immortal) return false;
+		if(damage > 0 && tgt.damageCooldown <= 0){
 			if(tgt.where.g){
 				tgt.type.physics.leaveGround(tgt, new Vec(tgt.pos.x > src.pos.x ? 200 : -200, 300));
 				tgt.where.g = false;
@@ -84,6 +87,7 @@ public class Life extends AiPlugin {
 			}
 			tgt.health -= damage;
 			Main.world.window.addEffect(new BloodSplash(tgt.pos));
+			tgt.damageCooldown = coolDownStart;
 			return true;
 		}
 		return false;

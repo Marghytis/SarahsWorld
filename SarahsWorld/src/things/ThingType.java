@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import effects.WorldEffect;
+import effects.particles.BasicMagicDissapperance;
 import effects.particles.BasicMagicEffect;
 import effects.particles.Hearts;
 import effects.particles.MovingEffect;
+import effects.particles.RainbowSpit;
 import item.ItemType;
 import item.ItemType.WeaponType;
 import main.Main;
@@ -14,6 +16,7 @@ import main.Res;
 import main.UsefulStuff;
 import render.Animation;
 import render.TexAtlas;
+import things.Technique.CloseRange;
 import things.aiPlugins.Animating;
 import things.aiPlugins.Attachement;
 import things.aiPlugins.Attacking;
@@ -90,21 +93,20 @@ public class ThingType {
 			new AvatarControl(),
 			new Life(20, 0, 1),
 			new Magic(20, 20),
-			new Attacking(4, 0.01, new AttackType[]{
-					 new AttackType("punch", 100, -50, 100, WeaponType.PUNCH, 1, 1, 0.5)//punch
-					,new AttackType("kick", 200, -30, 50, WeaponType.KICK, 2, 1, 1)//kick
-					,new AttackType("strike", 400, -200, 300, WeaponType.STRIKE, 5, 2, 0.7)//strike
-					,new AttackType("spell", 1000, -1000, 1000, WeaponType.SPELL, 1, 1, 1, 
-							(source, targets, amount, item) -> {
-								for(Thing target : targets){
-									int damage = source.type.attack.calculateDamage(target, item, 1);
-								}
+			new Attacking(4, 0.01, new Technique[]{
+					 new Technique("punch",  WeaponType.PUNCH,  1, 1, 0.5, new CloseRange(100,  -50, 100))//punch
+					,new Technique("kick",   WeaponType.KICK,   2, 1, 1,   new CloseRange(200,  -30,  50))//kick
+					,new Technique("strike", WeaponType.STRIKE, 5, 2, 0.7, new CloseRange(400, -200, 300))//strike
+					,new Technique("spell",  WeaponType.SPELL,  1, 1, 1, 
+							Technique.selectAll,
+							(source, item, technique, pos, selected) -> {
+								Vec start = source.pos.copy().shift(0, 35);
+								Vec vel = pos.copy().minus(start).setLength(300);
+								ThingType.MOVING_EFFECT.defaultSpawner.spawn(source.link, start, new BasicMagicEffect(3, source, selected, ThingType.SARAH.attacking.getTechnique("spell")), vel);
 							},
 							(src, dam, tgt) -> {
-								Vec vel = tgt.pos.copy().minus(src.pos).setLength(300);
-						ThingType.MOVING_EFFECT.defaultSpawner.spawn(src.link, src.pos.copy().shift(0, 35), new BasicMagicEffect(100), vel);
-						return tgt.type.life.getHit(tgt, src, dam);
-						})//spell TODO add Effect
+								return Technique.lifeHit.start(src, dam, tgt);}) //spell TODO add Effect
+							
 					}),
 			new Riding(new Rect(Res.getAtlas("sarah").pixelCoords), new Rect(Res.getAtlas("sarah_onCow").pixelCoords)),
 			new Inventory(ItemType.NOTHING, 5),
@@ -128,7 +130,7 @@ public class ThingType {
 			,new Animating(snail[0], new Rect(Res.getAtlas("snail").pixelCoords), 0, 0, 4, false, snail)
 			,new Life(10, 10, 2, new ItemType[]{ItemType.SNAIL_SHELL, ItemType.SNAILS_EYE}, 0.05, 2)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
-			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 0.5)})
+			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(1, 1, true, true, true, true, true, true)){
@@ -137,7 +139,7 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attack.attack(t, WeaponType.PUNCH, ItemType.NOTHING, "punch", t.target);//attack
+				attacking.attack(t, "punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -162,7 +164,7 @@ public class ThingType {
 			,new Animating(rabbit[0][0], new Rect(Res.getAtlas("rabbit").pixelCoords), 0, 0, 4, false, rabbit)
 			,new Life(10, 10, 2, new ItemType[]{ItemType.RABBITS_FOOT}, 0.01)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
-			,new Attacking(2, 0.05, new AttackType[]{new AttackType("bite", 300, -300, 300, WeaponType.BITE, 2, 5, 0.5)})
+			,new Attacking(2, 0.05, new Technique[]{new Technique("bite", WeaponType.BITE, 2, 5, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(1, 1)){
@@ -173,7 +175,7 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attack.attack(t, WeaponType.BITE, ItemType.NOTHING, "bite", t.target);//attack
+				attacking.attack(t, "bite", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -193,7 +195,7 @@ public class ThingType {
 			,new Animating(scorpion[0], new Rect(Res.getAtlas("scorpion").pixelCoords), 0, 0, 4, false, scorpion)
 			,new Life(10, 10, 2, new ItemType[]{ItemType.SCORPION_CLAW, ItemType.SCORPION_STING}, 0.05, 0.05)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
-			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 1)})
+			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 1, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(1, 1)){
@@ -202,7 +204,7 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attack.attack(t, WeaponType.PUNCH, ItemType.NOTHING, "punch", t.target);//attack
+				attacking.attack(t, "punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -282,12 +284,12 @@ public class ThingType {
 											new Animation("stand", Res.getAtlas("zombie"), 3, 0),
 											new Animation("walk", Res.getAtlas("zombie"), 10, 0,/**/2, 1, 0, 1, 2, 3),
 											new Animation("sprint", Res.getAtlas("zombie"), 20, 0,/**/2, 1, 0, 1, 2, 3),
-											new Animation("punch", Res.getAtlas("zombie"), 30, 1,/**/0, 1, 2)};
+											new Animation("punch", Res.getAtlas("zombie"), 15, 1,/**/0, 1, 2)};
 	public static final ThingType ZOMBIE = new ThingType("ZOMBIE", Res.getAtlas("zombie"), 40, true, (p, f, ed) -> new Thing(ThingType.ZOMBIE, p, f.shift(0, 100), ed)
 			,new Animating(zombie[0], new Rect(Res.getAtlas("zombie").pixelCoords), 0, 0, 4, false, zombie)
 			,new Life(10, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH}, 0.5, 0.5, 0.5)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
-			,new Attacking(2, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 0.5)})
+			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(1, 1)) {
@@ -297,7 +299,7 @@ public class ThingType {
 
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attack.attack(t, WeaponType.PUNCH, ItemType.NOTHING, "punch", t.target);//attack
+				attacking.attack(t, "punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -332,8 +334,13 @@ public class ThingType {
 				}.addSecondTex(Res.getAtlas("unicorn_hair").file)
 			,new Life(20, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH, ItemType.UNICORN_HORN}, 0.5, 0.5, 0.5, 1.1)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
-			,new Attacking(2, 0.05, new AttackType[]{new AttackType("spit", 300, -300, 300, WeaponType.SPELL, 2, 2, 0.5,
-					new AttackSelectedSpell(AttackType.standardEffect, 2.0), AttackType.standardEffect)})
+			,new Attacking(2, 0.05, new Technique[]{
+					new Technique("spit", WeaponType.SPELL, 2, 2, 0.5,
+							Technique.selectAll,
+							(source, item, technique, pos, selected) -> 
+					
+					Main.world.window.addEffect(new RainbowSpit(new Vec(!source.dir? source.ani.tex.info[0][0] : (source.ani.tex.w-source.ani.tex.info[0][0]), source.ani.tex.info[0][1]).shift(source.pos).shift(source.box.pos), source.dir? 1 : -1, source, selected, Technique.lifeHit))
+								)})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(1, 1)) {
@@ -344,7 +351,7 @@ public class ThingType {
 		public void update(Thing t, double delta){
 			t.time += delta*0.1;
 			if(follow.action(t, delta)){//follow
-				attack.attack(t, WeaponType.SPELL, ItemType.NOTHING, "spit", t.target);//attack
+				attacking.attack(t, "spit", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -361,14 +368,14 @@ public class ThingType {
 			,new Animating(cat_giant[0], new Rect(Res.getAtlas("cat_giant").pixelCoords), 0, 0, 4, false, cat_giant)
 			,new Life(10, 10, 2)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
-			,new Attacking(10, 0.05, new AttackType[]{new AttackType("punch", 300, -300, 300, WeaponType.PUNCH, 2, 2, 2)})
+			,new Attacking(10, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 2, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 300, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(50, 300)) {
 
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attack.attack(t, WeaponType.PUNCH, ItemType.NOTHING, "punch", t.target);//attack
+				attacking.attack(t, "punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -386,9 +393,9 @@ public class ThingType {
 			,new Animating(trex[0], new Rect(Res.getAtlas("trex").pixelCoords), 0, 0, 6, false, trex)
 			,new Life(10, 10, 2, new ItemType[]{ItemType.TREX_TOOTH}, 0.9)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
-			,new Attacking(10, 0.05, new AttackType[]{
-					new AttackType("eat", 300, -300, 300, WeaponType.BITE, 2, 1, 5),
-					new AttackType("tailhit", 300, -300, 300, WeaponType.KICK, 2, 2, 3)})
+			,new Attacking(10, 0.05, new Technique[]{
+					new Technique("eat", WeaponType.BITE, 2, 1, 5, new CloseRange(300, -300, 300)),
+					new Technique("tailhit", WeaponType.KICK, 2, 2, 3, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 300, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(50, 300)) {
@@ -403,9 +410,9 @@ public class ThingType {
 				}
 			} else if(follow.action(t, delta)){//follow
 				if(World.rand.nextInt(100) < 70){//attack
-					attack.attack(t, WeaponType.KICK, null, "", t.target);
+					attacking.attack(t, "tailhit", t.target);
 				} else {
-					attack.attack(t, WeaponType.BITE, null, "", t.target);
+					attacking.attack(t, "eat", t.target);
 				}
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
@@ -764,6 +771,9 @@ public class ThingType {
 			if(extraData.length > 0 && extraData[0] != null) {
 				type = (ItemType)extraData[0];
 			}
+			if(extraData.length > 1 && extraData[1] != null) {
+				t.vel.set((Vec) extraData[1]);
+			}
 				
 			t.ani.setTexture(type.texWorld);
 			
@@ -829,7 +839,7 @@ public class ThingType {
 	public TexAtlas file;//1
 	public Animating ani;//2
 	public Physics physics;//3
-	public Attacking attack;//4
+	public Attacking attacking;//4
 	public Movement movement;//5
 	public Life life;//6
 	public Inventory inv;//7
@@ -881,7 +891,7 @@ public class ThingType {
 			} else if(plugin instanceof WalkAround){
 				walkAround = (WalkAround)plugin;
 			} else if(plugin instanceof Attacking){
-				attack = (Attacking)plugin;
+				attacking = (Attacking)plugin;
 			} else if(plugin instanceof Inventory){
 				inv = (Inventory)plugin;
 			} else if(plugin instanceof Magic){
@@ -912,7 +922,7 @@ public class ThingType {
 		this.plugins[i++] = inv;//collect coins and do item coolDown
 		this.plugins[i++] = speak;//updates the thoughbubble's position
 		this.plugins[i++] = life;//removes the thing, if live is below zero
-		this.plugins[i++] = attack;//attack cooldown
+		this.plugins[i++] = attacking;//attack cooldown
 		this.plugins[i++] = physEx;//repelling other things
 		
 		//no update

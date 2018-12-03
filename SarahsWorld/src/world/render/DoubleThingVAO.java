@@ -67,9 +67,13 @@ public class DoubleThingVAO extends ThingVAO {
 	}
 
 	public void add(Thing t, boolean inBatch){
-		
+
+		t.onVisibilityChange(true);
 		int side = whichSide(t);
 
+		if(dirs[side]*lastUsedIndices[side] + 1 >= dirs[side]*lastUsedIndices[1-side]){
+			removeFreedThings();
+		}
 		if(dirs[side]*lastUsedIndices[side] + 1 >= dirs[side]*lastUsedIndices[1-side]){
 			System.err.println("Not enough space for " + t.type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.type.maxVisible);
 			enlarge();
@@ -84,7 +88,7 @@ public class DoubleThingVAO extends ThingVAO {
 		}
 	}
 	
-	public void remove(Thing t){
+	public void remove(Thing t, boolean vboAsWell){
 		int side = whichSide(t);
 		if(dirs[side]*lastUsedIndices[side] < dirs[side]*ends[side]){
 			new Exception("You removed one " + t.type.name + " too much!!!!").printStackTrace();
@@ -94,16 +98,22 @@ public class DoubleThingVAO extends ThingVAO {
 			new Exception("This " + t.type.name + " is already deleted in the VAO!!");
 			return;
 		}
+		t.onVisibilityChange(false);
 		
 		//move last thing in the list to t's location and update lastUsedIndex
-		moveThing(lastUsedIndices[side], t.index);
+		moveThing(lastUsedIndices[side], t.index, vboAsWell);
 		lastUsedIndices[side] -= dirs[side];
 		
 		t.index = -1;
 		t.addedToVAO = false;
+		t.freeToMakeInvisible = false;//reset this flag
+		if(t.selected) System.out.println("Removing...");
 	}
 	
-	public void enlarge(){
+	public void enlarge() {
+		enlarge(true);
+	}
+	public void enlarge(boolean vboAsWell){
 		super.enlarge();
 		
 		int newEnd = capacity - 1;
@@ -111,7 +121,7 @@ public class DoubleThingVAO extends ThingVAO {
 		
 		//move all the (normally) FRONT things to the higher end of the buffer and array
 		for(int i = ends[higherSide]; i != lastUsedIndices[higherSide] + dirs[higherSide]; i+=dirs[higherSide]) {
-			moveThing(i, i + shift);
+			moveThing(i, i + shift, vboAsWell);
 		}
 		ends[higherSide] += shift;
 		lastUsedIndices[higherSide] += shift;

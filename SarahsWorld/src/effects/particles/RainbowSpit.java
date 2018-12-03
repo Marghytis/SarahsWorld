@@ -1,8 +1,11 @@
 package effects.particles;
 
+import java.util.List;
+
 import effects.particles.Particle.ParticleType;
+import item.ItemType;
 import main.Res;
-import things.AttackType.AttackEffect;
+import things.Technique.HitEffect;
 import things.Thing;
 import util.Color;
 import util.math.Vec;
@@ -46,9 +49,9 @@ public class RainbowSpit implements ParticleEffect{
 		public void velocityInterpolator(Particle p, float delta) {
 			p.vel.y -= 2f;
 			if(targets != null){
-				for(int i = 0; i < targets.length; i++){
-					if(targets[i].box.copy().shift(targets[i].pos).contains(p.pos)){
-						effect.attackEffect(source, damages[i], targets[i]);
+				for(Thing target : targets){
+					if(target.box.copy().shift(target.pos).contains(p.pos)){
+						effect.start(source, source.type.attacking.calculateDamage(source, target, ItemType.NOTHING, "spit"), target);
 					}
 				}
 			}
@@ -76,21 +79,20 @@ public class RainbowSpit implements ParticleEffect{
 	
 	Vec pos;
 	float live = 1.5f;
-	int damages[];
-	Thing source, targets[];
-	AttackEffect effect;
+	Thing source;
+	List<Thing> targets;
+	HitEffect effect;
 	int dir;
 	
 	public RainbowSpit(Vec pos, int dir){
-		this(pos, dir, null, null, null, null);
+		this(pos, dir, null, null, null);
 	}
 	
-	public RainbowSpit(Vec pos, int dir, Thing source, Thing[] target, int[] damage, AttackEffect effect){
+	public RainbowSpit(Vec pos, int dir, Thing source, List<Thing> selected, HitEffect effect){
 		this.pos = pos.copy();
 		this.dir = dir;
 		this.source = source;
-		this.targets = target;
-		this.damages = damage;
+		this.targets = selected;
 		this.effect = effect;
 	}
 	
