@@ -38,7 +38,7 @@ public class RainbowSpit implements ParticleEffect{
 		
 		@Override
 		public void makeParticle(Particle p) {
-			p.pos.set(pos.x, pos.y - (color*2));
+			p.pos.set(pos.x, pos.y - (color));
 			p.vel.set(-dir*200f, speedY[color]);
 			p.col.set(colors[color]);
 			p.rot = random.nextInt(3)-1;
@@ -73,7 +73,7 @@ public class RainbowSpit implements ParticleEffect{
 		
 		@Override
 		public void radiusInterpolator(Particle p, float delta){
-			p.rad = 1 + ((lifeSpan - p.lived)/lifeSpan*0.5f);
+			p.rad = 0.1f + (p.lived/lifeSpan*2f);
 		}
 	};
 	

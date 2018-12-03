@@ -337,10 +337,10 @@ public class ThingType {
 			,new Attacking(2, 0.05, new Technique[]{
 					new Technique("spit", WeaponType.SPELL, 2, 2, 0.5,
 							Technique.selectAll,
-							(source, item, technique, pos, selected) -> 
-					
-					Main.world.window.addEffect(new RainbowSpit(new Vec(!source.dir? source.ani.tex.info[0][0] : (source.ani.tex.w-source.ani.tex.info[0][0]), source.ani.tex.info[0][1]).shift(source.pos).shift(source.box.pos), source.dir? 1 : -1, source, selected, Technique.lifeHit))
-								)})
+							(source, item, technique, pos, selected) -> {
+					int[] info = Res.getAtlas("unicorn").texs[0].info[0];
+					Main.world.window.addEffect(new RainbowSpit(new Vec(!source.dir? info[0] : (source.ani.tex.w-info[0]), info[1]).shift(source.pos).shift(source.box.pos), source.dir? 1 : -1, source, selected, Technique.lifeHit));
+							})})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
 			,new Physics(1, 1)) {

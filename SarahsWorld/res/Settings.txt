@@ -1,5 +1,5 @@
 boolean	SHOW_WORLD_FIELD_BORDERS			false
-boolean AGGRESSIVE_CREATURES				false
+boolean AGGRESSIVE_CREATURES				true
 boolean SHOW_BOUNDING_BOX					false
 boolean SPLIT_STRENGTH_ON_MULTIPLE_TARGETS	true
 boolean FRICTION							true

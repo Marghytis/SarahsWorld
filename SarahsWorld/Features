@@ -1,9 +1,7 @@
 to add
-_add particle effects to the spell attack
 _improve swimming animations (not urgent)
 _load and save world
 _improve the biome transition in BiomeManager
-_for debug add again rendering of boundingboxes (when it's needed?)
 _sky color transitions better
 _better outline with overlapping creatures
 _rainbow spit smaller at the mouth
@@ -17,11 +15,16 @@ _weather update (rain, thunder, lightning, day + night, candy rain)
 _magic
 _camp fire (e.g. when hitting a stack of sticks with a magic spell)
 _frozen lakes in winter biome
-_throw away items -> take every item -> einblenden, dass man was bekommen hat
+_take every item -> einblenden, dass man was bekommen hat
 
 debug:
 _set next biome
+_for debug add again rendering of boundingboxes (when it's needed?)
 
 Ideas:
 _Landscape with lots of rocks and small grass pits with flowers
 _Readd inventory nametags
+
+done
+_add particle effects to the spell attack
+_throw away items
