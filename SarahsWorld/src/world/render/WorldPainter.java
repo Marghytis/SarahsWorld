@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import org.lwjgl.opengl.GL11;
 
-import core.Core;
 import core.Renderer;
 import core.Updater;
 import effects.Effect;
@@ -22,7 +21,6 @@ import render.Render;
 import render.VAO;
 import things.Thing;
 import util.Color;
-import util.Time;
 import util.math.Vec;
 import world.World;
 import world.data.WorldData;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import effects.WorldEffect;
-import effects.particles.BasicMagicDissapperance;
 import effects.particles.BasicMagicEffect;
 import effects.particles.Hearts;
 import effects.particles.MovingEffect;
@@ -828,6 +827,9 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta) {
 			((MovingEffect)t.effect).setPos(t.pos);
+			if(!t.effect.living()) {
+				Main.world.thingWindow.remove(t);
+			}
 		}
 	};
 	

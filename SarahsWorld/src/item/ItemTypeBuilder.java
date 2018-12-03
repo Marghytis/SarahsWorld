@@ -37,7 +37,7 @@ public class ItemTypeBuilder {
 	//usable
 	boolean usableBuilt;
 	public boolean oneWay;
-	public int coolDownTime;
+	public int coolDownTime, coolDownTimeUsage;
 	public boolean needsTarget;
 	
 	//weapon
@@ -115,7 +115,8 @@ public class ItemTypeBuilder {
 		setUsable(
 				Boolean.parseBoolean(words[i++]),//oneWay
 				Boolean.parseBoolean(words[i++]),//needsTarget
-				Integer.parseInt(words[i++])	 //coolDownTime
+				Integer.parseInt(words[i++]),	 //coolDownTime
+				Integer.parseInt(words[i++])	 //coolDownTimeUsage
 				);
 		setWeapon(
 				WeaponType.valueOf(words[i++]),//weaponType
@@ -128,10 +129,11 @@ public class ItemTypeBuilder {
 		}
 	}
 	
-	public ItemTypeBuilder setUsable(boolean oneWay, boolean needsTarget, int coolDownTime) {
+	public ItemTypeBuilder setUsable(boolean oneWay, boolean needsTarget, int coolDownTime, int coolDownTimeUsage) {
 		this.oneWay = oneWay;
 		this.needsTarget = needsTarget;
 		this.coolDownTime = coolDownTime;
+		this.coolDownTimeUsage = coolDownTimeUsage;
 		
 		usableBuilt = true;
 		return this;

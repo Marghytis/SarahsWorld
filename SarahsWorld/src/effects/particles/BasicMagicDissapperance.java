@@ -93,6 +93,8 @@ public class BasicMagicDissapperance implements ParticleEffect {
 		smoke.tick((float)dTime);
 		sparkle.tick((float)dTime);
 		count -= dTime;
+		if(!living())
+			Main.world.window.removeEffect(this);
 	}
 	
 	@Override

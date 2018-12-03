@@ -69,42 +69,7 @@ public class ItemType {
 	
 	//Item types below this line won't appear in traders inventories
 	public static final ItemType MOUTH 			= new ItemType(builder.readItemType("MOUTH"));
-	public static final ItemType NOTHING 		= new ItemType(builder.readItemType("NOTHING")) {
-		public boolean use(Thing src, Vec pos, Thing[] dest){
-			for (int i = 0; i < dest.length; i++) {
-				if(dest[i].type == ThingType.ITEM){
-					if(useOn(src, pos, dest[i])){
-						return true;
-					}
-				}
-			}
-			return super.use(src, pos, dest);
-		}
-		public boolean useOn(Thing src, Vec pos, Thing dest){
-			boolean success = false;
-			if(dest.fruits != null && !dest.fruits.isEmpty() && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
-				int index = World.rand.nextInt(dest.fruits.size());
-				ItemType i = dest.fruits.get(index);
-				dest.fruits.remove(index);
-				if(i != null) src.type.inv.addItem(src, i, 1);
-				success = true;
-			} else {
-				if(dest.type == ThingType.COW){
-					src.type.ride.mount(src, dest);
-					success = true;
-				} else if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE){
-					if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
-						src.type.inv.addItem(src, dest.itemBeing, 1);
-						Main.world.engine.requestDeletion(dest);
-						success = true;
-					}
-				} else {
-					dest.onRightClick.run(src, pos, dest);
-				}
-			}
-			return success;
-		}
-	};
+	public static final ItemType NOTHING 		= new ItemType(builder.readItemType("NOTHING"));
 	public static final ItemType COIN = new ItemType(builder.readItemType("COIN"));
 
 	public static ItemType[] values = tempList.toArray(new ItemType[tempList.size()]);
@@ -124,7 +89,7 @@ public class ItemType {
 	//usable
 	public boolean oneWay;
 	public boolean needsTarget;//Whether the item needs a thing target to use it or not
-	public int coolDownTime;//Length of the cool down after usage
+	public int coolDownTime, coolDownTimeUsage;//Length of the cool down after usage
 	public ItemUsageType useType;//determines the animation played on usage (right click)
 	
 	//weapon
@@ -154,6 +119,7 @@ public class ItemType {
 		this.nameInv = builder.nameInv;
 		this.value = builder.coinValue;
 		this.coolDownTime = builder.coolDownTime;
+		this.coolDownTimeUsage = builder.coolDownTimeUsage;
 		this.weaponType = builder.weaponType;
 		this.useType = builder.useType;
 		this.bodyPos = builder.bodyPos;
@@ -169,6 +135,15 @@ public class ItemType {
 	
 	public boolean use(Thing src, Vec pos, Thing[] dest){
 		if(needsTarget){
+			//prefer to pick up items
+			for(Thing t : dest){
+				if(t.type == ThingType.ITEM){
+					if(useOn(src, pos, t)){
+						return true;
+					}
+				}
+			}
+			//and only then use on other things
 			for(Thing t : dest){
 				if(useOn(src, pos, t)){
 					return true;
@@ -180,9 +155,32 @@ public class ItemType {
 		return false;
 	}
 
-	public boolean useOn(Thing src, Vec pos, Thing dest){return false;}
+//	public boolean useOn(Thing src, Vec pos, Thing dest){return false;}
 	public boolean useAt(Thing src, Vec pos){return false;}
-	
+	public boolean useOn(Thing src, Vec pos, Thing dest){
+		boolean success = false;
+		if(dest.fruits != null && !dest.fruits.isEmpty() && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
+			int index = World.rand.nextInt(dest.fruits.size());
+			ItemType i = dest.fruits.get(index);
+			dest.fruits.remove(index);
+			if(i != null) src.type.inv.addItem(src, i, 1);
+			success = true;
+		} else {
+			if(dest.type == ThingType.COW){
+				src.type.ride.mount(src, dest);
+				success = true;
+			} else if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE){
+				if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
+					src.type.inv.addItem(src, dest.itemBeing, 1);
+					Main.world.engine.requestDeletion(dest);
+					success = true;
+				}
+			} else {
+				dest.onRightClick.run(src, pos, dest);
+			}
+		}
+		return success;
+	}
 	/**
 	 * Translates and rotates the model matrix. Matrix origin should be at bottom left corner of the things texture.
 	 * Then the hand texture is rendered via the provided animator.

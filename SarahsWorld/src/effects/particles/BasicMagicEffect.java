@@ -25,6 +25,7 @@ public class BasicMagicEffect extends MovingEffect {
 
 		@Override
 		public void velocityInterpolator(Particle p, float delta) {
+			p.pos.set(movingPos);
 			if(targets != null){
 				for(Thing target : targets){
 					if(target.box.copy().shift(target.pos).contains(p.pos)){
@@ -35,7 +36,6 @@ public class BasicMagicEffect extends MovingEffect {
 					}
 				}
 			}
-			p.pos.set(movingPos);
 		}
 		
 		@Override
@@ -105,6 +105,7 @@ public class BasicMagicEffect extends MovingEffect {
 	
 	public void end() {
 		Main.world.window.removeEffect(this);
+		lived = life+1;
 	}
 	
 	public void terminate(){

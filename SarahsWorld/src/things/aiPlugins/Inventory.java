@@ -83,7 +83,7 @@ public class Inventory extends AiPlugin {
 					if(item == selected.item)
 						selected.remove(1);
 				} else {
-					selected.coolDown = item.coolDownTime;
+					selected.coolDown = item.coolDownTimeUsage;
 				}
 			}
 		}
