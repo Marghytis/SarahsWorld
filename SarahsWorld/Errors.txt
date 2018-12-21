@@ -1,2 +1,0 @@
-1. Nothing is rendered when using glDrawElements: indices buffer offset has to be in bytes
-2. Fatal error EXCEPTION_ACCESS_VIOLATION: GL method is invoked even though openGl is not well initialized

@@ -16,6 +16,7 @@ _item is at strange position when punching
 _text in textfields isn't vertically centered
 _you can throw away fists
 _when passing the maxVisible amount of things of a type (by spawning them/throwing away items), newly created things are not visible
+_thing rendering still not working as expected when walking through a jungle
 
 optional
 _schweben bei antigravity etc.
