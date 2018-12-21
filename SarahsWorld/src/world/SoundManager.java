@@ -4,7 +4,7 @@ import core.Updater;
 import main.Main;
 import main.Music;
 import main.Res;
-import menu.Menu.Menus;
+import menu.MenuManager.MenuType;
 import menu.Settings;
 import util.SoundSource;
 
@@ -34,7 +34,7 @@ public class SoundManager implements Updater {
 		}
 		
 		if(Main.world.isGameOver() && !death.isPlaying()) {
-			Main.menu.setMenu(Menus.MAIN);
+			Main.menu.setMenu(MenuType.MAIN);
 		}
 		
 		return false;

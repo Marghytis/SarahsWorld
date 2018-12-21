@@ -25,7 +25,7 @@ public enum Biome {
 				null
 			},
 			new ThingSpawner[]{
-				new ThingSpawner(spawnBetween(ThingType.PYRAMID, -30, -50), 0.03),
+				new ThingSpawner(spawnBetween(ThingType.PYRAMID, -30, -50, false), 0.03),
 				new ThingSpawner(spawnBetween(ThingType.CACTUS, -5, -10), 0.05),
 				new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05),
 				new ThingSpawner(ThingType.SCORPION.defaultSpawner, 0.01)
@@ -423,6 +423,13 @@ public enum Biome {
 		};
 	}
 	
+	/**
+	 * Spawns things of 'type' with z-zalues between z1 and z2
+	 * @param type
+	 * @param z1
+	 * @param z2
+	 * @return
+	 */
 	public static Spawner spawnZ(ThingType type, double z1, double z2){
 		return (c, pos, ed) -> {
 			Thing t = new Thing(type, c, pos.copy(), ed);
@@ -432,20 +439,23 @@ public enum Biome {
 	}
 
 	public static Spawner spawnBetween(ThingType type, double y1, double y2){
-		return spawnBetween(type, y1, y2, true, true);
+		return spawnBetween(type, y1, y2, World.rand.nextBoolean());
 	}
 	
+	/**
+	 * Spawns things of 'type' with y-values between y1 and y2 (using y-Offset). The z-value is adjusted to not have strangely overlapping things.
+	 * @param type
+	 * @param y1
+	 * @param y2
+	 * @param randomSide
+	 * @param front if the thing should be at the front (false if at back)
+	 * @return
+	 */
 	public static Spawner spawnBetween(ThingType type, double y1, double y2, boolean front){
-		return spawnBetween(type, y1, y2, false, front);
-	}
-	
-	public static Spawner spawnBetween(ThingType type, double y1, double y2, boolean randomSide, boolean front){
 		return (c, pos, ed) -> {
 			Thing t = new Thing(type, c, pos.copy(), ed);
 			t.yOffset = y1 + World.rand.nextDouble()*(y2-y1);
-			boolean frontLocal = front;
-			if(randomSide) frontLocal = World.rand.nextBoolean();
-			if(!frontLocal){
+			if(!front){
 				t.z = foliageZ.f(t.yOffset);
 			} else {
 				t.z = -foliageZ.f(t.yOffset);

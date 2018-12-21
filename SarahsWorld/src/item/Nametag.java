@@ -1,15 +1,29 @@
 package item;
 
+import org.lwjgl.opengl.GL15;
+
 import effects.Effect;
 import main.Main;
-import menu.Menu;
+import main.Res;
+import menu.MenuManager;
 import menu.Settings;
+import render.Render;
 import render.TexFile;
+import render.VAO;
+import render.VBO;
 import things.ThingType;
 import util.Color;
 import util.math.Vec;
 
 public class Nametag implements Effect {
+	
+	VAO vao;
+	
+	public Nametag() {
+//		VBO indices = new VBO(Render.standardIndex, GL15.GL_STATIC_DRAW);
+//		VBO vertices = new 
+//		vao = new VAO(indices, vbos);
+	}
 
 	public boolean keyPressed(int key) {
 		return false;
@@ -26,15 +40,15 @@ public class Nametag implements Effect {
 	public void render(float scaleX, float scaleY) {
 		if(Settings.getBoolean("SHOW_NAME_TAGS")){
 //			Color.BLACK.bind();
-//			Res.light2.file.bind();
-//			Main.world.window.forEach(ThingType.ITEM, (t) -> {
-//				Res.light.fill(t.pos.x - 50, t.pos.y - 20, t.pos.x + Menu.font.getWidth(t.itemBeing.name)/2 + 50, t.pos.y + Menu.font.getHeight() + 20, false);
-//			});TODO
+//			Res.getAtlas("light").file.bind();
+//			Main.world.thingWindow.forEach(ThingType.ITEM.ordinal, (t) -> {
+//				Res.getAtlas("light").fill(t.pos.x - 50, t.pos.y - 20, t.pos.x + MenuManager.font.getWidth(t.itemBeing.name)/2 + 50, t.pos.y + MenuManager.font.getHeight() + 20, false);
+//			});
 			
 			TexFile.bindNone();
 			Color.WHITE.bind();
 			Main.world.thingWindow.forEach(ThingType.ITEM.ordinal, (t) -> {
-				Menu.font.drawString((float)t.pos.x, (float)t.pos.y, t.itemBeing.nameInv, 1, 1);
+				MenuManager.font.drawString((float)(t.pos.x + Render.offsetX), (float)(t.pos.y + Render.offsetY), t.itemBeing.nameInv, 1, 1, scaleX, scaleY);
 			});
 		}
 	}

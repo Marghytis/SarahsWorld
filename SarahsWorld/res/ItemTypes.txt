@@ -4,9 +4,9 @@ AXE				Axe					100		d  1 0			d  1 0				d  1 0 			HAND	false	true	1000		0		STRIKE
 STICK			Stick				2 		d  3 0			d  2 0				d  3 0 			HAND	false	true	500 		0		STRIKE		2			2		0
 CANDY_CANE		Candy_cane			2 		d  7 0			d  3 0				d  7 0 			HAND	false	true	1000		0		STRIKE		2			2		0
 SHOVEL			Shovel				70		d  4 0			d  4 0				d  4 0 			HAND	false	true	700 		0		STRIKE		3			4		0.1
-UNICORN_HORN	Unicorn_horn		200		d  5 0			d  1 1				d  5 0 			HEAD	false 	true	1000		0		SPELL		0			2		0.03
+UNICORN_HORN	Unicorn_horn		200		d  5 0			d  1 1				d  5 0 			HEAD	false 	false	1000		0		SPELL		0			2		0.03
 
-BERRY 			Berry				8 		d  6 0			d  7 0				d  6 0			HAND	true	true	1			0		PUNCH		3			4		0.3
+BERRY 			Berry				8 		d  6 0			d  7 0				d  6 0			HAND	true	false	1			0		PUNCH		3			4		0.3
 SNAILS_EYE 		Snails_eye			40		d  0 1			d  0 4				d  0 1			HAND	false	true	1			0		PUNCH		1			2		0.03
 SNAIL_SHELL 	Snail_shell			40		d  1 1			d  1 4				d  1 1			HAND	false	true	1			0		PUNCH		1			2		0.03
 RABBITS_FOOT 	Rabbits_foot		40		d  2 1			d  2 4				d  2 1			HAND	false	true	1			0		PUNCH		1			2		0.03

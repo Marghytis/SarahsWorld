@@ -6,11 +6,12 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
+import main.Main;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
 import things.Thing;
-import things.ThingType;
+import world.window.ThingWindow;
 
 public class ThingVAO {
 	
@@ -102,8 +103,6 @@ public class ThingVAO {
 		vao = new VAO(null, vboUsual, vboUnusual);
 	}
 	
-	private ByteBuffer[] vboBuffers = new ByteBuffer[2];
-	
 	/**
 	 * Create a VBO with the given data types
 	 * @param params {amount[], type[], normalized[], changer[]}
@@ -118,8 +117,8 @@ public class ThingVAO {
 		}
 		bytesUpdated[type] = shift;
 		changer[type] = BufferUtils.createByteBuffer(bytesUpdated[type]);
-		vboBuffers[type] = BufferUtils.createByteBuffer(capacity*bytesUpdated[type]);
-		vbo[type] = new VBO(vboBuffers[type],  type == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW, bytesUpdated[type], vaps);
+		ByteBuffer buffer = BufferUtils.createByteBuffer(capacity*bytesUpdated[type]);
+		vbo[type] = new VBO(buffer,  type == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW, bytesUpdated[type], vaps);
 		
 		return vbo[type];
 	}
@@ -158,10 +157,14 @@ public class ThingVAO {
 	}
 	
 	public void updateVBOs(Thing firstThing) {
+		updateVBOs(firstThing, vbo[0].buffer, vbo[1].buffer);
+	}
+	
+	public void updateVBOs(Thing firstThing, ByteBuffer usual, ByteBuffer unusual) {
 		startBatchAdder(0);
-			updateVBOBatch(firstThing, vboBuffers[0], 0);
+			updateVBOBatch(firstThing, usual, 0);
 		startBatchAdder(1);
-			updateVBOBatch(firstThing, vboBuffers[1], 1);
+			updateVBOBatch(firstThing, unusual, 1);
 		endBatchAdder();
 	}
 	
@@ -176,17 +179,17 @@ public class ThingVAO {
 	}
 	
 	public void clearBuffers() {
-		vboBuffers[0].clear();
-		vboBuffers[1].clear();
+		vbo[0].buffer.clear();
+		vbo[1].buffer.clear();
 	}
 	
 	public void flipBuffers() {
-		vboBuffers[0].flip();
-		vboBuffers[1].flip();
+		vbo[0].buffer.flip();
+		vbo[1].buffer.flip();
 	}
 	
 	public void fillBuffers(Thing t) {
-		fillBuffers(t, vboBuffers[0], vboBuffers[1]);
+		fillBuffers(t, vbo[0].buffer, vbo[1].buffer);
 	}
 	
 	public void fillBuffers(Thing t, ByteBuffer bufferUsual, ByteBuffer bufferUnusual) {
@@ -274,13 +277,17 @@ public class ThingVAO {
 		}
 	}
 	
-	protected void refillBuffers() {
+	public void refillBuffers() {
 		for(int type = 0; type <= 1; type++) {
-			vboBuffers[type].clear();
+			vbo[type].buffer.clear();
+			if(type == 1 && ThingWindow.print) System.out.print("[");
+		
 			for(int index = 0; index < things.length; index++) {
-				fillBuffer(things[index], vboBuffers[type], type);
+				fillBuffer(things[index], vbo[type].buffer, type);
+				if(type == 1 && ThingWindow.print) System.out.print((things[index] == null ? "-" : things[index].index) + ",");
 			}
-			vboBuffers[type].flip();
+			if(type == 1 && ThingWindow.print) System.out.println("]");
+			vbo[type].buffer.flip();
 			vbo[type].update();
 		}
 	}
@@ -297,7 +304,7 @@ public class ThingVAO {
 		things[iFrom] = null;
 	}
 	
-	protected void removeFreedThings() {
+	public void removeFreedThings() {
 		for(int i = 0; i < things.length; i++){
 			if(things[i] != null && things[i].freeToMakeInvisible) {
 				remove(things[i], false);
@@ -310,14 +317,14 @@ public class ThingVAO {
 		capacity *= 1.5;
 		for(int i = 0; i < vbo.length; i++){
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo[i].handle);
-			GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vboBuffers[i]);
-			ByteBuffer temp = vboBuffers[i];
-			vboBuffers[i] = BufferUtils.createByteBuffer((int)(capacity*bytesUpdated[i]));
-			vboBuffers[i].put(temp);
-			vboBuffers[i].put(new byte[vboBuffers[i].capacity()-temp.capacity()]);
-			vboBuffers[i].flip();
-			GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vboBuffers[i], i == 0 ? GL15.GL_STREAM_DRAW : GL15.GL_DYNAMIC_DRAW);
+			GL15.glGetBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vbo[i].buffer);
 			GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+			ByteBuffer temp = vbo[i].buffer;
+			vbo[i].buffer = BufferUtils.createByteBuffer((int)(capacity*bytesUpdated[i]));
+			vbo[i].buffer.put(temp);
+			vbo[i].buffer.put(new byte[vbo[i].buffer.capacity()-temp.capacity()]);
+			vbo[i].buffer.flip();
+			vbo[i].update();
 		}
 		
 		Thing[] newThings = new Thing[capacity];

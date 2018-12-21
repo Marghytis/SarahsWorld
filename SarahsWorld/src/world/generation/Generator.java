@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import menu.Settings;
 import util.math.Vec;
 import world.data.Column;
 import world.data.Dir;
@@ -34,8 +35,8 @@ public class Generator implements GeneratorInterface {
 	public Generator(WorldData world){
 		this.world = world;
 		
-//		Biome startBiome = Biome.values()[world.random.nextInt(Biome.values().length)];//TODO make it random
-		ZoneType startZone = ZoneType.values()[random.nextInt(ZoneType.values().length)];
+		ZoneType startZone = newZoneType();
+		
 		Biome startBiome = startZone.startBiome;
 		
 		posL = 0;
@@ -125,8 +126,18 @@ public class Generator implements GeneratorInterface {
 	}
 	
 	public Zone newZone(BiomeManager biomeM, double originX, boolean left) {
-		ZoneType startZone = ZoneType.values()[random.nextInt(ZoneType.values().length)];
+		ZoneType startZone = newZoneType();
 		return startZone.supply.get(random, biomeM, originX, left);
+	}
+	
+	public ZoneType newZoneType() {
+		ZoneType zoneType;
+		if("RANDOM".equals(Settings.getString("ZONETYPE")))
+			zoneType = ZoneType.values()[random.nextInt(ZoneType.values().length)];
+		else
+			zoneType = ZoneType.valueOf(Settings.getString("ZONETYPE"));
+		
+		return zoneType;
 	}
 	
 	public boolean extend(int iDir) {

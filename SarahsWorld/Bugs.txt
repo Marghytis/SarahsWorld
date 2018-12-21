@@ -8,12 +8,14 @@ _speech bubbles scale faulty when zooming
 _sky has different color at origin when using generator2
 _creatures swim back and forth very quickly in water
 _trees grow in water
-_magic effect doesn't work
-_right click for mounting cows or interaction in general
+_magic effect doesn't work or interaction in general
 _cows fall through the ground
 _item positions are not correct when rotating
 _after giving Evelyn a cake, I can give other evelyns a cake too, even though I don't have one
-_click position is wrong when zoomed
+_item is at strange position when punching
+_text in textfields isn't vertically centered
+_you can throw away fists
+_when passing the maxVisible amount of things of a type (by spawning them/throwing away items), newly created things are not visible
 
 optional
 _schweben bei antigravity etc.
@@ -30,3 +32,9 @@ _crash when trying to spawn an item
 _crash when spawning heart
 _Sarah does head dive when changing direction after pressing SPACE
 _candy biome is too long
+_click position is wrong when zoomed
+_horn is at strange position when mounting a cow
+_moving effects (the dummy things) are tried to be added to VAOs
+_spawning things doesn't work
+_right click for mounting cows work only with empty hands
+_speech bubble has wrong texture

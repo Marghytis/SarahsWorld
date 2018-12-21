@@ -1,7 +1,8 @@
 package menu;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE;
 
+import main.Main;
 import render.Texture;
 import util.Color;
 import util.math.Vec;
@@ -11,9 +12,14 @@ public class TextInput extends TextField {
 	public Color color1, selectedColor;
 	public boolean selected;
 
-	public TextInput(String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2,
+	public TextInput(Main game, String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2,
 			int y2, Color background, Color selected, Texture backgroundTex) {
-		super(text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, background, backgroundTex, true);
+		this(game, text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, background, selected, backgroundTex, true);
+	}
+
+		public TextInput(Main game, String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2,
+				int y2, Color background, Color selected, Texture backgroundTex, boolean center) {
+		super(game, text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, background, backgroundTex, center);
 		this.color1 = background;
 		this.selectedColor = selected;
 	}
@@ -42,6 +48,10 @@ public class TextInput extends TextField {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean keyReleased(int key) {
+		return selected;
 	}
 	
 	public boolean keyPressed(int key){

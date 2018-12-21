@@ -5,19 +5,24 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import exceptions.WorldCreationException;
+import exceptions.WorldTooSmallException;
+import input.PollData;
 import item.ItemType;
 import main.Main;
-import menu.Menu.Menus;
+import menu.MenuManager.MenuType;
 import menu.Settings;
 import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
+import world.data.Dir;
 import world.data.Vertex;
 import world.data.WorldData;
 import world.data.WorldEditor;
 import world.generation.Generator;
 import world.generation.GeneratorInterface;
+import world.generation.environment.Generator2;
 import world.render.WorldPainter;
 import world.window.BackgroundWindow;
 import world.window.GeneratingWorldWindow;
@@ -36,15 +41,16 @@ public class World {
 	public GeneratorInterface generator;
 	
 	public GeneratingWorldWindow genWindow;
-	public RealWorldWindow updateWindow;
 	public TerrainWindow landscapeWindow;
+	public BackgroundWindow backgroundRenderingWindow;
 	public ThingWindow thingWindow;
 	
 	public WorldEngine engine;
 	public WorldPainter window;
+	public WorldListener listener;
 	public Thing avatar;
 	
-	public World(){
+	public World(PollData inputData){
 		world = this;
 		Main.world = this;
 
@@ -58,26 +64,27 @@ public class World {
 		Vertex v = data.getRightColumn().getTopSolidVertex();
 		Vec pos = new Vec(Settings.getVec("AVATAR_START_OFFSET").x, v.y + Settings.getVec("AVATAR_START_OFFSET").y);
 		avatar = new Thing(ThingType.SARAH, v.parent, pos);
+		ThingType.SARAH.avatar.setAvatar(avatar);
 		avatar.type.inv.addItem(avatar, ItemType.UNICORN_HORN, 1);
 		
-		init();
+		init(inputData);
 	}
 
-	public World(DataInputStream input) throws IOException {
+	public World(DataInputStream input, PollData inputData) throws IOException {
 		data = new WorldData(input);
 		editor = new WorldEditor(data);
 		generator = new Generator(data, input);//				8.	generator
 
-		init();
+		init(inputData);
 	}
 	
-	public void init(){
+	public void init(PollData inputData){
 
 		Column anchor = data.getRightColumn();
 
 		//define ranges
 		int windowRadius = (int)((Main.HALFSIZE.w )/Column.COLUMN_WIDTH);
-		genWindow = new GeneratingWorldWindow(anchor, windowRadius + 25, generator);
+		genWindow = new GeneratingWorldWindow(anchor, windowRadius + 28, generator);
 		
 		//generation happens here, because avatar and generator can't be accessed statically yet. might change..
 //		generator.borders(avatar.pos.x - Settings.get("GENERATION_RADIUS"), avatar.pos.x + Settings.get("GENERATION_RADIUS"));
@@ -89,15 +96,20 @@ public class World {
 		thingWindow 	= new ThingWindow(anchor, windowRadius + 28, windowRadius + 24, windowRadius + 4, windowRadius + 0);
 		thingWindow.moveToColumn(startX);
 		thingWindow.loadCenter();
-		landscapeWindow = new TerrainWindow(anchor, windowRadius + 6);
-		BackgroundWindow backgroundRenderingWindow    = new BackgroundWindow(anchor, windowRadius + 6);
+		try {
+			landscapeWindow 			 = new TerrainWindow(   anchor, windowRadius + 6);
+			backgroundRenderingWindow    = new BackgroundWindow(anchor, windowRadius + 6);
+		} catch (WorldTooSmallException e) {
+			throw new WorldCreationException("World data is not large enough yet : (" + genWindow.getEnd(Dir.l).xIndex + " <-> " + genWindow.getEnd(Dir.r).xIndex + ")", e);
+		}
 		engine = new WorldEngine(data, editor, thingWindow, genWindow, landscapeWindow, backgroundRenderingWindow, thingWindow);
 		window = new WorldPainter(data, thingWindow, landscapeWindow, backgroundRenderingWindow);
+		listener = new WorldListener(this, inputData);
 	}
 	
 	public void gameOver() {
 		data.setGameOver();
-		Main.menu.setMenu(Menus.EMPTY);
+		Main.menu.setMenu(MenuType.EMPTY);
 		Main.sound.playFuneralMarch();
 	}
 	

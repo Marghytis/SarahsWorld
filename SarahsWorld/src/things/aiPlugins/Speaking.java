@@ -4,7 +4,7 @@ import effects.Effect;
 import main.Main;
 import main.Res;
 import menu.Dialog;
-import menu.Menu.Menus;
+import menu.MenuManager.MenuType;
 import quest.ActiveQuest;
 import quest.Strings;
 import render.Render;
@@ -39,24 +39,23 @@ public class Speaking extends AiPlugin {
 			for(int i = 0; i < answers.length; i++){
 				realAnswers[i] = Strings.get(answers[i], World.rand);
 			}
-			((Dialog)Menus.DIALOG.elements[0]).setup(quest, t, Strings.get(what, World.rand), realAnswers);
-			Menus.DIALOG.ani = ((Dialog)Menus.DIALOG.elements[0]).ani;
-			Main.menu.setMenu(Menus.DIALOG);
+			((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(quest, t, Strings.get(what, World.rand), realAnswers);
+			Main.menu.setMenu(MenuType.DIALOG);
 		}
 	}
 
 	public void update(Thing t, double delta) {
 		if(t.currentSpeech != null){
 			if(t.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000 && !t.speaking){// && "".equals(t.currentSpeech)
-				if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
-					Main.menu.setMenu(Menus.DIALOG);
+				if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == t){
+					Main.menu.setMenu(MenuType.DIALOG);
 				} else {
 					t.tb.popUp();
 				}
 			} else if(t.pos.minus(Main.world.avatar.pos).lengthSquare() > 90000){
 				if(t.tb.living) t.tb.goAway();
-				if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
-					Main.menu.setMenu(Menus.EMPTY);
+				if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == t){
+					Main.menu.setMenu(MenuType.EMPTY);
 					t.speaking = false;
 				}
 			}
@@ -67,8 +66,8 @@ public class Speaking extends AiPlugin {
 		if(t.tb.living){
 			t.tb.goAway();
 		}
-		if(Main.menu.open == Menus.DIALOG && ((Dialog)Menus.DIALOG.elements[0]).other == t){
-			Main.menu.setMenu(Menus.EMPTY);
+		if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == t){
+			Main.menu.setMenu(MenuType.EMPTY);
 			t.speaking = false;
 		}
 	}
@@ -171,9 +170,8 @@ public class Speaking extends AiPlugin {
 				for(int i = 0; i < speaker.answers.length; i++){
 					realAnswers[i] = Strings.get(speaker.answers[i], World.rand);
 				}
-				((Dialog)Menus.DIALOG.elements[0]).setup(speaker.quest, speaker, Strings.get(speaker.currentSpeech, World.rand), realAnswers);
-				Menus.DIALOG.ani = ((Dialog)Menus.DIALOG.elements[0]).ani;
-				Main.menu.setMenu(Menus.DIALOG);
+				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(speaker.quest, speaker, Strings.get(speaker.currentSpeech, World.rand), realAnswers);
+				Main.menu.setMenu(MenuType.DIALOG);
 				return true;
 			}
 			return false;

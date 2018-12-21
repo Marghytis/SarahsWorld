@@ -1,5 +1,6 @@
 package world.render;
 
+import main.Main;
 import things.Thing;
 
 public class DoubleThingVAO extends ThingVAO {
@@ -10,7 +11,7 @@ public class DoubleThingVAO extends ThingVAO {
 	static {dirs[lowerSide] = 1; dirs[higherSide] = -1;}
 	
 	private int[] lastUsedIndices = new int[2];
-	private int[] ends = new int[2];
+	private final int[] ends = new int[2];
 	
 	public DoubleThingVAO(int capacity) {
 		super(capacity);
@@ -29,8 +30,17 @@ public class DoubleThingVAO extends ThingVAO {
 	}
 	
 	public int size(int side) {
-		return (lastUsedIndices[side] - ends[side])*dirs[side]+1;
+		return ((lastUsedIndices[side] - ends[side])*dirs[side])+1;
 	}
+	
+	public int sizePrint(int side) {
+		if(side == 1) {
+			System.out.println(lastUsedIndices[side]);
+		}
+		return ((lastUsedIndices[side] - ends[side])*dirs[side])+1;
+	}
+	
+	
 	
 	public boolean empty(int side) {
 		return lastUsedIndices[side]*dirs[side] < ends[side]*dirs[side];
@@ -47,32 +57,29 @@ public class DoubleThingVAO extends ThingVAO {
 			return i + 1;
 	}
 	
-	@Deprecated
-	protected int start() {
-		return super.start();
-	}
-	
-	@Deprecated
-	protected int size() {
-		return super.size();
-	}
-	
-	@Deprecated
-	protected Thing getThing(int index) {
-		return super.getThing(index);
-	}
-	
 	public static int whichSide(Thing t) {
 		return t.z < 0 ? FRONT : BACK;
 	}
+	
+	public int spaceLeft() {
+		return capacity - size(FRONT) - size(BACK);
+	}
 
 	public void add(Thing t, boolean inBatch){
+		add(t, inBatch, true);
+	}
+	public void add(Thing t, boolean inBatch, boolean automaticallyRemoveFreedThings){
 
 		t.onVisibilityChange(true);
 		int side = whichSide(t);
 
 		if(dirs[side]*lastUsedIndices[side] + 1 >= dirs[side]*lastUsedIndices[1-side]){
-			removeFreedThings();
+			if(automaticallyRemoveFreedThings) {
+				Main.out.println("removing freed things");
+				removeFreedThings();
+			} else {
+				throw new RuntimeException("VAO is full!");
+			}
 		}
 		if(dirs[side]*lastUsedIndices[side] + 1 >= dirs[side]*lastUsedIndices[1-side]){
 			System.err.println("Not enough space for " + t.type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.type.maxVisible);
@@ -125,5 +132,13 @@ public class DoubleThingVAO extends ThingVAO {
 		}
 		ends[higherSide] += shift;
 		lastUsedIndices[higherSide] += shift;
+	}
+
+	public void free(double xMin, double xMax) {
+		for(int i = 0; i < things.length; i++) {
+			if(things[i] != null && xMin <= things[i].pos.x && xMax >= things[i].pos.x) {
+				things[i].freeToMakeInvisible = true;
+			}
+		}
 	}
 }

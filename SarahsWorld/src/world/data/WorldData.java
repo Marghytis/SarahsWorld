@@ -34,7 +34,7 @@ public class WorldData {
 	}
 	public WorldData(World world) {
 		this.world = world;
-		weather = new Weather();
+		weather = new Weather(world);
 	}
 	
 	public boolean isGameOver() {

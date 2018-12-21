@@ -32,6 +32,19 @@ public class RealWorldWindow {
 		return ends[Dir.r].next();
 	}
 	
+	public Column at(double x) {
+		if(ends[0].xReal > x || ends[1].xReal < x) {
+			return null;
+		} else {
+			for(Column c = start(); c != end().prev(); c = c.next()) {
+				if(c.next().xReal > x) {
+					return c;
+				}
+			}
+			return null;
+		}
+	}
+	
 	public void forEachColumn(Consumer<Column> cons) {
 
 		for(Column c = start(); c != end(); c = c.next()) {

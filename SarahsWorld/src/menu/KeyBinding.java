@@ -1,5 +1,6 @@
 package menu;
 
+import main.Main;
 import menu.Settings.Key;
 import render.Texture;
 import util.Color;
@@ -10,13 +11,13 @@ public class KeyBinding extends FlexibleTextField {
 	Key key;
 	boolean selected;
 	
-	public KeyBinding(Key key, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex) {
-		super(() -> key.getName(), relX1, relY1, relX2, relY2, x1, y1, x2, y2, color, tex, true);
+	public KeyBinding(Main game, Key key, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex) {
+		super(game, () -> key.getName(), relX1, relY1, relX2, relY2, x1, y1, x2, y2, color, tex, true);
 		this.key = key;
 	}
 	
 	public boolean visible() {
-		return Settings.getBoolean("DEBUGGING") || key.ordinal() < Settings.firstDebugKey;
+		return key.ordinal() < Settings.firstDebugKey;
 	}
 	
 	public void update(double delta){

@@ -20,3 +20,4 @@ boolean	SOUND								true
 boolean	MUSIC								false
 boolean	DEBUGGING							true
 boolean IMMORTAL							true
+String	ZONETYPE							RANDOM

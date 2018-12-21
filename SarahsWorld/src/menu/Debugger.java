@@ -3,13 +3,19 @@ package menu;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 
-import core.Window;
 import main.Main;
-import render.*;
+import render.Render;
+import render.Shader;
+import render.Texture;
+import render.VAO;
+import render.VBO;
 import render.VBO.VAP;
-import util.*;
+import util.Color;
+import util.Time;
+import util.TrueTypeFont;
 
 public class Debugger extends Element {
 	String fps = "Frame time:";
@@ -28,8 +34,8 @@ public class Debugger extends Element {
 	VAO vao;
 	VAO zeroLine, line60, background;
 
-	public Debugger() {
-		super(0, 0, 0, 0, 0, 0, 0, 0, null, null);
+	public Debugger(Main game) {
+		super(game, 0, 0, 0, 0, 0, 0, 0, 0, null, null);
 		vao = new VAO(
 				null,
 				new VBO(xs, GL15.GL_STATIC_DRAW, Float.BYTES, 

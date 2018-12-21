@@ -34,6 +34,7 @@ public class Thing extends DefaultListElement<Thing> implements StructureThing<T
 	public double z, size = 1;
 	public Rect box = new Rect();//NOT USED FOR DRAWING!!!
 	public OnInteraction onRightClick = (src, pos, dest) -> {};
+	public boolean isAvatar = false;
 
 	//dynamically changing values
 	public short index = -1;
@@ -68,6 +69,7 @@ public class Thing extends DefaultListElement<Thing> implements StructureThing<T
 	public boolean speaking;
 	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible, addedToVAO, freeToMakeInvisible;
 	public boolean linked = false;
+	public boolean willingToTrade = false;
 	
 	public Thing target;
 	public Thing mountedThing;

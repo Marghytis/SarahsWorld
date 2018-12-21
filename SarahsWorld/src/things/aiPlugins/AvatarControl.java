@@ -1,20 +1,22 @@
 package things.aiPlugins;
 
-import core.Listener;
-import item.ItemType;
 import main.Main;
-import menu.Menu.Menus;
 import menu.Settings;
 import menu.Settings.Key;
 import things.AiPlugin;
 import things.Thing;
-import things.ThingType;
-import util.math.Vec;
-import world.World;
 
-public  class AvatarControl extends AiPlugin implements Listener {
+public  class AvatarControl extends AiPlugin {
+	
+	private Thing avatar;
+	public void setAvatar(Thing t) {
+		avatar = t;
+		t.isAvatar = true;
+	}
 
 	public boolean action(Thing t, double delta) {
+		if(!t.isAvatar)
+			return false;
 		
 		t.immortal = Settings.getBoolean("IMMORTAL");
 		
@@ -98,176 +100,13 @@ public  class AvatarControl extends AiPlugin implements Listener {
 		
 		//Scroll through inventory
 		int scroll = (int)Main.input.getDWheel(Main.WINDOW);
+		Main.input.resetDeltas(Main.WINDOW);
 
 		int selectedItem = t.selectedItem - scroll;
-		selectedItem -= Math.floorDiv(selectedItem, t.itemStacks.length);//accounts for large negative scrolls
+		selectedItem -= Math.floorDiv(selectedItem, t.itemStacks.length)*t.itemStacks.length;//accounts for large negative scrolls
 		if(t.itemStacks[t.selectedItem].item.ordinal != t.itemStacks[selectedItem].item.ordinal)
-			Main.world.avatar.type.attacking.cancelAttack(Main.world.avatar);
+			t.type.attacking.cancelAttack(t);
 		t.selectedItem = selectedItem;
 		return true;
 	}
-
-	Vec worldPos = new Vec();
-	@Override
-	public boolean pressed(int button, Vec mousePos) {
-		if(Main.world.avatar.health <= 0) return false;
-		worldPos.set(mousePos);
-		Main.world.window.toWorldPos(worldPos);
-		Main.world.window.forEachEffect(e -> e.pressed(button, mousePos));
-		return false;
-	}
-
-	@Override
-	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
-		if(Main.world.avatar.health <= 0) return false;
-//		Vec worldPos = mousePos.minus(Main.SIZE.w/2, Main.SIZE.h/2).shift(Main.world.avatar.pos);
-
-		worldPos.set(mousePos);
-		Main.world.window.toWorldPos(worldPos);
-		Thing[] livingsClickedOn = Main.world.thingWindow.livingsAt(worldPos);
-		
-		switch(button){
-		case 0://ATTACK
-			if(Main.world.avatar.where.water == 0){
-				Main.world.avatar.type.attacking.attack(Main.world.avatar, Main.world.avatar.type.inv.getSelectedItem(Main.world.avatar), worldPos, livingsClickedOn);
-			}
-			break;
-		case 1://USE
-			Thing[] objectsClickedOn = Main.world.thingWindow.thingsAt(worldPos);
-			Main.world.avatar.type.inv.useSelectedItem(Main.world.avatar, worldPos, objectsClickedOn);
-			break;
-		case 2:
-			if(Settings.getBoolean("DEBUGGING")) {
-				objectsClickedOn = Main.world.thingWindow.thingsAt(worldPos);
-				for(Thing t : objectsClickedOn){
-					if(t.selected()) {
-						Main.world.window.deselect(t);
-					} else {
-						Main.world.window.select(t);
-					}
-				}
-			}
-			break;
-		}
-		
-		Main.world.window.forEachEffect(e -> e.released(button, mousePos, pathSincePress));
-//		int hitThingLoc = -3;
-//		Thing[] hitThing = new Thing[1];
-//		for(List<Thing> list : Main.world.objects) for(Thing t : list){
-//			if(t.ani.behind > hitThingLoc && t.life != null && !t.equals(this) && worldPos.containedBy(t.ani.box.pos.x + t.pos.x, t.ani.box.pos.y + t.pos.y, t.ani.box.size.x, t.ani.box.size.y)){
-//				hitThing[0] = t;
-//				hitThingLoc = t.ani.behind;
-//			}
-//		}
-//		if(hitThing[0] != null){
-//			switch(button){
-//			case 0: sarah.attack.attack(hitThing[0]); break;
-//			case 1: 
-//				switch(hitThing[0].type){
-//				case COW : sarah.riding.mount(hitThing[0]); break;
-//				default: break;
-//				}
-//			}
-//			
-//		}
-		return false;
-	}
-
-	@Override
-	public boolean keyPressed(int key) {
-		if(Main.world.avatar.health <= 0) return false;
-		
-		Key bind = Key.getBinding(key);
-		
-		switch(bind){
-		case JUMP: if(Main.world.avatar.where.g) Main.world.avatar.type.movement.jump(Main.world.avatar); break;
-		case DISMOUNT: if(Main.world.avatar.isRiding) Main.world.avatar.type.ride.dismount(Main.world.avatar); break;
-		case INVENTORY:
-			if(Main.menu.open.stay) break;
-			if(Main.menu.open != Menus.INVENTORY){
-				Main.menu.setMenu(Menus.INVENTORY);
-			} else {
-				Main.menu.setMenu(Menus.EMPTY);
-			}
-			break;
-		case MAIN_MENU:
-			if(Main.menu.open != Menus.EMPTY){
-				Main.menu.setMenu(Menus.EMPTY);
-			} else {
-				Main.menu.setMenu(Menus.MAIN);
-			}
-			break;
-		case DEBUG:
-			if(Main.menu.open.stay) break;
-			if(Main.menu.open != Menus.DEBUG && Settings.getBoolean("DEBUGGING")){
-				Settings.set("SHOW_BOUNDING_BOX",true);
-				Main.menu.setMenu(Menus.DEBUG);
-			} else {
-				Settings.set("SHOW_BOUNDING_BOX",false);
-				Main.menu.setLast();
-			}
-			break;
-		case STOP_GRAPH:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("STOP_GRAPH",!Settings.getBoolean("STOP_GRAPH"));
-			break;
-		case FASTER:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("timeScale", Settings.getDouble("timeScale")*1.25);
-			break;
-		case SLOWER:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("timeScale", Settings.getDouble("timeScale")*0.8);
-			break;
-		case FREEZE:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("FREEZE",!Settings.getBoolean("FREEZE"));
-			break;
-		case JUMPDOWN:
-			if(Settings.getBoolean("DEBUGGING")) {
-				World.world.avatar.pos.y -= 200;
-				World.world.avatar.where.g = false;
-			}
-		case LAYERCOUNT_UP:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("LAYERS_TO_DRAW", Settings.getInt("LAYERS_TO_DRAW") + 1);
-			break;
-		case LAYERCOUNT_DOWN:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("LAYERS_TO_DRAW", Settings.getInt("LAYERS_TO_DRAW") - 1);
-			break;
-		case ZOOM_IN:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("ZOOM", Settings.getDouble("ZOOM")*1.25);
-			break;
-		case ZOOM_OUT:
-			if(Settings.getBoolean("DEBUGGING"))
-				Settings.set("ZOOM", Settings.getDouble("ZOOM")*0.8);
-			break;
-		case TOSS_COIN:
-			if(Settings.getBoolean("DEBUGGING"))
-				Main.world.thingWindow.add(new Thing(ThingType.COIN, Main.world.avatar.link, Main.world.window.toWorldPos(Main.input.getMousePos(Main.core.getWindow().getHandle())), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
-			break;
-		case THROW_ITEM:
-			ItemType type = Main.world.avatar.type.inv.getSelectedItem(Main.world.avatar);
-			if(type != null) {
-				Main.world.thingWindow.add(new Thing(ThingType.ITEM, Main.world.avatar.link, Main.world.avatar.pos.copy().shift(0, 60), type, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
-				Main.world.avatar.type.inv.addItem(Main.world.avatar, type, -1);
-			}
-			break;
-		default:
-		}
-		//No, don't add if-clauses here!! Add the keys legally!!
-		return false;
-	}
-	public boolean keyReleased(int key) {
-		if(Main.world.avatar.health <= 0) return false;
-		return false;
-	}
-
-	public boolean charTyped(char ch) {
-		if(Main.world.avatar.health <= 0) return false;
-		return false;
-	}
-
 }

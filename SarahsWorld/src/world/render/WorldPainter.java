@@ -164,7 +164,7 @@ public class WorldPainter implements Updater, Renderer{
 //
 		//draw bounding boxes of all things and their anchor points
 		if(Settings.getBoolean("SHOW_BOUNDING_BOX")){
-//			renderBoundingBoxes();
+			things.renderBoundingBoxes();
 		}
 		
 		//effects

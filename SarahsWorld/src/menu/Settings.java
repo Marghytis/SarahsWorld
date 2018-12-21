@@ -1,7 +1,6 @@
 package menu;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_0;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_1;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
@@ -34,6 +33,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_MINUS;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_O;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_R;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT;
@@ -59,40 +59,45 @@ public class Settings {
 	static Hashtable<String, Boolean> booleans = new Hashtable<>();
 	static Hashtable<String, Integer> ints = new Hashtable<>();
 	static Hashtable<String, Double> doubles = new Hashtable<>();
-	static Hashtable<String, Vec>	vecs = new Hashtable<>();
+	static Hashtable<String, Vec> vecs = new Hashtable<>();
+	static Hashtable<String, String> strings = new Hashtable<>();
 	
 	public static boolean getBoolean(String setting) {
 		Boolean out = booleans.get(setting);
 		if(out == null) {
-			new Exception("Setting not found: " + setting + "!").printStackTrace();
-			System.exit(-1);
+			throw new RuntimeException("Setting not found: " + setting + "!");
 		}
 		return out;
 	}
 	public static int getInt(String setting) {
 		Integer out = ints.get(setting);
 		if(out == null) {
-			new Exception("Setting not found: " + setting + "!").printStackTrace();
-			System.exit(-1);
+			throw new RuntimeException("Setting not found: " + setting + "!");
 		}
 		return out;
 	}
 	public static double getDouble(String setting) {
 		Double out = doubles.get(setting);
 		if(out == null) {
-			new Exception("Setting not found: " + setting + "!").printStackTrace();
-			System.exit(-1);
+			throw new RuntimeException("Setting not found: " + setting + "!");
 		}
 		return out;
 	}
 	public static Vec getVec(String setting) {
 		Vec out = vecs.get(setting);
 		if(out == null) {
-			new Exception("Setting not found: " + setting + "!").printStackTrace();
-			System.exit(-1);
+			throw new RuntimeException("Setting not found: " + setting + "!");
 		}
 		return out;
 	}
+	public static String getString(String setting) {
+		String out = strings.get(setting);
+		if(out == null) {
+			throw new RuntimeException("Setting not found: " + setting + "!");
+		}
+		return out;
+	}
+	
 	public static void set(String setting, boolean value) {
 		booleans.put(setting, value);
 	}
@@ -104,6 +109,9 @@ public class Settings {
 	}
 	public static void set(String setting, Vec value) {
 		vecs.put(setting, value);
+	}
+	public static void set(String setting, String value) {
+		strings.put(setting, value);
 	}
 	
 	static {
@@ -133,6 +141,9 @@ public class Settings {
 									break;
 									
 					case "Vec" :	vecs.put(name, new Vec(Double.parseDouble(words[i++]), Double.parseDouble(words[i++])));
+									break;
+									
+					case "String" :	strings.put(name, words[i++]);
 									break;
 					}
 				}
@@ -175,6 +186,8 @@ public class Settings {
 		SUPERSPRINT(GLFW_KEY_W, "sprint faster"),
 		STOP_GRAPH(GLFW_KEY_R, "stop debug graph"),
 		DEBUG(GLFW_KEY_F1, "open debug screen"),
+		REFILL_BUFFERS(GLFW_KEY_F2, "refill buffers"),
+		RELOAD_TERRAIN(GLFW_KEY_F3, "refill buffers"),
 		NONE(0, "");
 		
 		public int key;
@@ -213,13 +226,21 @@ public class Settings {
 		}
 	}
 
-	public static boolean friction = true, airFriction = true;
+	public static boolean friction = true, airFriction = true;//TODO add these to the txt!!!
 	public boolean keyPressed(int key) {
 		switch(key){
-		case GLFW_KEY_0: friction = !friction; break;
-		case GLFW_KEY_1: airFriction = !airFriction; break;
+		case GLFW_KEY_0: friction = !friction; return true;
+		case GLFW_KEY_1: airFriction = !airFriction; return true;
 		}
-		return false;
+		Key bind = Key.getBinding(key);
+		
+		switch(bind){
+		case STOP_GRAPH:
+			if(Settings.getBoolean("DEBUGGING"))
+				Settings.set("STOP_GRAPH",!Settings.getBoolean("STOP_GRAPH"));
+			return true;
+			default: return false;
+		}
 	}
 	
 	public static Hashtable<Integer, String> keys = new Hashtable<>();

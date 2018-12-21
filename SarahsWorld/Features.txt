@@ -11,14 +11,15 @@ _more things (sloth, witch, trex, panda, meteor, giant cat, birds, tumbleweed, r
 _tutorial for beginners
 _moving clouds
 _weather update (rain, thunder, lightning, day + night, candy rain)
-_magic
 _camp fire (e.g. when hitting a stack of sticks with a magic spell)
 _frozen lakes in winter biome
 _take every item -> einblenden, dass man was bekommen hat
+_snail get-hit-animation
+
+optimisation:
+_vaos for name tags (make it a real effect)
 
 debug:
-_set next biome
-_for debug add again rendering of boundingboxes (when it's needed?)
 
 Ideas:
 _Landscape with lots of rocks and small grass pits with flowers
@@ -28,3 +29,7 @@ done
 _add particle effects to the spell attack
 _throw away items
 _rainbow spit smaller at the mouth
+_casting a spell uses mana
+_set next biome in Settings.txt
+_for debug add again rendering of boundingboxes (when it's needed?)
+_magic

@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 import effects.particles.BerryEat;
+import effects.particles.FireEffect;
 import main.Main;
 import main.Res;
+import menu.MenuManager.MenuType;
 import render.Animator;
 import render.Render;
 import render.TexFile;
@@ -16,6 +18,7 @@ import things.ThingType;
 import util.Color;
 import util.math.Vec;
 import world.World;
+import world.data.Column;
 
 public class ItemType {
 
@@ -28,7 +31,19 @@ public class ItemType {
 	public static final ItemType STICK			= new ItemType(builder.readItemType("STICK"));
 	public static final ItemType CANDY_CANE		= new ItemType(builder.readItemType("CANDY_CANE"));
 	public static final ItemType SHOVEL			= new ItemType(builder.readItemType("SHOVEL"));
-	public static final ItemType UNICORN_HORN	= new ItemType(builder.readItemType("UNICORN_HORN"));
+	public static final ItemType UNICORN_HORN	= new ItemType(builder.readItemType("UNICORN_HORN")) {
+		@Override
+		public boolean useAt(Thing src, Vec pos) {
+			Column c = Main.world.landscapeWindow.at(pos.x);
+			if(c != null) {
+				Vec loc = new Vec();
+				ThingType.EFFECT.defaultSpawner.spawn(c.getRandomTopLocation(World.rand, loc), loc, new FireEffect(loc));
+				return true;
+			} else {
+				return false;
+			}
+		}
+	};
 	
 //	horn = new MagicWeapon	(Res.items_world.tex(4, 0),	Res.items_hand.tex(5, 0),		Res.getAtlas("items_inv").tex(5, 0), new Rect(-25, -2, 50, 50), new Rect(-55, -19, 80, 40), 180,					"Horn",			1000,			100, 		WeaponType.SPELL,	ItemUsageType.FIST, BodyPos.HAND, 3,	4,	0.3,false);TODO Add particle effects
 	public static final ItemType SNAILS_EYE 	= new ItemType(builder.readItemType("SNAILS_EYE"));
@@ -175,6 +190,8 @@ public class ItemType {
 					Main.world.engine.requestDeletion(dest);
 					success = true;
 				}
+			} else if(dest.willingToTrade) {
+				Main.menu.setMenu(MenuType.TRADE, dest);
 			} else {
 				dest.onRightClick.run(src, pos, dest);
 			}
@@ -198,6 +215,7 @@ public class ItemType {
 		int handAngle = 0;
 		
 		if(info != null){
+			if(info[0] == -200) return;
 			handX = info[0];
 			handY = info[1];
 			handAngle = defaultRotationHand + info[2] + 90;

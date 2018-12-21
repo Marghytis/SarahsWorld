@@ -47,9 +47,25 @@ public class ThingWindow extends RealWorldWindow {
 		prepare.moveToColumn(xIndex);
 		super.moveToColumn(xIndex);
 	}
+	public static boolean print;
+	public void refillBuffers() {
+		System.out.println("refilling thing vao buffers");
+		for(int i = 0; i < vaos.length; i++){
+			if(i == ThingType.TREE_FIR_SNOW.ordinal) {
+				System.out.print(ThingType.types[i].name + ": ");
+				print = true;
+			}
+			vaos[i].refillBuffers();
+			print = false;
+		}
+	}
 	
 	public void add(Thing t) {
-		vaos[t.getTypeOrdinal()].add(t, false);
+		if(t.type.ani != null) {
+			vaos[t.getTypeOrdinal()].add(t, false);
+		} else {
+			t.onVisibilityChange(true);
+		}
 	}
 	
 	/**
@@ -57,7 +73,11 @@ public class ThingWindow extends RealWorldWindow {
 	 * @param t
 	 */
 	public void remove(Thing t) {
-		vaos[t.type.ordinal].remove(t);
+		if(t.type.ani != null) {
+			vaos[t.type.ordinal].remove(t);
+		} else {
+			t.onVisibilityChange(false);
+		}
 	}
 	
 	public void changeUsual(Thing t) {
@@ -73,12 +93,12 @@ public class ThingWindow extends RealWorldWindow {
 //		t.pos.drawPoint();
 	};
 	public void renderBoundingBoxes(){
-		forEach(boundingBoxRenderer);
+//		forEach(boundingBoxRenderer);
+		renderThings(t -> true, Res.thingBoxShader, 0);
+		renderThings(t -> true, Res.thingBoxShader, 1);
 	}
 	
 	public void renderThings() {
-		
-		updateVisibility();
 		
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
@@ -103,25 +123,6 @@ public class ThingWindow extends RealWorldWindow {
 		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
-	}
-
-//	@SuppressWarnings(value = { "deprecation" })
-	private void updateVisibility() {
-//		//add things to the buffer that should be visible
-//		for(int type = 0; type < ThingType.types.length; type++)
-//		for(Column c = start(); c != end(); c = c.next())
-//		for(Thing t = c.things[type]; t != null; t = t.next)
-//			if(t.pos.x >= Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH && t.pos.x <= Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH) {
-//				t.setVisible(true);
-//			}
-//		//remove things from the buffer that should not be visible
-//		for(int type = 0; type < ThingType.types.length; type++) {
-//			for(int t = vaos[type].start(); t < vaos[type].end(); t = vaos[type].nextUsedIndex(t)){
-//				if(vaos[type].getThing(t).pos.x < Main.world.avatar.pos.x - radius*Column.COLUMN_WIDTH || vaos[type].getThing(t).pos.x > Main.world.avatar.pos.x + radius*Column.COLUMN_WIDTH){
-//					vaos[type].getThing(t).setVisible(false);
-//				}
-//			}
-//		}
 	}
 	
 	public void renderOutlines() {

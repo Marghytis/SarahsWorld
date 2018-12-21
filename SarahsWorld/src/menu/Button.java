@@ -1,8 +1,6 @@
 package menu;
 
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
-import static org.lwjgl.glfw.GLFW.glfwGetMouseButton;
 
 import main.Main;
 import main.Res;
@@ -19,22 +17,22 @@ public abstract class Button extends TextField {
 	public Texture[] textures;
 	int nStates, visualState;
 
-	public Button(String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color1, Color color2, Color color3, Texture tex1, Texture tex2, Texture tex3) {
-		super(text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, color1, tex1, true);
+	public Button(Main game, String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color1, Color color2, Color color3, Texture tex1, Texture tex2, Texture tex3) {
+		super(game, text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, color1, tex1, true);
 		this.colors = new Color[] {color1,color2,color3};
 		this.textures = new Texture[] {tex1,tex2,tex3};
 		nStates = 3;
 	}
 
-	public Button(String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color1, Color color2, Texture tex1, Texture tex2) {
-		super(text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, color1, tex1, true);
+	public Button(Main game, String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color1, Color color2, Texture tex1, Texture tex2) {
+		super(game, text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, color1, tex1, true);
 		this.colors = new Color[] {color1,color2};
 		this.textures = new Texture[] {tex1,tex2};
 		nStates = 2;
 	}
 	
-	public Button(String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Object... colsAndTexs) {
-		super(text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, (Color)colsAndTexs[0], (Texture)colsAndTexs[1], true);
+	public Button(Main game, String text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Object... colsAndTexs) {
+		super(game, text, relX1, relY1, relX2, relY2, x1, y1, x2, y2, (Color)colsAndTexs[0], (Texture)colsAndTexs[1], true);
 		nStates = colsAndTexs.length/2;
 		this.colors = new Color[nStates];
 		this.textures = new Texture[nStates];
@@ -44,6 +42,7 @@ public abstract class Button extends TextField {
 		}
 	}
 	
+	@Override
 	public boolean pressed(int button, Vec mousePos){
 		if(contains(mousePos)){
 			pressed(button);
@@ -52,6 +51,7 @@ public abstract class Button extends TextField {
 		return false;
 	}
 
+	@Override
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){
 		if(contains(mousePos)){
 			released(button);
@@ -64,8 +64,8 @@ public abstract class Button extends TextField {
 	public abstract void released(int button);
 
 	public void determineState() {
-		if(contains(Main.input.getMousePos(Main.WINDOW))){
-			if(nStates >= 3 && glfwGetMouseButton(Main.WINDOW, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS){
+		if(contains(game.getInputData().getMousePos())){
+			if(nStates >= 3 && game.getInputData().isMousePressed(GLFW_MOUSE_BUTTON_1)){
 				visualState = 2;
 			} else {
 				visualState = 1;
@@ -74,6 +74,7 @@ public abstract class Button extends TextField {
 			visualState = 0;
 		}
 	}
+	
 	public void render() {
 		determineState();
 		color = colors[visualState];

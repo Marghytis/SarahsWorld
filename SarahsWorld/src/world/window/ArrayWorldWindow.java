@@ -1,6 +1,6 @@
 package world.window;
 
-import main.Main;
+import exceptions.WorldTooSmallException;
 import world.data.Column;
 import world.data.Dir;
 
@@ -10,15 +10,33 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	protected int center;
 	private int[] nextIndex;//is private because it really should not be changed outside this class
 	
-	public ArrayWorldWindow(Column anchor, int radius) {
+	int sideLastInwards;
+	
+	public ArrayWorldWindow(Column anchor, int radius) throws WorldTooSmallException {
 		super(anchor, radius);
 		columns = new Column[2*radius+1];
 		this.center = anchor.xIndex;
 		
-		sideLastInwards = Dir.l;
 		nextIndex = new int[2];
+		
+		loadAllColumns(anchor, radius);
+	}
+	
+	protected void loadAllColumns(Column anchor, int radius) throws WorldTooSmallException {
+		//calculate current window center
+		center = (ends[Dir.l].xIndex + ends[Dir.r].xIndex)/2;
+		//move anchor to center
+		while(anchor.xIndex < center)
+			anchor = anchor.next(Dir.r);
+		while(anchor.xIndex > center)
+			anchor = anchor.next(Dir.l);
+		
+		sideLastInwards = Dir.l;
 		nextIndex[Dir.r] = add1To(radius);
 		nextIndex[Dir.l] = substract1From(radius);
+
+		ends[Dir.r] = anchor;
+		ends[Dir.l] = ends[Dir.r];
 		//create Column array and find borders
 		insertColumn(anchor);
 		for(int end = 0; end <= 1; end++) {
@@ -31,8 +49,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		}
 		
 		if(ends[Dir.l].xIndex > center-radius || ends[Dir.r].xIndex < center + radius){
-			new Exception("World data is not large enough yet : (" + Main.world.genWindow.getEnd(Dir.l).xIndex + " - " + Main.world.genWindow.getEnd(Dir.r).xIndex + ")").printStackTrace();
-			System.exit(-1);
+			throw new WorldTooSmallException();
 		}
 	}
 	
@@ -47,8 +64,6 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		removeColumn(end);
 		super.shiftInwards(end);
 	}
-	
-	int sideLastInwards;
 	
 	protected int startIndexLeft() {
 		if(sideLastInwards == Dir.l) {

@@ -9,7 +9,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL32;
+import org.lwjgl.opengl.GL45;
 
+import exceptions.WorldTooSmallException;
 import main.Res;
 import menu.Settings;
 import render.Render;
@@ -19,6 +22,7 @@ import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
 import world.data.Column;
+import world.data.Dir;
 import world.data.Vertex;
 import world.generation.Biome;
 import world.generation.Material;
@@ -40,7 +44,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 	ArrayList<Patch> waterPatches = new ArrayList<>();
 	Patch[] currentPatches;
 
-	public TerrainWindow(Column anchor, int columnRadius){
+	public TerrainWindow(Column anchor, int columnRadius) throws WorldTooSmallException {
 		super(anchor, columnRadius);
 		pointsX = columns.length;
 		vao = new VAO(
@@ -58,6 +62,15 @@ public class TerrainWindow extends ArrayWorldWindow {
 		}
 	}
 	
+	public void reload() {
+		try {
+			loadAllColumns(ends[Dir.l], radius);
+		} catch (WorldTooSmallException e) {
+			e.printStackTrace();
+			throw new RuntimeException("World is too small?!?!?!");
+		}
+	}
+	
 	public void renderLandscape(){
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		layersDrawn = 0;
@@ -66,6 +79,14 @@ public class TerrainWindow extends ArrayWorldWindow {
 		Res.landscapeShader.bind();//Yes, don't use scaleX, scaleY here, because the landscape gets rendered into a framebuffer
 		Res.landscapeShader.set("transform", Render.offsetX, Render.offsetY, Render.scaleX, Render.scaleY);
 		vao.bindStuff();
+
+			if(Settings.getInt("DRAW") == 0) {//(0 = GL_POINTS)
+				GL32.glEnable(GL32.GL_PROGRAM_POINT_SIZE);
+				Res.landscapeShader.set("points", true);
+			} else {
+				GL32.glDisable(GL32.GL_PROGRAM_POINT_SIZE);
+				Res.landscapeShader.set("points", false);
+			}
 			//draw normal quads
 			drawNormalQuads();
 			//draw quads for vertcal transition
@@ -81,6 +102,15 @@ public class TerrainWindow extends ArrayWorldWindow {
 		Res.landscapeShader.bind();
 		Res.landscapeShader.set("transform", Render.offsetX, Render.offsetY, Render.scaleX, Render.scaleY);
 		vao.bindStuff();
+		
+			if(Settings.getInt("DRAW") == 0) {//(0 = GL_POINTS)
+				GL32.glEnable(GL32.GL_PROGRAM_POINT_SIZE);
+				Res.landscapeShader.set("points", true);
+			} else {
+				GL32.glDisable(GL32.GL_PROGRAM_POINT_SIZE);
+				Res.landscapeShader.set("points", false);
+			}
+		
 			//draw normal quads
 			drawWater();
 		vao.unbindStuff();
@@ -108,7 +138,8 @@ public class TerrainWindow extends ArrayWorldWindow {
 	}
 	private void drawWater(){
 		drawPatches(0, true);
-		drawPatches(pointsX*pointsY*indicesPerQuad, true);
+		if(Settings.getBoolean("DRAW_TRANSITIONS"))
+			drawPatches(pointsX*pointsY*indicesPerQuad, true);
 	}
 	
 	private void drawPatches(int indicesOffset, boolean water){

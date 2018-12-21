@@ -6,11 +6,17 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import main.Main;
-import render.*;
+import render.Render;
+import render.Shader;
+import render.TexFile;
+import render.Texture;
+import render.VAO;
 import util.Color;
 import util.math.Vec;
 
 public class Element {
+	
+	protected Main game;
 
 	public double relX1, relY1, relX2, relY2;
 	public int x1O, y1O, x2O, y2O;
@@ -22,7 +28,8 @@ public class Element {
 	 */
 	public VAO vao;
 	
-	public Element(double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex){
+	public Element(Main game, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex){
+		this.game = game;
 		this.relX1 = relX1;
 		this.relY1 = relY1;
 		this.relX2 = relX2;

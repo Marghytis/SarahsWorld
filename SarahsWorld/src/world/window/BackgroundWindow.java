@@ -6,6 +6,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
+import exceptions.WorldTooSmallException;
 import main.Res;
 import render.Render;
 import render.Shader;
@@ -28,7 +29,7 @@ public class BackgroundWindow extends ArrayWorldWindow {
 	byte[] color = new byte[4];//use 'color' only cleared
 	ByteBuffer changerColor = BufferUtils.createByteBuffer(bytesPerVertex*verticesPerPoint);
 	
-	public BackgroundWindow(Column anchor, int radius) {
+	public BackgroundWindow(Column anchor, int radius) throws WorldTooSmallException {
 		super(anchor, radius);
 		this.pointsX = columns.length;
 		vaoColor = new VAO(

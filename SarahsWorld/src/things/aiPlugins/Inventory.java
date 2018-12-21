@@ -56,8 +56,9 @@ public class Inventory extends AiPlugin {
 	public boolean addItem(Thing t, ItemType item, int amount){
 		if(item == ItemType.COIN){
 			t.coins += amount;
-		} else
-		for(int i = 0; i < t.itemStacks.length; i++){
+		} else if(item == defaultItem) {
+			return false;
+		} else for(int i = 0; i < t.itemStacks.length; i++){
 			if(t.itemStacks[i].item == item){
 				t.itemStacks[i].count += amount;
 				if(t.itemStacks[i].count <= 0){

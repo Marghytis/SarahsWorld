@@ -6,12 +6,14 @@ import util.math.Vec;
 
 public class FireEffect implements ParticleEffect{
 
+	double vel = 100;
+	
 	public static final ParticleType SMOKE = new ParticleType(Res.getTex("smokeParticle"));
 	public ParticleEmitter smoke = new ParticleEmitter(100, 50, SMOKE, 2){
 		
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
-			p.vel.set((random.nextFloat() - 0.5f)*50f, 100f);
+			p.vel.set((random.nextFloat() - 0.5f)*vel*0.5, vel);
 			p.col.set(0.4f, 0.4f, 0.4f, 1f);
 			p.lived = random.nextFloat() - 0.5f;
 		}
@@ -32,7 +34,7 @@ public class FireEffect implements ParticleEffect{
 		@Override
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
-			p.vel.set((random.nextFloat() - 0.5f)*10f, 100f);
+			p.vel.set((random.nextFloat() - 0.5f)*vel/10, vel);
 			p.col.set(0.5f, 0.5f, 0.1f, 0.5f);
 			p.rot = random.nextFloat();
 		}
@@ -72,7 +74,7 @@ public class FireEffect implements ParticleEffect{
 		@Override
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
-			p.vel.set((random.nextFloat() - 0.5f)*10, 100);
+			p.vel.set((random.nextFloat() - 0.5f)*vel/10, vel);
 			p.col.set(1f, 0.6f, 0.1f, 1f);
 			p.rot = random.nextFloat();
 			p.rad = 0.1f;
@@ -92,7 +94,7 @@ public class FireEffect implements ParticleEffect{
 		@Override
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + random.nextInt(size), pos.y);
-			p.vel.set((random.nextFloat() - 0.5f)*10, 100);
+			p.vel.set((random.nextFloat() - 0.5f)*vel/10, vel);
 			p.col.set(1f, 1f, 1f, 1f);
 		}
 

@@ -18,4 +18,13 @@ public class Magic extends AiPlugin {
 	public void setup(Thing t){
 		t.mana = startMana;
 	}
+
+	public boolean drainMana(Thing t, int manaUse) {
+		if(t.mana >= manaUse) {
+			t.mana -= manaUse;
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

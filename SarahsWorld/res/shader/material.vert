@@ -2,6 +2,7 @@
 
 uniform vec4 transform;
 uniform int matSlot;
+uniform int points;
 
 in vec2 in_Position;
 in vec2 in_TextureCoords;
@@ -13,7 +14,12 @@ out vec2 pass_Alpha;
 
 void main(void){
 	gl_Position = vec4((in_Position + transform.xy)*transform.zw, 0, 1);
+	if(points == 1){
+		gl_PointSize = 10;
+		pass_Alpha = vec2(in_Alphas[matSlot], 0.5*in_TransAlpha);
+	} else {
+		pass_Alpha = vec2(in_Alphas[matSlot], in_TransAlpha);
+	}
 	
 	pass_TexCoords = in_TextureCoords;
-	pass_Alpha = vec2(in_Alphas[matSlot], in_TransAlpha);
 }

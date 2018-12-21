@@ -16,8 +16,8 @@ public abstract class FlexibleButton extends TextField {
 	public Texture t1, t2;
 	StringProducer stringProd;
 	
-	public FlexibleButton(StringProducer text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color1, Color color2, Texture tex1, Texture tex2) {
-		super("", relX1, relY1, relX2, relY2, x1, y1, x2, y2, color1, tex1, true);
+	public FlexibleButton(Main game, StringProducer text, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color1, Color color2, Texture tex1, Texture tex2) {
+		super(game, "", relX1, relY1, relX2, relY2, x1, y1, x2, y2, color1, tex1, true);
 		this.stringProd = text;
 		this.c1 = color1;
 		this.c2 = color2;

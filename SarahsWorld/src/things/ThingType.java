@@ -3,6 +3,7 @@ package things;
 import java.util.ArrayList;
 import java.util.List;
 
+import effects.Effect;
 import effects.WorldEffect;
 import effects.particles.BasicMagicEffect;
 import effects.particles.Hearts;
@@ -96,7 +97,7 @@ public class ThingType {
 					 new Technique("punch",  WeaponType.PUNCH,  1, 1, 0.5, new CloseRange(100,  -50, 100))//punch
 					,new Technique("kick",   WeaponType.KICK,   2, 1, 1,   new CloseRange(200,  -30,  50))//kick
 					,new Technique("strike", WeaponType.STRIKE, 5, 2, 0.7, new CloseRange(400, -200, 300))//strike
-					,new Technique("spell",  WeaponType.SPELL,  1, 1, 1, 
+					,new Technique("spell",  WeaponType.SPELL,  1, 1, 1, 5, 
 							Technique.selectAll,
 							(source, item, technique, pos, selected) -> {
 								Vec start = source.pos.copy().shift(0, 35);
@@ -276,6 +277,7 @@ public class ThingType {
 				t.aniSet = World.rand.nextInt(ani.animations.length);
 			}
 			ani.setAnimation(t, "stand");
+			t.willingToTrade = true;
 		}
 	};
 	
@@ -551,7 +553,7 @@ public class ThingType {
 		}};
 	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.getAtlas("tree_fir"), 50, new Animating(tree_fir[0][0], new Rect(Res.getAtlas("tree_fir").pixelCoords), 0, 1, 1, false, tree_fir)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType TREE_FIR_SNOW = new ThingType("TREE_FIR_SNOW", Res.getAtlas("tree_firSnow"), 50, new Animating(tree_firSnow[0][0], new Rect(Res.getAtlas("tree_firSnow").pixelCoords), 0, 1, 1, false, tree_firSnow)){
+	public static final ThingType TREE_FIR_SNOW = new ThingType("TREE_FIR_SNOW", Res.getAtlas("tree_firSnow"), 100, new Animating(tree_firSnow[0][0], new Rect(Res.getAtlas("tree_firSnow").pixelCoords), 0, 1, 1, false, tree_firSnow)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
 	public static final ThingType TREE_CANDY = new ThingType("TREE_CANDY", Res.getAtlas("tree_candy"), 50, new Animating(tree_candy[0][0], new Rect(Res.getAtlas("tree_candy").pixelCoords), 0, 1, 1, false, tree_candy)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
@@ -823,10 +825,34 @@ public class ThingType {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
 			t.effect = (MovingEffect) extraData[0];
 			Main.world.window.addEffect(t.effect);
-			t.vel.set((Vec)extraData[1]);
+			if(extraData.length > 1) {
+				t.vel.set((Vec)extraData[1]);
+			} else {
+				t.vel.set(0, 0);
+			}
 		}
 		public void update(Thing t, double delta) {
 			((MovingEffect)t.effect).setPos(t.pos);
+			if(!t.effect.living()) {
+				Main.world.thingWindow.remove(t);
+			}
+		}
+	};
+	public static final ThingType EFFECT = new ThingType("EFFECT", TexAtlas.emptyAtlas, 30, true,
+			new Physics(1, 0, false, false, false, false, false, false),
+			new Attachement() {
+				public void onVisibilityChange(Thing t, boolean visible){
+					if(!t.visible && visible) {
+						Main.world.window.addEffect(t.effect);
+					} else if(t.visible && !visible) {
+						Main.world.window.removeEffect(t.effect);
+					}
+				}}) {
+		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
+			t.effect = (Effect) extraData[0];
+			Main.world.window.addEffect(t.effect);
+		}
+		public void update(Thing t, double delta) {
 			if(!t.effect.living()) {
 				Main.world.thingWindow.remove(t);
 			}

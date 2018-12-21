@@ -23,6 +23,7 @@ public class Technique {
 	public WeaponType wp;
 	public double extraCooldown;
 	public double damageMultiplier;
+	private int manaUse;
 	public TargetSelector selector;
 	public HitEffect hitEffect;
 	public AttackEffect start;
@@ -34,15 +35,19 @@ public class Technique {
 	 * @param rYd
 	 * @param attackEffect
 	 */
-	public Technique(String name, WeaponType wp, double damageMultiplier, int maxTargets, double extraCooldown, TargetSelector selector, AttackEffect start, HitEffect hitEffect){
+	public Technique(String name, WeaponType wp, double damageMultiplier, int maxTargets, double extraCooldown, int manaUse, TargetSelector selector, AttackEffect start, HitEffect hitEffect){
 		this.name = name;
 		this.wp = wp;
 		this.maxTargets = maxTargets;
 		this.extraCooldown = extraCooldown;
 		this.damageMultiplier = damageMultiplier;
+		this.manaUse = manaUse;
 		this.selector = selector;
 		this.start = start;
 		this.hitEffect = hitEffect;
+	}
+	public Technique(String name, WeaponType wp, double damageMultiplier, int maxTargets, double extraCooldown, TargetSelector selector, AttackEffect start, HitEffect hitEffect){
+		this(name, wp, damageMultiplier, maxTargets, extraCooldown, 0, selector, start, hitEffect);
 	}
 	public Technique(String name, WeaponType wp, int maxTargets, double damageMultiplier, double extraCooldown, TargetSelector attack, HitEffect effect){
 		this(name, wp, damageMultiplier, maxTargets, extraCooldown, attack, instantHit, effect);
@@ -54,6 +59,10 @@ public class Technique {
 		this(name, wp, damageMultiplier, maxTargets, extraCooldown, attack, instantHit, lifeHit);
 	}
 	
+	public int getManaUse() {
+		return manaUse;
+	}
+	
 	public boolean execute(Thing source, ItemType item, Vec worldPos, Thing[] targets) {
 		
 		if(targets.length > 0) {
@@ -63,6 +72,15 @@ public class Technique {
 			source.type.ani.setAnimation(source, name,  () -> {
 				
 				List<Thing> selected = selector.select(source, targets, amount, item);
+				
+				if(manaUse > 0) {
+					if(source.type.magic != null) {
+						if(!source.type.magic.drainMana(source, manaUse))
+							return;
+					} else {//can't use this technique
+						return;
+					}
+				}
 				
 				start.start(source, item, this, worldPos, selected);
 			

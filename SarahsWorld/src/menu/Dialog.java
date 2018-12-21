@@ -62,8 +62,8 @@ public class Dialog extends Element {
 	VBO vboSpeechBubble;
 	boolean bubbleRenderUpdateNeeded = true;
 	
-	public Dialog() {
-		super(0, 0, 1, 1, 0, 0, 0, 0, null, null);
+	public Dialog(Main game) {
+		super(game, 0, 0, 1, 1, 0, 0, 0, 0, null, null);
 		createSpeechBubbleVAO();
 	}
 	

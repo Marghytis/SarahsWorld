@@ -7,7 +7,8 @@ import core.Game;
 import core.Input;
 import core.Speaker;
 import core.Window;
-import menu.Menu;
+import input.PollData;
+import menu.MenuManager;
 import menu.Settings;
 import util.math.IntVec;
 import world.SoundManager;
@@ -24,13 +25,16 @@ public class Main implements Game {
 	final static String TEX_ATLAS_TABLE_PATH = "res/TexAtlasTable.res";
 	public final static String SETTINGS_PATH = "res/Settings.txt";
 	
+	private static Window window;
 	public static Input input;
-	public static Menu menu;
+	public static PollData input2;
+	public static MenuManager menu;
 	public static World world;
 	public static SoundManager sound;
 	public static Core core;
 	public static IntVec SIZE, HALFSIZE;
 	public static long WINDOW;
+	public static Out out;
 	
 	/**
 	 * Creates a Window, loads or creates a world and resets the core classes. Then it starts the game loop.
@@ -49,10 +53,11 @@ public class Main implements Game {
 	 * Initializes the window, core object, menu and world.
 	 * @param worldName name of the world to be loaded or created 
 	 */
-	static void initializeGame(String worldName)
+	private static void initializeGame(String worldName)
 	{
+		out = new Out(10);
 		input = new Input();
-		Window window = new Window("Sarahs World", false, 1, 1, true, true, input);
+		window = new Window("Sarahs World", false, 1, 1, true, true, input);
 		Speaker speaker = new Speaker();
 		Game game = new Main();
 		//create a core object
@@ -65,23 +70,52 @@ public class Main implements Game {
 	}
 
 	public void init() {
+		input2 = window.getPollData();
 		WINDOW = core.getWindow().getHandle();
 		//create a menu object and load or create a world object
-		menu = new Menu();
 		if(Save.worldSaved("worlds/world.sw")){//TODO make the path variable
 			world = Save.loadWorld("worlds/world.sw");
 		} else {
-			world = new World();
+			world = new World(input2);
 		}
+		menu = new MenuManager(this);
+		menu.init();//because this function uses the menu variable already
 		sound = new SoundManager();
 
 		resetCoreLists();
 	}
 	
+	public PollData getInputData() {
+		return input2;
+	}
+	
+	public SoundManager getSoundManager() {
+		return sound;
+	}
+	
+	public World getWorld() {
+		return world;
+	}
+	
+	public MenuManager getMenu() {
+		return menu;
+	}
+	
+	public void requestNewWorld() {
+		Main.core.doAfterTheRest(() -> {
+			world = new World(input2);
+			resetCoreLists();
+		});
+	}
+	
+	public void requestTermination() {//TODO add termination function to Game
+		core.getWindow().requestClose();
+	}
+	
 	/**
 	 * Resets the lists of 'Updaters', 'Renderers' and 'Listeners'
 	 */
-	public static void resetCoreLists()
+	private static void resetCoreLists()
 	{
 		core.setUpdaters(
 				menu,
@@ -95,7 +129,7 @@ public class Main implements Game {
 
 		core.getWindow().setListeners(
 				menu,
-				world.avatar.type.avatar);
+				world.listener);
 	}
 	
 }

@@ -1,8 +1,10 @@
 package things;
 
+import java.util.Iterator;
+
 import things.interfaces.Listable;
 
-public class ThingSet<T extends Listable> {
+public class ThingSet<T extends Listable> implements Iterable<T> {
 
 	private int indexIndex;
 	private int capacity;
@@ -97,5 +99,25 @@ public class ThingSet<T extends Listable> {
 
 	public boolean isEmpty() {
 		return n <= 0;
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return new Iterator<T>() {
+			
+			int i = 0;
+
+			@Override
+			public boolean hasNext() {
+				return i < n;
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public T next() {
+				return (T) array[i++];
+			}
+			
+		};
 	}
 }

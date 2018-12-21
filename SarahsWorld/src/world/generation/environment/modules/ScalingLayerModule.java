@@ -10,14 +10,16 @@ public class ScalingLayerModule extends Module {
 	double collisionY, thickness, sizeEnd, scaleRate;
 	boolean invisible;
 	
-	public ScalingLayerModule(int index0, Module guide, Module follower, Material mat, double sizeStart, double sizeEnd, double scaleRate) {
+	public ScalingLayerModule(int index0, Module guide, Module follower, Material mat) {
+		this(index0, guide, follower, mat, 0);
+	}
+	
+	public ScalingLayerModule(int index0, Module guide, Module follower, Material mat, double sizeStart) {
 		super(index0, 1, guide.collision);
 		this.mat = mat;
 		this.guide = guide;
 		this.follower = follower;
 		this.thickness = sizeStart;
-		this.sizeEnd = sizeEnd;
-		this.scaleRate = scaleRate;
 		this.invisible = true;
 	}
 	
