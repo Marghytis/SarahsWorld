@@ -10,9 +10,9 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
-import org.lwjgl.opengl.GL45;
 
 import exceptions.WorldTooSmallException;
+import main.Main;
 import main.Res;
 import menu.Settings;
 import render.Render;
@@ -35,7 +35,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 	
 	private VAO vao;//vaoColor contains the data for the darkness and the background, because they have the same format
 	//I consider a Point to be an object of the Vertex class, because the name "vertex" is already in use...
-	private int pointsX,
+	private final int pointsX,
 				pointsY = Biome.layerCount - 1;
 	private ByteBuffer changer = BufferUtils.createByteBuffer(bytesPerVertex*verticesPerPoint);
 		
@@ -64,7 +64,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 	
 	public void reload() {
 		try {
-			loadAllColumns(ends[Dir.l], radius);
+			loadAllColumns(ends[Dir.l], Main.world.avatar.link.xIndex, radius);
 		} catch (WorldTooSmallException e) {
 			e.printStackTrace();
 			throw new RuntimeException("World is too small?!?!?!");
@@ -179,34 +179,38 @@ public class TerrainWindow extends ArrayWorldWindow {
 		for(Patch p : currentPatches)
 			p.deactivate();
 		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
-			int  column = startIndexLeft(), matIndex = columns[column].vertices(y).firstMatIndex;
-			do {//while(column != indexShift), loop through all columns
-				for(int i = 0; i < Vertex.maxMatCount; i++){
-					if(currentPatches[i].active() && currentPatches[i].end == column){
-						currentPatches[i].deactivate();
-					}
-					if((!currentPatches[i].active() || currentPatches[i].end == -1) && columns[column].vertices(y).mats[i] != Material.AIR){
-						currentPatches[i].set(y, i, column, columns[column].vertices(y).mats[i]);
-					}
-				}
-				int matIndex2 = matIndex;
-				do {
-					if(currentPatches[matIndex2].active()){
-						for(int column2 = column; currentPatches[matIndex2].end == -1; column2 = (column2+1)%pointsX){//if end != 1, the patch has been drawn
-							//the current patch ends here. if there is an open patch it gets rendered cut (after one layer currentPatches[i] = null for all i)
-							if(columns[column2].vertices(y).mats[matIndex2] != currentPatches[matIndex2].mat || column2 == oneBeforeStart)
-								drawPatch(currentPatches[matIndex2], column2, indicesOffset, water);
-						}
-					}
-					matIndex2 = (matIndex2+1)%Vertex.maxMatCount;
-				} while(matIndex2 != matIndex);//matIndex2 returns back to matIndex, if no patch is here
-				matIndex = matIndex2;
-				column = (column+1)%columns.length;
-			} while(column != startIndexLeft());
+			drawPatchesLayer(indicesOffset, water, y, oneBeforeStart);
 			for(Patch p : currentPatches)
 				p.deactivate();
 		}
 		layersDrawn += pointsY;
+	}
+	
+	private void drawPatchesLayer(int indicesOffset, boolean water, int iLayer, int oneBeforeStart) {
+		int  column = startIndexLeft(), matIndex = columns[column].vertices(iLayer).firstMatIndex, endColumn = column;
+		do {//while(column != indexShift), loop through all columns
+			int matIndex2 = matIndex;
+			do {
+				if(currentPatches[matIndex2].active() && currentPatches[matIndex2].end == column){
+					currentPatches[matIndex2].deactivate();
+				}
+				if((!currentPatches[matIndex2].active() || currentPatches[matIndex2].end == -1) && columns[column].vertices(iLayer).mats[matIndex2] != Material.AIR){
+					currentPatches[matIndex2].set(iLayer, matIndex2, column, columns[column].vertices(iLayer).mats[matIndex2]);
+				}
+				if(currentPatches[matIndex2].active()){
+					for(int column2 = column; currentPatches[matIndex2].end == -1; column2 = add1To(column2)){//if end != -1, the patch has been drawn
+						//the current patch ends here. if there is an open patch it gets rendered cut (after one layer currentPatches[i] = null for all i)
+						if(columns[column2].vertices(iLayer).mats[matIndex2] != currentPatches[matIndex2].mat || column2 == oneBeforeStart) {
+							drawPatch(currentPatches[matIndex2], column2, indicesOffset, water);
+							break;
+						}
+					}
+				}
+				matIndex2 = (matIndex2+1)%Vertex.maxMatCount;
+			} while(matIndex2 != matIndex);//matIndex2 returns back to matIndex, if no patch is here
+			
+			column = add1To(column);
+		} while(column != endColumn);
 	}
 	
 	private static class Patch {

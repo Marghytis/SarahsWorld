@@ -9,6 +9,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	protected Column[] columns;
 	protected int center;
 	private int[] nextIndex;//is private because it really should not be changed outside this class
+	private boolean isBuilt = false;;
 	
 	int sideLastInwards;
 	
@@ -19,17 +20,32 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		
 		nextIndex = new int[2];
 		
-		loadAllColumns(anchor, radius);
+		loadAllColumns(anchor, anchor.xIndex, radius);
+		isBuilt = true;
 	}
 	
-	protected void loadAllColumns(Column anchor, int radius) throws WorldTooSmallException {
+	/**
+	 * Tries to fill this windows array with columns starting from the anchor column.
+	 * If this is the first time this is done (at initialization),
+	 * the columns are attached to each other and their appear-function is called as well.
+	 * @param anchor
+	 * @param radius
+	 * @throws WorldTooSmallException
+	 */
+	protected void loadAllColumns(Column anchor, int center1, int radius) throws WorldTooSmallException {
 		//calculate current window center
-		center = (ends[Dir.l].xIndex + ends[Dir.r].xIndex)/2;
+		center = center1;
 		//move anchor to center
 		while(anchor.xIndex < center)
 			anchor = anchor.next(Dir.r);
 		while(anchor.xIndex > center)
 			anchor = anchor.next(Dir.l);
+		
+//		//detach all visible columns;
+//		
+//		for(Column c = start(); c != end(); c = c.next()) {
+//			
+//		}
 		
 		sideLastInwards = Dir.l;
 		nextIndex[Dir.r] = add1To(radius);
@@ -38,12 +54,13 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		ends[Dir.r] = anchor;
 		ends[Dir.l] = ends[Dir.r];
 		//create Column array and find borders
-		insertColumn(anchor);
+		insertColumn(anchor, !isBuilt);
 		for(int end = 0; end <= 1; end++) {
 			while(Dir.s[end]*(ends[end].xIndex - center) < radius && ends[end].next(end) != null){
 				ends[end] = ends[end].next(end);
-				insertColumn( ends[end]);
-				letAppear(ends[end], end);
+				insertColumn( ends[end], !isBuilt);
+				if(!isBuilt)
+					letAppear(ends[end], end);
 				nextIndex[end] = shiftBy1(nextIndex[end], end);
 			}
 		}
@@ -109,16 +126,18 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		//override
 	}
 	
-	void insertColumn(Column c){
+	void insertColumn(Column c, boolean modifiyNeighbors){
 		int index = c.xIndex - (center - radius);//index relative to the most left location of this window
 		columns[index] = c;
-		if(index > 0 && columns[index-1] != null){
-			c.setLeft(columns[index-1]);
-			columns[index-1].setRight(c);
-		}
-		if(index < columns.length-1 && columns[index+1] != null){
-			c.setRight(columns[index+1]);
-			columns[index+1].setLeft(c);
+		if(modifiyNeighbors) {
+			if(index > 0 && columns[index-1] != null){
+				c.setLeft(columns[index-1]);
+				columns[index-1].setRight(c);
+			}
+			if(index < columns.length-1 && columns[index+1] != null){
+				c.setRight(columns[index+1]);
+				columns[index+1].setLeft(c);
+			}
 		}
 	}
 
