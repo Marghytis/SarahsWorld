@@ -11,7 +11,6 @@ public class RealWorldWindow {
 
 	protected int radius;
 	protected Column[] ends = new Column[2];
-	protected Column it;
 	
 	public RealWorldWindow(Column anchor, int radius) {
 		this.radius = radius;

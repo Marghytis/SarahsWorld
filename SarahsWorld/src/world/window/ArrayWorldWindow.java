@@ -20,7 +20,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		
 		nextIndex = new int[2];
 		
-		loadAllColumns(anchor, anchor.xIndex, radius);
+		loadAllColumns(anchor, anchor.xIndex);
 		isBuilt = true;
 	}
 	
@@ -32,7 +32,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	 * @param radius
 	 * @throws WorldTooSmallException
 	 */
-	protected void loadAllColumns(Column anchor, int center1, int radius) throws WorldTooSmallException {
+	private void loadAllColumns(Column anchor, int center1) throws WorldTooSmallException {
 		//calculate current window center
 		center = center1;
 		//move anchor to center

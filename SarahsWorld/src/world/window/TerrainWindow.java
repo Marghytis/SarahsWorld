@@ -12,7 +12,6 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
 import exceptions.WorldTooSmallException;
-import main.Main;
 import main.Res;
 import menu.Settings;
 import render.Render;
@@ -22,7 +21,6 @@ import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
 import world.data.Column;
-import world.data.Dir;
 import world.data.Vertex;
 import world.generation.Biome;
 import world.generation.Material;
@@ -63,12 +61,12 @@ public class TerrainWindow extends ArrayWorldWindow {
 	}
 	
 	public void reload() {
-		try {
-			loadAllColumns(ends[Dir.l], Main.world.avatar.link.xIndex, radius);
-		} catch (WorldTooSmallException e) {
-			e.printStackTrace();
-			throw new RuntimeException("World is too small?!?!?!");
-		}
+//		try {
+//			loadAllColumns(ends[Dir.l], (int)Math.floor(Main.world.avatar.pos.x/Column.COLUMN_WIDTH));
+//		} catch (WorldTooSmallException e) {
+//			e.printStackTrace();
+//			throw new RuntimeException("World is too small?!?!?!");
+//		}
 	}
 	
 	public void renderLandscape(){
