@@ -173,42 +173,55 @@ public class TerrainWindow extends ArrayWorldWindow {
 	
 	private void drawPatches2(int indicesOffset, boolean water){
 		//for each material every patch of this material gets rendered.
-		int oneBeforeStart = (startIndexLeft()+pointsX-1)%columns.length;
-		for(Patch p : currentPatches)
-			p.deactivate();
+		int oneBeforeStart = substract1From(startIndexLeft());
+		deactivatePatches();
+		//loop all layers
 		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
-			drawPatchesLayer(indicesOffset, water, y, oneBeforeStart);
-			for(Patch p : currentPatches)
-				p.deactivate();
+			//loop all columns in this layer
+			int  column = startIndexLeft(), matIndex = columns[column].vertices(y).firstMatIndex, endColumn = column;
+			do {
+				//loop all material slots
+				matIndex = columns[column].vertices(y).firstMatIndex;
+				int matIndex2 = 0;
+				do {
+					
+					findAndDrawSinglePatch(column, y, matIndex2, indicesOffset, water, oneBeforeStart);
+					
+					
+					matIndex2 = (matIndex2+1)%Vertex.maxMatCount;
+				} while(matIndex2 != matIndex);//matIndex2 returns back to matIndex, if no patch is here
+				
+				column = add1To(column);
+			} while(column != endColumn);
+			deactivatePatches();
 		}
 		layersDrawn += pointsY;
 	}
 	
-	private void drawPatchesLayer(int indicesOffset, boolean water, int iLayer, int oneBeforeStart) {
-		int  column = startIndexLeft(), matIndex = columns[column].vertices(iLayer).firstMatIndex, endColumn = column;
-		do {//while(column != indexShift), loop through all columns
-			int matIndex2 = matIndex;
-			do {
-				if(currentPatches[matIndex2].active() && currentPatches[matIndex2].end == column){
-					currentPatches[matIndex2].deactivate();
-				}
-				if((!currentPatches[matIndex2].active() || currentPatches[matIndex2].end == -1) && columns[column].vertices(iLayer).mats[matIndex2] != Material.AIR){
-					currentPatches[matIndex2].set(iLayer, matIndex2, column, columns[column].vertices(iLayer).mats[matIndex2]);
-				}
-				if(currentPatches[matIndex2].active()){
-					for(int column2 = column; currentPatches[matIndex2].end == -1; column2 = add1To(column2)){//if end != -1, the patch has been drawn
-						//the current patch ends here. if there is an open patch it gets rendered cut (after one layer currentPatches[i] = null for all i)
-						if(columns[column2].vertices(iLayer).mats[matIndex2] != currentPatches[matIndex2].mat || column2 == oneBeforeStart) {
-							drawPatch(currentPatches[matIndex2], column2, indicesOffset, water);
-							break;
-						}
-					}
-				}
-				matIndex2 = (matIndex2+1)%Vertex.maxMatCount;
-			} while(matIndex2 != matIndex);//matIndex2 returns back to matIndex, if no patch is here
+	private void deactivatePatches() {
+		for(Patch p : currentPatches)
+			p.deactivate();
+	}
+	
+	private void findAndDrawSinglePatch(int iStartColumn, int iLayer, int iMat, int indicesOffset, boolean water, int oneBeforeStart) {
+		//if an active patch ends here, deactivate it
+		if(currentPatches[iMat].active() && currentPatches[iMat].end == iStartColumn){
+			currentPatches[iMat].deactivate();
+		}
+		//start a new patch
+		if((!currentPatches[iMat].active() || currentPatches[iMat].end == -1)
+				&& columns[iStartColumn].vertices(iLayer).mats[iMat] != Material.AIR){
 			
-			column = add1To(column);
-		} while(column != endColumn);
+			currentPatches[iMat].set(iLayer, iMat, iStartColumn, columns[iStartColumn].vertices(iLayer).mats[iMat]);
+			
+			//search for patch end
+			int end = iStartColumn;
+			//count up column2 while the layer still contains this material and the landscape window didn't end.
+			while(columns[end].vertices(iLayer).mats[iMat] == currentPatches[iMat].mat && end != oneBeforeStart) {
+				end = add1To(end);
+			}
+			drawPatch(currentPatches[iMat], end, indicesOffset, water);
+		}
 	}
 	
 	private static class Patch {
@@ -238,6 +251,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 		
 		public void deactivate() {
 			active = false;
+			set(-1, -1, -1, null);
 		}
 	}
 	

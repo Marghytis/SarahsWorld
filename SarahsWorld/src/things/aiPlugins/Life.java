@@ -23,16 +23,21 @@ public class Life extends AiPlugin {
 	public int armor;
 	public ItemType[] fruits;
 	public double[] fruitProperties;
+	private String getHitAnimation;
 	
 	public Life(int health, int coins, int armor){
 		this(health, coins, armor, null);
 	}
-	
+
 	public Life(int health, int coins, int armor, ItemType[] fruits, double... fruitProperties){
+		this(health, coins, armor, fruits, null, fruitProperties);
+	}
+	public Life(int health, int coins, int armor, ItemType[] fruits, String getHitAnimation, double... fruitProperties){
 		this.maxHealth = health;
 		this.startCoins = coins;
 		this.armor = armor;
 		this.fruits = fruits;
+		this.getHitAnimation = getHitAnimation;
 		this.fruitProperties = fruitProperties;
 	}
 	
@@ -87,6 +92,10 @@ public class Life extends AiPlugin {
 			}
 			tgt.health -= damage;
 			Main.world.window.addEffect(new BloodSplash(tgt.pos));
+			if(getHitAnimation != null) {
+				System.out.println("huu");
+				tgt.type.ani.setAnimation(tgt, getHitAnimation, () -> tgt.type.movement.setBackgroundAni(tgt));
+			}
 			tgt.damageCooldown = coolDownStart;
 			return true;
 		}

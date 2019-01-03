@@ -114,4 +114,9 @@ public class Animating extends AiPlugin {
 	public void setAnimation(Thing t, String aniName){
 		t.ani.setAnimation(get(t, aniName));
 	}
+	
+	public static interface AnimatedThing extends BasicThing {
+		public void setAnimation(String aniName);
+		public int getCurrentAnimationSet();
+	}
 }

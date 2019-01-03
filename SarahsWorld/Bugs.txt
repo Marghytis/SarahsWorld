@@ -1,6 +1,5 @@
 open bugs
 _Flies landing on water are stuck -> good, but they should avoid the water
-_There are no particle effects, if you go far to the right (left not tested)
 _sometimes Sarah and other creatures can't move in water, after they were leaving and returning to the water, e.g. if Sarah went swimming with a cow
 _very strange physics after swimming with a cow, especially in water...
 _when riding a cow it moves faster, but also slides further on grass -> when pressing supersprint and megasprint, Sarah slides further
@@ -8,7 +7,6 @@ _speech bubbles scale faulty when zooming
 _sky has different color at origin when using generator2
 _creatures swim back and forth very quickly in water
 _trees grow in water
-_magic effect doesn't work or interaction in general
 _cows fall through the ground
 _item positions are not correct when rotating
 _after giving Evelyn a cake, I can give other evelyns a cake too, even though I don't have one
@@ -17,6 +15,7 @@ _text in textfields isn't vertically centered
 _you can throw away fists
 _when passing the maxVisible amount of things of a type (by spawning them/throwing away items), newly created things are not visible
 _thing rendering still not working as expected when walking through a jungle
+_material transitions have some problems with the indices
 
 optional
 _schweben bei antigravity etc.
@@ -38,4 +37,6 @@ _horn is at strange position when mounting a cow
 _moving effects (the dummy things) are tried to be added to VAOs
 _spawning things doesn't work
 _right click for mounting cows work only with empty hands
+_magic effect doesn't work or interaction in general
 _speech bubble has wrong texture
+_there are no particle effects, if you go far to the right (left not tested)

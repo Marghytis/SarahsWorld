@@ -144,15 +144,20 @@ public class WorldPainter implements Updater, Renderer{
 		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
 		Render.drawSingleQuad(completeWindow, Color.WHITE, landscapeBuffer.getTex(), 0, 0, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, true, 0);
 		
-		things.renderThings();
-		
+		if(Settings.getBoolean("RENDER_THINGS"))
+			things.renderThings();
+
+		GL11.glAlphaFunc(GL11.GL_ALWAYS, 1.0f);
+//		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		
 		terrain.renderWater();
 
 		//Outlines of living things
-		things.renderOutlines();
+		if(Settings.getBoolean("RENDER_THINGS"))
+			things.renderOutlines();
 		
 		//auras
 //		renderAuras();

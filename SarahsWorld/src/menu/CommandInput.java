@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.function.Consumer;
 
 import main.Main;
+import menu.MenuManager.MenuType;
 import render.Texture;
 import util.Color;
 import util.math.Vec;
@@ -17,6 +18,7 @@ public class CommandInput extends TextInput {
 	static {
 		commands.put("enable", args -> Settings.set(args[0], true));
 		commands.put("disable", args -> Settings.set(args[0], false));
+		commands.put("setMenu", args -> Main.menu.setMenu(MenuType.valueOf(args[0])));
 		
 		//list all possible commands when no text is entered yet
 		String commandsList = "";
@@ -38,6 +40,12 @@ public class CommandInput extends TextInput {
 			disable += "\ndisable " + boo;
 		}
 		hints.put("disable", disable);
+		
+		String setMenu = "";
+		for(MenuType mt : MenuType.values()) {
+			setMenu += "\nsetMenu " + mt.name();
+		}
+		hints.put("setMenu", setMenu);
 	}
 	
 	String originalText = "";

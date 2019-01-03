@@ -42,6 +42,6 @@ public class Useful extends Zone2 {
 	}
 	
 	protected Column createColumn(double x){
-		return new Column(0, biomeManager.biome, biomeManager.getTop(), biomeManager.getLow(), biomeManager.createVertices(lastHeight), baseHeight);
+		return biomeManager.createColumn(lastHeight, baseHeight);
 	}
 }

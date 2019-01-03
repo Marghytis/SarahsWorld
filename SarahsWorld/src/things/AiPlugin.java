@@ -28,4 +28,8 @@ public abstract class AiPlugin {
 	
 	public void remove(Thing t) {}
 	
+	public static interface BasicThing {
+		public String getTypeName();
+	}
+	
 }

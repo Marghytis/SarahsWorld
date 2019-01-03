@@ -96,7 +96,7 @@ public abstract class Zone {
 		return height1 + height2;
 	}
 	
-	public void stepColumn(Column nextColumn){
+	public void setLastColumn(Column nextColumn){
 		biomeManager.lastColumn = nextColumn;
 	}
 	
@@ -116,6 +116,6 @@ public abstract class Zone {
 	}
 	
 	protected Column createColumn(double x){
-		return new Column(0, biomeManager.biome, biomeManager.getTop(), biomeManager.getLow(), biomeManager.createVertices(lastHeight));
+		return biomeManager.createColumn(lastHeight);
 	}
 }

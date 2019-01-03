@@ -120,15 +120,16 @@ public class ThingType {
 											new Animation("boring", Res.getAtlas("snail"), 0, 0),
 											new Animation("walk", Res.getAtlas("snail"), 10, 0, /**/0, 1, 2, 3, 4, 3, 2, 1),
 											new Animation("sprint", Res.getAtlas("snail"), 20, 0, /**/0, 1, 2, 3, 4, 3, 2, 1),
-											new Animation("punch", Res.getAtlas("snail"), 30, 1, /**/1, 2, 3, 4, 5, 6, 5)};
+											new Animation("punch", Res.getAtlas("snail"), 30, 1, /**/1, 2, 3, 4, 5, 6, 5),
+											new Animation("getHit", Res.getAtlas("snail"), 2, 2, 0, 0)};
 	public static final ThingType SNAIL = new ThingType("SNAIL", Res.getAtlas("snail"), 30, true,
 			(c, p, ed) -> {
 				if(c.getTopFluidVertex().averageSolidity == 2)
 				return new Thing(ThingType.SNAIL, c, p.shift(0, 100));
 				else return null;
 			}
-			,new Animating(snail[0], new Rect(Res.getAtlas("snail").pixelCoords), 0, 0, 4, false, snail)
-			,new Life(10, 10, 2, new ItemType[]{ItemType.SNAIL_SHELL, ItemType.SNAILS_EYE}, 0.05, 2)
+			,new Animating(snail[0], new Rect(Res.getAtlas("snail").pixelCoords), 0, 0, 5, false, snail)
+			,new Life(10, 10, 2, new ItemType[]{ItemType.SNAIL_SHELL, ItemType.SNAILS_EYE}, "getHit", 0.05, 2)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
 			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, ThingType.SARAH)

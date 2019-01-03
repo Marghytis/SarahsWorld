@@ -32,7 +32,7 @@ public class Lake extends Zone {
 		super(random, null, biome, originX, left, null);
 		before = biome.biome;
 		biome.switchToBiome(lakeBiome);
-		if(biome.ants[0].state == State.NOTHING) biome.ants[0].switchTo(lake, 0);
+		if(biome.ants[0].state == State.NOTHING) biome.ants[0].switchTo(lake, 0, biome.lastColumn);
 		this.width = width;
 		this.ownHeight = height;
 	}

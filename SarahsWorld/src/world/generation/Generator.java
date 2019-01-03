@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.Random;
 
 import menu.Settings;
-import util.math.Vec;
 import world.data.Column;
 import world.data.Dir;
 import world.data.WorldData;
 import world.generation.Zone.ZoneType;
-import world.generation.zones.Mountains;
 
 
 public class Generator implements GeneratorInterface {
@@ -20,15 +18,18 @@ public class Generator implements GeneratorInterface {
 	WorldData world;
 	Random random = new Random();
 	
-	double posL, posR;
+//	double posL, posR;
+	double[] positions = {0,0};
 
 	BiomeManager biomeL;
 	BiomeManager biomeR;
 	
-	public Zone zoneL;
-	public Zone zoneR;
+	private Zone[] zones = {null, null};
+//	private Zone zoneL, lastZoneL;
+//	private Zone zoneR, lastZoneR;
 	
-	Column nextColumnR, nextColumnL;
+//	Column nextColumnR, nextColumnL, columnR, columnL;
+	private Column[] nextColumns = {null, null};
 
 	public List<Spawner> questThings = new ArrayList<>();
 	
@@ -38,15 +39,15 @@ public class Generator implements GeneratorInterface {
 		ZoneType startZone = newZoneType();
 		
 		Biome startBiome = startZone.startBiome;
-		
-		posL = 0;
-		posR = 0;
+
+		positions[Dir.l] = 0;
+		positions[Dir.r] = 0;
 		
 		biomeL = new BiomeManager(startBiome, true);
 		biomeR = new BiomeManager(startBiome, false);
 
-		zoneL = startZone.supply.get(random, biomeL, 0, true);
-		zoneR = startZone.supply.get(random, biomeR, 0, false);
+		zones[Dir.l] = startZone.supply.get(random, biomeL, 0, true);
+		zones[Dir.r] = startZone.supply.get(random, biomeR, 0, false);
 		
 		world.addFirst(startBiome, biomeR.createVertices(0));
 	}
@@ -56,15 +57,13 @@ public class Generator implements GeneratorInterface {
 		//TODO
 	}
 	
-	Vec questPos = new Vec();
-	
 	public boolean borders(double d, double e) {
-		while(posR < e){
-			if(!extendRight())
+		while(positions[Dir.r] < e){
+			if(!extend(Dir.r))
 				return false;
 		}
-		while(posL > d){
-			if(!extendLeft())
+		while(positions[Dir.l] > d){
+			if(!extend(Dir.l))
 				return false;
 		}
 		return true;
@@ -80,48 +79,31 @@ public class Generator implements GeneratorInterface {
 		
 	}
 
-	public boolean extendRight() {
-		posR += Column.COLUMN_WIDTH;
-		
-		nextColumnR = zoneR.nextColumn(posR - zoneR.originX);
-//		world.addRight(nextColumnR);
-		
-		if(zoneR.end){
-//			switch(random.nextInt(2)){
-//				case 0 : zoneR = new Mountains(random, zoneR.biomeManager, posR, false);break;
-//				case 1 : zoneR = new Meadow(random, zoneR.biomeManager, posR, false);break;
-//				case 2 : zoneR = new Jungle(random, zoneR.biomeManager, posR, false);break;
-//				case 3 : zoneR = new Desert(random, zoneR.biomeManager, posR, false); break;
-//			}
-//			zoneR = new Jungle(random, zoneR.biome, posR, false);
-			zoneR = newZone(zoneR.biomeManager, posR, false);
+	@Override
+	public boolean extend(int iDir) {
+		Zone oldZone = zones[iDir];
+		positions[iDir] += Dir.s[iDir]*Column.COLUMN_WIDTH;
+//		columnR = nextColumnR;
+
+		//if the current zone has ended, start a new one
+		if(zones[iDir].end){
+			zones[iDir] = newZone(zones[iDir].biomeManager, Dir.s[iDir]*positions[iDir], iDir == Dir.l);
 		}
-		zoneR.stepColumn(nextColumnR);
+		//create next column
+		nextColumns[iDir] = zones[iDir].nextColumn(Dir.s[iDir]*positions[iDir] - zones[iDir].originX);
 
-		world.processNewColumn(nextColumnR, 1, zoneR.description);
+		zones[iDir].setLastColumn(nextColumns[iDir]);
 
-		zoneR.spawnThings(nextColumnR.left());
+		//add new Column to the world, spawn quests, things, etc.
+		world.processNewColumn(nextColumns[iDir], Dir.s[iDir], zones[iDir].description);
+		Column columnToSpawnThings = iDir == Dir.r ? nextColumns[iDir].left() : nextColumns[iDir];
+		oldZone.spawnThings(columnToSpawnThings);
 		
 		return true;
 	}
 
 	public boolean extendLeft() {
 
-		posL -= Column.COLUMN_WIDTH;
-		
-		nextColumnL = zoneL.nextColumn(-posL - zoneL.originX);
-//		world.addLeft(nextColumnL);
-
-		if(zoneL.end){
-			zoneL = new Mountains(random, zoneL.biomeManager, -posL, true);
-		}
-		
-		zoneL.stepColumn(nextColumnL);
-
-		world.processNewColumn(nextColumnL, -1, zoneL.description);
-
-		zoneL.spawnThings(nextColumnL);
-		
 		return true;
 	}
 	
@@ -140,11 +122,9 @@ public class Generator implements GeneratorInterface {
 		return zoneType;
 	}
 	
-	public boolean extend(int iDir) {
-		switch(iDir) {
-		case Dir.l : return extendLeft();
-		case Dir.r : return extendRight();
-		default: return false;
-		}
+	@Override
+	public boolean extendRight() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

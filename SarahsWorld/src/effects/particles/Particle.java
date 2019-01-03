@@ -1,7 +1,9 @@
 package effects.particles;
 
+import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
@@ -52,6 +54,8 @@ public class Particle {
 //													(short)100, (short)-100, (short)1, (short)1,
 //													(short)100, (short)100, (short)1, (short)0,
 //													(short)-100, (short)100, (short)0, (short)0);
+//			ByteBuffer buffer2 = BufferUtils.createByteBuffer(4*(2*Integer.BYTES + (2*Short.BYTES)));
+//			buffer2.putInt(tex.pixelCoords[0])
 			ShortBuffer buffer = Render.createBuffer(
 					(short)tex.pixelCoords[0], (short)tex.pixelCoords[1], (short)(Short.MAX_VALUE*tex.texCoords[0]), (short)(Short.MAX_VALUE*tex.texCoords[3]), 
 					(short)tex.pixelCoords[2], (short)tex.pixelCoords[1], (short)(Short.MAX_VALUE*tex.texCoords[2]), (short)(Short.MAX_VALUE*tex.texCoords[3]), 

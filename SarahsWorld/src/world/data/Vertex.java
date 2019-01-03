@@ -7,6 +7,8 @@ public class Vertex {
 		public static final Material[] emptyMats = {Material.AIR, Material.AIR, Material.AIR, Material.AIR};
 		public static final double[] emptyAlphas = {1, 0, 0, 0};
 		public double y;
+		private Loop<Material> materials = new Loop<>(4, Material.AIR);
+		private Loop<Double> alphs = new Loop<>(4);
 		public Material[] mats;
 		public double averageSolidity, averageDeceleration, averageBouyancy;
 		public int lastMatIndex, firstMatIndex;

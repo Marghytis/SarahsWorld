@@ -14,10 +14,10 @@ _weather update (rain, thunder, lightning, day + night, candy rain)
 _camp fire (e.g. when hitting a stack of sticks with a magic spell)
 _frozen lakes in winter biome
 _take every item -> einblenden, dass man was bekommen hat
-_snail get-hit-animation
 
 optimisation:
 _vaos for name tags (make it a real effect)
+_landscape don't calculate all patches every frame
 
 debug:
 
@@ -33,3 +33,4 @@ _casting a spell uses mana
 _set next biome in Settings.txt
 _for debug add again rendering of boundingboxes (when it's needed?)
 _magic
+_snail get-hit-animation

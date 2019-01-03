@@ -8,9 +8,7 @@ import things.Thing;
 
 public  class AvatarControl extends AiPlugin {
 	
-	private Thing avatar;
 	public void setAvatar(Thing t) {
-		avatar = t;
 		t.isAvatar = true;
 	}
 

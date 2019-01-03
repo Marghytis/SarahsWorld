@@ -23,6 +23,9 @@ import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
 import world.World;
+import world.data.Column;
+import world.data.Vertex;
+import world.generation.Biome;
 
 public class MenuManager implements Updater, Renderer, Listener {
 	public static Texture MONEYBAG = Res.getTex("moneybag");
@@ -620,6 +623,27 @@ public class MenuManager implements Updater, Renderer, Listener {
 							return s;
 						}
 						, 0, 0, 0.5, 0.7, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						game.getMenu().getBack(),
+						game.getMenu().getContinuePlaying()
+				);
+			}
+		},
+		COLUMN_INFOS(false, false){
+			public void setElements(Menu menu, Main game, Object... extraData){
+				menu.setElements(
+						new FlexibleTextField(game, () -> {
+							Column c = game.getWorld().landscapeWindow.at(game.getWorld().window.toWorldPos(game.getInputData().getMousePos()).x);
+							String s = "";
+							for(int i = 0; i < Biome.layerCount; i++) {
+								Vertex v = c.vertices(i);
+								for(int mat = 0; mat < Vertex.maxMatCount; mat++) {
+									s += "[" + v.mats[mat] + ", a = " + v.alphas[mat] + "]";
+								}
+								s += "\n";
+							}
+							return s;
+						}
+						, 0, 0.5, 0.6, 0.9, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						game.getMenu().getBack(),
 						game.getMenu().getContinuePlaying()
 				);

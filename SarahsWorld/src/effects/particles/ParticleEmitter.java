@@ -150,21 +150,49 @@ public abstract class ParticleEmitter{
 		//vec2 position
 		//float size
 		//vec4 color
-		int size = particles.length, bytesPerQuad = 17;
-		offsets = new int[]{0, 1, 5, 9, 13};
-		buffer = BufferUtils.createByteBuffer(size*bytesPerQuad);
+		int[] sizes = {1*Byte.BYTES, 2*Short.BYTES, 2*Short.BYTES, 1*Float.BYTES, 4*Byte.BYTES};
+		int bytesPerQuad = 0;
+		offsets = new int[sizes.length];
+		for(int i = 0; i < sizes.length; i++) {
+			offsets[i] = bytesPerQuad;
+			bytesPerQuad += sizes[i];
+		}
+		VBO vbo = createVBO(GL15.GL_STREAM_DRAW, 1, particles.length,
+				new int[] {		1,				2,				2,				1,				4},
+				new int[] {		GL11.GL_BYTE,	GL11.GL_INT,	GL11.GL_SHORT,	GL11.GL_FLOAT,	GL11.GL_BYTE},
+				new boolean[] {	false,			false,			true,			false,			true});
+		//						draw			position		rotation		size			color
+		buffer = vbo.getBuffer();
 		
 		vao = new VAO(
 				new VBO(Render.standardIndex, GL15.GL_STATIC_READ),
 				type.vbo,
-				new VBO(buffer, GL15.GL_STREAM_DRAW, bytesPerQuad, 1,
-						new VAP(1, GL11.GL_BYTE, false, offsets[0]),//draw
-						new VAP(2, GL11.GL_SHORT, false, offsets[1]),//position
-						new VAP(2, GL11.GL_SHORT, true, offsets[2]),//rotation
-						new VAP(1, GL11.GL_FLOAT, false, offsets[3]),//size
-						new VAP(4, GL11.GL_BYTE, true, offsets[4])//color
-						)
+				vbo
 				);
+	}
+	
+	public VBO createVBO(int usage, int divisor, int size, int[] amounts, int[] dataTypes, boolean[] normalized) {
+		int totalByteOffset = 0;
+		VAP[] vaps = new VAP[amounts.length];
+		
+		for(int i = 0; i < amounts.length; i++) {
+			vaps[i] = new VAP(amounts[i], dataTypes[i], normalized[i], totalByteOffset);
+			totalByteOffset += amounts[i]*getBytes(dataTypes[i]);
+		}
+
+		ByteBuffer buffer = BufferUtils.createByteBuffer(size*totalByteOffset);
+		
+		return new VBO(buffer, usage, totalByteOffset, divisor, vaps);
+	}
+	
+	public int getBytes(int dataType) {
+		switch(dataType) {
+		case GL11.GL_BYTE : return Byte.BYTES;
+		case GL11.GL_SHORT : return Short.BYTES;
+		case GL11.GL_FLOAT : return Float.BYTES;
+		case GL11.GL_INT : return Integer.BYTES;
+		default: return -1;
+		}
 	}
 	
 	ByteBuffer buffer;
@@ -178,8 +206,8 @@ public abstract class ParticleEmitter{
 			} else {
 				buffer.put((byte)0);
 			}
-			buffer.putShort((short)particles[i].pos.x);
-			buffer.putShort((short)particles[i].pos.y);
+			buffer.putInt((int)particles[i].pos.x);
+			buffer.putInt((int)particles[i].pos.y);
 			
 			buffer.putShort((short)(Short.MAX_VALUE*UsefulF.cos100[(int)(particles[i].rot*100)%100]));
 			buffer.putShort((short)(Short.MAX_VALUE*UsefulF.sin100[(int)(particles[i].rot*100)%100]));

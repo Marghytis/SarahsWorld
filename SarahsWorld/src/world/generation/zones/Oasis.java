@@ -49,10 +49,10 @@ public class Oasis extends Zone {
 				ownHeight = 0;
 			} else if(!endingPart1 && x - subZone.originX > 725){
 				endingPart1 = true;
-				biomeManager.ants[2].switchTo(Biome.OASIS.stratums[2], 2, 5);
+				biomeManager.ants[2].switchTo(Biome.OASIS.stratums[2], 2, 5, biomeManager.lastColumn);
 			} else if(!endingPart2 && x - subZone.originX > 800){
 				endingPart2 = true;
-				biomeManager.ants[1].switchTo(Biome.OASIS.stratums[1], 1, 2);
+				biomeManager.ants[1].switchTo(Biome.OASIS.stratums[1], 1, 2, biomeManager.lastColumn);
 			}
 			if(subZone.end){
 				xEnd = x + 1000;
