@@ -3,14 +3,17 @@ package things.aiPlugins;
 import java.util.HashMap;
 
 import main.Main;
-import render.*;
-import things.*;
+import render.Animation;
+import render.Animator;
+import render.TexFile;
+import things.AiPlugin;
+import things.Thing;
+import things.interfaces.AnimatedThing;
 import util.Color;
 import util.math.Rect;
-import world.*;
-import world.data.WorldData;
+import world.World;
 
-public class Animating extends AiPlugin {
+public class Animating extends AiPlugin<AnimatedThing> {
 	
 	public static boolean transformOnce;
 
@@ -51,14 +54,15 @@ public class Animating extends AiPlugin {
 		this(defaultTex, box, z, zRange, 0, aniCount, useTexBox, animations);
 	}
 	
-	public void setup(Thing t){
-		t.z = World.rand.nextDouble()*zRange + z - (zRange/2);
-		t.dir = World.rand.nextBoolean();
-		t.ani = new Animator(defaultAni);
-		t.box = defaultBox != null ? defaultBox.copy() : new Rect(t.ani.tex.pixelCoords);
+	@Override
+	public void setup(AnimatedThing t){
+		t.setZ( World.rand.nextDouble()*zRange + z - (zRange/2));
+		t.setOrientation( World.rand.nextBoolean());
+		t.setAnimator( new Animator(defaultAni));
+		t.setRenderBox( defaultBox != null ? defaultBox.copy() : new Rect(defaultAni.atlas.pixelCoords));
 	}
 	
-	public void update(Thing t, double delta) {
+	public void update(AnimatedThing t, double delta) {
 		t.ani.update(delta);
 		if(useTexBox && !t.box.equals(t.ani.tex.pixelCoords)){
 			t.box.set(t.ani.tex.pixelCoords);
@@ -70,7 +74,7 @@ public class Animating extends AiPlugin {
 		t.aniRotation = t.ani.ani.rotations[t.ani.pos];
 	}
 	
-	public void prepareRender(Thing t){
+	public void prepareRender(AnimatedThing t){
 		if(t.type.alwaysUpdateVBO || t.needsRenderUpdate || t.switchedSelected){
 			Main.world.thingWindow.changeUsual(t);
 			if(t.switchedSelected || t.needsUnusualRenderUpdate){
@@ -88,7 +92,7 @@ public class Animating extends AiPlugin {
 		}
 	}
 	
-	public void prepareSecondRender(Thing t){
+	public void prepareSecondRender(AnimatedThing t){
 		prepareRender(t);
 	}
 	
@@ -97,7 +101,7 @@ public class Animating extends AiPlugin {
 		return this;
 	}
 	
-	public Animation get(Thing t, String aniName){
+	public Animation get(AnimatedThing t, String aniName){
 		try {
 			int index = hashmap.get(aniName);
 			return animations[t.aniSet][index] != null ? animations[t.aniSet][index] : animations[0][index];
@@ -107,16 +111,11 @@ public class Animating extends AiPlugin {
 		return null;
 	}
 	
-	public void setAnimation(Thing t, String aniName, Runnable task){
+	public void setAnimation(AnimatedThing t, String aniName, Runnable task){
 		t.ani.setAnimation(get(t, aniName), task);
 	}
 	
-	public void setAnimation(Thing t, String aniName){
+	public void setAnimation(AnimatedThing t, String aniName){
 		t.ani.setAnimation(get(t, aniName));
-	}
-	
-	public static interface AnimatedThing extends BasicThing {
-		public void setAnimation(String aniName);
-		public int getCurrentAnimationSet();
 	}
 }

@@ -1,6 +1,8 @@
 package things;
 
-public abstract class AiPlugin {
+import things.interfaces.BasicThing;
+
+public abstract class AiPlugin<T extends BasicThing> {
 	
 	public String recon;
 	
@@ -13,7 +15,7 @@ public abstract class AiPlugin {
 	 * @param t
 	 * @param delta
 	 */
-	public void update(Thing t, double delta){}
+	public void update(T t, double delta){}
 	
 	/**
 	 * that executes the specific action of the plugin (e.g. Following follows)
@@ -22,14 +24,10 @@ public abstract class AiPlugin {
 	 * @param delta
 	 * @return if it succeeded
 	 */
-	public boolean action(Thing t, double delta){return false;};
+	public boolean action(T t, double delta){return false;};
 	
-	public void setup(Thing t){};
+	public void setup(T t){};
 	
-	public void remove(Thing t) {}
-	
-	public static interface BasicThing {
-		public String getTypeName();
-	}
+	public void remove(T t) {}
 	
 }
