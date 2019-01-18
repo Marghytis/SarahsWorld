@@ -10,7 +10,7 @@ import world.data.Column;
 
 
 
-public class Movement extends AiPlugin {
+public class Movement extends AiPlugin<Thing> {
 	
 	public String stand, sneak, walk1, walk2, fly, plunge, swim, sneakyStand;
 	public String liftOf, land, dive;
@@ -30,7 +30,7 @@ public class Movement extends AiPlugin {
 	}
 	
 	public void setBackgroundAni(Thing t) {
-		t.type.ani.setAnimation(t, t.backgroundAnimation, null);
+		t.aniPlug.setAnimation(t.backgroundAnimation, null);
 	}
 
 	public void setAni(Thing t, double acc) {
@@ -81,9 +81,9 @@ public class Movement extends AiPlugin {
 			t.whereBefore.water = t.where.water;
 			t.whereBefore.g = t.where.g;
 			if(foregroundRequest != "") {
-				t.type.ani.setAnimation(t, foregroundRequest, () -> t.type.ani.setAnimation(t, t.backgroundAnimation));
+				t.aniPlug.setAnimation(foregroundRequest, () -> t.aniPlug.setAnimation(t.backgroundAnimation));
 			} else if(t.backgroundAnimation != ""){
-				t.type.ani.setAnimation(t, t.backgroundAnimation);
+				t.aniPlug.setAnimation(t.backgroundAnimation);
 			}
 		}
 	}
@@ -95,19 +95,19 @@ public class Movement extends AiPlugin {
 	 * @param t
 	 */
 	public void jump(Thing t){
-		t.type.ani.setAnimation(t,  liftOf, () -> {
-			if(Main.world.avatar.where.g){
+		t.aniPlug.setAnimation( liftOf, () -> {
+			if(t.where.g){
 				t.willLandInWater = willLandInWater(t);
 				t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));//ortho(t.vel.x > 0)
 				t.reallyAir = true;
 				t.where.g = false;
 				if(t.willLandInWater){
-					t.type.ani.setAnimation(t,  dive, () -> {
-						t.type.ani.setAnimation(t, plunge);
+					t.aniPlug.setAnimation( dive, () -> {
+						t.aniPlug.setAnimation( plunge);
 					});
 				} else {
 					t.willLandInWater = false;
-					t.type.ani.setAnimation(t, fly);
+					t.aniPlug.setAnimation( fly);
 					t.backgroundAnimation = fly;
 				}
 			} else {
@@ -149,8 +149,8 @@ public class Movement extends AiPlugin {
 	 * @param t
 	 */
 	public void land(Thing t) {
-		t.type.ani.setAnimation(t, land, () -> {
-			t.type.ani.setAnimation(t, stand);
+		t.aniPlug.setAnimation( land, () -> {
+			t.aniPlug.setAnimation( stand);
 			t.backgroundAnimation = stand;
 		});
 	}
@@ -160,8 +160,8 @@ public class Movement extends AiPlugin {
 	 * @param t
 	 */
 	public void liftOf(Thing t) {
-		t.type.ani.setAnimation(t, liftOf, () -> {
-			t.type.ani.setAnimation(t, fly);
+		t.aniPlug.setAnimation( liftOf, () -> {
+			t.aniPlug.setAnimation( fly);
 			t.backgroundAnimation = fly;
 		});
 	}
@@ -171,8 +171,8 @@ public class Movement extends AiPlugin {
 	 * @param t
 	 */
 	public void dive(Thing t){
-		t.type.ani.setAnimation(t, "dive", () -> {
-			t.type.ani.setAnimation(t, "swim");
+		t.aniPlug.setAnimation( dive, () -> {
+			t.aniPlug.setAnimation( swim);
 		});
 	}
 }

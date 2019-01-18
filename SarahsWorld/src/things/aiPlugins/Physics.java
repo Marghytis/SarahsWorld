@@ -7,11 +7,10 @@ import things.Thing;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.data.Column;
-import world.data.Dir;
 import world.data.Vertex;
 import world.generation.Material;
 
-public class Physics extends AiPlugin {
+public class Physics extends AiPlugin<Thing> {
 	
 	static double dt = 0.010;
 	public static double lowestSpeed = 0.1;
@@ -96,7 +95,7 @@ public class Physics extends AiPlugin {
 				if(!t.reallyAir && t.airTime > 0.4){
 					t.reallyAir = true;
 					if(t.type.movement != null)
-						t.type.ani.setAnimation(t, t.type.movement.fly);
+						t.aniPlug.setAnimation(t.type.movement.fly);
 				}
 			}
 		}

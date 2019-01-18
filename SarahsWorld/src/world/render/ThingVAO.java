@@ -6,11 +6,10 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-import main.Main;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
-import things.Thing;
+import things.aiPlugins.Animating.AnimatingPlugin;
 import world.window.ThingWindow;
 
 public class ThingVAO {
@@ -24,7 +23,7 @@ public class ThingVAO {
 	private VAO vao;
 	protected int capacity;
 	private short lastUsedIndex = -1;
-	protected Thing[] things;
+	protected AnimatingPlugin[] things;
 	
 	protected int size() {
 		return lastUsedIndex + 1;
@@ -54,49 +53,49 @@ public class ThingVAO {
 		vao.unbindStuff();
 	}
 	
-	protected Thing getThing(int index) {
+	protected AnimatingPlugin getThing(int index) {
 		return things[index];
 	}
 	
 	public ThingVAO(int capacity){
 		this.capacity = capacity;
-		this.things = new Thing[capacity];
+		this.things = new AnimatingPlugin[capacity];
 
 		//Create VBO with data usually updated every tick
 		VBO vboUsual = createVBO(new VBOContent[]{
 			new VBOContent(2, GL11.GL_FLOAT, false,//vec2 in_position
-					(t) -> (float)t.pos.x,
-					(t) -> (float)(t.pos.y + t.yOffset + t.yOffsetToBalanceRotation)),
+					(t) -> (float)t.pos().x,
+					(t) -> (float)(t.pos().y + t.getYOffset() + t.getYOffsetToBalanceRotation())),
 			
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_rotation
-					(t) -> (float)(t.rotation + t.aniRotation)),
+					(t) -> (float)(t.getRotation() + t.getAniRotation())),
 			
 			new VBOContent(2, GL11.GL_SHORT, true,//vec2 in_texCoords
-					(t)-> (short)(Short.MAX_VALUE*t.ani.tex.texCoords[0]),
-					(t)-> (short)(Short.MAX_VALUE*t.ani.tex.texCoords[1])),
+					(t)-> (short)(Short.MAX_VALUE*t.getAnimator().tex.texCoords[0]),
+					(t)-> (short)(Short.MAX_VALUE*t.getAnimator().tex.texCoords[1])),
 			
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_mirror
-					(t) -> (float)((t.dir ? t.ani.tex.w : 0)/(float)t.ani.tex.file.width))}, 0);
+					(t) -> (float)((t.getOrientation() ? t.getAnimator().tex.w : 0)/(float)t.getAnimator().tex.file.width))}, 0);
 
 		//Create VBO with data not usually updated
 		VBO vboUnusual = createVBO(new VBOContent[]{
 			new VBOContent(4, GL11.GL_BYTE, true,//vec4 in_color
-					(t) -> (byte)(Byte.MAX_VALUE*t.color.r),
-					(t) -> (byte)(Byte.MAX_VALUE*t.color.g),
-					(t) -> (byte)(Byte.MAX_VALUE*t.color.b),
-					(t) -> (byte)(Byte.MAX_VALUE*t.color.a)),
+					(t) -> (byte)(Byte.MAX_VALUE*t.getColor().r),
+					(t) -> (byte)(Byte.MAX_VALUE*t.getColor().g),
+					(t) -> (byte)(Byte.MAX_VALUE*t.getColor().b),
+					(t) -> (byte)(Byte.MAX_VALUE*t.getColor().a)),
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_z
-					(t) -> (float)t.z),
+					(t) -> (float)t.getZ()),
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_size
-					(t) -> (float)t.size),
+					(t) -> (float)t.getThing().getSize()),
 			new VBOContent(4, GL11.GL_SHORT, false,//vec4 in_box
-					(t) -> (short)t.box.pos.x,
-					(t) -> (short)t.box.pos.y,
-					(t) -> (short)(t.box.pos.x + t.box.size.x),
-					(t) -> (short)(t.box.pos.y + t.box.size.y)),
+					(t) -> (short)t.getRenderBox().pos.x,
+					(t) -> (short)t.getRenderBox().pos.y,
+					(t) -> (short)(t.getRenderBox().pos.x + t.getRenderBox().size.x),
+					(t) -> (short)(t.getRenderBox().pos.y + t.getRenderBox().size.y)),
 			new VBOContent(2, GL11.GL_FLOAT, true,//vec2 in_texWH
-					(t) -> (float)((float)t.ani.tex.w/t.ani.tex.file.width),
-					(t) -> (float)((float)t.ani.tex.h/t.ani.tex.file.height)
+					(t) -> (float)((float)t.getAnimator().tex.w/t.getAnimator().tex.file.width),
+					(t) -> (float)((float)t.getAnimator().tex.h/t.getAnimator().tex.file.height)
 					)}, 1);
 		
 		//combine VBOs into VAO
@@ -124,23 +123,23 @@ public class ThingVAO {
 	}
 	
 	public interface Getter {
-		public Object get(Thing t);
+		public Object get(AnimatingPlugin t);
 	}
 
-	public void changeUsual(Thing t){
+	public void changeUsual(AnimatingPlugin t){
 		changeUsual(t, false);
 	}
-	public void changeUnusual(Thing t){
+	public void changeUnusual(AnimatingPlugin t){
 		changeUnusual(t, false);
 	}
-	public void changeUsual(Thing t, boolean inBatch) {
+	public void changeUsual(AnimatingPlugin t, boolean inBatch) {
 		change(t, 0, inBatch);
 	}
-	public void changeUnusual(Thing t, boolean inBatch) {
+	public void changeUnusual(AnimatingPlugin t, boolean inBatch) {
 		change(t, 1, inBatch);
 	}
 
-	private void change(Thing t, int index, boolean inBatch){
+	private void change(AnimatingPlugin t, int index, boolean inBatch){
 		if(!inBatch)
 			startBatchAdder(index);
 		
@@ -150,17 +149,17 @@ public class ThingVAO {
 			endBatchAdder();
 	}
 	
-	public void updateVBO(Thing firstThing, ByteBuffer buffer, int index) {
+	public void updateVBO(AnimatingPlugin firstThing, ByteBuffer buffer, int index) {
 		startBatchAdder(index);
 			updateVBOBatch(firstThing, buffer, index);
 		endBatchAdder();
 	}
 	
-	public void updateVBOs(Thing firstThing) {
+	public void updateVBOs(AnimatingPlugin firstThing) {
 		updateVBOs(firstThing, vbo[0].buffer, vbo[1].buffer);
 	}
 	
-	public void updateVBOs(Thing firstThing, ByteBuffer usual, ByteBuffer unusual) {
+	public void updateVBOs(AnimatingPlugin firstThing, ByteBuffer usual, ByteBuffer unusual) {
 		startBatchAdder(0);
 			updateVBOBatch(firstThing, usual, 0);
 		startBatchAdder(1);
@@ -168,11 +167,11 @@ public class ThingVAO {
 		endBatchAdder();
 	}
 	
-	public void updateVBOBatch(Thing firstThing, ByteBuffer buffer, int index) {
-		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, firstThing.index*bytesUpdated[index], buffer);	
+	public void updateVBOBatch(AnimatingPlugin firstThing, ByteBuffer buffer, int index) {
+		GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, firstThing.getIndex()*bytesUpdated[index], buffer);	
 	}
 	
-	public void fillBuffer(Thing t, ByteBuffer buffer, int index) {
+	public void fillBuffer(AnimatingPlugin t, ByteBuffer buffer, int index) {
 		for(int i = 0; i < contents[index].length; i++){
 			contents[index][i].change(buffer, t);
 		}
@@ -188,17 +187,17 @@ public class ThingVAO {
 		vbo[1].buffer.flip();
 	}
 	
-	public void fillBuffers(Thing t) {
+	public void fillBuffers(AnimatingPlugin t) {
 		fillBuffers(t, vbo[0].buffer, vbo[1].buffer);
 	}
 	
-	public void fillBuffers(Thing t, ByteBuffer bufferUsual, ByteBuffer bufferUnusual) {
+	public void fillBuffers(AnimatingPlugin t, ByteBuffer bufferUsual, ByteBuffer bufferUnusual) {
 		fillBuffer(t, bufferUsual, USUAL);
 		fillBuffer(t, bufferUnusual, UNUSUAL);
 	}
 	
-	private void changeNoBinding(Thing t, int index) {
-		if(t != null && t.index == -1){
+	private void changeNoBinding(AnimatingPlugin t, int index) {
+		if(t != null && t.getIndex() == -1){
 			(new Exception("Thing is not registered")).printStackTrace();
 			return;
 		}
@@ -208,20 +207,20 @@ public class ThingVAO {
 		updateVBOBatch(t, changer[index], index);
 	}
 
-	public void add(Thing t, boolean inBatch){
+	public void add(AnimatingPlugin t, boolean inBatch){
 
 		if(lastUsedIndex+1 >= capacity){
 			removeFreedThings();
 		}
 		lastUsedIndex++;
 		if(lastUsedIndex >= capacity){//yes, same if!!
-			System.err.println("Not enough space for " + t.type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.type.maxVisible);
+			System.err.println("Not enough space for " + t.getType().name + "s! Current capacity: " + capacity + " quads. Default: " + t.getType().maxVisible);
 			enlarge();
 		}
 		t.onVisibilityChange(true);
 		things[lastUsedIndex] = t;
-		t.index = lastUsedIndex;
-		t.addedToVAO = true;
+		t.setIndex(lastUsedIndex);
+		t.setAddedToVAO(true);
 		if(!inBatch) {
 			changeUsual(t);
 			changeUnusual(t);
@@ -243,28 +242,28 @@ public class ThingVAO {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
-	public void remove(Thing t){
+	public void remove(AnimatingPlugin t){
 		remove(t, true);
 	}
 	
-	public void remove(Thing t, boolean vboAsWell) {
+	public void remove(AnimatingPlugin t, boolean vboAsWell) {
 		if(lastUsedIndex < 0){
-			new Exception("You removed one " + t.type.name + " too much!!!!").printStackTrace();
+			new Exception("You removed one " + t.getType().name + " too much!!!!").printStackTrace();
 			return;
 		}
-		if(t.index == -1) {
-			new Exception("This " + t.type.name + " is already deleted in the VAO!!");
+		if(t.getIndex() == -1) {
+			new Exception("This " + t.getType().name + " is already deleted in the VAO!!");
 			return;
 		}
 		t.onVisibilityChange(false);
 		
 		//move last thing in the list to t's location and update lastUsedIndex
-		moveThing(lastUsedIndex, t.index, vboAsWell);
+		moveThing(lastUsedIndex, t.getIndex(), vboAsWell);
 		lastUsedIndex--;
 		
-		t.index = -1;
-		t.addedToVAO = false;
-		t.freeToMakeInvisible = false;//reset this flag
+		t.setIndex((short)-1);
+		t.setAddedToVAO(false);
+		t.setFreeToMakeInvisible(false);//reset this flag
 	}
 	
 	protected void copyVBOdata(int iFrom, int iTo) {
@@ -284,7 +283,7 @@ public class ThingVAO {
 		
 			for(int index = 0; index < things.length; index++) {
 				fillBuffer(things[index], vbo[type].buffer, type);
-				if(type == 1 && ThingWindow.print) System.out.print((things[index] == null ? "-" : things[index].index) + ",");
+				if(type == 1 && ThingWindow.print) System.out.print((things[index] == null ? "-" : things[index].getIndex()) + ",");
 			}
 			if(type == 1 && ThingWindow.print) System.out.println("]");
 			vbo[type].buffer.flip();
@@ -296,7 +295,7 @@ public class ThingVAO {
 		if(vboAsWell) copyVBOdata(iFrom, iTo);
 		int index = iTo;
 		things[index] = things[iFrom];
-		things[index].index = (short) iTo;
+		things[index].setIndex((short) iTo);
 	}
 	
 	protected void moveThing(int iFrom, int iTo, boolean vboAsWell) {
@@ -306,7 +305,7 @@ public class ThingVAO {
 	
 	public void removeFreedThings() {
 		for(int i = 0; i < things.length; i++){
-			if(things[i] != null && things[i].freeToMakeInvisible) {
+			if(things[i] != null && things[i].freeToMakeInvisible()) {
 				remove(things[i], false);
 			}
 		}
@@ -327,7 +326,7 @@ public class ThingVAO {
 			vbo[i].update();
 		}
 		
-		Thing[] newThings = new Thing[capacity];
+		AnimatingPlugin[] newThings = new AnimatingPlugin[capacity];
 		System.arraycopy(things, 0, newThings, 0, things.length);
 		things = newThings;
 	}
@@ -348,7 +347,7 @@ public class ThingVAO {
 			}
 		}
 		
-		public void change(ByteBuffer buffer, Thing t){
+		public void change(ByteBuffer buffer, AnimatingPlugin t){
 			
 			if(t == null) {
 				fillWith0(buffer);
@@ -357,7 +356,7 @@ public class ThingVAO {
 			}
 		}
 		
-		private void fillWithThing(ByteBuffer buffer, Thing t) {
+		private void fillWithThing(ByteBuffer buffer, AnimatingPlugin t) {
 			switch(type){
 			case GL11.GL_FLOAT:
 				for(int i = 0; i < getters.length; i++)		buffer.putFloat((float)get(t, i)); break;
@@ -395,7 +394,7 @@ public class ThingVAO {
 			}
 		}
 		
-		private Object get(Thing t, int i) {
+		private Object get(AnimatingPlugin t, int i) {
 			return getters[i].get(t);
 		}
 		

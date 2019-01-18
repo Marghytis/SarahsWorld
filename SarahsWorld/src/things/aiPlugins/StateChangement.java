@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 import things.AiPlugin;
 import things.Thing;
 
-public class StateChangement extends AiPlugin {
+public class StateChangement extends AiPlugin<Thing> {
 
 	BiConsumer<Thing, Double> action;
 	

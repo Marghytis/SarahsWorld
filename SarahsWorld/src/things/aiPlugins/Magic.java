@@ -5,7 +5,7 @@ import things.Thing;
 
 
 
-public class Magic extends AiPlugin {
+public class Magic extends AiPlugin<Thing> {
 	
 	public int startMana;
 	public int maxMana;

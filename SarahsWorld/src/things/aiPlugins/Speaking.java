@@ -22,7 +22,7 @@ import util.math.UsefulF;
 import util.math.Vec;
 import world.World;
 
-public class Speaking extends AiPlugin {
+public class Speaking extends AiPlugin<Thing> {
 	
 	public void setup(Thing t){
 		t.tb = new ThoughtBubble(t);

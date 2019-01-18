@@ -69,7 +69,7 @@ public class Technique {
 			
 			int amount = Math.min(maxTargets, targets.length);
 			
-			source.type.ani.setAnimation(source, name,  () -> {
+			source.aniPlug.setAnimation(name,  () -> {
 				
 				List<Thing> selected = selector.select(source, targets, amount, item);
 				
@@ -85,7 +85,7 @@ public class Technique {
 				start.start(source, item, this, worldPos, selected);
 			
 				source.attacking = false;
-				source.ani.setLast();
+				source.aniPlug.getAnimator().setLast();
 				source.lastAttack = this;
 			});
 			

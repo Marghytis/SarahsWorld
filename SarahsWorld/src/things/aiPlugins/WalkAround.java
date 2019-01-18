@@ -4,9 +4,7 @@ import things.AiPlugin;
 import things.Thing;
 import world.World;
 
-
-
-public class WalkAround extends AiPlugin{
+public class WalkAround extends AiPlugin<Thing> {
 	
 	public void setup(Thing t){
 		t.xDestMin = t.pos.x + World.rand.nextInt(500) - 250;

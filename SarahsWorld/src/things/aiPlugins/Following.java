@@ -7,7 +7,7 @@ import things.Thing;
 import things.ThingType;
 import world.data.Column;
 
-public class Following extends AiPlugin{
+public class Following extends AiPlugin<Thing> {
 
 	double maxDistanceSquare;
 	double rAimSq, rAim;

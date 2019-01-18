@@ -14,7 +14,7 @@ import world.World;
 
 
 
-public class Life extends AiPlugin {
+public class Life extends AiPlugin<Thing> {
 	
 	static double coolDownStart = 0.5;
 	
@@ -94,7 +94,7 @@ public class Life extends AiPlugin {
 			Main.world.window.addEffect(new BloodSplash(tgt.pos));
 			if(getHitAnimation != null) {
 				System.out.println("huu");
-				tgt.type.ani.setAnimation(tgt, getHitAnimation, () -> tgt.type.movement.setBackgroundAni(tgt));
+				tgt.aniPlug.setAnimation( getHitAnimation, () -> tgt.type.movement.setBackgroundAni(tgt));
 			}
 			tgt.damageCooldown = coolDownStart;
 			return true;

@@ -1,6 +1,7 @@
 package things;
 
 import things.interfaces.BasicThing;
+import util.math.Vec;
 
 public abstract class AiPlugin<T extends BasicThing> {
 	
@@ -29,5 +30,49 @@ public abstract class AiPlugin<T extends BasicThing> {
 	public void setup(T t){};
 	
 	public void remove(T t) {}
+	
+	public class BasicPlugin extends ThingPlugin {
+		
+		Vec pos;
+		double rotation;
+		double size;
+		double yOffset;
+		double yOffsetToBalanceRotation;
+
+		public BasicPlugin(Thing thing) {
+			super(thing);
+			pos = new Vec();
+		}
+
+		public void setRotation(double angle) {
+			rotation = angle;
+		}
+
+		public ThingType getType() {
+			return thing.getType();
+		}
+
+		public double getSize() {
+			return size;
+		}
+		
+		public double getRotation() {
+			return rotation;
+		}
+
+		public Vec pos() {
+			return pos;
+		}
+
+		public double getYOffset() {
+			return yOffset;
+		}
+
+		public double getYOffsetToBalanceRotation() {
+			return yOffsetToBalanceRotation;
+		}
+		
+		
+	}
 	
 }

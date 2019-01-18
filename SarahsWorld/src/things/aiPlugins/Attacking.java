@@ -11,7 +11,7 @@ import util.math.Vec;
 import world.World;
 
 
-public class Attacking extends AiPlugin {
+public class Attacking extends AiPlugin<Thing> {
 	
 	public int strength;
 	public double critProb;
@@ -19,7 +19,7 @@ public class Attacking extends AiPlugin {
 	
 	/**
 	 * 
-	 * @param t
+	 * @param thing
 	 * @param defaultWeapon
 	 * @param strength
 	 * @param critProb
@@ -51,7 +51,7 @@ public class Attacking extends AiPlugin {
 	 */
 	public boolean attack(Thing source, ItemType item, Technique technique, Vec worldPos, Thing... targets){
 		if(!source.attacking && (Settings.getBoolean("AGGRESSIVE_CREATURES") || source.type == ThingType.SARAH) && technique != null && 
-				source.type.ani.get(source, technique.name).duration + technique.extraCooldown <= source.attackCooldown){
+				source.aniPlug.get(technique.name).duration + technique.extraCooldown <= source.attackCooldown){
 			
 			if(technique.execute(source, item, worldPos, targets)) {
 				source.attacking = true;
@@ -103,7 +103,7 @@ public class Attacking extends AiPlugin {
 	private Technique getRandomTechnique(Thing t, WeaponType weapon) {
 		int type = -1;
 		for(int i = 0; i < attacks.length; i++){
-			if(t.type.ani.get(t, attacks[i].name).duration + attacks[i].extraCooldown <= t.attackCooldown){//additional cooldown-if, to choose only a technique that may be used.
+			if(t.aniPlug.get(attacks[i].name).duration + attacks[i].extraCooldown <= t.attackCooldown){//additional cooldown-if, to choose only a technique that may be used.
 				if(attacks[i].wp == weapon){//weapon == null || 
 					if(type == -1){
 						type = i;

@@ -4,7 +4,7 @@ import things.AiPlugin;
 import things.Thing;
 import util.math.Rect;
 
-public class Riding extends AiPlugin {
+public class Riding extends AiPlugin<Thing> {
 
 	Rect normalBox, ridingBox;
 	
@@ -35,14 +35,14 @@ public class Riding extends AiPlugin {
 				rider.pos.set(horse.pos);
 				rider.where = horse.where;
 				horse.hide();
-				rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.type.ani.setAnimation(rider, "stand"));
+				rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.aniPlug.setAnimation( "stand"));
 			});
 		} else {
 			rider.mountedThing = horse;
 			rider.pos.set(horse.pos);
 			rider.where = horse.where;
 			horse.hide();
-			rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.type.ani.setAnimation(rider, "stand"));
+			rider.ani.setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.aniPlug.setAnimation( "stand"));
 		}
 	}
 	
@@ -53,7 +53,7 @@ public class Riding extends AiPlugin {
 			rider.aniSet = 0;
 			rider.box = normalBox;
 			rider.needsUnusualRenderUpdate = true;
-			rider.type.ani.setAnimation(rider, "stand");
+			rider.aniPlug.setAnimation( "stand");
 		});
 	}
 	

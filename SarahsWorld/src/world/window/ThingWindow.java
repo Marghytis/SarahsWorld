@@ -15,6 +15,7 @@ import render.Shader;
 import render.TexFile;
 import things.Thing;
 import things.ThingType;
+import things.aiPlugins.Animating.AnimatingPlugin;
 import util.math.Vec;
 import world.data.Column;
 import world.render.DoubleThingVAO;
@@ -64,7 +65,7 @@ public class ThingWindow extends RealWorldWindow {
 		if(t.type.ani != null) {
 			vaos[t.getTypeOrdinal()].add(t, false);
 		} else {
-			t.onVisibilityChange(true);
+			t.aniPlug.onVisibilityChange(true);
 		}
 	}
 	
@@ -74,18 +75,18 @@ public class ThingWindow extends RealWorldWindow {
 	 */
 	public void remove(Thing t) {
 		if(t.type.ani != null) {
-			vaos[t.type.ordinal].remove(t);
+			vaos[t.type.ordinal].remove(t.aniPlug);
 		} else {
-			t.onVisibilityChange(false);
+			t.aniPlug.onVisibilityChange(false);
 		}
 	}
 	
-	public void changeUsual(Thing t) {
-		vaos[t.type.ordinal].changeUsual(t);
+	public void changeUsual(AnimatingPlugin t) {
+		vaos[t.getThing().getType().ordinal].changeUsual(t);
 	}
 	
-	public void changeUnusual(Thing t) {
-		vaos[t.type.ordinal].changeUnusual(t);
+	public void changeUnusual(AnimatingPlugin t) {
+		vaos[t.getThing().getType().ordinal].changeUnusual(t);
 	}
 	
 	Consumer<Thing> boundingBoxRenderer = (t) -> {
@@ -162,7 +163,7 @@ public class ThingWindow extends RealWorldWindow {
 
 			for(Column c = start(); c != end(); c = c.next())
 			for(Thing t = c.firstThing(type); t != null; t = t.next()) {
-				t.prepareRender();
+				t.aniPlug.prepareRender();
 			}
 
 			vaos[type].bindStuff();
@@ -174,7 +175,7 @@ public class ThingWindow extends RealWorldWindow {
 
 				for(Column c = start(); c != end(); c = c.next())
 				for(Thing t = c.firstThing(type); t != null; t = t.next()) {
-					t.prepareSecondRender();
+					t.aniPlug.prepareSecondRender();
 				}
 
 				vaos[type].bindStuff();
