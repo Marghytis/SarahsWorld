@@ -15,7 +15,7 @@ import render.VBO;
 import render.VBO.VAP;
 import world.data.Column;
 
-public class BackgroundWindow extends ArrayWorldWindow {
+public class BackgroundWindow extends ArrayWorldWindow<Column> {
 
 	private static int 	indicesPerQuad = 6,
 			verticesPerPoint = 3, 

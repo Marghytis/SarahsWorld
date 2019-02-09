@@ -11,7 +11,7 @@ import util.math.Vec;
 import world.World;
 
 
-public class Attacking extends AiPlugin<Thing> {
+public class Attacking extends AiPlugin {
 	
 	public int strength;
 	public double critProb;
@@ -56,7 +56,7 @@ public class Attacking extends AiPlugin<Thing> {
 			if(technique.execute(source, item, worldPos, targets)) {
 				source.attacking = true;
 				source.attackCooldown = 0;
-				source.attackCooldown = -source.ani.ani.duration;
+				source.attackCooldown = -source.aniPlug.getAnimator().ani.duration;
 			}
 			
 			return true;

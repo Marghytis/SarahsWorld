@@ -1,11 +1,12 @@
 package things.aiPlugins;
 
-import things.AiPlugin;
+import things.AiPlugin2;
 import things.Thing;
+import things.ThingPlugin;
 
 
 
-public class Magic extends AiPlugin<Thing> {
+public class Magic extends AiPlugin2 {
 	
 	public int startMana;
 	public int maxMana;
@@ -14,17 +15,32 @@ public class Magic extends AiPlugin<Thing> {
 		this.startMana = startMana;
 		this.maxMana = maxMana;
 	}
-	
-	public void setup(Thing t){
-		t.mana = startMana;
-	}
 
-	public boolean drainMana(Thing t, int manaUse) {
-		if(t.mana >= manaUse) {
-			t.mana -= manaUse;
-			return true;
-		} else {
-			return false;
+	@Override
+	public ThingPlugin plugIntoThing(Thing t) {
+		MagicPlugin magic = new MagicPlugin(t);
+		t.setMagicPlugin(magic);
+		return magic;
+	}
+	
+	public class MagicPlugin extends ThingPlugin {
+		
+		public int mana;
+
+		public MagicPlugin(Thing thing) {
+			super(thing);
+			
+			this.mana = startMana;
 		}
+		
+		public boolean drainMana(int manaUse) {
+			if(mana >= manaUse) {
+				mana -= manaUse;
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
 	}
 }

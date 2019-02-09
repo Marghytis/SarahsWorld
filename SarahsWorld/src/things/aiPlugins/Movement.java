@@ -4,13 +4,14 @@ import main.Main;
 import menu.Settings.Key;
 import things.AiPlugin;
 import things.Thing;
+import things.ThingType;
 import util.math.Function;
 import util.math.Vec;
 import world.data.Column;
 
 
 
-public class Movement extends AiPlugin<Thing> {
+public class Movement extends AiPlugin {
 	
 	public String stand, sneak, walk1, walk2, fly, plunge, swim, sneakyStand;
 	public String liftOf, land, dive;
@@ -54,7 +55,7 @@ public class Movement extends AiPlugin<Thing> {
 					}
 				}
 			}
-			else if(t.where.water < 0.3 && t.ani.ani.name != swim){
+			else if(t.where.water < 0.3 && t.aniPlug.getAnimator().ani.name != swim){
 				foregroundRequest = dive;
 				t.backgroundAnimation = swim;
 			}
@@ -75,9 +76,9 @@ public class Movement extends AiPlugin<Thing> {
 			}
 		}
 
-		if(t.ani.endTask == null){
-			if(acc > 0) t.dir = false;
-			else if(acc < 0) t.dir = true;
+		if(t.aniPlug.getAnimator().endTask == null){
+			if(acc > 0) t.aniPlug.setOrientation( false);
+			else if(acc < 0) t.aniPlug.setOrientation( true);
 			t.whereBefore.water = t.where.water;
 			t.whereBefore.g = t.where.g;
 			if(foregroundRequest != "") {
@@ -121,7 +122,7 @@ public class Movement extends AiPlugin<Thing> {
 //		double xPeak = (vX*vY)/Physics.gravity.y + t.pos.x;
 		double a = vY/vX, b = 0.5*Physics.gravity.y/(t.type.physics.mass*vX*vX);
 		Function f = (x) -> t.pos.y + (a*x) + (b*x*x);
-		Column cursor = t.link;
+		Column cursor = t.newLink;
 		boolean lastOne = false;
 		while(cursor != null){
 			if(/*cursor.xReal > xPeak && */cursor.getCollisionY() != cursor.getCollisionYFluid()){

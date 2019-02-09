@@ -1,26 +1,27 @@
 package world.window;
 
 import exceptions.WorldTooSmallException;
-import world.data.Column;
 import world.data.Dir;
+import world.data.StructureColumn;
 
-public abstract class ArrayWorldWindow extends RealWorldWindow {
+public abstract class ArrayWorldWindow<T extends StructureColumn<T> > extends RealWorldWindow<T> {
 
-	protected Column[] columns;
+	protected T[] columns;
 	protected int center;
 	private int[] nextIndex;//is private because it really should not be changed outside this class
 	private boolean isBuilt = false;;
 	
 	int sideLastInwards;
 	
-	public ArrayWorldWindow(Column anchor, int radius) throws WorldTooSmallException {
+	@SuppressWarnings("unchecked")
+	public ArrayWorldWindow(T anchor, int radius) throws WorldTooSmallException {
 		super(anchor, radius);
-		columns = new Column[2*radius+1];
-		this.center = anchor.xIndex;
+		columns = (T[])new StructureColumn[2*radius+1];
+		this.center = anchor.getIndex();
 		
 		nextIndex = new int[2];
 		
-		loadAllColumns(anchor, anchor.xIndex);
+		loadAllColumns(anchor, anchor.getIndex());
 		isBuilt = true;
 	}
 	
@@ -32,13 +33,13 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	 * @param radius
 	 * @throws WorldTooSmallException
 	 */
-	private void loadAllColumns(Column anchor, int center1) throws WorldTooSmallException {
+	private void loadAllColumns(T anchor, int center1) throws WorldTooSmallException {
 		//calculate current window center
 		center = center1;
 		//move anchor to center
-		while(anchor.xIndex < center)
+		while(anchor.getIndex() < center)
 			anchor = anchor.next(Dir.r);
-		while(anchor.xIndex > center)
+		while(anchor.getIndex() > center)
 			anchor = anchor.next(Dir.l);
 		
 //		//detach all visible columns;
@@ -56,7 +57,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		//create Column array and find borders
 		insertColumn(anchor, !isBuilt);
 		for(int end = 0; end <= 1; end++) {
-			while(Dir.s[end]*(ends[end].xIndex - center) < radius && ends[end].next(end) != null){
+			while(Dir.s[end]*(ends[end].getIndex() - center) < radius && ends[end].next(end) != null){
 				ends[end] = ends[end].next(end);
 				insertColumn( ends[end], !isBuilt);
 				if(!isBuilt)
@@ -65,7 +66,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 			}
 		}
 		
-		if(ends[Dir.l].xIndex > center-radius || ends[Dir.r].xIndex < center + radius){
+		if(ends[Dir.l].getIndex() > center-radius || ends[Dir.r].getIndex() < center + radius){
 			throw new WorldTooSmallException();
 		}
 	}
@@ -93,7 +94,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		nextIndex[iDir] = shiftBy1(nextIndex[iDir], 1-iDir);
 		sideLastInwards = iDir;
 	}
-	protected void addColumn(Column c, int iDir) {
+	protected void addColumn(T c, int iDir) {
 		columns[nextIndex[iDir]] = c;
 		addAt(c, nextIndex[iDir]);
 //		if(nextIndex[iDir] == shiftBy1(nextIndex[1-iDir], iDir)) {
@@ -116,18 +117,18 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		}
 	}
 	
-	protected abstract void addAt(Column c, int index);
+	protected abstract void addAt(T c, int index);
 	
-	protected void letAppear(Column c, int iDir) {
+	protected void letAppear(T c, int iDir) {
 		//to override if wanted
 	}
 	
-	protected void letDisappear(Column c) {
+	protected void letDisappear(T c) {
 		//override
 	}
 	
-	void insertColumn(Column c, boolean modifiyNeighbors){
-		int index = c.xIndex - (center - radius);//index relative to the most left location of this window
+	void insertColumn(T c, boolean modifiyNeighbors){
+		int index = c.getIndex() - (center - radius);//index relative to the most left location of this window
 		columns[index] = c;
 		if(modifiyNeighbors) {
 			if(index > 0 && columns[index-1] != null){

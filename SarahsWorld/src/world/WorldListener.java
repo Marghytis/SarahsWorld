@@ -52,11 +52,11 @@ public class WorldListener implements Listener {
 			Thing[] objectsClickedOn = world.thingWindow.thingsAt(worldPos);
 			world.avatar.type.inv.useSelectedItem(world.avatar, worldPos, objectsClickedOn);
 			break;
-		case 2:
+		case 2://MARK
 			if(Settings.getBoolean("DEBUGGING")) {
 				objectsClickedOn = world.thingWindow.thingsAt(worldPos);
 				for(Thing t : objectsClickedOn){
-					if(t.selected()) {
+					if(t.aniPlug.selected()) {
 						world.window.deselect(t);
 					} else {
 						world.window.select(t);
@@ -134,12 +134,12 @@ public class WorldListener implements Listener {
 			break;
 		case TOSS_COIN:
 			if(Settings.getBoolean("DEBUGGING"))
-				world.thingWindow.add(new Thing(ThingType.COIN, world.avatar.link, world.window.toWorldPos(input.getMousePos()), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
+				world.thingWindow.add(new Thing(ThingType.COIN, world.avatar.newLink, world.window.toWorldPos(input.getMousePos()), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
 			break;
 		case THROW_ITEM:
 			ItemType type = world.avatar.type.inv.getSelectedItem(world.avatar);
 			if(type != null) {
-				world.thingWindow.add(new Thing(ThingType.ITEM, world.avatar.link, world.avatar.pos.copy().shift(0, 60), type, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
+				world.thingWindow.add(new Thing(ThingType.ITEM, world.avatar.newLink, world.avatar.pos.copy().shift(0, 60), type, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
 				world.avatar.type.inv.addItem(world.avatar, type, -1);
 			}
 			break;

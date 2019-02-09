@@ -6,13 +6,14 @@ import main.Main;
 import render.Animation;
 import render.Animator;
 import render.TexFile;
-import things.AiPlugin;
+import things.AiPlugin2;
 import things.Thing;
+import things.ThingPlugin;
 import util.Color;
 import util.math.Rect;
 import world.World;
 
-public class Animating extends AiPlugin<Thing> {
+public class Animating extends AiPlugin2 {
 	
 	public static boolean transformOnce;
 
@@ -53,17 +54,19 @@ public class Animating extends AiPlugin<Thing> {
 		this(defaultTex, box, z, zRange, 0, aniCount, useTexBox, animations);
 	}
 	
-	@Override
-	public void setup(Thing t){
-		t.setAnimatingPlugin(new AnimatingPlugin(t));
-	}
-	
 	public Animating addSecondTex(TexFile file){
 		secondFile = file;
 		return this;
 	}
+
+	@Override
+	public ThingPlugin plugIntoThing(Thing t) {
+		AnimatingPlugin aniPlug = new AnimatingPlugin(t);
+		t.setAnimatingPlugin(aniPlug);
+		return aniPlug;
+	}
 	
-	public class AnimatingPlugin extends BasicPlugin {
+	public class AnimatingPlugin extends ThingPlugin {
 		
 		double zPos;
 		boolean ori;
@@ -89,6 +92,7 @@ public class Animating extends AiPlugin<Thing> {
 			this.ori = World.rand.nextBoolean();
 			this.animator = new Animator(defaultAni);
 			this.renderBox = defaultBox != null ? defaultBox.copy() : new Rect(defaultAni.atlas.pixelCoords);
+			this.color = new Color(Color.WHITE);
 		}
 		
 		public void update(double delta) {
@@ -100,14 +104,14 @@ public class Animating extends AiPlugin<Thing> {
 				setNeedsUnusualRenderUpdate(true);
 			}
 			if(animator.ani != null && animator.ani.rotations != null)
-			aniRotation = animator.ani.rotations[animator.pos];
+				aniRotation = animator.ani.rotations[animator.pos];
 		}
 		
 		public void prepareRender(){
-			if(visible && (thing.getType().alwaysUpdateVBO || needsRenderUpdate() || switchedSelected())){
+			if(visible && (thing.type().alwaysUpdateVBO || needsRenderUpdate() || switchedSelected())){
 				Main.world.thingWindow.changeUsual(this);
 				if(switchedSelected() || needsUnusualRenderUpdate()){
-					if(thing.selected()){
+					if(thing.aniPlug.selected()){
 						setColor( new Color(1, 0, 0, 1));
 						Main.world.thingWindow.changeUnusual(this);
 					} else {
@@ -126,8 +130,8 @@ public class Animating extends AiPlugin<Thing> {
 		}
 		
 		public void onVisibilityChange(boolean visible) {
-			if(thing.attachement != null) {
-				thing.attachement.onVisibilityChange( visible);
+			if(thing.attachment != null) {
+				thing.attachment.onVisibilityChange( visible);
 			}
 			this.visible = visible;
 		}
@@ -137,133 +141,56 @@ public class Animating extends AiPlugin<Thing> {
 				int index = hashmap.get(aniName);
 				return animations[getiAnimationSet()][index] != null ? animations[getiAnimationSet()][index] : animations[0][index];
 			} catch(NullPointerException e){
-				new Exception("Couldn't get the animation called " + aniName + " for this " + thing.getType().name + ".").printStackTrace();
+				new Exception("Couldn't get the animation called " + aniName + " for this " + thing.type().name + ".").printStackTrace();
 			}
 			return null;
 		}
 		
 		public void setAnimation(String aniName, Runnable task){
-			getAnimator().setAnimation(get(aniName), task);
+			animator.setAnimation(get(aniName), task);
 		}
 		
 		public void setAnimation(String aniName){
-			getAnimator().setAnimation(get(aniName));
+			animator.setAnimation(get(aniName));
 		}
-
-		public int getiAnimationSet() {
-			return aniSet;
-		}
-
-		public void setAnimator(Animator ani) {
-			this.animator = ani;
-		}
-
-		public void setRenderBox(Rect box) {
-			this.renderBox = box;
-		}
-
-		public void setColor(Color c) {
-			this.color = c;
-		}
-
-		public void setZ(double z) {
-			this.zPos = z;
-		}
-
-		public void setOrientation(boolean ori) {
-			this.dir = ori;
-		}
-
-		public void setAniRotation(double angle) {
-			this.aniRotation = angle;
-		}
-
-		public void setNeedsRenderUpdate(boolean needs) {
-			this.needsRenderUpdate = needs;
-		}
-
-		public void setNeedsUnusualRenderUpdate(boolean needs) {
-			this.needsUnusualRenderUpdate = needs;
-		}
-
-		public void setSwitchedSelected(boolean switched) {
-			this.switchedSelected = switched;
-		}
+	
+//Changers
+		public void 	increaseTimeBy(double d) { 					time += d; 								}
+		public void 	changeBox(int[] pixelCoords) {				this.renderBox.set(pixelCoords);		}
+//Setters
+		public void 	setAnimator(Animator ani) {					this.animator = ani;					}
+		public void 	setRenderBox(Rect box) {					this.renderBox = box;					}
+		public void 	setColor(Color c) {							this.color = c;							}
+		public void 	setZ(double z) {							this.zPos = z;							}
+		public void 	setOrientation(boolean ori) {				this.dir = ori;							}
+		public void 	setAniRotation(double angle) {				this.aniRotation = angle;				}
+		public void 	setNeedsRenderUpdate(boolean needs) {		this.needsRenderUpdate = needs;			}
+		public void 	setNeedsUnusualRenderUpdate(boolean needs) {this.needsUnusualRenderUpdate = needs;	}
+		public void 	setSwitchedSelected(boolean switched) {		this.switchedSelected = switched;		}		
+		public void 	setAddedToVAO(boolean added) {				this.addedToVAO = added;				}		
+		public void 	setFreeToMakeInvisible(boolean free) {		this.freeToMakeInvisible = free;		}
+		public void 	setIndex(short newIndex) { 					this.index = newIndex; 					}
+		public void 	setAniSet(int aniSet) { 					this.aniSet = aniSet; 					}
+		public void 	setSelected(boolean selected) {				this.selected = selected; 				}
+//Getters
+		public int 		getiAnimationSet() {						return aniSet;							}
+		public Animator getAnimator() {								return animator;						}
+		public Rect 	getRenderBox() {							return renderBox;						}
+		public Color 	getColor() {								return color;							}
+		public int		getIndex() {								return index;							}
+		public double 	getZ() {									return z;								}
+		public double 	z() {										return getZ();							}
+		public double 	getAniRotation() { 							return aniRotation; 					}
+		public boolean 	getOrientation() { 							return dir; 							}
+		public int		getTime() { 								return time; 							}
+		public int		getAniSet() { 								return aniSet; 							}
 		
-		public void setAddedToVAO(boolean added) {
-			this.addedToVAO = added;
-		}
-		
-		public void setFreeToMakeInvisible(boolean free) {
-			this.freeToMakeInvisible = free;
-		}
-
-		public void changeBox(int[] pixelCoords) {
-			this.renderBox.set(pixelCoords);
-		}
-
-		public Animator getAnimator() {
-			return animator;
-		}
-
-		public Rect getRenderBox() {
-			return renderBox;
-		}
-
-		public Color getColor() {
-			return color;
-		}
-
-		public boolean needsRenderUpdate() {
-			return needsRenderUpdate;
-		}
-
-		public boolean needsUnusualRenderUpdate() {
-			return needsUnusualRenderUpdate;
-		}
-
-		public boolean switchedSelected() {
-			return switchedSelected;
-		}
-		
-		public boolean addedToVAO() {
-			return addedToVAO;
-		}
-
-		public int getIndex() {
-			return index;
-		}
-
-		public double getZ() {
-			return z;
-		}
-
-		public double getAniRotation() {
-			return aniRotation;
-		}
-
-		public boolean getOrientation() {
-			return dir;
-		}
-		
-		public int getTime() {
-			return time;
-		}
-
-		public void increaseTimeBy(double d) {
-			time += d;
-		}
-
-		public void setIndex(short newIndex) {
-			this.index = newIndex;
-		}
-
-		public boolean freeToMakeInvisible() {
-			return freeToMakeInvisible;
-		}
-
-		public boolean selected() {
-			return selected;
-		}
+		public boolean 	needsRenderUpdate() {						return needsRenderUpdate;				}
+		public boolean 	needsUnusualRenderUpdate() {				return needsUnusualRenderUpdate;		}
+		public boolean 	switchedSelected() {						return switchedSelected;				}		
+		public boolean 	addedToVAO() {								return addedToVAO;						}
+		public boolean 	freeToMakeInvisible() { 					return freeToMakeInvisible; 			}
+		public boolean 	selected() { 								return selected; 						}
+		public boolean 	visible() { 								return visible; 						}
 	}
 }

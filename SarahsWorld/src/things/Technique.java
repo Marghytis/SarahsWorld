@@ -74,8 +74,8 @@ public class Technique {
 				List<Thing> selected = selector.select(source, targets, amount, item);
 				
 				if(manaUse > 0) {
-					if(source.type.magic != null) {
-						if(!source.type.magic.drainMana(source, manaUse))
+					if(source.magic != null) {
+						if(!source.magic.drainMana( manaUse))
 							return;
 					} else {//can't use this technique
 						return;

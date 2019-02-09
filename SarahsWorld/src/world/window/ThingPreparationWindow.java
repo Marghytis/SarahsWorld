@@ -1,7 +1,6 @@
 package world.window;
 
 import java.nio.ByteBuffer;
-import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,13 +11,14 @@ import things.ThingSet;
 import things.ThingType;
 import world.data.Column;
 import world.data.Dir;
+import world.data.StructureColumn;
 import world.render.DoubleThingVAO;
 
 
 /**
  * A larger window than ThingWindow that lists the things it encounters so they can be added together at a later time.
  */
-public class ThingPreparationWindow extends RealWorldWindow {
+public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWorldWindow<T> {
 	
 	private static int addBatchSize = 70;
 	
@@ -32,7 +32,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 	
 	private int dxPreparation, dxVisibility, dxDontCare, dxPreparation2, dxVisibility2, dxDontCare2, dxFree2;
 
-	public ThingPreparationWindow(Column anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare, DoubleThingVAO[] vaos) {
+	public ThingPreparationWindow(T anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare, DoubleThingVAO[] vaos) {
 		super(anchor, rObservation);
 		this.dxPreparation = rObservation - rPreparation;
 		this.dxVisibility = rObservation - rVisibility;
@@ -65,12 +65,12 @@ public class ThingPreparationWindow extends RealWorldWindow {
 	private void setCorrectStates() {
 		//remove any things that were missed by the window because of too high speed
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
-			vaos[ttype].free(ends[Dir.l].xReal, ends[Dir.l].xReal + (Column.COLUMN_WIDTH*dxPreparation));
-			vaos[ttype].free(ends[Dir.l].xReal + (Column.COLUMN_WIDTH*dxPreparation2), ends[Dir.r].xReal);
+			vaos[ttype].free(ends[Dir.l].getX(), ends[Dir.l].getX() + (Column.COLUMN_WIDTH*dxPreparation));
+			vaos[ttype].free(ends[Dir.l].getX() + (Column.COLUMN_WIDTH*dxPreparation2), ends[Dir.r].getX());
 		}
-		int xStart = start().xIndex;
-		for(Column c = start(); c != end(); c = c.next()) {
-			int dx = c.xIndex - xStart; 
+		int xStart = start().getIndex();
+		for(T c = start(); c != end(); c = c.next()) {
+			int dx = c.getIndex() - xStart; 
 			if( dx < dxPreparation) {//not prepared l
 				setFree(c, Dir.l);
 			} else if( dx < dxVisibility) {//prepared l
@@ -100,7 +100,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 	 * @param c
 	 * @param end
 	 */
-	private void setFree(Column c, int end) {
+	private void setFree(StructureColumn<T> c, int end) {
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
 			if(ThingType.types[ttype].ani == null) continue;
 			for(Thing t = c.firstThing(ttype); t != null; t = t.next()){
@@ -112,7 +112,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 			}
 		}
 	}
-	private void setPrepared(Column c, int end) {
+	private void setPrepared(StructureColumn<T> c, int end) {
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
 			if(ThingType.types[ttype].ani == null) continue;
 			for(Thing t = c.firstThing(ttype); t != null; t = t.next()){
@@ -123,7 +123,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 			}
 		}
 	}
-	private void setVisible(Column c, int end) {
+	private void setVisible(StructureColumn<T> c, int end) {
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
 			if(ThingType.types[ttype].ani == null) continue;
 			
@@ -139,33 +139,36 @@ public class ThingPreparationWindow extends RealWorldWindow {
 				addPreparedThings(ttype, end);
 		}
 	}
-	private void addInvisibles(Column c) {
+	private void addInvisibles(StructureColumn<T> c) {
 		
+		//the attachements of things that aren't rendered are updated
+		//rendered things have an Animating plugin, which completes this task
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++)
-			if(ThingType.types[ttype].ani == null)
+			if(ThingType.types[ttype].ani == null && ThingType.types[ttype].attachment != null)
 				for(Thing t = c.firstThing(ttype); t != null; t = t.next())
-					t.onVisibilityChange(true);
+					t.attachment.onVisibilityChange(true);
 	}
-	private void removeInvisibles(Column c) {
+	private void removeInvisibles(StructureColumn<T> c) {
 
+		//the attachements of things that aren't rendered are updated
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++)
-			if(ThingType.types[ttype].ani == null)
+			if(ThingType.types[ttype].ani == null && ThingType.types[ttype].attachment != null)
 				for(Thing t = c.firstThing(ttype); t != null; t = t.next())
-					t.onVisibilityChange(false);
+					t.attachment.onVisibilityChange(false);
 	}
 	private boolean isPreparedToBeAdded(Thing t) {
 		return toAdd[t.getTypeOrdinal()][Dir.l].contains(t) || toAdd[t.getTypeOrdinal()][Dir.r].contains(t); 
 	}
 	private boolean isVisible(Thing t) {
-		return t.addedToVAO;
+		return t.aniPlug.addedToVAO();
 	}
 
 	private void prepareRemoval(Thing t) {
-		t.freeToMakeInvisible = true;
+		t.aniPlug.setFreeToMakeInvisible( true);
 	}
 	public void loadCenter() {
 		start = true;
-		for(Column c = start(); c != end(); c = c.next()) {
+		for(T c = start(); c != end(); c = c.next()) {
 			setPrepared(c, Dir.l);
 		}
 		for(int type = 0; type < ThingType.types.length; type++) {
@@ -173,12 +176,9 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		}
 		start = false;
 	}
-	private boolean isPreparedToBeRemoved(Thing t) {
-		return t.freeToMakeInvisible;
-	}
 	
 	private void cancelRemoval(Thing t) {
-		t.freeToMakeInvisible = false;
+		t.aniPlug.setFreeToMakeInvisible( false);
 	}
 	
 	protected boolean prepareAddition(Thing t, int iDir) {
@@ -225,10 +225,10 @@ public class ThingPreparationWindow extends RealWorldWindow {
 			//add things to vao (not yet to vbos)
 			sideToAdd.clear();
 			for(Thing t : toAdd[type][iDir]) {
-				if(DoubleThingVAO.whichSide(t) == side && !t.addedToVAO) {
+				if(DoubleThingVAO.whichSide(t.aniPlug) == side && !t.aniPlug.addedToVAO()) {
 					
 					//add Thing to VAO management
-					vaos[type].add(t, true, false);
+					vaos[type].add(t.aniPlug, true, false);
 					if(side == DoubleThingVAO.lowerSide) {
 						sideToAdd.add(t);
 					} else {
@@ -247,7 +247,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 			for(Thing t : sideToAdd) {
 				//fill buffers with thing data
 //				vaos[type].fillBuffers(t);
-				vaos[type].fillBuffers(t, buffers[0], buffers[1]);
+				vaos[type].fillBuffers(t.aniPlug, buffers[0], buffers[1]);
 			}
 //			vaos[type].flipBuffers();
 			buffers[0].flip(); buffers[1].flip();
@@ -255,7 +255,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 			//put thing data into VBOs as a block
 			if(sideToAdd.size() > 0) {//means no thing on this side
 //				vaos[type].updateVBOs(sideToAdd.get(0));
-				vaos[type].updateVBOs(sideToAdd.get(0), buffers[0], buffers[1]);
+				vaos[type].updateVBOs(sideToAdd.get(0).aniPlug, buffers[0], buffers[1]);
 			} else {
 				System.out.println("nothing to add on " + Dir.names[side] + " side.");
 			}

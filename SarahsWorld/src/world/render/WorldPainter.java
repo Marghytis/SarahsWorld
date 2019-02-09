@@ -73,15 +73,15 @@ public class WorldPainter implements Updater, Renderer{
 	public void select(Thing t) {
 
 		selected.add(t);
-		t.selected = true;
-		t.switchedSelected = true;
+		t.aniPlug.setSelected( true);
+		t.aniPlug.setSwitchedSelected( true);
 	}
 	
 	public void deselect(Thing t) {
 		
 		selected.remove(t);
-		t.selected = false;
-		t.switchedSelected = true;
+		t.aniPlug.setSelected( false);
+		t.aniPlug.setSwitchedSelected( true);
 	}
 	
 	public int selectionSize() {

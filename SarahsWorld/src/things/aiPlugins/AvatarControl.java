@@ -6,7 +6,7 @@ import menu.Settings.Key;
 import things.AiPlugin;
 import things.Thing;
 
-public  class AvatarControl extends AiPlugin<Thing> {
+public  class AvatarControl extends AiPlugin {
 	
 	public void setAvatar(Thing t) {
 		t.isAvatar = true;

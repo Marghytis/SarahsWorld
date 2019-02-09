@@ -6,7 +6,7 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 
-public class PhysicsExtension extends AiPlugin<Thing> {
+public class PhysicsExtension extends AiPlugin {
 
 	static double forceBase = 1;
 	static double friction = 10;

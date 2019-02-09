@@ -18,9 +18,10 @@ import things.ThingType;
 import things.aiPlugins.Animating.AnimatingPlugin;
 import util.math.Vec;
 import world.data.Column;
+import world.data.StructureColumn;
 import world.render.DoubleThingVAO;
 
-public class ThingWindow extends RealWorldWindow {
+public class ThingWindow extends RealWorldWindow<Column> {
 	
 	//variables that should be local but are not, due to speed optimization
 	private List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
@@ -63,30 +64,30 @@ public class ThingWindow extends RealWorldWindow {
 	
 	public void add(Thing t) {
 		if(t.type.ani != null) {
-			vaos[t.getTypeOrdinal()].add(t, false);
+			vaos[t.getTypeOrdinal()].add(t.aniPlug, false);
 		} else {
-			t.aniPlug.onVisibilityChange(true);
+			throw new RuntimeException("The Thing you're trying to add is not animated!");
 		}
 	}
 	
 	/**
-	 * forces the instant removal of the thind.
+	 * forces the instant removal of the thing.
 	 * @param t
 	 */
 	public void remove(Thing t) {
 		if(t.type.ani != null) {
 			vaos[t.type.ordinal].remove(t.aniPlug);
 		} else {
-			t.aniPlug.onVisibilityChange(false);
+			throw new RuntimeException("The Thing you're trying to remove is not animated!");
 		}
 	}
 	
 	public void changeUsual(AnimatingPlugin t) {
-		vaos[t.getThing().getType().ordinal].changeUsual(t);
+		vaos[t.getThing().type.ordinal].changeUsual(t);
 	}
 	
 	public void changeUnusual(AnimatingPlugin t) {
-		vaos[t.getThing().getType().ordinal].changeUnusual(t);
+		vaos[t.getThing().type.ordinal].changeUnusual(t);
 	}
 	
 	Consumer<Thing> boundingBoxRenderer = (t) -> {
@@ -158,14 +159,24 @@ public class ThingWindow extends RealWorldWindow {
 		
 		for(int type = 0; type < ThingType.types.length; type++) {
 			if(vaos[type].empty() || !d.test(ThingType.types[type])) continue;
+			
 			//render Thing
 			ThingType.types[type].file.file.bind();
 
-			for(Column c = start(); c != end(); c = c.next())
+			for(StructureColumn c = start(); c != end(); c = c.next())
 			for(Thing t = c.firstThing(type); t != null; t = t.next()) {
 				t.aniPlug.prepareRender();
 			}
 
+
+			if(type == ThingType.SARAH.ordinal) {
+//				double[] vaoData = vaos[type].convertToNumbers(vaos[type].getVBOdata(0));
+//				for(int i = 0; i < vaoData.length; i++) {
+//					System.out.println(vaoData[i]);
+//				}
+//				System.out.println("-------------------");
+//				System.out.println(Main.world.avatar.aniPlug.getOrientation());
+			}
 			vaos[type].bindStuff();
 				GL11.glDrawArrays(GL11.GL_POINTS, vaos[type].start(side), vaos[type].size(side));
 			vaos[type].unbindStuff();
@@ -173,7 +184,7 @@ public class ThingWindow extends RealWorldWindow {
 			if(ThingType.types[type].ani != null && ThingType.types[type].ani.secondFile != null){
 				ThingType.types[type].ani.secondFile.bind();
 
-				for(Column c = start(); c != end(); c = c.next())
+				for(StructureColumn c = start(); c != end(); c = c.next())
 				for(Thing t = c.firstThing(type); t != null; t = t.next()) {
 					t.aniPlug.prepareSecondRender();
 				}
@@ -192,7 +203,7 @@ public class ThingWindow extends RealWorldWindow {
 		ItemType.handheldTex.bind();
 		for(int type = 0; type < ThingType.types.length; type++)
 		if(ThingType.types[type].inv != null)
-		for(Column c = start(); c != end(); c = c.next())
+		for(StructureColumn c = start(); c != end(); c = c.next())
 		for(Thing cursor = c.firstThing(type); cursor != null; cursor = cursor.next()){
 			cursor.itemStacks[cursor.selectedItem].item.renderHand(cursor, cursor.itemAni);
 		}
@@ -218,7 +229,7 @@ public class ThingWindow extends RealWorldWindow {
 //		}
 	}
 	public void forEach(int type, Consumer<Thing> cons){
-		for(Column c = start(); c != end(); c = c.next()) {
+		for(StructureColumn c = start(); c != end(); c = c.next()) {
 			for(Thing t = c.firstThing(type); t != null; t = t.next()) {
 				cons.accept(t);
 			}
@@ -234,32 +245,32 @@ public class ThingWindow extends RealWorldWindow {
 	public Thing[] livingsAt(Vec loc){
 		thingsAt.clear();
 		forEach(t -> 
-		{if(t.type.life != null && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y + t.yOffset, t.box.size.x, t.box.size.y)){
+		{if(t.type.life != null && !t.equals(Main.world.avatar) && t.containsCoords(loc)){
 			thingsAt.add(t);
 		}});
-		thingsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
+		thingsAt.sort((t1, t2) -> t1.aniPlug.z() > t2.aniPlug.z() ? 1 : t1.aniPlug.z() < t2.aniPlug.z() ?  -1 : 0);
 		return thingsAt.toArray(new Thing[thingsAt.size()]);
 	}
 
 	public Thing[] objectsAt(Vec loc){
 		objectsAt.clear();
 		forEach(t -> {
-			if(t.type.life == null && !t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y + t.yOffset, t.box.size.x, t.box.size.y)){
+			if(t.type.life == null && !t.equals(Main.world.avatar) && t.containsCoords(loc)){
 				objectsAt.add(t);
 			}
 		});
-		objectsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
+		objectsAt.sort((t1, t2) -> t1.aniPlug.z() > t2.aniPlug.z() ? 1 : t1.aniPlug.z() < t2.aniPlug.z() ?  -1 : 0);
 		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 	
 	public Thing[] thingsAt(Vec loc){
 		objectsAt.clear();
 		forEach(t -> {
-			if(!t.equals(Main.world.avatar) && loc.containedBy(t.box.pos.x + t.pos.x, t.box.pos.y + t.pos.y + t.yOffset, t.box.size.x, t.box.size.y)){
+			if(!t.equals(Main.world.avatar) && t.containsCoords(loc)){
 				objectsAt.add(t);
 			}
 		});
-		objectsAt.sort((t1, t2) -> t1.z > t2.z ? 1 : t1.z < t2.z ?  -1 : 0);
+		objectsAt.sort((t1, t2) -> t1.aniPlug.z() > t2.aniPlug.z() ? 1 : t1.aniPlug.z() < t2.aniPlug.z() ?  -1 : 0);
 		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 

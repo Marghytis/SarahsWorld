@@ -448,7 +448,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 						new ItemContainer(game, Main.world.avatar, 4, 8/12.0, 1.0/8),
 
 						new Bar(game, 0.3, 5.0/16, 0.7, 5.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.health/(double)Main.world.avatar.type.life.maxHealth),//Health
-						new Bar(game, 0.3, 4.0/16, 0.7, 4.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
+						new Bar(game, 0.3, 4.0/16, 0.7, 4.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.magic.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
 				);
 			}
 		},
@@ -593,10 +593,10 @@ public class MenuManager implements Updater, Renderer, Listener {
 							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force + "\n";
 							if(t.type.life != null)
 								s += "health: " + t.health + "\n";
-							if(t.link != null)
-								s += "link x index: " + t.link.xIndex + "\n";
-							if(t.ani != null)
-								s += "added to VAO: " + t.addedToVAO + "\n";
+							if(t.newLink != null)
+								s += "link x index: " + t.newLink.xIndex + "\n";
+							if(t.aniPlug != null)
+								s += "added to VAO: " + t.aniPlug.addedToVAO() + "\n";
 							
 							return s;
 						}
@@ -612,14 +612,15 @@ public class MenuManager implements Updater, Renderer, Listener {
 //						, 0, 0.25, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(game, () -> {
 							String s =  "Sarah: " + Main.world.avatar.vel + "\n" +
-										"box: " + Main.world.avatar.box.toString() + "\n" +
-										"tex width: " + Main.world.avatar.ani.tex.w + "\n" + 
-										"dir: " + Main.world.avatar.dir + "\n" +
+										"box: " + Main.world.avatar.aniPlug.getRenderBox().toString() + "\n" +
+										"added to VAO: " + Main.world.avatar.aniPlug.addedToVAO() + "\n" +
+										"tex width: " + Main.world.avatar.aniPlug.getAnimator().tex.w + "\n" + 
+										"dir: " + Main.world.avatar.aniPlug.getOrientation() + "\n" +
 										"riding: " + Main.world.avatar.isRiding + "\n" +
 										"where.water: " + Main.world.avatar.where.water + "\n" +
 										"left column: " + Main.world.landscapeWindow.start().xIndex + "\n" +
 										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().xIndex : "null") + "\n" +
-										"Biome: " + Main.world.avatar.link.biome.toString();
+										"Biome: " + Main.world.avatar.newLink.biome.toString();
 							return s;
 						}
 						, 0, 0, 0.5, 0.7, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
@@ -722,11 +723,11 @@ public class MenuManager implements Updater, Renderer, Listener {
 					menu.addElement(new Button(game, values[j].name, x, y, x, y, -170, -30, 170, 30, Color.BROWN, Color.GRAY, null, null){
 						public void released(int button) {
 							if(values[j] == ThingType.ITEM){
-								Thing t = values[j].defaultSpawner.spawn(Main.world.avatar.link, Main.world.avatar.pos.copy().shift(0, 1), ItemType.valueOf(((TextField)menu.getElement(j)).text));
-								t.showUpAfterHiding(t.link);
+								Thing t = values[j].defaultSpawner.spawn(Main.world.avatar.newLink, Main.world.avatar.pos.copy().shift(0, 1), ItemType.valueOf(((TextField)menu.getElement(j)).text));
+								t.showUpAfterHiding(t.newLink);
 							} else {
-								Thing t = values[j].defaultSpawner.spawn(Main.world.avatar.link, Main.world.avatar.pos.copy());
-								t.showUpAfterHiding(t.link);
+								Thing t = values[j].defaultSpawner.spawn(Main.world.avatar.newLink, Main.world.avatar.pos.copy());
+								t.showUpAfterHiding(t.newLink);
 							}
 							((TextInput)menu.getElement(j)).selected = false;
 						}

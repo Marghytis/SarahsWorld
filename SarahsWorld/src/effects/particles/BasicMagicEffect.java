@@ -28,7 +28,7 @@ public class BasicMagicEffect extends MovingEffect {
 			p.pos.set(movingPos);
 			if(targets != null){
 				for(Thing target : targets){
-					if(target.box.copy().shift(target.pos).contains(p.pos)){
+					if(target.aniPlug.getRenderBox().copy().shift(target.pos).contains(p.pos)){
 						spell.hitEffect.start(source, source.type.attacking.calculateDamage(target, ItemType.NOTHING, spell), target);
 						Main.world.window.addEffect(new BasicMagicDissapperance(target.pos.copy().shift(0, p.pos.y - target.pos.y + target.yOffset)));
 						end();

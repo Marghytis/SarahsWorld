@@ -1,9 +1,6 @@
 package things;
 
-import things.interfaces.BasicThing;
-import util.math.Vec;
-
-public abstract class AiPlugin<T extends BasicThing> {
+public abstract class AiPlugin {
 	
 	public String recon;
 	
@@ -16,7 +13,7 @@ public abstract class AiPlugin<T extends BasicThing> {
 	 * @param t
 	 * @param delta
 	 */
-	public void update(T t, double delta){}
+	public void update(Thing t, double delta){}
 	
 	/**
 	 * that executes the specific action of the plugin (e.g. Following follows)
@@ -25,54 +22,10 @@ public abstract class AiPlugin<T extends BasicThing> {
 	 * @param delta
 	 * @return if it succeeded
 	 */
-	public boolean action(T t, double delta){return false;};
+	public boolean action(Thing t, double delta){return false;};
 	
-	public void setup(T t){};
+	public void setup(Thing t){}
 	
-	public void remove(T t) {}
-	
-	public class BasicPlugin extends ThingPlugin {
-		
-		Vec pos;
-		double rotation;
-		double size;
-		double yOffset;
-		double yOffsetToBalanceRotation;
-
-		public BasicPlugin(Thing thing) {
-			super(thing);
-			pos = new Vec();
-		}
-
-		public void setRotation(double angle) {
-			rotation = angle;
-		}
-
-		public ThingType getType() {
-			return thing.getType();
-		}
-
-		public double getSize() {
-			return size;
-		}
-		
-		public double getRotation() {
-			return rotation;
-		}
-
-		public Vec pos() {
-			return pos;
-		}
-
-		public double getYOffset() {
-			return yOffset;
-		}
-
-		public double getYOffsetToBalanceRotation() {
-			return yOffsetToBalanceRotation;
-		}
-		
-		
-	}
+	public void remove(Thing t) {}
 	
 }

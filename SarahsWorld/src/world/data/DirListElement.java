@@ -1,6 +1,6 @@
 package world.data;
 
-public class DirListElement<T extends DirListElement<T>> implements ListElement<T> {
+public class DirListElement<T extends DirList<T>> implements DirList<T> {
 
 	protected T left, right;
 	

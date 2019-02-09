@@ -4,7 +4,7 @@ import things.AiPlugin;
 import things.Thing;
 import world.World;
 
-public class MidgeAround extends AiPlugin<Thing> {
+public class MidgeAround extends AiPlugin {
 
 	public boolean action(Thing t, double delta) {
 //		if(!t.where.g){

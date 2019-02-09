@@ -50,7 +50,7 @@ public class RainbowSpit implements ParticleEffect{
 			p.vel.y -= 2f;
 			if(targets != null){
 				for(Thing target : targets){
-					if(target.box.copy().shift(target.pos).contains(p.pos)){
+					if(target.aniPlug.getRenderBox().copy().shift(target.pos).contains(p.pos)){
 						effect.start(source, source.type.attacking.calculateDamage(source, target, ItemType.NOTHING, "spit"), target);
 					}
 				}

@@ -22,11 +22,9 @@ import world.data.WorldData;
 import world.data.WorldEditor;
 import world.generation.Generator;
 import world.generation.GeneratorInterface;
-import world.generation.environment.Generator2;
 import world.render.WorldPainter;
 import world.window.BackgroundWindow;
 import world.window.GeneratingWorldWindow;
-import world.window.RealWorldWindow;
 import world.window.TerrainWindow;
 import world.window.ThingWindow;
 
@@ -90,17 +88,17 @@ public class World {
 //		generator.borders(avatar.pos.x - Settings.get("GENERATION_RADIUS"), avatar.pos.x + Settings.get("GENERATION_RADIUS"));
 		int startX = (int)(avatar.pos.x/Column.COLUMN_WIDTH);
 		genWindow.moveToColumn(startX);
-		while(anchor.xIndex < startX && anchor.right() != null) anchor = anchor.right();
-		while(anchor.xIndex > startX && anchor.left() != null) anchor = anchor.left();
+		while(anchor.getIndex() < startX && anchor.right() != null) anchor = anchor.right();
+		while(anchor.getIndex() > startX && anchor.left() != null) anchor = anchor.left();
 
 		thingWindow 	= new ThingWindow(anchor, windowRadius + 28, windowRadius + 24, windowRadius + 4, windowRadius + 0);
 		thingWindow.moveToColumn(startX);
 		thingWindow.loadCenter();
 		try {
-			landscapeWindow 			 = new TerrainWindow(   anchor, windowRadius + 6);
+			landscapeWindow 			 = new TerrainWindow<Column>(   anchor, windowRadius + 6);
 			backgroundRenderingWindow    = new BackgroundWindow(anchor, windowRadius + 6);
 		} catch (WorldTooSmallException e) {
-			throw new WorldCreationException("World data is not large enough yet : (" + genWindow.getEnd(Dir.l).xIndex + " <-> " + genWindow.getEnd(Dir.r).xIndex + ")", e);
+			throw new WorldCreationException("World data is not large enough yet : (" + genWindow.getEnd(Dir.l).getIndex() + " <-> " + genWindow.getEnd(Dir.r).getIndex() + ")", e);
 		}
 		engine = new WorldEngine(data, editor, thingWindow, genWindow, landscapeWindow, backgroundRenderingWindow, thingWindow);
 		window = new WorldPainter(data, thingWindow, landscapeWindow, backgroundRenderingWindow);

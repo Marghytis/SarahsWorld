@@ -62,19 +62,19 @@ public class ItemType {
 	public static final ItemType BIRTHDAY_CAKE 	= new ItemType(builder.readItemType("BIRTHDAY_CAKE")) {
 		public boolean useAt(Thing src, Vec pos){
 			pos = pos.copy();
-			src.link.getRandomTopLocation(World.rand, pos);
-			ThingType.CAKE.defaultSpawner.spawn(src.link, pos);
-			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
+			src.newLink.getRandomTopLocation(World.rand, pos);
+			ThingType.CAKE.defaultSpawner.spawn(src.newLink, pos);
+			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.aniPlug.getAnimator().tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.aniPlug.getAnimator().tex.h/2))));
 			return true;
 		}
 	};
 	public static final ItemType BERRY 			= new ItemType(builder.readItemType("BERRY")) {
 		public boolean useAt(Thing src, Vec pos){
-			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.ani.tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.ani.tex.h/2))));
+			Main.world.window.addEffect(new BerryEat(new Vec(Main.world.avatar.pos.x + (Main.world.avatar.aniPlug.getAnimator().tex.w/2), Main.world.avatar.pos.y + (Main.world.avatar.aniPlug.getAnimator().tex.h/2))));
 			if(src.type.magic != null) {
-				src.mana += 2;
-				if(src.mana > src.type.magic.maxMana){
-					src.mana = src.type.magic.maxMana;
+				src.magic.mana += 2;
+				if(src.magic.mana > src.type.magic.maxMana){
+					src.magic.mana = src.type.magic.maxMana;
 				}
 				return true;
 			}
@@ -207,7 +207,7 @@ public class ItemType {
 	public void renderHand(Thing t, Animator ani){
 		
 		if(texHand == Texture.emptyTexture) return;
-		Texture thingTex = t.ani.tex;
+		Texture thingTex = t.aniPlug.getAnimator().tex;
 		int[] info = thingTex.info[bodyPos.ordinal()];
 		
 		int handX = 0;
@@ -221,11 +221,11 @@ public class ItemType {
 			handAngle = defaultRotationHand + info[2] + 90;
 		}
 		
-		if(t.dir){
+		if(t.aniPlug.getOrientation()){
 			handX = thingTex.w - handX;
 			handAngle = -handAngle;
 		}
-		ani.quad.update(new Vec(handX + t.pos.x + thingTex.pixelCoords[0] + Render.offsetX, handY + t.pos.y + thingTex.pixelCoords[1] + Render.offsetY), (0 + handAngle)/360.0, 1, t.dir);
+		ani.quad.update(new Vec(handX + t.pos.x + thingTex.pixelCoords[0] + Render.offsetX, handY + t.pos.y + thingTex.pixelCoords[1] + Render.offsetY), (0 + handAngle)/360.0, 1, t.aniPlug.getOrientation());
 	
 		ani.quad.render(new Vec(), -1, new Vec(Render.scaleX, Render.scaleY), Color.WHITE);
 	}

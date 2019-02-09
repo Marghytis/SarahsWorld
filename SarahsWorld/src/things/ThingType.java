@@ -102,7 +102,7 @@ public class ThingType {
 							(source, item, technique, pos, selected) -> {
 								Vec start = source.pos.copy().shift(0, 35);
 								Vec vel = pos.copy().minus(start).setLength(300);
-								ThingType.MOVING_EFFECT.defaultSpawner.spawn(source.link, start, new BasicMagicEffect(3, source, selected, ThingType.SARAH.attacking.getTechnique("spell")), vel);
+								ThingType.MOVING_EFFECT.defaultSpawner.spawn(source.newLink, start, new BasicMagicEffect(3, source, selected, ThingType.SARAH.attacking.getTechnique("spell")), vel);
 							},
 							(src, dam, tgt) -> {
 								return Technique.lifeHit.start(src, dam, tgt);}) //spell TODO add Effect
@@ -172,7 +172,7 @@ public class ThingType {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 			if(extraData.length > 0)
-				t.aniSet = (int)extraData[0];
+				t.aniPlug.setAniSet((int)extraData[0]);
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
@@ -235,7 +235,7 @@ public class ThingType {
 			,new FlyAround()) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("stand");
 		}
 		public void update(Thing t, double delta){
@@ -273,9 +273,9 @@ public class ThingType {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			if(extraData.length >= 1 && Integer.parseInt((String)extraData[0]) > 0){
-				t.aniSet =  Integer.parseInt((String)extraData[0]);
+				t.aniPlug.setAniSet(Integer.parseInt((String)extraData[0]));
 			} else {
-				t.aniSet = World.rand.nextInt(ani.animations.length);
+				t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			}
 			t.aniPlug.setAnimation("stand");
 			t.willingToTrade = true;
@@ -346,7 +346,7 @@ public class ThingType {
 							Technique.selectAll,
 							(source, item, technique, pos, selected) -> {
 					int[] info = Res.getAtlas("unicorn").texs[0].info[0];
-					Main.world.window.addEffect(new RainbowSpit(new Vec(!source.dir? info[0] : (source.ani.tex.w-info[0]), info[1]).shift(source.pos).shift(source.box.pos), source.dir? 1 : -1, source, selected, Technique.lifeHit));
+					Main.world.window.addEffect(new RainbowSpit(new Vec(!source.aniPlug.getOrientation()? info[0] : (source.aniPlug.getAnimator().tex.w-info[0]), info[1]).shift(source.pos).shift(source.aniPlug.getRenderBox().pos), source.aniPlug.getOrientation()? 1 : -1, source, selected, Technique.lifeHit));
 							})})
 			,new Following(500.0, 50, ThingType.SARAH)
 			,new WalkAround()
@@ -445,7 +445,7 @@ public class ThingType {
 
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			if(extraData.length > 0 && extraData[0] != null) {
-				t.ani.pos = (int)extraData[0];
+				t.aniPlug.getAnimator().pos = (int)extraData[0];
 			}
 			t.onRightClick = (src, p, dest) -> {
 				if(src.type.life != null) {
@@ -479,10 +479,10 @@ public class ThingType {
 			,new Physics(1, 1000, true, false, true, false, true, false)){
 
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.box = new Rect(file.pixelCoords).scale(World.rand.nextDouble() + 0.5);
+			t.aniPlug.setRenderBox(new Rect(file.pixelCoords).scale(World.rand.nextDouble() + 0.5));
 			t.yOffset = 200 + World.rand.nextInt(100);
 			if(extraData.length > 0){
-				t.color.set((Color)extraData[0]);
+				t.aniPlug.setColor((Color)extraData[0]);
 			}
 		}
 		public void update(Thing t, double delta){
@@ -495,7 +495,7 @@ public class ThingType {
 			,new Animating(grass[0], new Rect(Res.getAtlas("grasstuft").pixelCoords), 0, 0, 1, false, grass)) {
 
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.ani.pos = World.rand.nextInt(t.ani.ani.indices.length);
+			t.aniPlug.getAnimator().pos = World.rand.nextInt(t.aniPlug.getAnimator().ani.indices.length);
 		}
 	};
 	
@@ -507,7 +507,7 @@ public class ThingType {
 			,new Animating(grass_giant[0][0], new Rect(Res.getAtlas("grass_giant").pixelCoords), 0, 0, 1, false, grass_giant)) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet( World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
 		}
 	};
@@ -542,13 +542,13 @@ public class ThingType {
 			,new Animating(tree_normal[0][0], new Rect(Res.getAtlas("tree").pixelCoords), 0, 1, 1, false, tree_normal)) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
+			t.aniPlug.setAniSet( World.rand.nextInt(t.type.ani.animations.length));
 			t.aniPlug.setAnimation("");
 			t.size = 0.5 + World.rand.nextDouble();
-			t.box.scale(t.size);
+			t.aniPlug.getRenderBox().scale(t.size);
 //			t.box.set(t.ani.createBox());//
-			if(t.z == 0) t.z = -0.1;
-			else if(t.z == 0.1) t.z = 0.2;
+			if(t.aniPlug.getZ() == 0) t.aniPlug.setZ(-0.1);
+			else if(t.aniPlug.getZ() == 0.1) t.aniPlug.setZ(0.2);
 			int stickAmount = World.rand.nextInt((int)(5*t.size));
 			for(int i = 0; i < stickAmount; i++) {
 				if(t.type == ThingType.TREE_CANDY)
@@ -581,7 +581,7 @@ public class ThingType {
 			,new Animating(plant_giant[0][0], new Rect(Res.getAtlas("plant_giant").pixelCoords), 0, 0, 1, false, plant_giant)) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
 		}
 	};
@@ -598,18 +598,18 @@ public class ThingType {
 			,new Animating(bush_normal[0][0], new Rect(Res.getAtlas("bush_normal").pixelCoords), 0, 0, 1, false, bush_normal)) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(t.type.ani.animations.length));
 			t.aniPlug.setAnimation("");
 			t.size = World.rand.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5;
-			if(t.box.size.y > 80){
-				t.z = -1;
+			if(t.aniPlug.getRenderBox().size.y > 80){
+				t.aniPlug.setZ(-1);
 			}
 			if(extraData.length >= 2){
-				t.z = (double) extraData[1];
+				t.aniPlug.setZ((double) extraData[1]);
 			} else {
-				t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
+				t.aniPlug.setZ(World.rand.nextInt(100) < 30 ? 1 : -1);
 			}
-			if(t.type == this && t.aniSet == 1){//not necessary, because the other bushes use this too
+			if(t.type == this && t.aniPlug.getAniSet() == 1){//not necessary, because the other bushes use this too
 				int berryAmount = 1 + World.rand.nextInt(3);
 				for(int i = 0; i < berryAmount; i++)
 					t.fruits.add(ItemType.BERRY);
@@ -642,9 +642,9 @@ public class ThingType {
 			,new Animating(flower_normal[0][0], new Rect(Res.getAtlas("flower_normal").pixelCoords), 0, 0, 1, false, flower_normal)) {
 
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(t.type.ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(t.type.ani.animations.length));
 			t.aniPlug.setAnimation("");
-			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
+			t.aniPlug.setZ(World.rand.nextInt(100) < 30 ? 1 : -1);
 		}};
 	public static final ThingType FLOWER_CANDY = new ThingType("FLOWER_CANDY", Res.getAtlas("flower_candy") , 50, new Animating(flower_candy[0][0], new Rect(Res.getAtlas("flower_candy").pixelCoords), 0, 0, 1, false, flower_candy)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ FLOWER_NORMAL.setup(t, field, pos, extraData);}};
@@ -660,7 +660,7 @@ public class ThingType {
 											{new Animation(Res.getAtlas("pyramide"), 0, 3)}};
 	public static final ThingType PYRAMID = new ThingType("PYRAMID", Res.getAtlas("pyramide"), 20, new Animating(pyramide[0][0], new Rect(Res.getAtlas("pyramide").pixelCoords), -1, 0, 1, true, pyramide)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
 		}};
 
@@ -681,7 +681,7 @@ public class ThingType {
 											{new Animation(Res.getAtlas("house"), 0, 5)}};
 	public static final ThingType HOUSE = new ThingType("HOUSE", Res.getAtlas("house"), 20, new Animating(house[0][0], new Rect(Res.getAtlas("house").pixelCoords), -1, 0, 1, false, house)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
 		}};
 										static final Animation[][] townobject = {
@@ -692,7 +692,7 @@ public class ThingType {
 											{new Animation(Res.getAtlas("townobject"), 0, 4)}};
 	public static final ThingType TOWN_OBJECT = new ThingType("TOWN_OBJECT", Res.getAtlas("townobject"), 30 ,new Animating(townobject[0][0], new Rect(Res.getAtlas("townobject").pixelCoords), -1, 0, 1, false, townobject)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
 		}};
 										static final Animation[][] bamboo = {
@@ -702,10 +702,10 @@ public class ThingType {
 											{new Animation(Res.getAtlas("bamboo") , 0, 3)}};
 	public static final ThingType BAMBOO = new ThingType("BAMBOO", Res.getAtlas("bamboo") , 200, new Animating(bamboo[0][0], new Rect(Res.getAtlas("bamboo").pixelCoords), 0, 0, 1, false, bamboo)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
 			t.size = 0.5 + World.rand.nextDouble();
-			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
+			t.aniPlug.setZ(World.rand.nextInt(100) < 30 ? 1 : -1);
 		}};
 										static final Animation[][] plant_jungle = {
 											{new Animation(Res.getAtlas("plant_jungle") ,0, 0)},
@@ -715,10 +715,10 @@ public class ThingType {
 											{new Animation(Res.getAtlas("plant_jungle") ,0, 4)}};
 	public static final ThingType FERN = new ThingType("FERN", Res.getAtlas("plant_jungle") ,350, new Animating(plant_jungle[0][0], new Rect(Res.getAtlas("plant_jungle").pixelCoords), 0, 0.05, 1, false, plant_jungle)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
-			t.box.set(new Rect(file.pixelCoords).scale(0.5 + World.rand.nextDouble()));
-			t.z = World.rand.nextBoolean() ? 1 : -1;
+			t.aniPlug.getRenderBox().set(new Rect(file.pixelCoords).scale(0.5 + World.rand.nextDouble()));
+			t.aniPlug.setZ(World.rand.nextBoolean() ? 1 : -1);
 		}};
 										static final Animation[][] cactus = {
 											{new Animation(Res.getAtlas("cactus"), 0, 0)},
@@ -726,10 +726,10 @@ public class ThingType {
 											{new Animation(Res.getAtlas("cactus"), 0, 2)}};
 	public static final ThingType CACTUS = new ThingType("CACTUS", Res.getAtlas("cactus"), 30, new Animating(cactus[0][0], new Rect(Res.getAtlas("cactus").pixelCoords), 0, 0, 1, false, cactus)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
-			t.box.set(new Rect(file.pixelCoords).scale(0.5 + World.rand.nextDouble()));
-			t.z = World.rand.nextInt(100) < 30 ? 1 : -1;
+			t.aniPlug.getRenderBox().set(new Rect(file.pixelCoords).scale(0.5 + World.rand.nextDouble()));
+			t.aniPlug.setZ(World.rand.nextInt(100) < 30 ? 1 : -1);
 		}};
 										static final Animation[][] grave = {
 											{new Animation(Res.getAtlas("grave"), 0, 0)},
@@ -741,8 +741,8 @@ public class ThingType {
 											{new Animation(Res.getAtlas("grave"), 0, 6)}};
 	public static final ThingType GRAVE = new ThingType("GRAVE", Res.getAtlas("grave"), 80,new Animating(grave[0][0], new Rect(Res.getAtlas("grave").pixelCoords), 0.5, 0, 1, false, grave)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.aniSet = World.rand.nextInt(ani.animations.length);
-			t.dir = false;
+			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
+			t.aniPlug.setOrientation( false);
 			t.aniPlug.setAnimation("");
 			t.fruits.add(ItemType.ZOMBIE_FLESH);
 		}};
@@ -753,9 +753,9 @@ public class ThingType {
 											{new Animation(Res.getAtlas("crack") , 0, 3)}};
 		public static final ThingType CRACK = new ThingType("CRACK", Res.getAtlas("crack") , 200, new Animating(crack[0][0], new Rect(Res.getAtlas("crack").pixelCoords), 0, 0, 1, false, crack)){
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
-				t.aniSet = World.rand.nextInt(ani.animations.length);
+				t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 				t.aniPlug.setAnimation("");
-				t.z = -0.001;
+				t.aniPlug.setZ(-0.001);
 			}};
 										static final Animation[][] fossil = {
 											{new Animation(Res.getAtlas("fossil"), 0, 0)},
@@ -763,9 +763,9 @@ public class ThingType {
 											{new Animation(Res.getAtlas("fossil"), 0, 2)}};
 		public static final ThingType FOSSIL = new ThingType("FOSSIL", Res.getAtlas("fossil"), 75,new Animating(fossil[0][0], new Rect(Res.getAtlas("fossil").pixelCoords), 0, 0, 1, false, fossil)){
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
-				t.aniSet = World.rand.nextInt(ani.animations.length);
+				t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 				t.aniPlug.setAnimation("");
-				t.z = -0.001;
+				t.aniPlug.setZ(-0.001);
 			}};
 		
 	//OTHER THINGS
@@ -782,9 +782,9 @@ public class ThingType {
 				t.vel.set((Vec) extraData[1]);
 			}
 				
-			t.ani.setTexture(type.texWorld);
+			t.aniPlug.getAnimator().setTexture(type.texWorld);
 			
-			t.box.set(type.texWorld.pixelCoords);
+			t.aniPlug.getRenderBox().set(type.texWorld.pixelCoords);
 			t.itemBeing = type;
 		}};
 										static final Animation[] coin = {new Animation(Res.getAtlas("coin"), 0, 0)};
@@ -804,10 +804,12 @@ public class ThingType {
 	public static final ThingType WORLD_EFFECT = new ThingType("WORLD_EFFECT", TexAtlas.emptyAtlas, 30, true,
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
-					if(!t.visible && visible) {
+					if(!t.active && visible) {
 						t.effectTicket = ((WorldEffect)t.effect).spawn(t.pos.x, t.pos.y);
-					} else if(t.visible && !visible) {
+						t.active = true;
+					} else if(t.active && !visible) {
 						((WorldEffect)t.effect).despawn(t.effectTicket);
+						t.active = false;
 					}
 				}}) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
@@ -822,15 +824,18 @@ public class ThingType {
 			new Physics(1, 0, false, false, false, false, false, false),
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
-					if(!t.visible && visible) {
+					if(!t.active && visible) {
 						Main.world.window.addEffect(t.effect);
-					} else if(t.visible && !visible) {
+						t.active = true;
+					} else if(t.active && !visible) {
 						Main.world.window.removeEffect(t.effect);
+						t.active = false;
 					}
 				}}) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
 			t.effect = (MovingEffect) extraData[0];
 			Main.world.window.addEffect(t.effect);
+			t.active = true;
 			if(extraData.length > 1) {
 				t.vel.set((Vec)extraData[1]);
 			} else {
@@ -848,10 +853,12 @@ public class ThingType {
 			new Physics(1, 0, false, false, false, false, false, false),
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
-					if(!t.visible && visible) {
+					if(t.effectTicket == -1 && visible) {
 						Main.world.window.addEffect(t.effect);
-					} else if(t.visible && !visible) {
+						t.effectTicket = 0;
+					} else if(t.effectTicket >= 0 && !visible) {
 						Main.world.window.removeEffect(t.effect);
+						t.effectTicket = -1;
 					}
 				}}) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
@@ -889,20 +896,20 @@ public class ThingType {
 	public Attachement attachment;//17
 	public StateChangement state;//18
 	
-	public AiPlugin<?>[] plugins;
+	public AiPlugin[] plugins;
 	public Spawner defaultSpawner;
 	public int maxVisible;
 	public boolean alwaysUpdateVBO;
 	
-	ThingType(String name, TexAtlas file, int maxVisible, AiPlugin<?>... plugins){
+	ThingType(String name, TexAtlas file, int maxVisible, AiPlugin... plugins){
 		this(name, file, maxVisible, false, plugins);
 	}
 	
-	ThingType(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, AiPlugin<?>... plugins){
+	ThingType(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, AiPlugin... plugins){
 		this(name, file, maxVisible, alwaysUpdateVBO, null, plugins);
 	}
 	
-	ThingType(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, Spawner defaultSpawner, AiPlugin<?>... plugins){
+	ThingType(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, Spawner defaultSpawner, AiPlugin... plugins){
 		this.name = name;
 		this.file = file;
 		this.maxVisible = maxVisible;
@@ -911,7 +918,7 @@ public class ThingType {
 		this.ordinal = index++;
 		tempList.add(this);
 		
-		for(AiPlugin<?> plugin : plugins){
+		for(AiPlugin plugin : plugins){
 			if(plugin instanceof Animating){
 				ani = (Animating)plugin;
 			} else if(plugin instanceof Physics){

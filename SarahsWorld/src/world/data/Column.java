@@ -8,7 +8,7 @@ import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
 
-public class Column extends DirListElement<Column> {
+public class Column extends DirListElement<Column> implements DetailedColumn<Column> {
 	public static final double COLUMN_WIDTH = 20;
 	private Vertex[] vertices;
 	private Thing[] things;//these are the anchors. may be null
@@ -19,7 +19,10 @@ public class Column extends DirListElement<Column> {
 	public Biome biome;
 	public Color topColor, lowColor;
 	public int testInt;
-	
+
+	public Thing getFirst(ThingType type) {
+		return firstThing(type);
+	}
 	public Thing firstThing(ThingType type) {
 		return firstThing(type.ordinal);
 	}
@@ -61,7 +64,7 @@ public class Column extends DirListElement<Column> {
 		
 	}
 	
-	public void setX(int xIndex){
+	public void setIndex(int xIndex){
 		this.xIndex = xIndex;
 		this.xReal = xIndex*COLUMN_WIDTH;
 	}
@@ -86,11 +89,11 @@ public class Column extends DirListElement<Column> {
 		double fac = random.nextDouble();
 		if(right != null) {
 			posField.set(	
-					xReal + (fac*(right.xReal - xReal)),
+					xReal + (fac*(right.getX() - xReal)),
 					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		} else {
 			posField.set(	
-					xReal + (fac*(left.xReal - xReal)),
+					xReal + (fac*(left.getX() - xReal)),
 					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		}
 		return this;
@@ -101,11 +104,11 @@ public class Column extends DirListElement<Column> {
 		double fac = random.nextDouble();
 		if(dir == -1) {
 			posField.set(
-					xReal + (fac*(right.xReal - xReal)),
+					xReal + (fac*(right.getX() - xReal)),
 					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		} else if(dir == 1) {
 			posField.set(
-					xReal + (fac*(left.xReal - xReal)),
+					xReal + (fac*(left.getX() - xReal)),
 					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		} else {
 			new Exception("Unknown direction!").printStackTrace();
@@ -132,11 +135,11 @@ public class Column extends DirListElement<Column> {
 	}
 	
 	public Vec getTopLine(Vec topLine){
-		return topLine.set(right.xReal - xReal, right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y);
+		return topLine.set(right.getX() - xReal, right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y);
 	}
 	
 	public Vec getCollisionLine(Vec topLine){
-		return topLine.set(right.xReal - xReal, right.getCollisionY() - getCollisionY());
+		return topLine.set(right.getX() - xReal, right.getCollisionY() - getCollisionY());
 	}
 	public final Vertex getTopSolidVertex(){
 		return topSolidVertex;
@@ -149,6 +152,18 @@ public class Column extends DirListElement<Column> {
 	}
 	public final double getCollisionYFluid(){
 		return collisionYFluid;
+	}
+	@Override
+	public int getIndex() {
+		return xIndex;
+	}
+	@Override
+	public double getX() {
+		return xReal;
+	}
+	@Override
+	public void setX(double x) {
+		xReal = x;
 	}
 
 }

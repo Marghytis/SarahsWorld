@@ -11,7 +11,7 @@ import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
 
-public class Inventory extends AiPlugin<Thing> {
+public class Inventory extends AiPlugin {
 
 	public int itemAmount;
 	public ItemType defaultItem;

@@ -418,7 +418,7 @@ public enum Biome {
 	public static Spawner spawnZ(ThingType type, double z){
 		return (c, pos, ed) -> {
 			Thing t = new Thing(type, c, pos.copy(), ed);
-			t.z = z;
+			t.aniPlug.setZ( z);
 			return t;
 		};
 	}
@@ -433,7 +433,7 @@ public enum Biome {
 	public static Spawner spawnZ(ThingType type, double z1, double z2){
 		return (c, pos, ed) -> {
 			Thing t = new Thing(type, c, pos.copy(), ed);
-			t.z = z1 + World.rand.nextDouble()*(z2-z1);
+			t.aniPlug.setZ( z1 + World.rand.nextDouble()*(z2-z1));
 			return t;
 		};
 	}
@@ -456,9 +456,9 @@ public enum Biome {
 			Thing t = new Thing(type, c, pos.copy(), ed);
 			t.yOffset = y1 + World.rand.nextDouble()*(y2-y1);
 			if(!front){
-				t.z = foliageZ.f(t.yOffset);
+				t.aniPlug.setZ( foliageZ.f(t.yOffset));
 			} else {
-				t.z = -foliageZ.f(t.yOffset);
+				t.aniPlug.setZ( -foliageZ.f(t.yOffset));
 			}
 			return t;
 		};

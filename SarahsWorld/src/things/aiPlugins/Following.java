@@ -7,7 +7,7 @@ import things.Thing;
 import things.ThingType;
 import world.data.Column;
 
-public class Following extends AiPlugin<Thing> {
+public class Following extends AiPlugin {
 
 	double maxDistanceSquare;
 	double rAimSq, rAim;
@@ -25,7 +25,7 @@ public class Following extends AiPlugin<Thing> {
 			findTarget(t);
 			int acc = 0;
 			if(t.target != null){
-				double r = rAim + (t.box.size.x/2);
+				double r = rAim + (t.aniPlug.getRenderBox().size.x/2);
 				if(t.target.pos.minus(t.pos).lengthSquare() > r*r) {
 					if(t.target.pos.x > t.pos.x){
 						acc += 2;

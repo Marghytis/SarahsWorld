@@ -10,7 +10,7 @@ import world.data.Column;
 import world.data.Vertex;
 import world.generation.Material;
 
-public class Physics extends AiPlugin<Thing> {
+public class Physics extends AiPlugin {
 	
 	static double dt = 0.010;
 	public static double lowestSpeed = 0.1;
@@ -105,8 +105,8 @@ public class Physics extends AiPlugin<Thing> {
 		//UPDATE WORLD LINK
 
 		int column = (int)Math.floor(t.pos.x/Column.COLUMN_WIDTH);
-		while(t.link.xIndex < column && t.link.right() != null) t.link = t.link.right();
-		while(t.link.xIndex > column && t.link.left() != null) t.link = t.link.left();
+		while(t.newLink.xIndex < column && t.newLink.right() != null) t.newLink = t.newLink.right();
+		while(t.newLink.xIndex > column && t.newLink.left() != null) t.newLink = t.newLink.left();
 	}
 	
 	public void updateRotation(Thing t, double delta){
@@ -137,7 +137,7 @@ public class Physics extends AiPlugin<Thing> {
 			}
 		} else if(t.where.g){
 			if(stickToGround){
-				t.rotation = -t.link.getCollisionLine(new Vec()).angle();
+				t.rotation = -t.newLink.getCollisionLine(new Vec()).angle();
 			} else {
 				t.rotation = 0;
 			}
@@ -164,7 +164,7 @@ public class Physics extends AiPlugin<Thing> {
 			Vec topLine = t.collisionC.getCollisionLine(new Vec()).normalize();
 			updateForceNextVelAndNextPos(t, constantForce, null, t1, true);
 			t.pos.set(collisionVec);
-			t.link = t.collisionC;
+			t.newLink = t.collisionC;
 			t.willLandInWater = false;
 			
 			t.speed = t.nextVel.dot(topLine);
@@ -184,7 +184,7 @@ public class Physics extends AiPlugin<Thing> {
 	
 	public void walkOrLiftOf(Thing t, Vec constantForce, double delta){
 		
-		Vec topLine = t.link.getCollisionLine(new Vec()).normalize();
+		Vec topLine = t.newLink.getCollisionLine(new Vec()).normalize();
 		Vec ortho = topLine.ortho(true);
 
 		//constant Force with walking force minus air friction, nextVel and nextPos get set
@@ -202,7 +202,7 @@ public class Physics extends AiPlugin<Thing> {
 			} else {
 				t.pos.set(circleCollision);
 				t.vel.set(t.collisionC.getCollisionLine(topLine)).setLength(t.speed);
-				t.link = t.collisionC;
+				t.newLink = t.collisionC;
 			}
 			t.where.g = true;
 		} else {
@@ -308,14 +308,14 @@ public class Physics extends AiPlugin<Thing> {
 	public void checkWater(Vec force, Vec pos, Thing t){
 		t.buoyancyForce = 0;
 		//check, if the column the thing is in contains water:
-		if(t.link.getTopSolidVertex() != t.link.getTopFluidVertex() && t.link.right() != null && t.link.right().getTopSolidVertex() != t.link.right().getTopFluidVertex()){
+		if(t.newLink.getTopSolidVertex() != t.newLink.getTopFluidVertex() && t.newLink.right() != null && t.newLink.right().getTopSolidVertex() != t.newLink.right().getTopFluidVertex()){
 			//get vertex of water surface
-			Vertex waterVertex = t.link.getTopFluidVertex();
+			Vertex waterVertex = t.newLink.getTopFluidVertex();
 
 			//check if at least part of the thing is under water
-			if(waterVertex.y > pos.y + t.box.pos.y){
+			if(waterVertex.y > pos.y + t.aniPlug.getRenderBox().pos.y){
 				//calculate how deep the thing is in the water in units of it's height
-				t.where.water = Math.min((waterVertex.y - (pos.y + t.box.pos.y))/t.box.size.y, 1);//+20
+				t.where.water = Math.min((waterVertex.y - (pos.y + t.aniPlug.getRenderBox().pos.y))/t.aniPlug.getRenderBox().size.y, 1);//+20
 				//apply a buoyancy force
 				t.buoyancyForce = waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/);
 				force.shift(0, t.buoyancyForce);

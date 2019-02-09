@@ -2,41 +2,41 @@ package world.window;
 
 import java.util.function.Consumer;
 
-import main.Main;
 import util.Time;
-import world.data.Column;
 import world.data.Dir;
+import world.data.StructureColumn;
 
-public class RealWorldWindow {
+public class RealWorldWindow<T extends StructureColumn<T>> {
 
 	protected int radius;
-	protected Column[] ends = new Column[2];
+	@SuppressWarnings("unchecked")
+	protected T[] ends = (T[]) new StructureColumn[2];
 	
-	public RealWorldWindow(Column anchor, int radius) {
+	public RealWorldWindow(T anchor, int radius) {
 		this.radius = radius;
 
 		ends[Dir.r] = anchor;
 		ends[Dir.l] = ends[Dir.r];
 	}
 	
-	public Column getEnd(int iDir) {
+	public T getEnd(int iDir) {
 		return ends[iDir];
 	}
 	
-	public Column start() {
+	public T start() {
 		return ends[Dir.l];
 	}
 	
-	public Column end() {
+	public T end() {
 		return ends[Dir.r].next();
 	}
 	
-	public Column at(double x) {
-		if(ends[0].xReal > x || ends[1].xReal < x) {
+	public T at(double x) {
+		if(ends[0].getX() > x || ends[1].getX() < x) {
 			return null;
 		} else {
-			for(Column c = start(); c != end().prev(); c = c.next()) {
-				if(c.next().xReal > x) {
+			for(T c = start(); c != end().prev(); c = c.next()) {
+				if(c.next().getX() > x) {
 					return c;
 				}
 			}
@@ -44,9 +44,9 @@ public class RealWorldWindow {
 		}
 	}
 	
-	public void forEachColumn(Consumer<Column> cons) {
+	public void forEachColumn(Consumer<T> cons) {
 
-		for(Column c = start(); c != end(); c = c.next()) {
+		for(T c = start(); c != end(); c = c.next()) {
 			cons.accept(c);
 		}
 	}
@@ -56,7 +56,7 @@ public class RealWorldWindow {
 		//increase size
 		Time.update(12);
 		for(int end = 0; end < Dir.s.length; end++) {
-			while(Dir.s[end]*(ends[end].xIndex - xIndex) < radius && dirOkay(end) && ends[end].next(end) != null) {
+			while(Dir.s[end]*(ends[end].getIndex() - xIndex) < radius && dirOkay(end) && ends[end].next(end) != null) {
 				shiftOutwards(end);
 			}
 		}
@@ -64,7 +64,7 @@ public class RealWorldWindow {
 		Time.update(13);
 		//decrease size
 		for(int end = 0; end < Dir.s.length; end++) {
-			while(Dir.s[end]*(ends[end].xIndex - xIndex) > radius && ends[end].next(1-end) != null) {
+			while(Dir.s[end]*(ends[end].getIndex() - xIndex) > radius && ends[end].next(1-end) != null) {
 				shiftInwards(end);
 			}
 		}

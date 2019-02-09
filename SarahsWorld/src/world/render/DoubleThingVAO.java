@@ -1,7 +1,7 @@
 package world.render;
 
 import main.Main;
-import things.Thing;
+import things.aiPlugins.Animating.AnimatingPlugin;
 
 public class DoubleThingVAO extends ThingVAO {
 
@@ -57,18 +57,18 @@ public class DoubleThingVAO extends ThingVAO {
 			return i + 1;
 	}
 	
-	public static int whichSide(Thing t) {
-		return t.z < 0 ? FRONT : BACK;
+	public static int whichSide(AnimatingPlugin t) {
+		return t.getZ() < 0 ? FRONT : BACK;
 	}
 	
 	public int spaceLeft() {
 		return capacity - size(FRONT) - size(BACK);
 	}
 
-	public void add(Thing t, boolean inBatch){
+	public void add(AnimatingPlugin t, boolean inBatch){
 		add(t, inBatch, true);
 	}
-	public void add(Thing t, boolean inBatch, boolean automaticallyRemoveFreedThings){
+	public void add(AnimatingPlugin t, boolean inBatch, boolean automaticallyRemoveFreedThings){
 
 		t.onVisibilityChange(true);
 		int side = whichSide(t);
@@ -82,39 +82,39 @@ public class DoubleThingVAO extends ThingVAO {
 			}
 		}
 		if(dirs[side]*lastUsedIndices[side] + 1 >= dirs[side]*lastUsedIndices[1-side]){
-			System.err.println("Not enough space for " + t.type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.type.maxVisible);
+			System.err.println("Not enough space for " + t.getThing().type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.getThing().type.maxVisible);
 			enlarge();
 		}
 		lastUsedIndices[side] += dirs[side];
 		things[lastUsedIndices[side]] = t;
-		t.index = (short) lastUsedIndices[side];
-		t.addedToVAO = true;
+		t.setIndex((short) lastUsedIndices[side]);
+		t.setAddedToVAO(true);
 		if(!inBatch) {
 			changeUsual(t, inBatch);
 			changeUnusual(t, inBatch);
 		}
 	}
 	
-	public void remove(Thing t, boolean vboAsWell){
+	public void remove(AnimatingPlugin t, boolean vboAsWell){
 		int side = whichSide(t);
 		if(dirs[side]*lastUsedIndices[side] < dirs[side]*ends[side]){
-			new Exception("You removed one " + t.type.name + " too much!!!!").printStackTrace();
+			new Exception("You removed one " + t.getThing().type.name + " too much!!!!").printStackTrace();
 			return;
 		}
-		if(t.index == -1) {
-			new Exception("This " + t.type.name + " is already deleted in the VAO!!");
+		if(t.getIndex() == -1) {
+			new Exception("This " + t.getThing().type.name + " is already deleted in the VAO!!");
 			return;
 		}
 		t.onVisibilityChange(false);
 		
 		//move last thing in the list to t's location and update lastUsedIndex
-		moveThing(lastUsedIndices[side], t.index, vboAsWell);
+		moveThing(lastUsedIndices[side], t.getIndex(), vboAsWell);
 		lastUsedIndices[side] -= dirs[side];
 		
-		t.index = -1;
-		t.addedToVAO = false;
-		t.freeToMakeInvisible = false;//reset this flag
-		if(t.selected) System.out.println("Removing...");
+		t.setIndex((short)-1);
+		t.setAddedToVAO(false);
+		t.setFreeToMakeInvisible(false);//reset this flag
+		if(t.selected()) System.out.println("Removing...");
 	}
 	
 	public void enlarge() {
@@ -136,8 +136,8 @@ public class DoubleThingVAO extends ThingVAO {
 
 	public void free(double xMin, double xMax) {
 		for(int i = 0; i < things.length; i++) {
-			if(things[i] != null && xMin <= things[i].pos.x && xMax >= things[i].pos.x) {
-				things[i].freeToMakeInvisible = true;
+			if(things[i] != null && xMin <= things[i].getThing().pos.x && xMax >= things[i].getThing().pos.x) {
+				things[i].setFreeToMakeInvisible(true);
 			}
 		}
 	}

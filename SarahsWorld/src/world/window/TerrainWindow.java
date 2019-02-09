@@ -20,12 +20,12 @@ import render.TexFile;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
-import world.data.Column;
+import world.data.DetailedColumn;
 import world.data.Vertex;
 import world.generation.Biome;
 import world.generation.Material;
 
-public class TerrainWindow extends ArrayWorldWindow {
+public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow<T> {
 
 	private static int 	indicesPerQuad = 6,
 				verticesPerPoint = 3,
@@ -42,7 +42,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 	ArrayList<Patch> waterPatches = new ArrayList<>();
 	Patch[] currentPatches;
 
-	public TerrainWindow(Column anchor, int columnRadius) throws WorldTooSmallException {
+	public TerrainWindow(T anchor, int columnRadius) throws WorldTooSmallException {
 		super(anchor, columnRadius);
 		pointsX = columns.length;
 		vao = new VAO(
@@ -116,7 +116,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 		Shader.bindNone();
 	}
 	
-	protected void addAt(Column c, int index) {
+	protected void addAt(T c, int index) {
 		//landscape
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.vbos[0].handle);
 			for(int yIndex = 0; yIndex < pointsY; yIndex++){
@@ -289,7 +289,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 	private ByteBuffer createVertexBuffer(){
 		ByteBuffer buffer = BufferUtils.createByteBuffer(pointsX*pointsY*verticesPerPoint*bytesPerVertex);
 		for(int yIndex = 0; yIndex < pointsY; yIndex++){// Put Vertices in Buffer:
-			for(Column column : columns){
+			for(T column : columns){
 				putPointData(buffer, column, yIndex);
 			}
 		}
@@ -297,8 +297,8 @@ public class TerrainWindow extends ArrayWorldWindow {
 		return buffer;
 	}
 	
-	private void putPointData(ByteBuffer buffer, Column column, int yIndex){
-		float 	x0 = (float)column.xReal,
+	private void putPointData(ByteBuffer buffer, T column, int yIndex){
+		float 	x0 = (float)column.getX(),
 				y0 = (float)column.vertices(yIndex).y,
 				y1 = (float)column.vertices(yIndex+1).y,
 				y2 = y1 - (float)column.vertices(yIndex).transitionHeight;

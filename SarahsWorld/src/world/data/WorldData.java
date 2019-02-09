@@ -54,9 +54,9 @@ public class WorldData {
 		}
 	}
 	public Thing findAvatar() {
-		for(Column c = leftColumn; c != rightColumn.right(); c = c.right()) {
-			if(c.firstThing(ThingType.SARAH.ordinal) != null) {
-				return c.firstThing(ThingType.SARAH.ordinal);
+		for(StructureColumn<Column> c = leftColumn; c != rightColumn.right(); c = c.right()) {
+			if(c.getFirst(ThingType.SARAH) != null) {
+				return c.getFirst(ThingType.SARAH);
 			}
 		}
 		return null;
@@ -121,23 +121,23 @@ public class WorldData {
 		addFirst(new Column(0, biome, biome.topColor, biome.lowColor, vertices));
 	}
 	
-	public Column addLeft(Column l){
-		l.setX(leftColumn.xIndex-1);
+	public StructureColumn<Column> addLeft(Column l){
+		l.setIndex(leftColumn.getIndex()-1);
 		l.setRight(leftColumn);
 		leftColumn.setLeft(l);
 		leftColumn = l;
 		return l;
 	}
 	
-	public Column addRight(Column r){
-		r.setX(rightColumn.xIndex+1);
+	public StructureColumn<Column> addRight(Column r){
+		r.setIndex(rightColumn.getIndex()+1);
 		r.setLeft(rightColumn);
 		rightColumn.setRight(r);
 		rightColumn = r;
 		return r;
 	}
 	
-	public Column add(Column c, int dir) {
+	public StructureColumn<Column> add(Column c, int dir) {
 		if(dir == -1) {
 			addLeft(c);
 		} else if(dir == 1) {
