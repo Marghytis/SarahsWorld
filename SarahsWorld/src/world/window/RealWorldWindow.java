@@ -3,40 +3,40 @@ package world.window;
 import java.util.function.Consumer;
 
 import util.Time;
+import world.data.Column;
+import world.data.ColumnListElement;
 import world.data.Dir;
-import world.data.StructureColumn;
 
-public class RealWorldWindow<T extends StructureColumn<T>> {
+public class RealWorldWindow {
 
 	protected int radius;
-	@SuppressWarnings("unchecked")
-	protected T[] ends = (T[]) new StructureColumn[2];
+	protected ColumnListElement[] ends = new ColumnListElement[2];
 	
-	public RealWorldWindow(T anchor, int radius) {
+	public RealWorldWindow(ColumnListElement anchor, int radius) {
 		this.radius = radius;
 
 		ends[Dir.r] = anchor;
 		ends[Dir.l] = ends[Dir.r];
 	}
 	
-	public T getEnd(int iDir) {
+	public ColumnListElement getEnd(int iDir) {
 		return ends[iDir];
 	}
 	
-	public T start() {
+	public ColumnListElement start() {
 		return ends[Dir.l];
 	}
 	
-	public T end() {
+	public ColumnListElement end() {
 		return ends[Dir.r].next();
 	}
 	
-	public T at(double x) {
-		if(ends[0].getX() > x || ends[1].getX() < x) {
+	public ColumnListElement at(double x) {
+		if(ends[0].column().getX() > x || ends[1].column().getX() < x) {
 			return null;
 		} else {
-			for(T c = start(); c != end().prev(); c = c.next()) {
-				if(c.next().getX() > x) {
+			for(ColumnListElement c = start(); c != end().prev(); c = c.next()) {
+				if(c.next().column().getX() > x) {
 					return c;
 				}
 			}
@@ -44,10 +44,10 @@ public class RealWorldWindow<T extends StructureColumn<T>> {
 		}
 	}
 	
-	public void forEachColumn(Consumer<T> cons) {
+	public void forEachColumn(Consumer<Column> cons) {
 
-		for(T c = start(); c != end(); c = c.next()) {
-			cons.accept(c);
+		for(ColumnListElement c = start(); c != end(); c = c.next()) {
+			cons.accept(c.column());
 		}
 	}
 	

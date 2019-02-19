@@ -1,6 +1,12 @@
 package world.data;
 
-public interface ListElement<T extends ListElement<T>> {
+/**
+ * 
+ * @author Mario
+ *
+ * @param <T> type of previous and next element
+ */
+public interface ListElement<T> {
 
 	
 	public T next();

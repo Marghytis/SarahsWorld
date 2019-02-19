@@ -18,7 +18,7 @@ import things.ThingType;
 import util.Color;
 import util.math.Vec;
 import world.World;
-import world.data.Column;
+import world.data.ColumnListElement;
 
 public class ItemType {
 
@@ -34,10 +34,10 @@ public class ItemType {
 	public static final ItemType UNICORN_HORN	= new ItemType(builder.readItemType("UNICORN_HORN")) {
 		@Override
 		public boolean useAt(Thing src, Vec pos) {
-			Column c = Main.world.landscapeWindow.at(pos.x);
+			ColumnListElement c = Main.world.landscapeWindow.at(pos.x);
 			if(c != null) {
 				Vec loc = new Vec();
-				ThingType.EFFECT.defaultSpawner.spawn(c.getRandomTopLocation(World.rand, loc), loc, new FireEffect(loc));
+				ThingType.EFFECT.defaultSpawner.spawn(c.column().getRandomTopLocation(World.rand, loc), loc, new FireEffect(loc));
 				return true;
 			} else {
 				return false;

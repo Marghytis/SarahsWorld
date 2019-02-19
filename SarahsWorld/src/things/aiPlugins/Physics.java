@@ -7,6 +7,7 @@ import things.Thing;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.data.Column;
+import world.data.ColumnListElement;
 import world.data.Vertex;
 import world.generation.Material;
 
@@ -105,8 +106,8 @@ public class Physics extends AiPlugin {
 		//UPDATE WORLD LINK
 
 		int column = (int)Math.floor(t.pos.x/Column.COLUMN_WIDTH);
-		while(t.newLink.xIndex < column && t.newLink.right() != null) t.newLink = t.newLink.right();
-		while(t.newLink.xIndex > column && t.newLink.left() != null) t.newLink = t.newLink.left();
+		while(t.newLink.xIndex < column && t.newLink.right() != null) t.newLink = t.newLink.right().column();
+		while(t.newLink.xIndex > column && t.newLink.left() != null) t.newLink = t.newLink.left().column();
 	}
 	
 	public void updateRotation(Thing t, double delta){
@@ -261,18 +262,18 @@ public class Physics extends AiPlugin {
 	
 	public boolean circleCollision(Thing t, Vec pos1, double r, boolean right){
 		Vec vec1 = new Vec(), vec2 = new Vec();
-		for(Column c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
+		for(ColumnListElement c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
 			Vec[] output = UsefulF.circleIntersection(
-					vec1.set(c.xReal,c.getCollisionY()),
-					vec2.set(c.right().xReal, c.right().getCollisionY()),
+					vec1.set(c.column().getX(), c.column().getCollisionY()),
+					vec2.set(c.right().column().getX(), c.right().column().getCollisionY()),
 					pos1,
 					r);
 			if(right && output[1] != null){
-				t.collisionC = c;
+				t.collisionC = c.column();
 				circleCollision.set(output[1]);
 				return true;
 			} else if(!right && output[0] != null){
-				t.collisionC = c;
+				t.collisionC = c.column();
 				circleCollision.set(output[0]);
 				return true;
 			}
@@ -285,13 +286,13 @@ public class Physics extends AiPlugin {
 		if(coll){
 			Vec vec1 = new Vec(), vec2 = new Vec();
 
-			for(Column c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
+			for(ColumnListElement c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
 				if(UsefulF.intersectionLines2(
 						pos1,
 						velt,
-						vec1.set(c.xReal, c.getCollisionY()),
-						vec2.set(c.right().xReal, c.right().getCollisionY()), collisionVec)){
-					t.collisionC = c;
+						vec1.set(c.column().getX(), c.column().getCollisionY()),
+						vec2.set(c.right().column().getX(), c.right().column().getCollisionY()), collisionVec)){
+					t.collisionC = c.column();
 					return true;//can only collide with one vertex
 				}
 			}
@@ -308,7 +309,7 @@ public class Physics extends AiPlugin {
 	public void checkWater(Vec force, Vec pos, Thing t){
 		t.buoyancyForce = 0;
 		//check, if the column the thing is in contains water:
-		if(t.newLink.getTopSolidVertex() != t.newLink.getTopFluidVertex() && t.newLink.right() != null && t.newLink.right().getTopSolidVertex() != t.newLink.right().getTopFluidVertex()){
+		if(t.newLink.getTopSolidVertex() != t.newLink.getTopFluidVertex() && t.newLink.right() != null && t.newLink.right().column().getTopSolidVertex() != t.newLink.right().column().getTopFluidVertex()){
 			//get vertex of water surface
 			Vertex waterVertex = t.newLink.getTopFluidVertex();
 

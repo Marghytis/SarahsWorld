@@ -5,6 +5,7 @@ import java.util.Arrays;
 import util.math.Function;
 import util.math.UsefulF;
 import world.data.Column;
+import world.data.ColumnListElement;
 import world.data.Vertex;
 import world.generation.BiomeManager.State;
 
@@ -79,9 +80,9 @@ public class Ant {
 				transitionToMaterialInSteps(stratum.material, transition);
 				
 				//TODO change old vertices thickness here (left in your thinking)
-				Column c = lastColumn;
+				ColumnListElement c = lastColumn.list;
 				int dx = transition/2;
-				for(Column c2 = lastColumn;dx <= transition && c != null; dx++, c = left? c.right() : c.left()){
+				for(ColumnListElement c2 = lastColumn.list;dx <= transition && c != null; dx++, c = left? c.right() : c.left()){
 					if(left){//if left, add mat below and lower the other mats alphas
 						for(int i = 0; i < index.size; i++){
 							if(i != index.current){

@@ -96,7 +96,7 @@ public class Generator implements GeneratorInterface {
 
 		//add new Column to the world, spawn quests, things, etc.
 		world.processNewColumn(nextColumns[iDir], Dir.s[iDir], zones[iDir].description);
-		Column columnToSpawnThings = iDir == Dir.r ? nextColumns[iDir].left() : nextColumns[iDir];
+		Column columnToSpawnThings = iDir == Dir.r ? nextColumns[iDir].list.left().column() : nextColumns[iDir];
 		oldZone.spawnThings(columnToSpawnThings);
 		
 		return true;

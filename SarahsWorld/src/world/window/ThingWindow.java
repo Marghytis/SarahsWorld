@@ -17,11 +17,10 @@ import things.Thing;
 import things.ThingType;
 import things.aiPlugins.Animating.AnimatingPlugin;
 import util.math.Vec;
-import world.data.Column;
-import world.data.StructureColumn;
+import world.data.ColumnListElement;
 import world.render.DoubleThingVAO;
 
-public class ThingWindow extends RealWorldWindow<Column> {
+public class ThingWindow extends RealWorldWindow {
 	
 	//variables that should be local but are not, due to speed optimization
 	private List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
@@ -31,7 +30,7 @@ public class ThingWindow extends RealWorldWindow<Column> {
 	private ThingPreparationWindow prepare;
 	
 	
-	public ThingWindow(Column anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare) {
+	public ThingWindow(ColumnListElement anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare) {
 		super(anchor, rVisibility);
 		
 		for(int i = 0; i < ThingType.types.length; i++){
@@ -163,8 +162,8 @@ public class ThingWindow extends RealWorldWindow<Column> {
 			//render Thing
 			ThingType.types[type].file.file.bind();
 
-			for(StructureColumn c = start(); c != end(); c = c.next())
-			for(Thing t = c.firstThing(type); t != null; t = t.next()) {
+			for(ColumnListElement c = start(); c != end(); c = c.next())
+			for(Thing t = c.column().firstThing(type); t != null; t = t.next()) {
 				t.aniPlug.prepareRender();
 			}
 
@@ -184,8 +183,8 @@ public class ThingWindow extends RealWorldWindow<Column> {
 			if(ThingType.types[type].ani != null && ThingType.types[type].ani.secondFile != null){
 				ThingType.types[type].ani.secondFile.bind();
 
-				for(StructureColumn c = start(); c != end(); c = c.next())
-				for(Thing t = c.firstThing(type); t != null; t = t.next()) {
+				for(ColumnListElement c = start(); c != end(); c = c.next())
+				for(Thing t = c.column().firstThing(type); t != null; t = t.next()) {
 					t.aniPlug.prepareSecondRender();
 				}
 
@@ -203,8 +202,8 @@ public class ThingWindow extends RealWorldWindow<Column> {
 		ItemType.handheldTex.bind();
 		for(int type = 0; type < ThingType.types.length; type++)
 		if(ThingType.types[type].inv != null)
-		for(StructureColumn c = start(); c != end(); c = c.next())
-		for(Thing cursor = c.firstThing(type); cursor != null; cursor = cursor.next()){
+		for(ColumnListElement c = start(); c != end(); c = c.next())
+		for(Thing cursor = c.column().firstThing(type); cursor != null; cursor = cursor.next()){
 			cursor.itemStacks[cursor.selectedItem].item.renderHand(cursor, cursor.itemAni);
 		}
 		Shader.bindNone();
@@ -229,8 +228,8 @@ public class ThingWindow extends RealWorldWindow<Column> {
 //		}
 	}
 	public void forEach(int type, Consumer<Thing> cons){
-		for(StructureColumn c = start(); c != end(); c = c.next()) {
-			for(Thing t = c.firstThing(type); t != null; t = t.next()) {
+		for(ColumnListElement c = start(); c != end(); c = c.next()) {
+			for(Thing t = c.column().firstThing(type); t != null; t = t.next()) {
 				cons.accept(t);
 			}
 		}

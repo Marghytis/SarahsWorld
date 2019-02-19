@@ -23,7 +23,7 @@ import util.Color;
 import util.TrueTypeFont;
 import util.math.Vec;
 import world.World;
-import world.data.Column;
+import world.data.ColumnListElement;
 import world.data.Vertex;
 import world.generation.Biome;
 
@@ -618,8 +618,8 @@ public class MenuManager implements Updater, Renderer, Listener {
 										"dir: " + Main.world.avatar.aniPlug.getOrientation() + "\n" +
 										"riding: " + Main.world.avatar.isRiding + "\n" +
 										"where.water: " + Main.world.avatar.where.water + "\n" +
-										"left column: " + Main.world.landscapeWindow.start().xIndex + "\n" +
-										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().xIndex : "null") + "\n" +
+										"left column: " + Main.world.landscapeWindow.start().getIndex() + "\n" +
+										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().getIndex() : "null") + "\n" +
 										"Biome: " + Main.world.avatar.newLink.biome.toString();
 							return s;
 						}
@@ -633,7 +633,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			public void setElements(Menu menu, Main game, Object... extraData){
 				menu.setElements(
 						new FlexibleTextField(game, () -> {
-							Column c = game.getWorld().landscapeWindow.at(game.getWorld().window.toWorldPos(game.getInputData().getMousePos()).x);
+							ColumnListElement c = game.getWorld().landscapeWindow.at(game.getWorld().window.toWorldPos(game.getInputData().getMousePos()).x);
 							String s = "";
 							for(int i = 0; i < Biome.layerCount; i++) {
 								Vertex v = c.vertices(i);

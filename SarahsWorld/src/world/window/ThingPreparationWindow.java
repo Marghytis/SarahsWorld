@@ -10,15 +10,15 @@ import things.Thing;
 import things.ThingSet;
 import things.ThingType;
 import world.data.Column;
+import world.data.ColumnListElement;
 import world.data.Dir;
-import world.data.StructureColumn;
 import world.render.DoubleThingVAO;
 
 
 /**
  * A larger window than ThingWindow that lists the things it encounters so they can be added together at a later time.
  */
-public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWorldWindow<T> {
+public class ThingPreparationWindow extends RealWorldWindow {
 	
 	private static int addBatchSize = 70;
 	
@@ -32,7 +32,7 @@ public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWo
 	
 	private int dxPreparation, dxVisibility, dxDontCare, dxPreparation2, dxVisibility2, dxDontCare2, dxFree2;
 
-	public ThingPreparationWindow(T anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare, DoubleThingVAO[] vaos) {
+	public ThingPreparationWindow(ColumnListElement anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare, DoubleThingVAO[] vaos) {
 		super(anchor, rObservation);
 		this.dxPreparation = rObservation - rPreparation;
 		this.dxVisibility = rObservation - rVisibility;
@@ -65,11 +65,11 @@ public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWo
 	private void setCorrectStates() {
 		//remove any things that were missed by the window because of too high speed
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
-			vaos[ttype].free(ends[Dir.l].getX(), ends[Dir.l].getX() + (Column.COLUMN_WIDTH*dxPreparation));
-			vaos[ttype].free(ends[Dir.l].getX() + (Column.COLUMN_WIDTH*dxPreparation2), ends[Dir.r].getX());
+			vaos[ttype].free(ends[Dir.l].column().getX(), ends[Dir.l].column().getX() + (Column.COLUMN_WIDTH*dxPreparation));
+			vaos[ttype].free(ends[Dir.l].column().getX() + (Column.COLUMN_WIDTH*dxPreparation2), ends[Dir.r].column().getX());
 		}
 		int xStart = start().getIndex();
-		for(T c = start(); c != end(); c = c.next()) {
+		for(ColumnListElement c = start(); c != end(); c = c.next()) {
 			int dx = c.getIndex() - xStart; 
 			if( dx < dxPreparation) {//not prepared l
 				setFree(c, Dir.l);
@@ -100,10 +100,10 @@ public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWo
 	 * @param c
 	 * @param end
 	 */
-	private void setFree(StructureColumn<T> c, int end) {
+	private void setFree(ColumnListElement c, int end) {
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
 			if(ThingType.types[ttype].ani == null) continue;
-			for(Thing t = c.firstThing(ttype); t != null; t = t.next()){
+			for(Thing t = c.column().firstThing(ttype); t != null; t = t.next()){
 				if(isVisible(t)) {
 					prepareRemoval(t);
 				} else if(isPreparedToBeAdded(t)){
@@ -112,10 +112,10 @@ public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWo
 			}
 		}
 	}
-	private void setPrepared(StructureColumn<T> c, int end) {
+	private void setPrepared(ColumnListElement c, int end) {
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
 			if(ThingType.types[ttype].ani == null) continue;
-			for(Thing t = c.firstThing(ttype); t != null; t = t.next()){
+			for(Thing t = c.column().firstThing(ttype); t != null; t = t.next()){
 				if(!isVisible(t)) {
 					prepareAddition(t, end);
 				}//else no need to be added
@@ -123,12 +123,12 @@ public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWo
 			}
 		}
 	}
-	private void setVisible(StructureColumn<T> c, int end) {
+	private void setVisible(ColumnListElement c, int end) {
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
 			if(ThingType.types[ttype].ani == null) continue;
 			
 			boolean addNeeded = false;
-			for(Thing t = c.firstThing(ttype); t != null; t = t.next()){
+			for(Thing t = c.column().firstThing(ttype); t != null; t = t.next()){
 				if(!isVisible(t)) {
 					prepareAddition(t, end);
 					addNeeded = true;
@@ -139,21 +139,21 @@ public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWo
 				addPreparedThings(ttype, end);
 		}
 	}
-	private void addInvisibles(StructureColumn<T> c) {
+	private void addInvisibles(ColumnListElement c) {
 		
 		//the attachements of things that aren't rendered are updated
 		//rendered things have an Animating plugin, which completes this task
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++)
 			if(ThingType.types[ttype].ani == null && ThingType.types[ttype].attachment != null)
-				for(Thing t = c.firstThing(ttype); t != null; t = t.next())
+				for(Thing t = c.column().firstThing(ttype); t != null; t = t.next())
 					t.attachment.onVisibilityChange(true);
 	}
-	private void removeInvisibles(StructureColumn<T> c) {
+	private void removeInvisibles(ColumnListElement c) {
 
 		//the attachements of things that aren't rendered are updated
 		for(int ttype = 0; ttype < ThingType.types.length; ttype++)
 			if(ThingType.types[ttype].ani == null && ThingType.types[ttype].attachment != null)
-				for(Thing t = c.firstThing(ttype); t != null; t = t.next())
+				for(Thing t = c.column().firstThing(ttype); t != null; t = t.next())
 					t.attachment.onVisibilityChange(false);
 	}
 	private boolean isPreparedToBeAdded(Thing t) {
@@ -168,7 +168,7 @@ public class ThingPreparationWindow<T extends StructureColumn<T>> extends RealWo
 	}
 	public void loadCenter() {
 		start = true;
-		for(T c = start(); c != end(); c = c.next()) {
+		for(ColumnListElement c = start(); c != end(); c = c.next()) {
 			setPrepared(c, Dir.l);
 		}
 		for(int type = 0; type < ThingType.types.length; type++) {

@@ -3,7 +3,7 @@ package world.data;
 import things.Thing;
 import things.ThingType;
 
-public interface StructureColumn<T extends StructureColumn<T>> extends DirList<T> {
+public interface StructureColumn {
 
 	public void add(Thing t);
 	public void remove(Thing t);	

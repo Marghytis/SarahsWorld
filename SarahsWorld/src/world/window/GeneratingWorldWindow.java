@@ -1,13 +1,13 @@
 package world.window;
 
-import world.data.StructureColumn;
+import world.data.ColumnListElement;
 import world.generation.GeneratorInterface;
 
 public class GeneratingWorldWindow extends RealWorldWindow {
 
 	GeneratorInterface gen;
 	
-	public GeneratingWorldWindow(StructureColumn anchor, int radius, GeneratorInterface gen) {
+	public GeneratingWorldWindow(ColumnListElement anchor, int radius, GeneratorInterface gen) {
 		super(anchor, radius);
 		this.gen = gen;
 	}

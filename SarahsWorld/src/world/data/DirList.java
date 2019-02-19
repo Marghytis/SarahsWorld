@@ -1,6 +1,6 @@
 package world.data;
 
-public interface DirList<T extends DirList<T>> extends ListElement<T> {
+public interface DirList<T> extends ListElement<T> {
 
 	public void setRight(T c);
 	public T right();

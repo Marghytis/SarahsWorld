@@ -1,22 +1,21 @@
 package world.window;
 
 import exceptions.WorldTooSmallException;
+import world.data.ColumnListElement;
 import world.data.Dir;
-import world.data.StructureColumn;
 
-public abstract class ArrayWorldWindow<T extends StructureColumn<T> > extends RealWorldWindow<T> {
+public abstract class ArrayWorldWindow extends RealWorldWindow {
 
-	protected T[] columns;
+	protected ColumnListElement[] columns;
 	protected int center;
 	private int[] nextIndex;//is private because it really should not be changed outside this class
 	private boolean isBuilt = false;;
 	
 	int sideLastInwards;
 	
-	@SuppressWarnings("unchecked")
-	public ArrayWorldWindow(T anchor, int radius) throws WorldTooSmallException {
+	public ArrayWorldWindow(ColumnListElement anchor, int radius) throws WorldTooSmallException {
 		super(anchor, radius);
-		columns = (T[])new StructureColumn[2*radius+1];
+		columns = new ColumnListElement[2*radius+1];
 		this.center = anchor.getIndex();
 		
 		nextIndex = new int[2];
@@ -33,7 +32,7 @@ public abstract class ArrayWorldWindow<T extends StructureColumn<T> > extends Re
 	 * @param radius
 	 * @throws WorldTooSmallException
 	 */
-	private void loadAllColumns(T anchor, int center1) throws WorldTooSmallException {
+	private void loadAllColumns(ColumnListElement anchor, int center1) throws WorldTooSmallException {
 		//calculate current window center
 		center = center1;
 		//move anchor to center
@@ -94,7 +93,7 @@ public abstract class ArrayWorldWindow<T extends StructureColumn<T> > extends Re
 		nextIndex[iDir] = shiftBy1(nextIndex[iDir], 1-iDir);
 		sideLastInwards = iDir;
 	}
-	protected void addColumn(T c, int iDir) {
+	protected void addColumn(ColumnListElement c, int iDir) {
 		columns[nextIndex[iDir]] = c;
 		addAt(c, nextIndex[iDir]);
 //		if(nextIndex[iDir] == shiftBy1(nextIndex[1-iDir], iDir)) {
@@ -117,17 +116,17 @@ public abstract class ArrayWorldWindow<T extends StructureColumn<T> > extends Re
 		}
 	}
 	
-	protected abstract void addAt(T c, int index);
+	protected abstract void addAt(ColumnListElement c, int index);
 	
-	protected void letAppear(T c, int iDir) {
+	protected void letAppear(ColumnListElement c, int iDir) {
 		//to override if wanted
 	}
 	
-	protected void letDisappear(T c) {
+	protected void letDisappear(ColumnListElement c) {
 		//override
 	}
 	
-	void insertColumn(T c, boolean modifiyNeighbors){
+	void insertColumn(ColumnListElement c, boolean modifiyNeighbors){
 		int index = c.getIndex() - (center - radius);//index relative to the most left location of this window
 		columns[index] = c;
 		if(modifiyNeighbors) {

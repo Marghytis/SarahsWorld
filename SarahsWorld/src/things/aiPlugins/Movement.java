@@ -4,7 +4,6 @@ import main.Main;
 import menu.Settings.Key;
 import things.AiPlugin;
 import things.Thing;
-import things.ThingType;
 import util.math.Function;
 import util.math.Vec;
 import world.data.Column;
@@ -140,7 +139,7 @@ public class Movement extends AiPlugin {
 			} else {
 				lastOne = false;
 			}
-			cursor = t.vel.x > 0 ? cursor.right() :  cursor.left();
+			cursor = t.vel.x > 0 ? cursor.right().column() :  cursor.left().column();
 		}
 		return false;
 	}

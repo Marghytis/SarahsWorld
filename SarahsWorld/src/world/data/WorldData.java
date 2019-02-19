@@ -54,9 +54,9 @@ public class WorldData {
 		}
 	}
 	public Thing findAvatar() {
-		for(StructureColumn<Column> c = leftColumn; c != rightColumn.right(); c = c.right()) {
-			if(c.getFirst(ThingType.SARAH) != null) {
-				return c.getFirst(ThingType.SARAH);
+		for(ColumnListElement c = leftColumn.list; c != rightColumn.list.right(); c = c.right()) {
+			if(c.column().getFirst(ThingType.SARAH) != null) {
+				return c.column().getFirst(ThingType.SARAH);
 			}
 		}
 		return null;
@@ -121,23 +121,23 @@ public class WorldData {
 		addFirst(new Column(0, biome, biome.topColor, biome.lowColor, vertices));
 	}
 	
-	public StructureColumn<Column> addLeft(Column l){
+	public ColumnListElement addLeft(Column l){
 		l.setIndex(leftColumn.getIndex()-1);
-		l.setRight(leftColumn);
+		l.list.setRight(leftColumn);
 		leftColumn.setLeft(l);
 		leftColumn = l;
-		return l;
+		return l.list;
 	}
 	
-	public StructureColumn<Column> addRight(Column r){
+	public ColumnListElement addRight(Column r){
 		r.setIndex(rightColumn.getIndex()+1);
 		r.setLeft(rightColumn);
 		rightColumn.setRight(r);
 		rightColumn = r;
-		return r;
+		return r.list;
 	}
 	
-	public StructureColumn<Column> add(Column c, int dir) {
+	public ColumnListElement add(Column c, int dir) {
 		if(dir == -1) {
 			addLeft(c);
 		} else if(dir == 1) {
@@ -145,7 +145,7 @@ public class WorldData {
 		} else {
 			new Exception("Unknown direction!").printStackTrace();
 		}
-		return c;
+		return c.list;
 	}
 
 	public void save(DataOutputStream output) {

@@ -14,8 +14,9 @@ import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
 import world.data.Column;
+import world.data.ColumnListElement;
 
-public class BackgroundWindow extends ArrayWorldWindow<Column> {
+public class BackgroundWindow extends ArrayWorldWindow {
 
 	private static int 	indicesPerQuad = 6,
 			verticesPerPoint = 3, 
@@ -29,7 +30,7 @@ public class BackgroundWindow extends ArrayWorldWindow<Column> {
 	byte[] color = new byte[4];//use 'color' only cleared
 	ByteBuffer changerColor = BufferUtils.createByteBuffer(bytesPerVertex*verticesPerPoint);
 	
-	public BackgroundWindow(Column anchor, int radius) throws WorldTooSmallException {
+	public BackgroundWindow(ColumnListElement anchor, int radius) throws WorldTooSmallException {
 		super(anchor, radius);
 		this.pointsX = columns.length;
 		vaoColor = new VAO(
@@ -82,11 +83,11 @@ public class BackgroundWindow extends ArrayWorldWindow<Column> {
 	
 	ByteBuffer createVertexBufferColor(){
 		ByteBuffer buffer = BufferUtils.createByteBuffer(2*columns.length*verticesPerPoint*bytesPerVertex);
-		for(Column column : columns){
-			putPointDataDarkness(buffer, column);
+		for(ColumnListElement column : columns){
+			putPointDataDarkness(buffer, column.column());
 		}
-		for(Column column : columns){
-			putPointDataBackground(buffer, column);
+		for(ColumnListElement column : columns){
+			putPointDataBackground(buffer, column.column());
 		}
 		buffer.flip();
 		return buffer;
@@ -124,16 +125,17 @@ public class BackgroundWindow extends ArrayWorldWindow<Column> {
 		buffer.put(color);
 	}
 
-	protected void addAt(Column c, int index) {
+	@Override
+	protected void addAt(ColumnListElement c, int index) {
 
 		//Darkness and Background
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vaoColor.vbos[0].handle);
 			//darkness
-			putPointDataDarkness(changerColor, c);
+			putPointDataDarkness(changerColor, c.column());
 			changerColor.flip();
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, index*verticesPerPoint*bytesPerVertex, changerColor);
 			//background
-			putPointDataBackground(changerColor, c);
+			putPointDataBackground(changerColor, c.column());
 			changerColor.flip();
 			GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (index + pointsX)*verticesPerPoint*bytesPerVertex, changerColor);
 		

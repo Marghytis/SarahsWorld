@@ -16,6 +16,7 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
+import world.data.ColumnListElement;
 import world.data.Dir;
 import world.data.Vertex;
 import world.data.WorldData;
@@ -78,7 +79,7 @@ public class World {
 	
 	public void init(PollData inputData){
 
-		Column anchor = data.getRightColumn();
+		ColumnListElement anchor = data.getRightColumn().list;
 
 		//define ranges
 		int windowRadius = (int)((Main.HALFSIZE.w )/Column.COLUMN_WIDTH);
@@ -95,7 +96,7 @@ public class World {
 		thingWindow.moveToColumn(startX);
 		thingWindow.loadCenter();
 		try {
-			landscapeWindow 			 = new TerrainWindow<Column>(   anchor, windowRadius + 6);
+			landscapeWindow 			 = new TerrainWindow(   anchor, windowRadius + 6);
 			backgroundRenderingWindow    = new BackgroundWindow(anchor, windowRadius + 6);
 		} catch (WorldTooSmallException e) {
 			throw new WorldCreationException("World data is not large enough yet : (" + genWindow.getEnd(Dir.l).getIndex() + " <-> " + genWindow.getEnd(Dir.r).getIndex() + ")", e);

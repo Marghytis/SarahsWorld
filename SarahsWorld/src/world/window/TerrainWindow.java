@@ -20,12 +20,13 @@ import render.TexFile;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
-import world.data.DetailedColumn;
+import world.data.Column;
+import world.data.ColumnListElement;
 import world.data.Vertex;
 import world.generation.Biome;
 import world.generation.Material;
 
-public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow<T> {
+public class TerrainWindow extends ArrayWorldWindow {
 
 	private static int 	indicesPerQuad = 6,
 				verticesPerPoint = 3,
@@ -42,7 +43,7 @@ public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow
 	ArrayList<Patch> waterPatches = new ArrayList<>();
 	Patch[] currentPatches;
 
-	public TerrainWindow(T anchor, int columnRadius) throws WorldTooSmallException {
+	public TerrainWindow(ColumnListElement anchor, int columnRadius) throws WorldTooSmallException {
 		super(anchor, columnRadius);
 		pointsX = columns.length;
 		vao = new VAO(
@@ -116,11 +117,11 @@ public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow
 		Shader.bindNone();
 	}
 	
-	protected void addAt(T c, int index) {
+	protected void addAt(ColumnListElement c, int index) {
 		//landscape
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.vbos[0].handle);
 			for(int yIndex = 0; yIndex < pointsY; yIndex++){
-				putPointData(changer, c, yIndex);
+				putPointData(changer, c.column(), yIndex);
 				changer.flip();
 				GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (yIndex*pointsX + index)*verticesPerPoint*bytesPerVertex, changer);
 			}
@@ -152,7 +153,7 @@ public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow
 				do {//while(column != indexShift), loop through all columns
 					if(started == -1){
 						for(int j = 0; j < Vertex.maxMatCount; j++){
-							if(columns[column].vertices(y).mats()[j].ordinal() == i){//a new patch starts here
+							if(columns[column].column().vertices(y).mats()[j].ordinal() == i){//a new patch starts here
 								started = column;
 								index = j;
 								break;//There might rise problems, if the same material appears twice in a single vertex...
@@ -160,7 +161,7 @@ public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow
 						}
 
 						//the current patch ends here. if there is an open patch it gets rendered cut
-					} else if(columns[column].vertices(y).mats()[index].ordinal() != i || column == oneBeforeStart){
+					} else if(columns[column].column().vertices(y).mats()[index].ordinal() != i || column == oneBeforeStart){
 						drawPatch(y, started, column, indicesOffset, index);
 						started = -1;
 					}
@@ -178,10 +179,10 @@ public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow
 		//loop all layers
 		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
 			//loop all columns in this layer
-			int  column = startIndexLeft(), matIndex = columns[column].vertices(y).firstMatIndex, endColumn = column;
+			int  column = startIndexLeft(), matIndex = columns[column].column().vertices(y).firstMatIndex, endColumn = column;
 			do {
 				//loop all material slots
-				matIndex = columns[column].vertices(y).firstMatIndex;
+				matIndex = columns[column].column().vertices(y).firstMatIndex;
 				int matIndex2 = 0;
 				do {
 					
@@ -210,14 +211,14 @@ public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow
 		}
 		//start a new patch
 		if((!currentPatches[iMat].active() || currentPatches[iMat].end == -1)
-				&& columns[iStartColumn].vertices(iLayer).mats[iMat] != Material.AIR){
+				&& columns[iStartColumn].column().vertices(iLayer).mats[iMat] != Material.AIR){
 			
-			currentPatches[iMat].set(iLayer, iMat, iStartColumn, columns[iStartColumn].vertices(iLayer).mats[iMat]);
+			currentPatches[iMat].set(iLayer, iMat, iStartColumn, columns[iStartColumn].column().vertices(iLayer).mats[iMat]);
 			
 			//search for patch end
 			int end = iStartColumn;
 			//count up column2 while the layer still contains this material and the landscape window didn't end.
-			while(columns[end].vertices(iLayer).mats[iMat] == currentPatches[iMat].mat && end != oneBeforeStart) {
+			while(columns[end].column().vertices(iLayer).mats[iMat] == currentPatches[iMat].mat && end != oneBeforeStart) {
 				end = add1To(end);
 			}
 			drawPatch(currentPatches[iMat], end, indicesOffset, water);
@@ -289,15 +290,15 @@ public class TerrainWindow<T extends DetailedColumn<T>> extends ArrayWorldWindow
 	private ByteBuffer createVertexBuffer(){
 		ByteBuffer buffer = BufferUtils.createByteBuffer(pointsX*pointsY*verticesPerPoint*bytesPerVertex);
 		for(int yIndex = 0; yIndex < pointsY; yIndex++){// Put Vertices in Buffer:
-			for(T column : columns){
-				putPointData(buffer, column, yIndex);
+			for(ColumnListElement column : columns){
+				putPointData(buffer, column.column(), yIndex);
 			}
 		}
 		buffer.flip();
 		return buffer;
 	}
 	
-	private void putPointData(ByteBuffer buffer, T column, int yIndex){
+	private void putPointData(ByteBuffer buffer, Column column, int yIndex){
 		float 	x0 = (float)column.getX(),
 				y0 = (float)column.vertices(yIndex).y,
 				y1 = (float)column.vertices(yIndex+1).y,

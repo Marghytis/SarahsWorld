@@ -5,7 +5,7 @@ import menu.Settings;
 import things.AiPlugin;
 import things.Thing;
 import things.ThingType;
-import world.data.Column;
+import world.data.ColumnListElement;
 
 public class Following extends AiPlugin {
 
@@ -53,7 +53,7 @@ public class Following extends AiPlugin {
 			Thing closest = null;
 			double distanceSquare = maxDistanceSquare+10;
 			for(int type = 0; type < targetClasses.length; type++){
-				for(Column c = Main.world.landscapeWindow.start(); c != Main.world.landscapeWindow.end(); c = c.next())
+				for(ColumnListElement c = Main.world.landscapeWindow.start(); c != Main.world.landscapeWindow.end(); c = c.next())
 				for(Thing t2 = c.firstThing(targetClasses[type].ordinal); t2 != null; t2 = t2.next()){
 					double distSqu = t.pos.minus(t2.pos).lengthSquare();
 					if(distSqu < distanceSquare){
