@@ -94,32 +94,32 @@ public class BackgroundWindow extends ArrayWorldWindow {
 	}
 	
 	public void putPointDataDarkness(ByteBuffer buffer, Column c){
-		buffer.putFloat((float)c.xReal);
+		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)c.getTopSolidVertex().y);
 		buffer.put(light);
 		
-		buffer.putFloat((float)c.xReal);
+		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)(c.getTopSolidVertex().y - darknessDistance));
 		buffer.put(dark);
 		
-		buffer.putFloat((float)c.xReal);
+		buffer.putFloat((float)c.getX());
 		buffer.putFloat(-2000);
 		buffer.put(dark);
 	}
 	
 	public void putPointDataBackground(ByteBuffer buffer, Column c){
-		buffer.putFloat((float)c.xReal);
+		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)1);//always the top of the screen
 		c.topColor.bytes(color);
 		buffer.put(color);
 		
-		buffer.putFloat((float)c.xReal);
+		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)-1);//always the bottom of the screen
 		c.lowColor.bytes(color);
 		buffer.put(color);
 
 		//just to fit in the vbo:
-		buffer.putFloat((float)c.xReal);
+		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)-1.1f);//always the bottom of the screen -1
 		c.lowColor.bytes(color);
 		buffer.put(color);

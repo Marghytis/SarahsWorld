@@ -594,7 +594,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 							if(t.type.life != null)
 								s += "health: " + t.health + "\n";
 							if(t.newLink != null)
-								s += "link x index: " + t.newLink.xIndex + "\n";
+								s += "link x index: " + t.newLink.getIndex() + "\n";
 							if(t.aniPlug != null)
 								s += "added to VAO: " + t.aniPlug.addedToVAO() + "\n";
 							

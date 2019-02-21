@@ -12,8 +12,8 @@ public class Column extends ColumnListElement {
 	public static final double COLUMN_WIDTH = 20;
 	private Vertex[] vertices;
 	private Thing[] things;//these are the anchors. may be null
-	public int xIndex;
-	public double xReal;
+	private int xIndex;
+	private double xReal;
 	private Vertex topSolidVertex, topFluidVertex;
 	private double collisionYSolid, collisionYFluid;
 	public Biome biome;

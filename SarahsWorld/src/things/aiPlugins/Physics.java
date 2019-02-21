@@ -106,8 +106,8 @@ public class Physics extends AiPlugin {
 		//UPDATE WORLD LINK
 
 		int column = (int)Math.floor(t.pos.x/Column.COLUMN_WIDTH);
-		while(t.newLink.xIndex < column && t.newLink.right() != null) t.newLink = t.newLink.right().column();
-		while(t.newLink.xIndex > column && t.newLink.left() != null) t.newLink = t.newLink.left().column();
+		while(t.newLink.getIndex() < column && t.newLink.right() != null) t.newLink = t.newLink.right().column();
+		while(t.newLink.getIndex() > column && t.newLink.left() != null) t.newLink = t.newLink.left().column();
 	}
 	
 	public void updateRotation(Thing t, double delta){

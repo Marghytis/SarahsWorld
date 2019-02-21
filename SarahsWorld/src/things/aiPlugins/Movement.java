@@ -125,7 +125,7 @@ public class Movement extends AiPlugin {
 		boolean lastOne = false;
 		while(cursor != null){
 			if(/*cursor.xReal > xPeak && */cursor.getCollisionY() != cursor.getCollisionYFluid()){
-				double y = f.f(cursor.xReal - t.pos.x);
+				double y = f.f(cursor.getX() - t.pos.x);
 				//if one cursor is below the graph and the other above, that's where she'll collide
 				if(cursor.getTopFluidVertex().y < y){
 					lastOne = true;
