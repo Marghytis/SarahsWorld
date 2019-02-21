@@ -54,9 +54,9 @@ public class WorldData {
 		}
 	}
 	public Thing findAvatar() {
-		for(ColumnListElement c = leftColumn.list; c != rightColumn.list.right(); c = c.right()) {
-			if(c.column().getFirst(ThingType.SARAH) != null) {
-				return c.column().getFirst(ThingType.SARAH);
+		for(Column c = leftColumn; c != rightColumn.right(); c = c.right()) {
+			if(c.getFirst(ThingType.SARAH) != null) {
+				return c.getFirst(ThingType.SARAH);
 			}
 		}
 		return null;
@@ -121,23 +121,23 @@ public class WorldData {
 		addFirst(new Column(0, biome, biome.topColor, biome.lowColor, vertices));
 	}
 	
-	public ColumnListElement addLeft(Column l){
+	public ColumnListElement addLeft(ColumnListElement l){
 		l.setIndex(leftColumn.getIndex()-1);
-		l.list.setRight(leftColumn);
+		l.setRight(leftColumn);
 		leftColumn.setLeft(l);
-		leftColumn = l;
-		return l.list;
+		leftColumn = l.column();
+		return l;
 	}
 	
-	public ColumnListElement addRight(Column r){
+	public ColumnListElement addRight(ColumnListElement r){
 		r.setIndex(rightColumn.getIndex()+1);
 		r.setLeft(rightColumn);
 		rightColumn.setRight(r);
-		rightColumn = r;
-		return r.list;
+		rightColumn = r.column();
+		return r;
 	}
 	
-	public ColumnListElement add(Column c, int dir) {
+	public ColumnListElement add(ColumnListElement c, int dir) {
 		if(dir == -1) {
 			addLeft(c);
 		} else if(dir == 1) {
@@ -145,7 +145,7 @@ public class WorldData {
 		} else {
 			new Exception("Unknown direction!").printStackTrace();
 		}
-		return c.list;
+		return c;
 	}
 
 	public void save(DataOutputStream output) {

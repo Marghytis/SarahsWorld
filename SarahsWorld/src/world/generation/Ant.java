@@ -80,9 +80,9 @@ public class Ant {
 				transitionToMaterialInSteps(stratum.material, transition);
 				
 				//TODO change old vertices thickness here (left in your thinking)
-				ColumnListElement c = lastColumn.list;
+				ColumnListElement c = lastColumn;
 				int dx = transition/2;
-				for(ColumnListElement c2 = lastColumn.list;dx <= transition && c != null; dx++, c = left? c.right() : c.left()){
+				for(ColumnListElement c2 = lastColumn;dx <= transition && c != null; dx++, c = left? c.right() : c.left()){
 					if(left){//if left, add mat below and lower the other mats alphas
 						for(int i = 0; i < index.size; i++){
 							if(i != index.current){

@@ -139,7 +139,7 @@ public class Movement extends AiPlugin {
 			} else {
 				lastOne = false;
 			}
-			cursor = t.vel.x > 0 ? cursor.right().column() :  cursor.left().column();
+			cursor = t.vel.x > 0 ? cursor.right() :  cursor.left();
 		}
 		return false;
 	}

@@ -8,7 +8,7 @@ import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
 
-public class Column implements DetailedColumn, Listed<ColumnListElement>, DirList<ColumnListElement> {
+public class Column extends ColumnListElement {
 	public static final double COLUMN_WIDTH = 20;
 	private Vertex[] vertices;
 	private Thing[] things;//these are the anchors. may be null
@@ -19,7 +19,7 @@ public class Column implements DetailedColumn, Listed<ColumnListElement>, DirLis
 	public Biome biome;
 	public Color topColor, lowColor;
 	public int testInt;
-	public ColumnListElement list;
+	public DirList<Column> list;
 
 	public Thing getFirst(ThingType type) {
 		return firstThing(type);
@@ -44,7 +44,7 @@ public class Column implements DetailedColumn, Listed<ColumnListElement>, DirLis
 		for(Vertex v : vertices){
 			v.parent = this;
 		}
-		this.list = new ColumnListElement(this);
+		this.list = this;
 		setCollisionVecs(collisionVecs);
 		this.things = new Thing[ThingType.types.length];
 	}
@@ -89,14 +89,14 @@ public class Column implements DetailedColumn, Listed<ColumnListElement>, DirLis
 	public Column getRandomTopLocation(Random random, Vec posField){
 		topSolidVertex = findTopSolidVertex(vertices);
 		double fac = random.nextDouble();
-		if(list.right != null) {
+		if(right != null) {
 			posField.set(	
-					xReal + (fac*(list.right.column().getX() - xReal)),
-					topSolidVertex.y + (fac*(list.right.column().vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+					xReal + (fac*(right.getX() - xReal)),
+					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		} else {
 			posField.set(	
-					xReal + (fac*(list.left.column().getX() - xReal)),
-					topSolidVertex.y + (fac*(list.left.column().vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+					xReal + (fac*(left.getX() - xReal)),
+					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		}
 		return this;
 	}
@@ -106,12 +106,12 @@ public class Column implements DetailedColumn, Listed<ColumnListElement>, DirLis
 		double fac = random.nextDouble();
 		if(dir == -1) {
 			posField.set(
-					xReal + (fac*(list.right.column().getX() - xReal)),
-					topSolidVertex.y + (fac*(list.right.column().vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+					xReal + (fac*(right.getX() - xReal)),
+					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		} else if(dir == 1) {
 			posField.set(
-					xReal + (fac*(list.left.column().getX() - xReal)),
-					topSolidVertex.y + (fac*(list.left.column().vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+					xReal + (fac*(left.getX() - xReal)),
+					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
 		} else {
 			new Exception("Unknown direction!").printStackTrace();
 		}
@@ -137,11 +137,11 @@ public class Column implements DetailedColumn, Listed<ColumnListElement>, DirLis
 	}
 	
 	public Vec getTopLine(Vec topLine){
-		return topLine.set(list.right.column().getX() - xReal, list.right.column().vertices[topSolidVertex.yIndex].y - topSolidVertex.y);
+		return topLine.set(right.getX() - xReal, right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y);
 	}
 	
 	public Vec getCollisionLine(Vec topLine){
-		return topLine.set(list.right.column().getX() - xReal, list.right.column().getCollisionY() - getCollisionY());
+		return topLine.set(right.getX() - xReal, right.getCollisionY() - getCollisionY());
 	}
 	public final Vertex getTopSolidVertex(){
 		return topSolidVertex;
@@ -155,41 +155,13 @@ public class Column implements DetailedColumn, Listed<ColumnListElement>, DirLis
 	public final double getCollisionYFluid(){
 		return collisionYFluid;
 	}
-	@Override
 	public int getIndex() {
 		return xIndex;
 	}
-	@Override
 	public double getX() {
 		return xReal;
 	}
-	@Override
 	public void setX(double x) {
 		xReal = x;
 	}
-	@Override
-	public ColumnListElement getList() {
-		return list;
-	}
-	@Override
-	public ColumnListElement next() {
-		return list.next();
-	}
-	@Override
-	public ColumnListElement prev() {
-		return list.prev();
-	}
-	@Override
-	public ColumnListElement right() {
-		return list.right();
-	}
-	@Override
-	public ColumnListElement left() {
-		return list.left();
-	}
-	@Override
-	public ColumnListElement next(int iDir) {
-		return list.next(iDir);
-	}
-
 }

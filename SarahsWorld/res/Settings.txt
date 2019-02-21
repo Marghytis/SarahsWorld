@@ -20,5 +20,5 @@ boolean	SOUND								true
 boolean	MUSIC								false
 boolean	DEBUGGING							true
 boolean IMMORTAL							true
-String	ZONETYPE							GRAVEYARD
+String	ZONETYPE							JUNGLE
 boolean RENDER_THINGS						true

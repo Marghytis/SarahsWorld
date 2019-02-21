@@ -19,7 +19,7 @@ public class ColorAnt {
 	public void switchBiome(Biome newBiome) {
 		dx = colorTransition;
 		{int dx = colorTransition-1;
-		for(ColumnListElement c = manager.lastColumn.list;dx >= 0 && c != null; dx--, c = manager.left? c.right() : c.left()){
+		for(ColumnListElement c = manager.lastColumn;dx >= 0 && c != null; dx--, c = manager.left? c.right() : c.left()){
 			c.column().topColor = getTransitionColor(manager.biome.topColor, newBiome.topColor, dx, colorTransition*2);
 			c.column().lowColor = getTransitionColor(manager.biome.lowColor, newBiome.lowColor, dx, colorTransition*2);
 //			c.topColor = newBiome.topColor;

@@ -845,7 +845,7 @@ public class ThingType {
 		public void update(Thing t, double delta) {
 			((MovingEffect)t.effect).setPos(t.pos);
 			if(!t.effect.living()) {
-				Main.world.thingWindow.remove(t);
+				t.remove();
 			}
 		}
 	};
@@ -867,7 +867,7 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta) {
 			if(!t.effect.living()) {
-				Main.world.thingWindow.remove(t);
+				t.remove();
 			}
 		}
 	};

@@ -3,31 +3,22 @@ package world.data;
 import things.Thing;
 import things.ThingType;
 
-public class ColumnListElement extends DirListElement<ColumnListElement>{
+public abstract class ColumnListElement extends DirListElement<Column> {
 
-	private Column column;
-
-	public ColumnListElement(Column column) {
-		this.column = column;
+	public void setLeft(ColumnListElement c) {
+		super.setLeft((Column)c);
+	}
+	public void setRight(ColumnListElement c) {
+		super.setRight((Column)c);
 	}
 	
 	public Column column() {
-		return column;
+		return (Column) this;
 	}
-	
-	public int getIndex() {
-		return column.getIndex();
-	}
-	
-	public Vertex vertices(int index) {
-		return column.vertices(index);
-	}
-	
-	public Thing firstThing(int type) {
-		return column.firstThing(type);
-	}
-	
-	public Thing firstThing(ThingType type) {
-		return column.firstThing(type);
-	}
+
+	public abstract void setIndex(int index);
+	public abstract int getIndex();
+	public abstract Vertex vertices(int yIndex);
+	public abstract Thing firstThing(int ordinal);
+	public abstract Thing firstThing(ThingType coin);
 }

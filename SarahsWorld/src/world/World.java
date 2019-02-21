@@ -16,7 +16,6 @@ import things.Thing;
 import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
-import world.data.ColumnListElement;
 import world.data.Dir;
 import world.data.Vertex;
 import world.data.WorldData;
@@ -79,7 +78,7 @@ public class World {
 	
 	public void init(PollData inputData){
 
-		ColumnListElement anchor = data.getRightColumn().list;
+		Column anchor = data.getRightColumn();
 
 		//define ranges
 		int windowRadius = (int)((Main.HALFSIZE.w )/Column.COLUMN_WIDTH);

@@ -4,6 +4,7 @@ import main.Main;
 import things.aiPlugins.Animating.AnimatingPlugin;
 import things.aiPlugins.Attachement.AttachementPlugin;
 import things.aiPlugins.Magic.MagicPlugin;
+import things.aiPlugins.MidgeAround.MidgePlugin;
 import util.math.Vec;
 import world.World;
 import world.data.Column;
@@ -15,8 +16,10 @@ public class Thing extends DataThing {
 	public AnimatingPlugin aniPlug;
 	public AttachementPlugin attachment;
 	public MagicPlugin magic;
+	public MidgePlugin midgePlug;
 	
 	Object[] extraData;
+
 
 	public Thing(ThingType type, Column field, Vec pos, Object... extraData){
 		this.type = type;
@@ -105,6 +108,11 @@ public class Thing extends DataThing {
 		if(aniPlug == null)
 			return false;
 		else return coords.containedBy(aniPlug.getRenderBox().pos.x + pos.x, aniPlug.getRenderBox().pos.y + pos.y + yOffset, aniPlug.getRenderBox().size.x, aniPlug.getRenderBox().size.y);
+	}
+
+	public void setMidgePlugin(MidgePlugin plug) {
+		this.midgePlug = plug;
+		
 	}
 
 }

@@ -93,7 +93,6 @@ public class Life extends AiPlugin {
 			tgt.health -= damage;
 			Main.world.window.addEffect(new BloodSplash(tgt.pos));
 			if(getHitAnimation != null) {
-				System.out.println("huu");
 				tgt.aniPlug.setAnimation( getHitAnimation, () -> tgt.type.movement.setBackgroundAni(tgt));
 			}
 			tgt.damageCooldown = coolDownStart;

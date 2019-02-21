@@ -62,6 +62,7 @@ public class ThingWindow extends RealWorldWindow {
 	}
 	
 	public void add(Thing t) {
+		// t.plugs[Plugs.ani] != null
 		if(t.type.ani != null) {
 			vaos[t.getTypeOrdinal()].add(t.aniPlug, false);
 		} else {
@@ -76,9 +77,10 @@ public class ThingWindow extends RealWorldWindow {
 	public void remove(Thing t) {
 		if(t.type.ani != null) {
 			vaos[t.type.ordinal].remove(t.aniPlug);
-		} else {
-			throw new RuntimeException("The Thing you're trying to remove is not animated!");
 		}
+//		 else {
+//			throw new RuntimeException("The Thing you're trying to remove is not animated!");
+//		}
 	}
 	
 	public void changeUsual(AnimatingPlugin t) {
