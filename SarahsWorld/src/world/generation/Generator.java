@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Random;
 
 import menu.Settings;
+import moveToLWJGLCore.Dir;
 import world.data.Column;
-import world.data.Dir;
 import world.data.WorldData;
 import world.generation.Zone.ZoneType;
 
@@ -96,7 +96,7 @@ public class Generator implements GeneratorInterface {
 
 		//add new Column to the world, spawn quests, things, etc.
 		world.processNewColumn(nextColumns[iDir], Dir.s[iDir], zones[iDir].description);
-		Column columnToSpawnThings = iDir == Dir.r ? nextColumns[iDir].list.left().column() : nextColumns[iDir];
+		Column columnToSpawnThings = iDir == Dir.r ? nextColumns[iDir].left().column() : nextColumns[iDir];
 		oldZone.spawnThings(columnToSpawnThings);
 		
 		return true;

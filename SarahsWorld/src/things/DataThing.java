@@ -6,6 +6,7 @@ import java.util.List;
 import effects.Effect;
 import item.ItemStack;
 import item.ItemType;
+import moveToLWJGLCore.DefaultListElement;
 import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
@@ -14,7 +15,6 @@ import things.interfaces.Listable;
 import things.interfaces.StructureThing;
 import util.math.Vec;
 import world.data.Column;
-import world.data.DefaultListElement;
 
 public abstract class DataThing extends DefaultListElement<Thing> implements StructureThing<Thing>, Listable {
 	//DEBUG

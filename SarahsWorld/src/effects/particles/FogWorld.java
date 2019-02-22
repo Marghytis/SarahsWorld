@@ -3,9 +3,9 @@ package effects.particles;
 import effects.WorldEffect;
 import effects.particles.Particle.ParticleType;
 import main.Res;
+import moveToLWJGLCore.Dir;
 import util.math.Vec;
 import world.data.Column;
-import world.data.Dir;
 import world.window.TerrainWindow;
 
 public class FogWorld implements ParticleEffect, WorldEffect {

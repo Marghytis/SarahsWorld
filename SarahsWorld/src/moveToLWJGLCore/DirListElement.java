@@ -1,4 +1,4 @@
-package world.data;
+package moveToLWJGLCore;
 
 public class DirListElement<T extends DirListElement<T>> implements DirList<T>{
 

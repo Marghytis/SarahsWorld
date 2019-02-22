@@ -1,8 +1,14 @@
 package world.data;
 
+import moveToLWJGLCore.DirListElement;
 import things.Thing;
 import things.ThingType;
 
+/**
+ * An abstract specification of an element in a directed list of Columns. Is implemented fully in Column.
+ * @author Mario
+ *
+ */
 public abstract class ColumnListElement extends DirListElement<Column> {
 
 	public void setLeft(ColumnListElement c) {

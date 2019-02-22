@@ -1,4 +1,4 @@
-package world.data;
+package moveToLWJGLCore;
 
 /**
  * 

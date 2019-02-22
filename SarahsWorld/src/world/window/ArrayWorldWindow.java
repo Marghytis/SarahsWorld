@@ -1,8 +1,8 @@
 package world.window;
 
 import exceptions.WorldTooSmallException;
+import moveToLWJGLCore.Dir;
 import world.data.ColumnListElement;
-import world.data.Dir;
 
 public abstract class ArrayWorldWindow extends RealWorldWindow {
 

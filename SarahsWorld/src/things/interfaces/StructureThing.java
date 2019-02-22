@@ -1,7 +1,7 @@
 package things.interfaces;
 
+import moveToLWJGLCore.ListElement;
 import things.ThingType;
-import world.data.ListElement;
 
 public interface StructureThing<T extends ListElement<T>> extends ListElement<T> {
 

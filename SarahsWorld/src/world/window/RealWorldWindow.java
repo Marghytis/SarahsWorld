@@ -2,10 +2,10 @@ package world.window;
 
 import java.util.function.Consumer;
 
+import moveToLWJGLCore.Dir;
 import util.Time;
 import world.data.Column;
 import world.data.ColumnListElement;
-import world.data.Dir;
 
 public class RealWorldWindow {
 

@@ -6,12 +6,12 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 
+import moveToLWJGLCore.Dir;
 import things.Thing;
 import things.ThingSet;
 import things.ThingType;
 import world.data.Column;
 import world.data.ColumnListElement;
-import world.data.Dir;
 import world.render.DoubleThingVAO;
 
 

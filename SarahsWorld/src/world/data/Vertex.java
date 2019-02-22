@@ -1,5 +1,6 @@
 package world.data;
 
+import moveToLWJGLCore.Loop;
 import world.generation.Material;
 
 public class Vertex {

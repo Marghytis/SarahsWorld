@@ -110,18 +110,18 @@ public class BackgroundWindow extends ArrayWorldWindow {
 	public void putPointDataBackground(ByteBuffer buffer, Column c){
 		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)1);//always the top of the screen
-		c.topColor.bytes(color);
+		c.getTopColor().bytes(color);
 		buffer.put(color);
 		
 		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)-1);//always the bottom of the screen
-		c.lowColor.bytes(color);
+		c.getLowColor().bytes(color);
 		buffer.put(color);
 
 		//just to fit in the vbo:
 		buffer.putFloat((float)c.getX());
 		buffer.putFloat((float)-1.1f);//always the bottom of the screen -1
-		c.lowColor.bytes(color);
+		c.getLowColor().bytes(color);
 		buffer.put(color);
 	}
 

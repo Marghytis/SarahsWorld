@@ -1,4 +1,4 @@
-package world.data;
+package moveToLWJGLCore;
 
 public class DefaultListElement<T extends DefaultListElement<T>> implements ListElement<T> {
 

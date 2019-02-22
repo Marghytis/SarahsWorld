@@ -620,7 +620,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 										"where.water: " + Main.world.avatar.where.water + "\n" +
 										"left column: " + Main.world.landscapeWindow.start().getIndex() + "\n" +
 										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().getIndex() : "null") + "\n" +
-										"Biome: " + Main.world.avatar.newLink.biome.toString();
+										"Biome: " + Main.world.avatar.newLink.getBiome().toString();
 							return s;
 						}
 						, 0, 0, 0.5, 0.7, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),

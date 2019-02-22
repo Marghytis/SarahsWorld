@@ -2,8 +2,8 @@ package world.generation.environment;
 
 import java.io.DataOutputStream;
 
+import moveToLWJGLCore.Dir;
 import world.data.Column;
-import world.data.Dir;
 import world.data.WorldData;
 import world.generation.Biome;
 import world.generation.GeneratorInterface;

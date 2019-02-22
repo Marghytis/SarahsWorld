@@ -8,32 +8,34 @@ import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
 
+/**
+ * Represents a vertical slice of the World. Contains, most importantly, the vertices that make up the terrain and the Thing located in this slice.
+ * Every column also defines a Biome and background colors. This class inherits from ColumnListElement to be able to quickly loop through neighboring columns.
+ * @author Mario
+ *
+ */
 public class Column extends ColumnListElement {
+	
 	public static final double COLUMN_WIDTH = 20;
 	private Vertex[] vertices;
-	private Thing[] things;//these are the anchors. may be null
+	/**These are the anchors. may be null.*/
+	private Thing[] things;
 	private int xIndex;
 	private double xReal;
 	private Vertex topSolidVertex, topFluidVertex;
 	private double collisionYSolid, collisionYFluid;
-	public Biome biome;
-	public Color topColor, lowColor;
-	public int testInt;
-	public DirList<Column> list;
+	private Biome biome;
+	private Color topColor, lowColor;
 
-	public Thing getFirst(ThingType type) {
-		return firstThing(type);
-	}
-	public Thing firstThing(ThingType type) {
-		return firstThing(type.ordinal);
-	}
-	public Thing firstThing(int type) {
-		return things[type];
-	}
-	public Vertex vertices(int index) {
-		return vertices[index];
-	}
-
+	/**
+	 * Constructs a column.
+	 * @param xIndex Unique index of this column that also determines it's x-coordinate
+	 * @param biome The Biome this column is contained in
+	 * @param top Sky color at top of the screen
+	 * @param low Sky color at the bottom of the screen
+	 * @param vertices Array of Vertex belonging to this slice of the world
+	 * @param collisionVecs y-Coordinates for the moving Things to collide with (solid and/or fluid)
+	 */
 	public Column(int xIndex, Biome biome, Color top, Color low, Vertex[] vertices, double... collisionVecs){
 		this.xIndex = xIndex;
 		this.xReal = xIndex*COLUMN_WIDTH;
@@ -44,11 +46,14 @@ public class Column extends ColumnListElement {
 		for(Vertex v : vertices){
 			v.parent = this;
 		}
-		this.list = this;
 		setCollisionVecs(collisionVecs);
 		this.things = new Thing[ThingType.types.length];
 	}
 	
+	/**
+	 * Determines the y coordinates for solid and fluid collision with things. If coordinates are given, they are used instead.
+	 * @param collisionVecs Predetermined coordinates. If only one coordinate is given, it is used for both coordinates.
+	 */
 	private void setCollisionVecs(double[] collisionVecs){
 		topSolidVertex = findTopSolidVertex(vertices);
 		topFluidVertex = findTopFluidVertex(vertices);
@@ -66,63 +71,98 @@ public class Column extends ColumnListElement {
 		
 	}
 	
-	public void setIndex(int xIndex){
-		this.xIndex = xIndex;
-		this.xReal = xIndex*COLUMN_WIDTH;
-	}
-	
-	public static Vertex findTopSolidVertex(Vertex[] vertices){
-		int i = 0; while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity <= 1))
+	/**
+	 * Searches the upper most Vertex that's not empty and whose average solidity is geater than 1.
+	 * @param vertices
+	 * @return The found Vertex. If no Vertex is found, a RuntimeException will be thrown.
+	 */
+	public Vertex findTopSolidVertex(Vertex[] vertices){
+		int i = 0;//start from the top and stop at the first solid vertex.
+		while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity <= 1))
 			i++;
-		if(i == Biome.layerCount - 1) i = -1;
+		
+		if(i == Biome.layerCount - 1) 
+			throw new RuntimeException("No solid vertex found!");
+		
 		return vertices[i];
 	}
 	
-	public static Vertex findTopFluidVertex(Vertex[] vertices){
-		int i = 0;
-			while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity < 1))
-				i++;
-		if(i == Biome.layerCount - 1) i = -1;
+	/**
+	 * Searches the upper most Vertex that's not empty and whose average solidity is above or equal to 1.
+	 * @param vertices
+	 * @return The found Vertex. If no Vertex is found, a RuntimeException will be thrown.
+	 */
+	public Vertex findTopFluidVertex(Vertex[] vertices){
+		int i = 0;//start from the top and stop at the first solid vertex.
+		while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity < 1))
+			i++;
+		
+		if(i == Biome.layerCount - 1) 
+			throw new RuntimeException("No fluid vertex found!");
 		return vertices[i];
 	}
-	
+
+	/**
+	 * Puts the coordinates of a random location on top of this column into posField. 
+	 * @param random
+	 * @param posField
+	 * @param dir +1 for left, -1 for right
+	 * @return This column, to allow piping.
+	 */
 	public Column getRandomTopLocation(Random random, Vec posField){
 		topSolidVertex = findTopSolidVertex(vertices);
 		double fac = random.nextDouble();
-		if(right != null) {
-			posField.set(	
-					xReal + (fac*(right.getX() - xReal)),
-					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
-		} else {
-			posField.set(	
-					xReal + (fac*(left.getX() - xReal)),
-					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
-		}
-		return this;
-	}
-	
-	public Column getRandomTopLocation(Random random, Vec posField, int dir){
-		topSolidVertex = findTopSolidVertex(vertices);
-		double fac = random.nextDouble();
-		if(dir == -1) {
-			posField.set(
-					xReal + (fac*(right.getX() - xReal)),
-					topSolidVertex.y + (fac*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
-		} else if(dir == 1) {
-			posField.set(
-					xReal + (fac*(left.getX() - xReal)),
-					topSolidVertex.y + (fac*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
-		} else {
-			new Exception("Unknown direction!").printStackTrace();
-		}
+		int dir = 0;
+		if(right != null)
+			dir = -1;
+		else if(left != null)
+			dir = +1;
+		interpolateTopLocation(topSolidVertex, fac, posField, dir);
 		return this;
 	}
 	
 	/**
-	 * Disconnects the thing by itself
-	 * @param t
+	 * Puts the coordinates of a random location on top of this column in direction dir into posField. 
+	 * @param random
+	 * @param posField
+	 * @param dir +1 for left, -1 for right
+	 * @return This column, to allow piping.
 	 */
-	public void add(Thing t){
+	public Column getRandomTopLocation(Random random, Vec posField, int dir) {
+		topSolidVertex = findTopSolidVertex(vertices);
+		double fac = random.nextDouble();
+		interpolateTopLocation(topSolidVertex, fac, posField, dir);
+		return this;
+	}
+	
+	/**
+	 * Interpolates the path between the given vertex and it's neighbor in the dir direction and places it's value at the offset factor*COLUMN_WIDTH into posField.
+	 * @param topSolidVertex The vertex to be interpolated
+	 * @param factor Offset in terms of COLUMN_WIDTH to interpolate
+	 * @param posField Vector that the result will be written to.
+	 * @param dir Direction of the interpolation. May be +1 (left) or -1 (right)
+	 */
+	private void interpolateTopLocation(Vertex topSolidVertex, double factor, Vec posField, int dir) {
+		if(dir == -1) {
+			posField.set(
+					xReal + (factor*(right.getX() - xReal)),
+					topSolidVertex.y + (factor*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+		} else if(dir == 1) {
+			posField.set(
+					xReal + (factor*(left.getX() - xReal)),
+					topSolidVertex.y + (factor*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+		} else {
+			new Exception("Unknown direction!").printStackTrace();
+		}
+	}
+	
+	/**
+	 * Adds the thing t to this column.
+	 * Doesn't close the gap if it was added somewhere else before,
+	 * so it should be removed from there earlier.
+	 * @param t Thing to add
+	 */
+	public void add(Thing t) {
 		int o = t.getTypeOrdinal();
 		t.setPrev(null);
 		t.setNext(things[o]);
@@ -130,38 +170,41 @@ public class Column extends ColumnListElement {
 		things[o] = t;
 	}
 	
+	/**
+	 * Removes the thing t from this column. Closes the created gap too.
+	 * @param t Thing to remove
+	 */
 	public void remove(Thing t) {
 		t.free();
-		if(things[t.type().ordinal] == t) things[t.type().ordinal] = t.next();
+		if(things[t.type().ordinal] == t)
+			things[t.type().ordinal] = t.next();
 		t.setLinked(false);
 	}
 	
-	public Vec getTopLine(Vec topLine){
-		return topLine.set(right.getX() - xReal, right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y);
-	}
-	
+	//Getters
+	public Thing firstThing(ThingType type) {			return firstThing(type.ordinal);	}
+	public Thing firstThing(int type) {					return things[type];	}
+	public Vertex vertices(int index) {					return vertices[index];	}
+	public int getIndex() {								return xIndex;	}
+	public Vertex getTopSolidVertex(){					return topSolidVertex;	}
+	public Vertex getTopFluidVertex(){					return topFluidVertex;	}
+	public double getCollisionY(){						return collisionYSolid;	}
+	public double getCollisionYFluid(){					return collisionYFluid;	}
+	public double getX() {								return xReal;	}
+	public Thing getFirst(ThingType type) {				return firstThing(type);	}	
+	public Biome getBiome() {							return biome;	}	
+	public Color getTopColor() {						return topColor;	}
+	public Color getLowColor() {						return lowColor;	}
+	public Vec getTopLine(Vec topLine) {
+		return topLine.set(right.getX() - xReal, right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y);}
 	public Vec getCollisionLine(Vec topLine){
-		return topLine.set(right.getX() - xReal, right.getCollisionY() - getCollisionY());
-	}
-	public final Vertex getTopSolidVertex(){
-		return topSolidVertex;
-	}
-	public final Vertex getTopFluidVertex(){
-		return topFluidVertex;
-	}
-	public final double getCollisionY(){
-		return collisionYSolid;
-	}
-	public final double getCollisionYFluid(){
-		return collisionYFluid;
-	}
-	public int getIndex() {
-		return xIndex;
-	}
-	public double getX() {
-		return xReal;
-	}
-	public void setX(double x) {
-		xReal = x;
+		return topLine.set(right.getX() - xReal, right.getCollisionY() - getCollisionY());}
+	
+	//Setters
+	public void setTopColor(Color color) {				this.topColor = color;	}
+	public void setLowColor(Color color) {				this.lowColor = color;	}
+	public void setIndex(int xIndex){
+		this.xIndex = xIndex;
+		this.xReal = xIndex*COLUMN_WIDTH;
 	}
 }

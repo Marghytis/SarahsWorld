@@ -133,7 +133,7 @@ public class BiomeManager {
 	 * @param c
 	 */
 	public void spawnThings(Column c){
-		c.biome.spawnThings(c);
+		c.getBiome().spawnThings(c);
 		for(Spawner sp : extraSpawns){
 			sp.spawn(c.getRandomTopLocation(World.rand, posField), posField.copy());
 		}

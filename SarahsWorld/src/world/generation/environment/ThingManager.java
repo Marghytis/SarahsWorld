@@ -11,8 +11,8 @@ public class ThingManager {
 	List<ThingSpawner> spawners = new ArrayList<>();
 	
 	public void populate(Column column) {
-		column.biome.spawnThings(column);
-		spawners.forEach(s -> column.biome.applySpawner(column, s));
+		column.getBiome().spawnThings(column);
+		spawners.forEach(s -> column.getBiome().applySpawner(column, s));
 		spawners.clear();
 	}
 
