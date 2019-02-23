@@ -45,7 +45,7 @@ public class WorldListener implements Listener {
 		switch(button){
 		case 0://ATTACK
 			if(world.avatar.where.water == 0){
-				world.avatar.type.attacking.attack(world.avatar, world.avatar.type.inv.getSelectedItem(world.avatar), worldPos, livingsClickedOn);
+				world.avatar.attack.attack(world.avatar.type.inv.getSelectedItem(world.avatar), worldPos, livingsClickedOn);
 			}
 			break;
 		case 1://USE

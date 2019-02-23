@@ -103,7 +103,7 @@ public  class AvatarControl extends AiPlugin {
 		int selectedItem = t.selectedItem - scroll;
 		selectedItem -= Math.floorDiv(selectedItem, t.itemStacks.length)*t.itemStacks.length;//accounts for large negative scrolls
 		if(t.itemStacks[t.selectedItem].item.ordinal != t.itemStacks[selectedItem].item.ordinal)
-			t.type.attacking.cancelAttack(t);
+			t.attack.cancel();
 		t.selectedItem = selectedItem;
 		return true;
 	}

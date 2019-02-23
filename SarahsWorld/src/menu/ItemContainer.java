@@ -52,7 +52,7 @@ public class ItemContainer extends Element {
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){
 		if(contains(mousePos)){
 			if(thing.selectedItem != ordinal && thing.type.attacking != null)
-				thing.type.attacking.cancelAttack(thing);
+				thing.attack.cancel();
 			
 			thing.selectedItem = ordinal;
 			return true;

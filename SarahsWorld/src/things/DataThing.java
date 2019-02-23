@@ -60,7 +60,6 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 //	public boolean dir;
 	public boolean immortal;
 	public boolean isRiding;
-	public boolean attacking;
 	public boolean speaking;
 //	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible, addedToVAO, freeToMakeInvisible;
 	public boolean linked = false, real = false;
@@ -84,7 +83,6 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 	public double healthTimer;
 	public int armor;
 	public int amount;//for coins or items
-	public double attackCooldown;//attackCooldown counts upwards
 	public double xDest;
 	public double waitTime;//for the walk around plugin
 	public String currentSpeech;
@@ -98,10 +96,6 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 		return realLink;
 	}
 	
-//	public boolean selected() {
-//		return selected;
-//	}
-
 	public int getTypeOrdinal() {
 		return type.ordinal;
 	}
@@ -155,145 +149,5 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 	public double getYOffsetToBalanceRotation() {
 		return yOffsetToBalanceRotation;
 	}
-
-//	@Override
-//	public ThingType getType() {
-//		return type;
-//	}
-//
-//	@Override
-//	public int getiAnimationSet() {
-//		return aniSet;
-//	}
-//
-//	@Override
-//	public void setAnimator(Animator ani) {
-//		this.ani = ani;
-//	}
-//
-//	@Override
-//	public void setRenderBox(Rect box) {
-//		this.box = box;
-//	}
-//
-////	@Override
-////	public void setColor(Color c) {
-////		this.color = c;
-////	}
-//
-//	@Override
-//	public void setZ(double z) {
-//		this.z = z;
-//	}
-//
-//	@Override
-//	public void setOrientation(boolean ori) {
-//		this.dir = ori;
-//	}
-//
-//	@Override
-//	public void setAniRotation(double angle) {
-//		this.aniRotation = angle;
-//	}
-//
-//	@Override
-//	public void setRotation(double angle) {
-//		this.rotation = angle;
-//	}
-//
-//	@Override
-//	public void setNeedsRenderUpdate(boolean needs) {
-//		this.needsRenderUpdate = needs;
-//	}
-//
-//	@Override
-//	public void setNeedsUnusualRenderUpdate(boolean needs) {
-//		this.needsUnusualRenderUpdate = needs;
-//	}
-//
-//	@Override
-//	public void setSwitchedSelected(boolean switched) {
-//		this.switchedSelected = switched;
-//	}
-//
-//	@Override
-//	public void changeBox(int[] pixelCoords) {
-//		this.box.set(pixelCoords);
-//	}
-//
-//	@Override
-//	public Animator getAnimator() {
-//		return ani;
-//	}
-//
-//	@Override
-//	public Rect getRenderBox() {
-//		return box;
-//	}
-//
-////	@Override
-////	public Color getColor() {
-////		return color;
-////	}
-//
-//	@Override
-//	public boolean needsRenderUpdate() {
-//		return needsRenderUpdate;
-//	}
-//
-//	@Override
-//	public boolean needsUnusualRenderUpdate() {
-//		return needsUnusualRenderUpdate;
-//	}
-//
-//	@Override
-//	public boolean switchedSelected() {
-//		return switchedSelected;
-//	}
-//
-//	@Override
-//	public int getIndex() {
-//		return index;
-//	}
-//
-//	@Override
-//	public double getZ() {
-//		return z;
-//	}
-//
-//	@Override
-//	public double getSize() {
-//		return size;
-//	}
-//
-//	@Override
-//	public double getRotation() {
-//		return rotation;
-//	}
-//
-//	@Override
-//	public Vec pos() {
-//		return pos;
-//	}
-//
-//	@Override
-//	public double getYOffset() {
-//		return yOffset;
-//	}
-//
-//	@Override
-//	public double getYOffsetToBalanceRotation() {
-//		return yOffsetToBalanceRotation;
-//	}
-//
-//	@Override
-//	public double getAniRotation() {
-//		return aniRotation;
-//	}
-//
-//	@Override
-//	public boolean getOrientation() {
-//		return dir;
-//	}
 
 }

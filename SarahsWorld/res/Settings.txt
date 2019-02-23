@@ -6,7 +6,7 @@ boolean FRICTION							true
 boolean DARKNESS							true
 boolean FREEZE								false
 int 	DRAW								4
-boolean DRAW_TRANSITIONS					false
+boolean DRAW_TRANSITIONS					true
 boolean SHOW_NAME_TAGS						true
 boolean STOP_GRAPH							false
 boolean printSarahPhysics					true

@@ -140,7 +140,7 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attacking.attack(t, "punch", t.target);//attack
+				t.attack.attack("punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -176,7 +176,7 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attacking.attack(t, "bite", t.target);//attack
+				t.attack.attack("bite", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -205,7 +205,7 @@ public class ThingType {
 		}
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attacking.attack(t, "punch", t.target);//attack
+				t.attack.attack("punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -301,7 +301,7 @@ public class ThingType {
 
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attacking.attack(t, "punch", t.target);//attack
+				t.attack.attack("punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -358,7 +358,7 @@ public class ThingType {
 		public void update(Thing t, double delta){
 			t.aniPlug.increaseTimeBy(delta*0.1);
 			if(follow.action(t, delta)){//follow
-				attacking.attack(t, "spit", t.target);//attack
+				t.attack.attack("spit", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -382,7 +382,7 @@ public class ThingType {
 
 		public void update(Thing t, double delta){
 			if(follow.action(t, delta)){//follow
-				attacking.attack(t, "punch", t.target);//attack
+				t.attack.attack("punch", t.target);//attack
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around
 			}
@@ -409,7 +409,7 @@ public class ThingType {
 
 		public void update(Thing t, double delta){
 			if(t.lastAttack != null && "eat".equals(t.lastAttack.name)){
-				if(!t.attacking){
+				if(!t.attack.attacking()){
 					t.aniPlug.setAnimation("chew", () -> {
 						t.aniPlug.setAnimation("stand");
 						t.lastAttack = null;
@@ -417,9 +417,9 @@ public class ThingType {
 				}
 			} else if(follow.action(t, delta)){//follow
 				if(World.rand.nextInt(100) < 70){//attack
-					attacking.attack(t, "tailhit", t.target);
+					t.attack.attack("tailhit", t.target);
 				} else {
-					attacking.attack(t, "eat", t.target);
+					t.attack.attack("eat", t.target);
 				}
 			} else if(t.target == null){
 				walkAround.action(t, delta);//walk around

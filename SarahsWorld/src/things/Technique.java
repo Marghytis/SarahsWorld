@@ -84,7 +84,7 @@ public class Technique {
 				
 				start.start(source, item, this, worldPos, selected);
 			
-				source.attacking = false;
+				source.attack.finishedAttack();
 				source.aniPlug.getAnimator().setLast();
 				source.lastAttack = this;
 			});

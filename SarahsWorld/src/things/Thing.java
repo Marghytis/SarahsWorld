@@ -3,6 +3,7 @@ package things;
 import main.Main;
 import things.aiPlugins.Animating.AnimatingPlugin;
 import things.aiPlugins.Attachement.AttachementPlugin;
+import things.aiPlugins.Attacking.AttackPlugin;
 import things.aiPlugins.Magic.MagicPlugin;
 import things.aiPlugins.MidgeAround.MidgePlugin;
 import util.math.Vec;
@@ -17,6 +18,7 @@ public class Thing extends DataThing {
 	public AttachementPlugin attachment;
 	public MagicPlugin magic;
 	public MidgePlugin midgePlug;
+	public AttackPlugin attack;
 	
 	Object[] extraData;
 
@@ -113,6 +115,10 @@ public class Thing extends DataThing {
 	public void setMidgePlugin(MidgePlugin plug) {
 		this.midgePlug = plug;
 		
+	}
+
+	public void setAttackPlugin(AttackPlugin plug) {
+		this.attack = plug;
 	}
 
 }
