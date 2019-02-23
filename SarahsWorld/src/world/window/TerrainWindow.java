@@ -179,10 +179,10 @@ public class TerrainWindow extends ArrayWorldWindow {
 		//loop all layers
 		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
 			//loop all columns in this layer
-			int  column = startIndexLeft(), matIndex = columns[column].column().vertices(y).firstMatIndex, endColumn = column;
+			int  column = startIndexLeft(), matIndex = columns[column].column().vertices(y).getFirstMatIndex(), endColumn = column;
 			do {
 				//loop all material slots
-				matIndex = columns[column].column().vertices(y).firstMatIndex;
+				matIndex = columns[column].column().vertices(y).getFirstMatIndex();
 				int matIndex2 = 0;
 				do {
 					
@@ -211,14 +211,14 @@ public class TerrainWindow extends ArrayWorldWindow {
 		}
 		//start a new patch
 		if((!currentPatches[iMat].active() || currentPatches[iMat].end == -1)
-				&& columns[iStartColumn].column().vertices(iLayer).mats[iMat] != Material.AIR){
+				&& columns[iStartColumn].column().vertices(iLayer).mats(iMat) != Material.AIR){
 			
-			currentPatches[iMat].set(iLayer, iMat, iStartColumn, columns[iStartColumn].column().vertices(iLayer).mats[iMat]);
+			currentPatches[iMat].set(iLayer, iMat, iStartColumn, columns[iStartColumn].column().vertices(iLayer).mats(iMat));
 			
 			//search for patch end
 			int end = iStartColumn;
 			//count up column2 while the layer still contains this material and the landscape window didn't end.
-			while(columns[end].column().vertices(iLayer).mats[iMat] == currentPatches[iMat].mat && end != oneBeforeStart) {
+			while(columns[end].column().vertices(iLayer).mats(iMat) == currentPatches[iMat].mat && end != oneBeforeStart) {
 				end = add1To(end);
 			}
 			drawPatch(currentPatches[iMat], end, indicesOffset, water);
@@ -300,41 +300,40 @@ public class TerrainWindow extends ArrayWorldWindow {
 	
 	private void putPointData(ByteBuffer buffer, Column column, int yIndex){
 		float 	x0 = (float)column.getX(),
-				y0 = (float)column.vertices(yIndex).y,
-				y1 = (float)column.vertices(yIndex+1).y,
-				y2 = y1 - (float)column.vertices(yIndex).transitionHeight;
-		if(!column.vertices(yIndex).prepared){
-			column.vertices(yIndex).texCoordsPrepared[0] = x0/Material.CANDY.tex.w;//(short)(Short.MAX_VALUE*(... - Math.floor(x0/Material.CANDY.tex.w)))
-			
-			column.vertices(yIndex).texCoordsPrepared[1] = y0/Material.CANDY.tex.h;
-			column.vertices(yIndex).texCoordsPrepared[2] = y1/Material.CANDY.tex.h;
-			column.vertices(yIndex).texCoordsPrepared[3] = y2/Material.CANDY.tex.h;
-			column.vertices(yIndex).prepared = true;
+				y0 = (float)column.vertices(yIndex).y(),
+				y1 = (float)column.vertices(yIndex+1).y(),
+				y2 = y1 - (float)column.vertices(yIndex).getTransitionHeight();
+		if(!column.vertices(yIndex).isPrepared()){
+			column.vertices(yIndex).prepare(
+					x0/Material.CANDY.tex.w,
+					y0/Material.CANDY.tex.h,
+					y1/Material.CANDY.tex.h,
+					y2/Material.CANDY.tex.h);
 		}
 		
 		buffer.putFloat(x0);
 		buffer.putFloat(y0);
-		buffer.putFloat(column.vertices(yIndex).texCoordsPrepared[0]);
-		buffer.putFloat(column.vertices(yIndex).texCoordsPrepared[1]);
+		buffer.putFloat(column.vertices(yIndex).getPreparedTexCoord(0));
+		buffer.putFloat(column.vertices(yIndex).getPreparedTexCoord(1));
 		for(int j = 0; j < Vertex.maxMatCount; j++)
-			buffer.put((byte)(Byte.MAX_VALUE*column.vertices(yIndex).alphas[j]));
+			buffer.put((byte)(Byte.MAX_VALUE*column.vertices(yIndex).alpha(j)));
 		buffer.put((byte)Byte.MAX_VALUE);
 		
 		buffer.putFloat(x0);
 		buffer.putFloat(y1);
-		buffer.putFloat(column.vertices(yIndex).texCoordsPrepared[0]);
-		buffer.putFloat(column.vertices(yIndex).texCoordsPrepared[2]);
+		buffer.putFloat(column.vertices(yIndex).getPreparedTexCoord(0));
+		buffer.putFloat(column.vertices(yIndex).getPreparedTexCoord(2));
 		for(int j = 0; j < Vertex.maxMatCount; j++)
-			buffer.put((byte)(Byte.MAX_VALUE*column.vertices(yIndex).alphas[j]));
+			buffer.put((byte)(Byte.MAX_VALUE*column.vertices(yIndex).alpha(j)));
 		buffer.put((byte)Byte.MAX_VALUE);
 		
 		buffer.putFloat(x0);
 		buffer.putFloat(y2);
-		buffer.putFloat(column.vertices(yIndex).texCoordsPrepared[0]);
-		buffer.putFloat(column.vertices(yIndex).texCoordsPrepared[3]);
+		buffer.putFloat(column.vertices(yIndex).getPreparedTexCoord(0));
+		buffer.putFloat(column.vertices(yIndex).getPreparedTexCoord(3));
 		for(int j = 0; j < Vertex.maxMatCount; j++)
 //			buffer.put((byte)0);
-			buffer.put((byte)(Byte.MAX_VALUE*column.vertices(yIndex).alphas[j]));
+			buffer.put((byte)(Byte.MAX_VALUE*column.vertices(yIndex).alpha(j)));
 		buffer.put((byte)0);
 	}
 	

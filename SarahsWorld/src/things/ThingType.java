@@ -124,7 +124,7 @@ public class ThingType {
 											new Animation("getHit", Res.getAtlas("snail"), 2, 2, 0, 0)};
 	public static final ThingType SNAIL = new ThingType("SNAIL", Res.getAtlas("snail"), 30, true,
 			(c, p, ed) -> {
-				if(c.getTopFluidVertex().averageSolidity == 2)
+				if(c.getTopFluidVertex().getAverageSolidity() == 2)
 				return new Thing(ThingType.SNAIL, c, p.shift(0, 100));
 				else return null;
 			}
@@ -158,7 +158,7 @@ public class ThingType {
 											new Animation("bite", Res.getAtlas("rabbit"), 30, 4, /**/1, 2, 3, 4, 1)}};
 	public static final ThingType RABBIT = new ThingType("RABBIT", Res.getAtlas("rabbit"), 40, true,
 			(c, p, ed) -> {
-				if(c.getTopFluidVertex().averageSolidity == 2)
+				if(c.getTopFluidVertex().getAverageSolidity() == 2)
 					return new Thing(ThingType.RABBIT, c, p.shift(0, 100));
 				else return null;
 			}
@@ -189,7 +189,7 @@ public class ThingType {
 											new Animation("punch", Res.getAtlas("scorpion"), 10, 1, /**/1, 2, 3, 4)};
 	public static final ThingType SCORPION = new ThingType("SCORPION", Res.getAtlas("scorpion"), 40, true,
 			(c, p, ed) -> {
-				if(c.getTopFluidVertex().averageSolidity == 2)
+				if(c.getTopFluidVertex().getAverageSolidity() == 2)
 					return new Thing(ThingType.SCORPION, c, p.shift(0, 100));
 				else return null;
 			}
@@ -261,7 +261,7 @@ public class ThingType {
 											new Animation("stand", Res.getAtlas("villager"), 0, 3)}};
 	public static final ThingType VILLAGER = new ThingType("VILLAGER", Res.getAtlas("villager"), 40, true,
 			(c, p, ed) -> {
-				if(c.getTopFluidVertex().averageSolidity == 2)
+				if(c.getTopFluidVertex().getAverageSolidity() == 2)
 				return new Thing(ThingType.VILLAGER, c, p.shift(0, 100),ed);
 				else return null;
 			}

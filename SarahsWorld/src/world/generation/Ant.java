@@ -86,7 +86,7 @@ public class Ant {
 					if(left){//if left, add mat below and lower the other mats alphas
 						for(int i = 0; i < index.size; i++){
 							if(i != index.current){
-								c2.vertices(yIndex).alphas[i] *= (float)dx/transition;//x is in [-transition, -1] < 0
+								c2.vertices(yIndex).scaleAlpha(i, (float)dx/transition);//x is in [-transition, -1] < 0
 							}
 						}
 						c2.vertices(yIndex).enqueueMat(stratum.material, 1, left);
@@ -100,7 +100,7 @@ public class Ant {
 //					if(left){//if left, add mat below and lower the other mats alphas
 //						for(int i = 0; i < index.size; i++){
 //							if(i != index.current){
-//								c.vertices(yIndex).alphas[i] *= 0.5f*(1 - (float)x/transition);//x is in [-transition, -1] < 0
+//								c.vertices(yIndex).alpha(i) *= 0.5f*(1 - (float)x/transition);//x is in [-transition, -1] < 0
 //							}
 //						}
 //						c.vertices(yIndex).enqueueMat(stratum.material, 1, left);

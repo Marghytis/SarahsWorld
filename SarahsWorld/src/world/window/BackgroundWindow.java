@@ -95,11 +95,11 @@ public class BackgroundWindow extends ArrayWorldWindow {
 	
 	public void putPointDataDarkness(ByteBuffer buffer, Column c){
 		buffer.putFloat((float)c.getX());
-		buffer.putFloat((float)c.getTopSolidVertex().y);
+		buffer.putFloat((float)c.getTopSolidVertex().y());
 		buffer.put(light);
 		
 		buffer.putFloat((float)c.getX());
-		buffer.putFloat((float)(c.getTopSolidVertex().y - darknessDistance));
+		buffer.putFloat((float)(c.getTopSolidVertex().y() - darknessDistance));
 		buffer.put(dark);
 		
 		buffer.putFloat((float)c.getX());

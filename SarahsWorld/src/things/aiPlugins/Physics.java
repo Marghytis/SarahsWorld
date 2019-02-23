@@ -236,7 +236,7 @@ public class Physics extends AiPlugin {
 		//forces
 		double normal = t.force.dot(ortho);
 		double downhill = t.force.dot(topLine);//walking force already included from before
-		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.getTopSolidVertex().averageDeceleration;
+		double friction = -(Settings.friction ? 1 : 0)*normal*this.friction*t.collisionC.getTopSolidVertex().getAverageDeceleration();
 //							+ (Settings.airFriction ? 1 : 0)*t.speed*t.speed*airFriction*airea
 							;
 
@@ -314,11 +314,11 @@ public class Physics extends AiPlugin {
 			Vertex waterVertex = t.newLink.getTopFluidVertex();
 
 			//check if at least part of the thing is under water
-			if(waterVertex.y > pos.y + t.aniPlug.getRenderBox().pos.y){
+			if(waterVertex.y() > pos.y + t.aniPlug.getRenderBox().pos.y){
 				//calculate how deep the thing is in the water in units of it's height
-				t.where.water = Math.min((waterVertex.y - (pos.y + t.aniPlug.getRenderBox().pos.y))/t.aniPlug.getRenderBox().size.y, 1);//+20
+				t.where.water = Math.min((waterVertex.y() - (pos.y + t.aniPlug.getRenderBox().pos.y))/t.aniPlug.getRenderBox().size.y, 1);//+20
 				//apply a buoyancy force
-				t.buoyancyForce = waterVertex.averageBouyancy*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/);
+				t.buoyancyForce = waterVertex.getAverageBouyancy()*t.where.water*(t.type.physics.airea/* + (Math.abs(t.walkingForce)/1000)*/);
 				force.shift(0, t.buoyancyForce);
 				
 			}
@@ -339,7 +339,7 @@ public class Physics extends AiPlugin {
 		try {
 			int yIndex = -1;
 			//get the material the thing is located in
-			while(c.vertices(yIndex+1).y > y) yIndex++;
+			while(c.vertices(yIndex+1).y() > y) yIndex++;
 			
 			if(yIndex != -1 && !c.vertices(yIndex).empty()) vert = c.vertices(yIndex);
 		} catch(IndexOutOfBoundsException e){

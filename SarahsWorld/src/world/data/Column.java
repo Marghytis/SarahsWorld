@@ -44,7 +44,7 @@ public class Column extends ColumnListElement {
 		this.lowColor = low;
 		this.vertices = vertices;
 		for(Vertex v : vertices){
-			v.parent = this;
+			v.setParent(this);
 		}
 		setCollisionVecs(collisionVecs);
 		this.things = new Thing[ThingType.types.length];
@@ -65,8 +65,8 @@ public class Column extends ColumnListElement {
 				this.collisionYFluid = collisionVecs[0];
 			}
 		} else {
-			this.collisionYSolid = topSolidVertex.y;
-			this.collisionYFluid = topFluidVertex.y;
+			this.collisionYSolid = topSolidVertex.y();
+			this.collisionYFluid = topFluidVertex.y();
 		}
 		
 	}
@@ -78,7 +78,7 @@ public class Column extends ColumnListElement {
 	 */
 	public Vertex findTopSolidVertex(Vertex[] vertices){
 		int i = 0;//start from the top and stop at the first solid vertex.
-		while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity <= 1))
+		while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].getAverageSolidity() <= 1))
 			i++;
 		
 		if(i == Biome.layerCount - 1) 
@@ -94,7 +94,7 @@ public class Column extends ColumnListElement {
 	 */
 	public Vertex findTopFluidVertex(Vertex[] vertices){
 		int i = 0;//start from the top and stop at the first solid vertex.
-		while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].averageSolidity < 1))
+		while(i < Biome.layerCount - 1 && (vertices[i].empty() || vertices[i].getAverageSolidity() < 1))
 			i++;
 		
 		if(i == Biome.layerCount - 1) 
@@ -146,11 +146,11 @@ public class Column extends ColumnListElement {
 		if(dir == -1) {
 			posField.set(
 					xReal + (factor*(right.getX() - xReal)),
-					topSolidVertex.y + (factor*(right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+					topSolidVertex.y() + (factor*(right.vertices[topSolidVertex.getYIndex()].y() - topSolidVertex.y())));
 		} else if(dir == 1) {
 			posField.set(
 					xReal + (factor*(left.getX() - xReal)),
-					topSolidVertex.y + (factor*(left.vertices[topSolidVertex.yIndex].y - topSolidVertex.y)));
+					topSolidVertex.y() + (factor*(left.vertices[topSolidVertex.getYIndex()].y() - topSolidVertex.y())));
 		} else {
 			new Exception("Unknown direction!").printStackTrace();
 		}
@@ -196,7 +196,7 @@ public class Column extends ColumnListElement {
 	public Color getTopColor() {						return topColor;	}
 	public Color getLowColor() {						return lowColor;	}
 	public Vec getTopLine(Vec topLine) {
-		return topLine.set(right.getX() - xReal, right.vertices[topSolidVertex.yIndex].y - topSolidVertex.y);}
+		return topLine.set(right.getX() - xReal, right.vertices[topSolidVertex.getYIndex()].y() - topSolidVertex.y());}
 	public Vec getCollisionLine(Vec topLine){
 		return topLine.set(right.getX() - xReal, right.getCollisionY() - getCollisionY());}
 	

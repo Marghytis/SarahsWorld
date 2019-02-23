@@ -60,8 +60,8 @@ public class World {
 		Settings.set("GENERATION_RADIUS",Main.SIZE.w + 800);//TODO is this value used?
 
 		Vertex v = data.getRightColumn().getTopSolidVertex();
-		Vec pos = new Vec(Settings.getVec("AVATAR_START_OFFSET").x, v.y + Settings.getVec("AVATAR_START_OFFSET").y);
-		avatar = new Thing(ThingType.SARAH, v.parent, pos);
+		Vec pos = new Vec(Settings.getVec("AVATAR_START_OFFSET").x, v.y() + Settings.getVec("AVATAR_START_OFFSET").y);
+		avatar = new Thing(ThingType.SARAH, v.getParent(), pos);
 		ThingType.SARAH.avatar.setAvatar(avatar);
 		avatar.type.inv.addItem(avatar, ItemType.UNICORN_HORN, 1);
 		

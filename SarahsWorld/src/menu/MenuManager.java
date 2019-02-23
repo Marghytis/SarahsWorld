@@ -638,7 +638,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 							for(int i = 0; i < Biome.layerCount; i++) {
 								Vertex v = c.vertices(i);
 								for(int mat = 0; mat < Vertex.maxMatCount; mat++) {
-									s += "[" + v.mats[mat] + ", a = " + v.alphas[mat] + "]";
+									s += "[" + v.mats(mat) + ", a = " + v.alpha(mat) + "]";
 								}
 								s += "\n";
 							}

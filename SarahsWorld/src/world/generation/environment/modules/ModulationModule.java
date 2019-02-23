@@ -20,7 +20,7 @@ public class ModulationModule extends Module {
 	public ModulationModule(int index0, Vertex vertex, Roughness baseTerrain, Roughness roughness, StructureModulation structure){
 		super(index0, 1, true);
 		this.vertex = vertex;
-		this.fixedY = vertex.y;
+		this.fixedY = vertex.y();
 		this.baseTerrain = baseTerrain;
 		this.roughness = roughness;
 		this.structure = structure;
@@ -51,7 +51,7 @@ public class ModulationModule extends Module {
 	public void change(Vertex vertex, int index){
 		checkWrongModuleException(index);
 		this.vertex = vertex;
-		fixedY = vertex.y;
+		fixedY = vertex.getY();
 	}
 	
 	public void checkWrongModuleException(int index){

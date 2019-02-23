@@ -52,7 +52,7 @@ public class StaticModule extends Module {
 			new Exception("You called the wrong terrain module for the collision y").printStackTrace();
 			System.exit(-1);
 		}
-		return vertices[iCollisionRel - index0].y;
+		return vertices[iCollisionRel - index0].y();
 	}
 	
 	public void change(Vertex vertex, int index){
