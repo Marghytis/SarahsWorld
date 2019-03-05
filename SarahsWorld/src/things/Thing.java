@@ -4,6 +4,7 @@ import main.Main;
 import things.aiPlugins.Animating.AnimatingPlugin;
 import things.aiPlugins.Attachement.AttachementPlugin;
 import things.aiPlugins.Attacking.AttackPlugin;
+import things.aiPlugins.AvatarControl.AvatarPlugin;
 import things.aiPlugins.Magic.MagicPlugin;
 import things.aiPlugins.MidgeAround.MidgePlugin;
 import util.math.Vec;
@@ -19,6 +20,7 @@ public class Thing extends DataThing {
 	public MagicPlugin magic;
 	public MidgePlugin midgePlug;
 	public AttackPlugin attack;
+	public AvatarPlugin avatar;
 	
 	Object[] extraData;
 
@@ -97,6 +99,23 @@ public class Thing extends DataThing {
 	public String save(){return "";};
 	
 	public void load(String save){}
+	
+	public boolean containsCoords(Vec coords) {
+		if(aniPlug == null)
+			return false;
+		else return coords.containedBy(aniPlug.getRenderBox().pos.x + pos.x, aniPlug.getRenderBox().pos.y + pos.y + yOffset, aniPlug.getRenderBox().size.x, aniPlug.getRenderBox().size.y);
+	}
+	
+	public void setPlugin(ThingPlugin plugin) {
+
+		switch(plugin.getClass().getName()) {
+		case "AnimatingPlugin": this.aniPlug = (AnimatingPlugin)plugin;
+		}
+		
+		if(plugin instanceof AnimatingPlugin)
+			this.aniPlug = (AnimatingPlugin)plugin;
+		
+	}
 
 	public void setAnimatingPlugin(AnimatingPlugin plugin) {
 		this.aniPlug = plugin;
@@ -105,20 +124,17 @@ public class Thing extends DataThing {
 	public void setMagicPlugin(MagicPlugin plugin) {
 		this.magic = plugin;
 	}
-	
-	public boolean containsCoords(Vec coords) {
-		if(aniPlug == null)
-			return false;
-		else return coords.containedBy(aniPlug.getRenderBox().pos.x + pos.x, aniPlug.getRenderBox().pos.y + pos.y + yOffset, aniPlug.getRenderBox().size.x, aniPlug.getRenderBox().size.y);
-	}
 
 	public void setMidgePlugin(MidgePlugin plug) {
 		this.midgePlug = plug;
-		
 	}
 
 	public void setAttackPlugin(AttackPlugin plug) {
 		this.attack = plug;
+	}
+
+	public void setAvatarPlugin(AvatarPlugin plug) {
+		this.avatar = plug;
 	}
 
 }

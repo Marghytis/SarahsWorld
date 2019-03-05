@@ -3,8 +3,10 @@ package things.aiPlugins;
 import things.AiPlugin;
 import things.Thing;
 import things.ThingPlugin;
+import things.sorting.AiAspect;
+import things.sorting.ThingAspect;
 
-public abstract class Attachement extends AiPlugin {
+public abstract class Attachement extends AiPlugin{
 
 	public abstract void onVisibilityChange(Thing t, boolean visible);
 	

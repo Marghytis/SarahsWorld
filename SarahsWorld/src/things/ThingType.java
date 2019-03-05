@@ -34,6 +34,7 @@ import things.aiPlugins.Riding;
 import things.aiPlugins.Speaking;
 import things.aiPlugins.StateChangement;
 import things.aiPlugins.WalkAround;
+import things.sorting.AiPluginTest;
 import util.Color;
 import util.math.Rect;
 import util.math.Vec;
@@ -42,6 +43,8 @@ import world.data.Column;
 import world.generation.Spawner;
 
 public class ThingType {
+	
+	public AiPluginTest test; 
 	
 	static List<ThingType> tempList = new ArrayList<>();
 	static int index;
@@ -321,8 +324,8 @@ public class ThingType {
 			,new Animating(unicorn[0][0], new Rect(Res.getAtlas("unicorn").pixelCoords), 0, 0, 4, false, unicorn) {
 
 					@Override
-					public void setup(Thing t){
-						t.setAnimatingPlugin(new AnimatingPlugin(t){
+					public ThingPlugin plugIntoThing(Thing t){
+						AnimatingPlugin plug = new AnimatingPlugin(t){
 							public void prepareRender(){
 								setZ(getZ() + 0.001);
 								super.prepareRender();
@@ -336,7 +339,9 @@ public class ThingType {
 								//return the color to normal in the next render cycle
 								setNeedsUnusualRenderUpdate(true);
 							}
-						});
+						};
+						t.setAnimatingPlugin(plug);
+						return plug;
 					}
 				}.addSecondTex(Res.getAtlas("unicorn_hair").file)
 			,new Life(20, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH, ItemType.UNICORN_HORN}, 0.5, 0.5, 0.5, 1.1)

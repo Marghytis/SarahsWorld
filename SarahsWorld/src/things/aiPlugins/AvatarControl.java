@@ -3,10 +3,26 @@ package things.aiPlugins;
 import main.Main;
 import menu.Settings;
 import menu.Settings.Key;
-import things.AiPlugin;
+import things.AiPlugin2;
 import things.Thing;
+import things.ThingPlugin;
 
-public  class AvatarControl extends AiPlugin {
+public  class AvatarControl extends AiPlugin2 {
+
+	@Override
+	public ThingPlugin plugIntoThing(Thing t) {
+		AvatarPlugin plug = new AvatarPlugin(t);
+		t.setAvatarPlugin(plug);
+		return plug;
+	}
+	
+	public class AvatarPlugin extends ThingPlugin {
+
+		public AvatarPlugin(Thing thing) {
+			super(thing);
+		}
+		
+	}
 	
 	public void setAvatar(Thing t) {
 		t.isAvatar = true;

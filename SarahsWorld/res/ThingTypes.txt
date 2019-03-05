@@ -1,0 +1,12 @@
+				Ani	Mov	Ava	Lif	Mag	Att	Rid	Inv	Phy Wal	Fol	
+SARAH			# 	#	#	#	#	#	#	#	#
+SNAIL			#	#		#		#			#	#	#
+RABBIT			#	#		#		#			#	#	#
+SCORPION
+COW
+BUTTERFLY
+MIDGE
+VILLAGER
+ZOMBIE
+UNICORN
+CAT_GIANT

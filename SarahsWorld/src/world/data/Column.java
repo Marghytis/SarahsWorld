@@ -4,6 +4,7 @@ import java.util.Random;
 
 import things.Thing;
 import things.ThingType;
+import things.sorting.AiAspect.ThingID;
 import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
@@ -182,6 +183,8 @@ public class Column extends ColumnListElement {
 	}
 	
 	//Getters
+	public ThingID firstThingID(ThingType type) {return firstThing(type).getID();};
+	
 	public Thing firstThing(ThingType type) {			return firstThing(type.ordinal);	}
 	public Thing firstThing(int type) {					return things[type];	}
 	public Vertex vertices(int index) {					return vertices[index];	}
