@@ -1,16 +1,13 @@
 package item;
 
-import org.lwjgl.opengl.GL15;
-
 import effects.Effect;
 import main.Main;
-import main.Res;
 import menu.MenuManager;
 import menu.Settings;
 import render.Render;
 import render.TexFile;
 import render.VAO;
-import render.VBO;
+import things.Thing;
 import things.ThingType;
 import util.Color;
 import util.math.Vec;
@@ -48,7 +45,7 @@ public class Nametag implements Effect {
 			TexFile.bindNone();
 			Color.WHITE.bind();
 			Main.world.thingWindow.forEach(ThingType.ITEM.ordinal, (t) -> {
-				MenuManager.font.drawString((float)(t.pos.x + Render.offsetX), (float)(t.pos.y + Render.offsetY), t.itemBeing.nameInv, 1, 1, scaleX, scaleY);
+				MenuManager.font.drawString((float)(t.pos.x + Render.offsetX), (float)(t.pos.y + Render.offsetY), ((Thing)t).itemBeing.nameInv, 1, 1, scaleX, scaleY);
 			});
 		}
 	}

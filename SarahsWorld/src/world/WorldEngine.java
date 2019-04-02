@@ -5,11 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import core.Core;
 import core.Updater;
-import main.Main;
 import quest.ActiveQuest;
-import things.Thing;
+import things.Entity;
 import util.Time;
 import util.math.Vec;
 import world.data.Column;
@@ -28,11 +26,11 @@ public class WorldEngine implements Updater {
 	
 	ThingWindow thingWindow;
 
-	Thing avatar;
+	Entity avatar;
 	public Vec lastAvatarPosition = new Vec();
 
 	List<Spawner> spawnRequests = new ArrayList<>();
-	Set<Thing> deletionRequests = new HashSet<>();
+	Set<Entity> deletionRequests = new HashSet<>();
 	
 	
 	public WorldEngine(WorldData data, WorldEditor editor, ThingWindow thingWindow, RealWorldWindow... worldWindows) {
@@ -57,7 +55,7 @@ public class WorldEngine implements Updater {
 //			set.add(t);
 //		}
 //		System.out.println(set.size() + "  " + deletionRequests.size());
-		for(Thing t : deletionRequests){
+		for(Entity t : deletionRequests){
 			editor.delete(t);
 		}
 		deletionRequests.clear();
@@ -95,7 +93,7 @@ public class WorldEngine implements Updater {
 	
 	public static boolean debug = false;
 	
-	public void requestDeletion(Thing t) {
+	public void requestDeletion(Entity t) {
 		deletionRequests.add(t);
 	}
 

@@ -1,29 +1,42 @@
 package things.aiPlugins;
 
-import things.AiPlugin;
-import things.Thing;
+import things.AiPlugin2;
+import things.Entity;
+import things.ThingPlugin;
 import world.World;
 
-public class FlyAround extends AiPlugin {
+public class FlyAround extends AiPlugin2 {
 
-	public boolean action(Thing t, double delta) {
-//		if(t.where != Where.GROUND){
+	@Override
+	public FlyPlugin createAttribute(Entity thing) {
+		return new FlyPlugin(thing);
+	}
+	
+	public class FlyPlugin extends ThingPlugin {
+
+		public FlyPlugin(Entity thing) {
+			super(thing);
+		}
+
+		public boolean action(double delta){
+//			if(t.where != Where.GROUND){
 //			System.out.println("Flap! " + t.ani.ani.name);
-			if(t.aniPlug.getAnimator().ani.name != "flap"){//gliding
+			if(thing.aniPlug.getAnimator().ani.name != "flap"){//gliding
 				if(World.rand.nextInt(100) < 20){//start flapping
-					t.aniPlug.setAnimation("flap", () -> t.aniPlug.setAnimation("fly"));
-					t.flyForce.set((0.5f - World.rand.nextFloat())*100, World.rand.nextFloat()*100 + 50);
+					thing.aniPlug.setAnimation("flap", () -> thing.aniPlug.setAnimation("fly"));
+					thing.flyForce.set((0.5f - World.rand.nextFloat())*100, World.rand.nextFloat()*100 + 50);
 				}
 			} else {//flapping
-				if(t.aniPlug.getAnimator().pos > 1)
-				t.type.physics.applyForce(t, t.flyForce);
+				if(thing.aniPlug.getAnimator().pos > 1)
+					thing.type.physics.applyForce(thing, thing.flyForce);
 			}
-			if(t.vel.x > 0){
-				t.aniPlug.setOrientation( true);
+			if(thing.vel.x > 0){
+				thing.aniPlug.setOrientation( true);
 			}
-			if(t.vel.x < 0){
-				t.aniPlug.setOrientation( false);
+			if(thing.vel.x < 0){
+				thing.aniPlug.setOrientation( false);
 			}
+			return true;
 //		} else {
 //			System.out.println("test");
 //			if(t.ani.ani != t.type.ani.get(t, "flap")){
@@ -37,6 +50,7 @@ public class FlyAround extends AiPlugin {
 //				}
 //			}
 //		}
-		return true;
+		}
 	}
+	
 }

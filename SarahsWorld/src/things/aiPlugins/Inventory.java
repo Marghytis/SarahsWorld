@@ -5,13 +5,15 @@ import item.ItemType;
 import main.Main;
 import main.Res;
 import render.Animator;
-import things.AiPlugin;
+import things.AiPlugin2;
+import things.Entity;
 import things.Thing;
+import things.ThingPlugin;
 import things.ThingType;
 import util.math.Vec;
 import world.data.ColumnListElement;
 
-public class Inventory extends AiPlugin {
+public class Inventory extends AiPlugin2 {
 
 	public int itemAmount;
 	public ItemType defaultItem;
@@ -21,33 +23,43 @@ public class Inventory extends AiPlugin {
 		this.itemAmount = itemAmount;
 	}
 	
-	public void setup(Thing t){
-		t.itemStacks = new ItemStack[itemAmount];
-		t.itemAni =  new Animator(defaultItem.texHand);
-		for(int i = 0; i < itemAmount; i++){
-			t.itemStacks[i] = new ItemStack(i, this);
+	@Override
+	public InventoryPlugin createAttribute(Entity thing) {
+		return new InventoryPlugin(thing);
+	}
+	
+	public class InventoryPlugin extends ThingPlugin {
+
+		public InventoryPlugin(Entity t) {
+			super(t);
+			thing.itemStacks = new ItemStack[itemAmount];
+			thing.itemAni =  new Animator(defaultItem.texHand);
+			for(int i = 0; i < itemAmount; i++){
+				thing.itemStacks[i] = new ItemStack(i, Inventory.this);
+			}
+		}
+		@Override
+		public void update(double delta){
+			for(ItemStack stack : thing.itemStacks){
+				stack.update(delta);
+			}
+			int coinAmount = 0;
+			for(ColumnListElement c = Main.world.thingWindow.start(); c != Main.world.thingWindow.end(); c = c.next())
+			for(Entity t2 = c.firstThing(ThingType.COIN.ordinal); t2 != null; t2 = t2.next()){
+				if(t2.pos.minus(thing.pos).lengthSquare() < 1000){
+					Main.world.engine.requestDeletion(t2);
+					coinAmount++;
+				}
+			}
+			if(coinAmount > 0){
+				
+				thing.coins += coinAmount;
+				Res.coinSoundSource.play();
+			}
+			thing.itemAni.setTexture(getSelectedItem(thing).texHand);
 		}
 	}
 	
-	public void update(Thing t, double delta){
-		for(ItemStack stack : t.itemStacks){
-			stack.update(delta);
-		}
-		int coinAmount = 0;
-		for(ColumnListElement c = Main.world.thingWindow.start(); c != Main.world.thingWindow.end(); c = c.next())
-		for(Thing t2 = c.firstThing(ThingType.COIN); t2 != null; t2 = t2.next()){
-			if(t2.pos.minus(t.pos).lengthSquare() < 1000){
-				Main.world.engine.requestDeletion(t2);
-				coinAmount++;
-			}
-		}
-		if(coinAmount > 0){
-			
-			t.coins += coinAmount;
-			Res.coinSoundSource.play();
-		}
-		t.itemAni.setTexture(getSelectedItem(t).texHand);
-	}
 	
 	public ItemType getSelectedItem(Thing t){
 		return t.itemStacks[t.selectedItem].item;

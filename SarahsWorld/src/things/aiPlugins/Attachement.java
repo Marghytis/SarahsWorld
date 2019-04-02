@@ -1,23 +1,22 @@
 package things.aiPlugins;
 
-import things.AiPlugin;
+import things.AiPlugin2;
+import things.Entity;
 import things.Thing;
 import things.ThingPlugin;
-import things.sorting.AiAspect;
-import things.sorting.ThingAspect;
 
-public abstract class Attachement extends AiPlugin{
+public abstract class Attachement extends AiPlugin2 {
 
 	public abstract void onVisibilityChange(Thing t, boolean visible);
-	
+
 	@Override
-	public void setup(Thing t) {
-		t.attachment = new AttachementPlugin(t);
+	public AttachementPlugin createAttribute(Entity thing) {
+		return new AttachementPlugin(thing);
 	}
 	
 	public class AttachementPlugin extends ThingPlugin {
 		
-		public AttachementPlugin(Thing thing) {
+		public AttachementPlugin(Entity thing) {
 			super(thing);
 		}
 

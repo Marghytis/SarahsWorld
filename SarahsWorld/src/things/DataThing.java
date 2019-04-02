@@ -6,7 +6,6 @@ import java.util.List;
 import effects.Effect;
 import item.ItemStack;
 import item.ItemType;
-import moveToLWJGLCore.DefaultListElement;
 import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
@@ -16,16 +15,17 @@ import things.interfaces.StructureThing;
 import util.math.Vec;
 import world.data.Column;
 
-public abstract class DataThing extends DefaultListElement<Thing> implements StructureThing<Thing>, Listable {
+public abstract class DataThing extends Entity implements StructureThing<Entity>, Listable {
+
+	
 	//DEBUG
 //	public boolean selected;
 //	public boolean switchedSelected;
 	
+
 	//values, that don't change, but are entity specific
-	public ThingType type;
 //	public Color color = new Color(Color.WHITE);
 	public ItemType itemBeing;
-	public double yOffset;
 	public double accWalking = 1000, accSwimming = 250, accFlying;//accWalking is different from snail to snail for example
 //	public double z, 
 	double size = 1;
@@ -36,7 +36,7 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 	//dynamically changing values
 //	public short index = -1;
 	public int[] indices = {-1,-1,-1,-1,-1};//for diverse lists of things
-	public Vec pos = new Vec(), nextPos = new Vec(), lastPos = new Vec();
+	public Vec nextPos = new Vec(), lastPos = new Vec();
 	public Vec vel = new Vec(), nextVelAvDelta = new Vec(), nextVel = new Vec();
 	public Vec force = new Vec(), noFricForce = new Vec(), flyForce = new Vec();//flyForce is mainly for butterflies
 	public double phi;
@@ -69,11 +69,6 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 	public Thing target;
 	public Thing mountedThing;
 	public Technique lastAttack;
-	/**
-	 * It's the column next left to the things position
-	 */
-	public Column newLink;
-	protected Column realLink;
 	public int selectedItem;
 //	public int aniSet;
 	public Where where = new Where();
@@ -91,6 +86,10 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 
 	public double xDestMin, xDestMax;//for walking around
 	public double splashCooldown1, splashCooldown2, otherCooldown;
+
+	public DataThing(Species<Thing> type, Column field, Vec pos, Object[] extraData) {
+		super(type, field, pos, extraData);
+	}
 	
 	public Column getRealLink() {
 		return realLink;
@@ -99,17 +98,10 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 	public int getTypeOrdinal() {
 		return type.ordinal;
 	}
-	public void free() {
-		if(next != null) next.prev = prev;
-		if(prev != null) prev.next = next;
-	}
-
-	public ThingType type() {
-		return type;
-	}
-
-	public void setLinked(boolean linked) {
-		this.linked = linked;
+	
+	@SuppressWarnings("unchecked")
+	public Species<Thing> type() {
+		return (Species<Thing>) type;
 	}
 
 	@Override
@@ -126,7 +118,7 @@ public abstract class DataThing extends DefaultListElement<Thing> implements Str
 		rotation = angle;
 	}
 
-	public ThingType getType() {
+	public Species<Thing> getType() {
 		return type();
 	}
 

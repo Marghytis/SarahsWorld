@@ -2,12 +2,13 @@ package things.aiPlugins;
 
 import java.util.HashMap;
 
+import base.entities.Attribute;
 import main.Main;
 import render.Animation;
 import render.Animator;
 import render.TexFile;
 import things.AiPlugin2;
-import things.Thing;
+import things.Entity;
 import things.ThingPlugin;
 import util.Color;
 import util.math.Rect;
@@ -60,13 +61,12 @@ public class Animating extends AiPlugin2 {
 	}
 
 	@Override
-	public ThingPlugin plugIntoThing(Thing t) {
-		AnimatingPlugin aniPlug = new AnimatingPlugin(t);
-		t.setAnimatingPlugin(aniPlug);
-		return aniPlug;
+	public AnimatingPlugin createAttribute(Entity thing) {
+		
+		return new AnimatingPlugin(thing);
 	}
-	
-	public class AnimatingPlugin extends ThingPlugin {
+
+	public class AnimatingPlugin extends ThingPlugin implements Attribute {
 		
 		double zPos;
 		boolean ori;
@@ -86,8 +86,9 @@ public class Animating extends AiPlugin2 {
 		int aniSet;
 		int time;
 		
-		public AnimatingPlugin(Thing thing) {
+		public AnimatingPlugin(Entity thing) {
 			super(thing);
+//			this.thing = null;
 			this.zPos = World.rand.nextDouble()*zRange + z - (zRange/2);
 			this.ori = World.rand.nextBoolean();
 			this.animator = new Animator(defaultAni);

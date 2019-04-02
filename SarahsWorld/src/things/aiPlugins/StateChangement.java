@@ -2,10 +2,12 @@ package things.aiPlugins;
 
 import java.util.function.BiConsumer;
 
-import things.AiPlugin;
+import things.AiPlugin2;
+import things.Entity;
 import things.Thing;
+import things.ThingPlugin;
 
-public class StateChangement extends AiPlugin {
+public class StateChangement extends AiPlugin2 {
 
 	BiConsumer<Thing, Double> action;
 	
@@ -13,8 +15,22 @@ public class StateChangement extends AiPlugin {
 		this.action = action;
 	}
 	
-	public void update(Thing t, double delta) {
-		action.accept(t, delta);
+	@Override
+	public StatePlugin createAttribute(Entity thing) {
+		return new StatePlugin(thing);
+	}
+	
+	public class StatePlugin extends ThingPlugin {
+
+		public StatePlugin(Entity thing) {
+			super(thing);
+		}
+		
+		@Override
+		public void update(double delta) {
+			action.accept(thing, delta);
+		}
+		
 	}
 	
 }

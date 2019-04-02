@@ -1,7 +1,7 @@
 package things.aiPlugins;
 
 import things.AiPlugin2;
-import things.Thing;
+import things.Entity;
 import things.ThingPlugin;
 
 
@@ -17,17 +17,15 @@ public class Magic extends AiPlugin2 {
 	}
 
 	@Override
-	public ThingPlugin plugIntoThing(Thing t) {
-		MagicPlugin magic = new MagicPlugin(t);
-		t.setMagicPlugin(magic);
-		return magic;
+	public MagicPlugin createAttribute(Entity thing) {
+		return new MagicPlugin(thing);
 	}
 	
 	public class MagicPlugin extends ThingPlugin {
 		
 		public int mana;
 
-		public MagicPlugin(Thing thing) {
+		public MagicPlugin(Entity thing) {
 			super(thing);
 			
 			this.mana = startMana;

@@ -4,6 +4,7 @@ import item.ItemType;
 import item.ItemType.WeaponType;
 import menu.Settings;
 import things.AiPlugin2;
+import things.Entity;
 import things.Technique;
 import things.Thing;
 import things.ThingPlugin;
@@ -32,12 +33,10 @@ public class Attacking extends AiPlugin2 {
 		this.critProb = critProb;
 		this.attacks = attacks;
 	}
-	
+
 	@Override
-	public ThingPlugin plugIntoThing(Thing t) {
-		AttackPlugin plug = new AttackPlugin(t);
-		t.setAttackPlugin(plug);
-		return plug;
+	public AttackPlugin createAttribute(Entity thing) {
+		return new AttackPlugin(thing);
 	}
 	
 	public int calculateDamage(Thing src, Thing target, ItemType item, String attack){
@@ -68,7 +67,7 @@ public class Attacking extends AiPlugin2 {
 		private double attackCooldown;
 		private boolean attacking;
 
-		public AttackPlugin(Thing thing) {
+		public AttackPlugin(Entity thing) {
 			super(thing);
 		}
 		
@@ -143,4 +142,5 @@ public class Attacking extends AiPlugin2 {
 			return attacks[type];
 		}
 	}
+	
 }

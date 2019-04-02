@@ -1,12 +1,12 @@
 package things.interfaces;
 
-import things.ThingType;
+import things.Species;
 import util.math.Vec;
 
 public interface BasicThing {
 	public void setRotation(double angle);
 	
-	public ThingType getType();
+	public Species getType();
 	public double getSize();
 	public double getRotation();
 	public Vec pos();

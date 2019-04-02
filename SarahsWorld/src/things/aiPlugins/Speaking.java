@@ -11,8 +11,10 @@ import render.Render;
 import render.TexAtlas;
 import render.Texture;
 import render.VAO;
-import things.AiPlugin;
+import things.AiPlugin2;
+import things.Entity;
 import things.Thing;
+import things.ThingPlugin;
 import util.Anim;
 import util.Anim.AnimPart;
 import util.Anim.Func;
@@ -22,10 +24,39 @@ import util.math.UsefulF;
 import util.math.Vec;
 import world.World;
 
-public class Speaking extends AiPlugin {
+public class Speaking extends AiPlugin2 {
 	
-	public void setup(Thing t){
-		t.tb = new ThoughtBubble(t);
+	@Override
+	public SpeakingPlugin createAttribute(Entity thing) {
+		return new SpeakingPlugin(thing);
+	}
+	
+	public class SpeakingPlugin extends ThingPlugin {
+
+		public SpeakingPlugin(Entity thing) {
+			super(thing);
+			this.thing.tb = new ThoughtBubble(this.thing);
+		}
+
+		@Override
+		public void update(double delta) {
+			if(thing.currentSpeech != null){
+				if(thing.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000 && !thing.speaking){// && "".equals(t.currentSpeech)
+					if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
+						Main.menu.setMenu(MenuType.DIALOG);
+					} else {
+						thing.tb.popUp();
+					}
+				} else if(thing.pos.minus(Main.world.avatar.pos).lengthSquare() > 90000){
+					if(thing.tb.living) thing.tb.goAway();
+					if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
+						Main.menu.setMenu(MenuType.EMPTY);
+						thing.speaking = false;
+					}
+				}
+			}
+		}
+		
 	}
 	
 	public void say(Thing t, boolean thoughtBubble, ActiveQuest quest, String what, String[] answers){
@@ -41,24 +72,6 @@ public class Speaking extends AiPlugin {
 			}
 			((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(quest, t, Strings.get(what, World.rand), realAnswers);
 			Main.menu.setMenu(MenuType.DIALOG);
-		}
-	}
-
-	public void update(Thing t, double delta) {
-		if(t.currentSpeech != null){
-			if(t.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000 && !t.speaking){// && "".equals(t.currentSpeech)
-				if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == t){
-					Main.menu.setMenu(MenuType.DIALOG);
-				} else {
-					t.tb.popUp();
-				}
-			} else if(t.pos.minus(Main.world.avatar.pos).lengthSquare() > 90000){
-				if(t.tb.living) t.tb.goAway();
-				if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == t){
-					Main.menu.setMenu(MenuType.EMPTY);
-					t.speaking = false;
-				}
-			}
 		}
 	}
 

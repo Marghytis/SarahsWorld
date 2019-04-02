@@ -1,10 +1,12 @@
 package things.aiPlugins;
 
-import things.AiPlugin;
+import things.AiPlugin2;
+import things.Entity;
 import things.Thing;
+import things.ThingPlugin;
 import util.math.Rect;
 
-public class Riding extends AiPlugin {
+public class Riding extends AiPlugin2 {
 
 	Rect normalBox, ridingBox;
 	
@@ -16,6 +18,19 @@ public class Riding extends AiPlugin {
 	public Riding(Rect normalBox, Rect ridingBox) {
 		this.normalBox = normalBox;
 		this.ridingBox = ridingBox;
+	}
+	
+	@Override
+	public RidingPlugin createAttribute(Entity thing) {
+		return new RidingPlugin(thing);
+	}
+	
+	public class RidingPlugin extends ThingPlugin {
+
+		public RidingPlugin(Entity thing) {
+			super(thing);
+		}
+		
 	}
 	
 	public void mount(Thing rider, Thing horse){
@@ -64,10 +79,6 @@ public class Riding extends AiPlugin {
 		rider.mountedThing.aniPlug.setOrientation( rider.aniPlug.getOrientation());
 		rider.mountedThing.where = rider.where;
 		rider.mountedThing = null;
-	}
-
-	public boolean action(double delta) {
-		return false;
 	}
 
 	public String save() {

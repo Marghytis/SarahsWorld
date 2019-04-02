@@ -13,6 +13,8 @@ import main.Res;
 import render.Render;
 import render.Shader;
 import render.TexFile;
+import things.Entity;
+import things.Species;
 import things.Thing;
 import things.ThingType;
 import things.aiPlugins.Animating.AnimatingPlugin;
@@ -23,9 +25,9 @@ import world.render.DoubleThingVAO;
 public class ThingWindow extends RealWorldWindow {
 	
 	//variables that should be local but are not, due to speed optimization
-	private List<Thing> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
+	private List<Entity> thingsAt = new ArrayList<>(), objectsAt = new ArrayList<>();
 
-	private DoubleThingVAO[] vaos = new DoubleThingVAO[ThingType.types.length];
+	private DoubleThingVAO[] vaos = new DoubleThingVAO[Species.types.length];
 	
 	private ThingPreparationWindow prepare;
 	
@@ -33,8 +35,8 @@ public class ThingWindow extends RealWorldWindow {
 	public ThingWindow(ColumnListElement anchor, int rObservation, int rPreparation, int rVisibility, int rDontCare) {
 		super(anchor, rVisibility);
 		
-		for(int i = 0; i < ThingType.types.length; i++){
-			vaos[i] = new DoubleThingVAO(ThingType.types[i].maxVisible);
+		for(int i = 0; i < Species.types.length; i++){
+			vaos[i] = new DoubleThingVAO(Species.types[i].maxVisible);
 		}
 		this.prepare = new ThingPreparationWindow(anchor, rObservation, rPreparation, rVisibility, rDontCare, vaos);
 	}
@@ -53,7 +55,7 @@ public class ThingWindow extends RealWorldWindow {
 		System.out.println("refilling thing vao buffers");
 		for(int i = 0; i < vaos.length; i++){
 			if(i == ThingType.TREE_FIR_SNOW.ordinal) {
-				System.out.print(ThingType.types[i].name + ": ");
+				System.out.print(Species.types[i].name + ": ");
 				print = true;
 			}
 			vaos[i].refillBuffers();
@@ -61,10 +63,10 @@ public class ThingWindow extends RealWorldWindow {
 		}
 	}
 	
-	public void add(Thing t) {
+	public void add(Entity t) {
 		// t.plugs[Plugs.ani] != null
-		if(t.type.ani != null) {
-			vaos[t.getTypeOrdinal()].add(t.aniPlug, false);
+		if(t.aniPlug != null) {
+			vaos[t.type.ordinal].add(t.aniPlug, false);
 		} else {
 			throw new RuntimeException("The Thing you're trying to add is not animated!");
 		}
@@ -74,8 +76,8 @@ public class ThingWindow extends RealWorldWindow {
 	 * forces the instant removal of the thing.
 	 * @param t
 	 */
-	public void remove(Thing t) {
-		if(t.type.ani != null) {
+	public void remove(Entity t) {
+		if(t.aniPlug != null) {
 			vaos[t.type.ordinal].remove(t.aniPlug);
 		}
 //		 else {
@@ -148,24 +150,24 @@ public class ThingWindow extends RealWorldWindow {
 		forEach(thing -> thing.update(delta));
 	}
 	
-	public void renderThings(Predicate<ThingType> d, int side){
+	public void renderThings(Predicate<Species<?>> d, int side){
 		renderThings(d, Res.thingShader, side);
 	}
 	
-	public void renderThings(Predicate<ThingType> d, Shader shader, int side){
+	public void renderThings(Predicate<Species<?>> d, Shader shader, int side){
 
 		shader.bind();
 		shader.set("scale", Render.scaleX, Render.scaleY);
 		shader.set("offset", Render.offsetX, Render.offsetY);
 		
-		for(int type = 0; type < ThingType.types.length; type++) {
-			if(vaos[type].empty() || !d.test(ThingType.types[type])) continue;
+		for(int type = 0; type < Species.types.length; type++) {
+			if(vaos[type].empty() || !d.test(Species.types[type])) continue;
 			
 			//render Thing
-			ThingType.types[type].file.file.bind();
+			Species.types[type].file.file.bind();
 
 			for(ColumnListElement c = start(); c != end(); c = c.next())
-			for(Thing t = c.column().firstThing(type); t != null; t = t.next()) {
+			for(Entity t = c.column().firstThing(type); t != null; t = t.next()) {
 				t.aniPlug.prepareRender();
 			}
 
@@ -182,11 +184,11 @@ public class ThingWindow extends RealWorldWindow {
 				GL11.glDrawArrays(GL11.GL_POINTS, vaos[type].start(side), vaos[type].size(side));
 			vaos[type].unbindStuff();
 			
-			if(ThingType.types[type].ani != null && ThingType.types[type].ani.secondFile != null){
-				ThingType.types[type].ani.secondFile.bind();
+			if(Species.types[type].ani != null && Species.types[type].ani.secondFile != null){
+				Species.types[type].ani.secondFile.bind();
 
 				for(ColumnListElement c = start(); c != end(); c = c.next())
-				for(Thing t = c.column().firstThing(type); t != null; t = t.next()) {
+				for(Entity t = c.column().firstThing(type); t != null; t = t.next()) {
 					t.aniPlug.prepareSecondRender();
 				}
 
@@ -202,10 +204,10 @@ public class ThingWindow extends RealWorldWindow {
 	public void renderItemsInHand(){
 		Res.thingShader.bind();
 		ItemType.handheldTex.bind();
-		for(int type = 0; type < ThingType.types.length; type++)
-		if(ThingType.types[type].inv != null)
+		for(int type = 0; type < Species.types.length; type++)
+		if(Species.types[type].inv != null)
 		for(ColumnListElement c = start(); c != end(); c = c.next())
-		for(Thing cursor = c.column().firstThing(type); cursor != null; cursor = cursor.next()){
+		for(Thing cursor = c.column().firstThing(Species.types[type]); cursor != null; cursor = (Thing)cursor.next()){
 			cursor.itemStacks[cursor.selectedItem].item.renderHand(cursor, cursor.itemAni);
 		}
 		Shader.bindNone();
@@ -229,16 +231,16 @@ public class ThingWindow extends RealWorldWindow {
 //			GL11.glBegin(GL11.GL_QUADS);
 //		}
 	}
-	public void forEach(int type, Consumer<Thing> cons){
+	public void forEach(int type, Consumer<Entity> cons){
 		for(ColumnListElement c = start(); c != end(); c = c.next()) {
-			for(Thing t = c.column().firstThing(type); t != null; t = t.next()) {
+			for(Entity t = c.column().firstThing(type); t != null; t = t.next()) {
 				cons.accept(t);
 			}
 		}
 	}
 	
-	private void forEach(Consumer<Thing> cons) {
-		for(int type = 0; type < ThingType.types.length; type++)
+	private void forEach(Consumer<Entity> cons) {
+		for(int type = 0; type < Species.types.length; type++)
 			forEach(type, cons);
 		
 	}
@@ -253,7 +255,7 @@ public class ThingWindow extends RealWorldWindow {
 		return thingsAt.toArray(new Thing[thingsAt.size()]);
 	}
 
-	public Thing[] objectsAt(Vec loc){
+	public Entity[] objectsAt(Vec loc){
 		objectsAt.clear();
 		forEach(t -> {
 			if(t.type.life == null && !t.equals(Main.world.avatar) && t.containsCoords(loc)){
@@ -276,6 +278,6 @@ public class ThingWindow extends RealWorldWindow {
 	}
 
 	public void relinkThings() {
-		forEach(Thing::applyLink);
+		forEach(Entity::applyLink);
 	}
 }

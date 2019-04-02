@@ -1,140 +1,86 @@
 package things;
 
-import main.Main;
-import things.aiPlugins.Animating.AnimatingPlugin;
+import base.entities.Attribute;
 import things.aiPlugins.Attachement.AttachementPlugin;
 import things.aiPlugins.Attacking.AttackPlugin;
 import things.aiPlugins.AvatarControl.AvatarPlugin;
+import things.aiPlugins.FlyAround.FlyPlugin;
+import things.aiPlugins.Following.FollowPlugin;
+import things.aiPlugins.Inventory.InventoryPlugin;
+import things.aiPlugins.Life.LifePlugin;
 import things.aiPlugins.Magic.MagicPlugin;
 import things.aiPlugins.MidgeAround.MidgePlugin;
+import things.aiPlugins.Movement.MovePlugin;
+import things.aiPlugins.Physics.PhysicsPlugin;
+import things.aiPlugins.PhysicsExtension.PhysExPlugin;
+import things.aiPlugins.Riding.RidingPlugin;
+import things.aiPlugins.Speaking.SpeakingPlugin;
+import things.aiPlugins.WalkAround.WalkAroundPugin;
+import transition.ThingEntity;
 import util.math.Vec;
-import world.World;
 import world.data.Column;
 
-public class Thing extends DataThing {
-
-	ThingPlugin[] plugins;
+public class Thing extends DataThing implements ThingEntity {
 	
-	public AnimatingPlugin aniPlug;
-	public AttachementPlugin attachment;
 	public MagicPlugin magic;
 	public MidgePlugin midgePlug;
 	public AttackPlugin attack;
 	public AvatarPlugin avatar;
+	public PhysicsPlugin physicsPlug;
+	public MovePlugin movementPlug;
+	public LifePlugin lifePlug;
+	public FlyPlugin flyAroundPlug;
+	public WalkAroundPugin walkAroundPlug;
+	public AttackPlugin attackingPlug;
+	public InventoryPlugin invPlug;
+	public RidingPlugin ridePlug;
+	public FollowPlugin followPlug;
+	public SpeakingPlugin speakPlug;
+	public MidgePlugin midgeAroundPlug;
+	public PhysExPlugin physExPlug;
+	public AttachementPlugin statePlug;
+
+	public Thing(ThingType type, Column field, Vec pos, Object... extraData) {
+		super(type, field, pos, extraData);
+		type.prepare(this, field, extraData);
+	}
 	
-	Object[] extraData;
-
-
-	public Thing(ThingType type, Column field, Vec pos, Object... extraData){
-		this.type = type;
-		if(pos != null)
-		this.pos = pos;
+	@Override
+	protected void onAttributeAdded(Attribute attrib) {
+		super.onAttributeAdded(attrib);
 		
-		this.extraData = extraData;
-		
-		setup();
-		newLink = field;
-		realLink = field;
-		applyLink();
-	}
-	
-	public void setup(){
-		plugins = new ThingPlugin[type.plugins.length];
-		for(int i = 0; i < type.plugins.length; i++){
-			if(type.plugins[i] != null) {
-				if(type.plugins[i] instanceof AiPlugin2) {
-					plugins[i] = ((AiPlugin2) type.plugins[i]).plugIntoThing(this);
-				} else {
-					type.plugins[i].setup(this);
-				}
-			}
-		}
-		type.setup(this, newLink, pos, extraData);
-	}
-	
-	public void update(double delta){
-		type.update(this, delta);
-		for(AiPlugin plugin : type.plugins){
-			if(plugin != null) plugin.update(this, delta);
-		}
-		for(ThingPlugin plugin : plugins) {
-			if(plugin != null) plugin.update(delta);
-		}
-	}
-	
-	public void applyLink() {
-		if(realLink != newLink || !linked) {
-			if(realLink != null)
-				realLink.remove(this);
-			newLink.add(this);
-			linked = true;
-			realLink = newLink;
+		if(attrib instanceof PhysicsPlugin){
+			physicsPlug = (PhysicsPlugin)attrib;
+		} else if(attrib instanceof MovePlugin){
+			movementPlug = (MovePlugin)attrib;
+		} else if(attrib instanceof LifePlugin){
+			lifePlug = (LifePlugin)attrib;
+		} else if(attrib instanceof FlyPlugin){
+			flyAroundPlug = (FlyPlugin)attrib;
+		} else if(attrib instanceof WalkAroundPugin){
+			walkAroundPlug = (WalkAroundPugin)attrib;
+		} else if(attrib instanceof AttackPlugin){
+			attackingPlug = (AttackPlugin)attrib;
+		} else if(attrib instanceof InventoryPlugin){
+			invPlug = (InventoryPlugin)attrib;
+		} else if(attrib instanceof MagicPlugin){
+			magic = (MagicPlugin)attrib;
+		} else if(attrib instanceof RidingPlugin){
+			ridePlug = (RidingPlugin)attrib;
+		} else if(attrib instanceof FollowPlugin){
+			followPlug = (FollowPlugin)attrib;
+		} else if(attrib instanceof SpeakingPlugin){
+			speakPlug = (SpeakingPlugin)attrib;
+		} else if(attrib instanceof AvatarPlugin){
+			avatar = (AvatarPlugin)attrib;
+		} else if(attrib instanceof MidgePlugin){
+			midgeAroundPlug = (MidgePlugin)attrib;
+		} else if(attrib instanceof PhysExPlugin){
+			physExPlug = (PhysExPlugin)attrib;
+		} else if(attrib instanceof AttachementPlugin){
+			statePlug = (AttachementPlugin)attrib;
+		} else {
+			//...
 		}
 	}
-	
-	public void remove() {
-		for(AiPlugin plugin : type.plugins){
-			if(plugin != null) plugin.remove(this);
-		}
-		Main.world.thingWindow.remove(this);
-	}
-	public void showUpAfterHiding(Column link) {
-		this.realLink = link;
-		this.newLink = link;
-		applyLink();
-		if(type.ani != null && !this.aniPlug.visible()){
-			World.world.thingWindow.add(this);
-		}
-		aniPlug.onVisibilityChange(true);
-	}
-	public void hide() {
-
-		if(type.ani != null && this.aniPlug.visible()){
-			World.world.thingWindow.remove(this);
-		}
-		aniPlug.onVisibilityChange(false);
-		if(linked) newLink.remove(this);
-	}
-	
-	public String save(){return "";};
-	
-	public void load(String save){}
-	
-	public boolean containsCoords(Vec coords) {
-		if(aniPlug == null)
-			return false;
-		else return coords.containedBy(aniPlug.getRenderBox().pos.x + pos.x, aniPlug.getRenderBox().pos.y + pos.y + yOffset, aniPlug.getRenderBox().size.x, aniPlug.getRenderBox().size.y);
-	}
-	
-	public void setPlugin(ThingPlugin plugin) {
-
-		switch(plugin.getClass().getName()) {
-		case "AnimatingPlugin": this.aniPlug = (AnimatingPlugin)plugin;
-		}
-		
-		if(plugin instanceof AnimatingPlugin)
-			this.aniPlug = (AnimatingPlugin)plugin;
-		
-	}
-
-	public void setAnimatingPlugin(AnimatingPlugin plugin) {
-		this.aniPlug = plugin;
-	}
-	
-	public void setMagicPlugin(MagicPlugin plugin) {
-		this.magic = plugin;
-	}
-
-	public void setMidgePlugin(MidgePlugin plug) {
-		this.midgePlug = plug;
-	}
-
-	public void setAttackPlugin(AttackPlugin plug) {
-		this.attack = plug;
-	}
-
-	public void setAvatarPlugin(AvatarPlugin plug) {
-		this.avatar = plug;
-	}
-
 }

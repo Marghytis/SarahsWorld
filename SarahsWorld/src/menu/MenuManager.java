@@ -18,6 +18,7 @@ import menu.Settings.Key;
 import render.Texture;
 import things.Thing;
 import things.ThingType;
+import things.Species;
 import util.Anim;
 import util.Color;
 import util.TrueTypeFont;
@@ -698,7 +699,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 		},
 		DEBUG_SPAWNER(false, false){
 			public void setElements(Menu menu, Main game, Object... extraData){
-				ThingType[] values = ThingType.types;
+				Species[] values = Species.types;
 				menu.clearElements();
 				double x = 0.25, y = 0.9;
 				int i = 0, columns = 0;

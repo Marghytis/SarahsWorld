@@ -2,8 +2,10 @@ package things.aiPlugins;
 
 import main.Main;
 import menu.Settings;
-import things.AiPlugin;
+import things.AiPlugin2;
+import things.Entity;
 import things.Thing;
+import things.ThingPlugin;
 import util.math.UsefulF;
 import util.math.Vec;
 import world.data.Column;
@@ -11,7 +13,7 @@ import world.data.ColumnListElement;
 import world.data.Vertex;
 import world.generation.Material;
 
-public class Physics extends AiPlugin {
+public class Physics extends AiPlugin2 {
 	
 	static double dt = 0.010;
 	public static double lowestSpeed = 0.1;
@@ -49,65 +51,79 @@ public class Physics extends AiPlugin {
 		this(mass, airea, true, true, true, true, walk, false);
 	}
 	
-	public void update(Thing t, double delta){
-		if(Settings.getBoolean("FREEZE")){
-			return;
+	@Override
+	public PhysicsPlugin createAttribute(Entity thing) {
+		return new PhysicsPlugin(thing);
+	}
+	
+	public class PhysicsPlugin extends ThingPlugin {
+
+		public PhysicsPlugin(Entity thing) {
+			super(thing);
 		}
 		
-		Vec constantForce = t.force.copy();
-		if(t.where.water > 0.5){
-			
-		}
-		t.where.water = 0;
-//		t.g = false;
-		
-		{//COLLISION TESTING-------------------------------------------O
-			//Test for collision in time intervals of dt=0.01s length
-			int steps = (int)(delta/dt);
-			double step = delta/steps;
-			for(int i = 0; i < steps; i++){
-				double time = step;
-				if(!t.where.g)
-					time = freeFallOrCollision(t, constantForce, time);
-				if(t.where.g && walk)
-					walkOrLiftOf(t, constantForce, time);
+		@Override
+		public void update(double delta){
+			if(Settings.getBoolean("FREEZE")){
+				return;
 			}
+			
+			Vec constantForce = thing.force.copy();
+			if(thing.where.water > 0.5){
 				
-		}
-		
-		
-		{//RESET FORCE-------------------------------------------------O
-			//reset force to gravity only
-			if(grav)
-				t.force.set(gravity).scale(mass);
-			else
-				t.force.set(0, 0);
-		}
-		
-		
-		{//UPDATE WHERE------------------------------------------------O
-			if(t.where.g){
-				if(t.airTime > 0.5 && t.type.movement != null)
-					t.type.movement.land(t);
-				t.reallyAir = false;
-				t.airTime = 0;
-			} else {
-				t.airTime += delta;
-				if(!t.reallyAir && t.airTime > 0.4){
-					t.reallyAir = true;
-					if(t.type.movement != null)
-						t.aniPlug.setAnimation(t.type.movement.fly);
+			}
+			thing.where.water = 0;
+//			t.g = false;
+			
+			{//COLLISION TESTING-------------------------------------------O
+				//Test for collision in time intervals of dt=0.01s length
+				int steps = (int)(delta/dt);
+				double step = delta/steps;
+				for(int i = 0; i < steps; i++){
+					double time = step;
+					if(!thing.where.g)
+						time = freeFallOrCollision(thing, constantForce, time);
+					if(thing.where.g && walk)
+						walkOrLiftOf(thing, constantForce, time);
+				}
+					
+			}
+			
+			
+			{//RESET FORCE-------------------------------------------------O
+				//reset force to gravity only
+				if(grav)
+					thing.force.set(gravity).scale(mass);
+				else
+					thing.force.set(0, 0);
+			}
+			
+			
+			{//UPDATE WHERE------------------------------------------------O
+				if(thing.where.g){
+					if(thing.airTime > 0.5 && thing.type.movement != null)
+						thing.type.movement.land(thing);
+					thing.reallyAir = false;
+					thing.airTime = 0;
+				} else {
+					thing.airTime += delta;
+					if(!thing.reallyAir && thing.airTime > 0.4){
+						thing.reallyAir = true;
+						if(thing.type.movement != null)
+							thing.aniPlug.setAnimation(thing.type.movement.fly);
+					}
 				}
 			}
-		}
-		//UPDATE ROTATION
-		updateRotation(t, delta);
-		
-		//UPDATE WORLD LINK
+			//UPDATE ROTATION
+			updateRotation(thing, delta);
+			
+			//UPDATE WORLD LINK
 
-		int column = (int)Math.floor(t.pos.x/Column.COLUMN_WIDTH);
-		while(t.newLink.getIndex() < column && t.newLink.right() != null) t.newLink = t.newLink.right().column();
-		while(t.newLink.getIndex() > column && t.newLink.left() != null) t.newLink = t.newLink.left().column();
+			int column = (int)Math.floor(thing.pos.x/Column.COLUMN_WIDTH);
+			while(thing.newLink.getIndex() < column && thing.newLink.right() != null) thing.newLink = thing.newLink.right().column();
+			while(thing.newLink.getIndex() > column && thing.newLink.left() != null) thing.newLink = thing.newLink.left().column();
+		}
+		
 	}
 	
 	public void updateRotation(Thing t, double delta){

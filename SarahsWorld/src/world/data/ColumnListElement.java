@@ -1,8 +1,8 @@
 package world.data;
 
 import moveToLWJGLCore.DirListElement;
-import things.Thing;
-import things.ThingType;
+import things.Entity;
+import things.Species;
 
 /**
  * An abstract specification of an element in a directed list of Columns. Is implemented fully in Column.
@@ -25,6 +25,6 @@ public abstract class ColumnListElement extends DirListElement<Column> {
 	public abstract void setIndex(int index);
 	public abstract int getIndex();
 	public abstract Vertex vertices(int yIndex);
-	public abstract Thing firstThing(int ordinal);
-	public abstract Thing firstThing(ThingType coin);
+	public abstract Entity firstThing(int ordinal);
+	public abstract <T extends Entity> T firstThing(Species<T> coin);
 }

@@ -1,19 +1,19 @@
 package quest;
 
 import things.Thing;
-import things.ThingType;
+import things.Species;
 import util.math.Vec;
 import world.data.Column;
 import world.generation.Spawner;
 
 public class QuestSpawner implements Spawner {
 
-	public ThingType thingType;
+	public Species thingType;
 	public ActiveQuest quest;
 	public String name;
 	public Object[] extraData;
 	
-	public QuestSpawner(ThingType type, ActiveQuest quest, String name, Object... extraData){
+	public QuestSpawner(Species type, ActiveQuest quest, String name, Object... extraData){
 		this.thingType = type;
 		this.quest = quest;
 		this.name = name;

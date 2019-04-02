@@ -7,7 +7,7 @@ import java.util.Hashtable;
 
 import item.ItemStack;
 import item.ItemType;
-import things.ThingType;
+import things.Species;
 import world.World;
 import world.data.WorldData;
 import world.generation.Zone.Attribute;
@@ -24,7 +24,7 @@ public enum Quest {
 	static {
 		values = values();
 	}
-	public Hashtable<String, ThingType> characters = new Hashtable<>();
+	public Hashtable<String, Species> characters = new Hashtable<>();
 	public int[] startAttributes;
 	public Event start;
 	
@@ -66,7 +66,7 @@ public enum Quest {
 		String[] chars = blocks[1].split("\\{")[1].split(";");
 		for(int i = 0; i < chars.length; i++){
 			String[] data = chars[i].split("=");
-			characters.put(data[0], ThingType.valueOf(data[1]));
+			characters.put(data[0], Species.valueOf(data[1]));
 		}
 		
 		//names

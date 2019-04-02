@@ -2,9 +2,9 @@ package world.data;
 
 import java.util.Random;
 
+import things.Entity;
+import things.Species;
 import things.Thing;
-import things.ThingType;
-import things.sorting.AiAspect.ThingID;
 import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
@@ -20,7 +20,7 @@ public class Column extends ColumnListElement {
 	public static final double COLUMN_WIDTH = 20;
 	private Vertex[] vertices;
 	/**These are the anchors. may be null.*/
-	private Thing[] things;
+	private Entity[] things;
 	private int xIndex;
 	private double xReal;
 	private Vertex topSolidVertex, topFluidVertex;
@@ -48,7 +48,7 @@ public class Column extends ColumnListElement {
 			v.setParent(this);
 		}
 		setCollisionVecs(collisionVecs);
-		this.things = new Thing[ThingType.types.length];
+		this.things = new Thing[Species.types.length];
 	}
 	
 	/**
@@ -163,8 +163,8 @@ public class Column extends ColumnListElement {
 	 * so it should be removed from there earlier.
 	 * @param t Thing to add
 	 */
-	public void add(Thing t) {
-		int o = t.getTypeOrdinal();
+	public void add(Entity t) {
+		int o = t.type.ordinal;
 		t.setPrev(null);
 		t.setNext(things[o]);
 		if(things[o] != null) things[o].setPrev(t);
@@ -175,18 +175,18 @@ public class Column extends ColumnListElement {
 	 * Removes the thing t from this column. Closes the created gap too.
 	 * @param t Thing to remove
 	 */
-	public void remove(Thing t) {
+	public void remove(Entity t) {
 		t.free();
-		if(things[t.type().ordinal] == t)
-			things[t.type().ordinal] = t.next();
+		if(things[t.type.ordinal] == t)
+			things[t.type.ordinal] = t.next();
 		t.setLinked(false);
 	}
 	
 	//Getters
-	public ThingID firstThingID(ThingType type) {return firstThing(type).getID();};
 	
-	public Thing firstThing(ThingType type) {			return firstThing(type.ordinal);	}
-	public Thing firstThing(int type) {					return things[type];	}
+	@SuppressWarnings("unchecked")
+	public <T extends Entity> T firstThing(Species<T> type) {	return (T)things[type.ordinal];	}
+	public Entity firstThing(int type) {					return things[type];	}
 	public Vertex vertices(int index) {					return vertices[index];	}
 	public int getIndex() {								return xIndex;	}
 	public Vertex getTopSolidVertex(){					return topSolidVertex;	}
@@ -194,7 +194,7 @@ public class Column extends ColumnListElement {
 	public double getCollisionY(){						return collisionYSolid;	}
 	public double getCollisionYFluid(){					return collisionYFluid;	}
 	public double getX() {								return xReal;	}
-	public Thing getFirst(ThingType type) {				return firstThing(type);	}	
+	public <T extends Entity> T getFirst(Species<T> type) {				return firstThing(type);	}	
 	public Biome getBiome() {							return biome;	}	
 	public Color getTopColor() {						return topColor;	}
 	public Color getLowColor() {						return lowColor;	}

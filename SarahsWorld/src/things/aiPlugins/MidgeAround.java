@@ -1,7 +1,7 @@
 package things.aiPlugins;
 
 import things.AiPlugin2;
-import things.Thing;
+import things.Entity;
 import things.ThingPlugin;
 import util.math.Vec;
 import world.World;
@@ -9,10 +9,8 @@ import world.World;
 public class MidgeAround extends AiPlugin2 {
 	
 	@Override
-	public ThingPlugin plugIntoThing(Thing t) {
-		MidgePlugin plug = new MidgePlugin(t);
-		t.setMidgePlugin(plug);
-		return plug;
+	public MidgePlugin createAttribute(Entity thing) {
+		return new MidgePlugin(thing);
 	}
 	
 	public class MidgePlugin extends ThingPlugin {
@@ -20,12 +18,12 @@ public class MidgeAround extends AiPlugin2 {
 		private double otherCooldown;
 		private Vec flyForce;
 		
-		public MidgePlugin(Thing thing) {
+		public MidgePlugin(Entity thing) {
 			super(thing);
 			flyForce = new Vec();
 		}
 
-		public void update(double delta) {
+		public boolean action(double delta) {
 			otherCooldown -= delta;
 			if(otherCooldown < 0){
 				otherCooldown = 1 + World.rand.nextDouble()*1;
@@ -38,6 +36,7 @@ public class MidgeAround extends AiPlugin2 {
 				flyForce.y = 3;
 			}
 			thing.force.set(flyForce);//.shift((0.5f - World.rand.nextDouble())*3f, (0.49f - World.rand.nextDouble())*3f);
+			return true;
 		}
 	}
 }

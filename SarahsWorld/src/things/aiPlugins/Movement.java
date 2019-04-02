@@ -2,15 +2,17 @@ package things.aiPlugins;
 
 import main.Main;
 import menu.Settings.Key;
-import things.AiPlugin;
+import things.AiPlugin2;
+import things.Entity;
 import things.Thing;
+import things.ThingPlugin;
 import util.math.Function;
 import util.math.Vec;
 import world.data.Column;
 
 
 
-public class Movement extends AiPlugin {
+public class Movement extends AiPlugin2 {
 	
 	public String stand, sneak, walk1, walk2, fly, plunge, swim, sneakyStand;
 	public String liftOf, land, dive;
@@ -27,6 +29,19 @@ public class Movement extends AiPlugin {
 		this.dive = dive;
 		this.plunge = plunge;
 		this.sneakyStand = sneakyStand;
+	}
+	
+	@Override
+	public MovePlugin createAttribute(Entity thing) {
+		return new MovePlugin(thing);
+	}
+	
+	public class MovePlugin extends ThingPlugin {
+
+		public MovePlugin(Entity thing) {
+			super(thing);
+		}
+		
 	}
 	
 	public void setBackgroundAni(Thing t) {

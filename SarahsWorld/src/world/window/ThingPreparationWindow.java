@@ -7,9 +7,9 @@ import java.util.List;
 import org.lwjgl.BufferUtils;
 
 import moveToLWJGLCore.Dir;
-import things.Thing;
+import things.Entity;
+import things.Species;
 import things.ThingSet;
-import things.ThingType;
 import world.data.Column;
 import world.data.ColumnListElement;
 import world.render.DoubleThingVAO;
@@ -26,9 +26,9 @@ public class ThingPreparationWindow extends RealWorldWindow {
 
 	private DoubleThingVAO[] vaos;
 	@SuppressWarnings("unchecked")
-	private ThingSet<Thing>[][] toAdd = new ThingSet[ThingType.types.length][2];
+	private ThingSet<Entity>[][] toAdd = new ThingSet[Species.types.length][2];
 	@SuppressWarnings("unchecked")
-	private ThingSet<Thing>[] toRemove = new ThingSet[ThingType.types.length];
+	private ThingSet<Entity>[] toRemove = new ThingSet[Species.types.length];
 	
 	private int dxPreparation, dxVisibility, dxDontCare, dxPreparation2, dxVisibility2, dxDontCare2, dxFree2;
 
@@ -42,11 +42,11 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		this.dxPreparation2 = rObservation+1 + rPreparation;
 		this.dxFree2 = rObservation+1 + rObservation;
 		this.vaos = vaos;
-		for(int i = 0; i < ThingType.types.length; i++){
-			int maxVisible = ThingType.types[i].maxVisible;
-			toAdd[i][0] = new ThingSet<Thing>(0, addBatchSize);//TODO use fraction of 'max visible' number instead of addBatchSize
-			toAdd[i][1] = new ThingSet<Thing>(1, addBatchSize);
-			toRemove[i] = new ThingSet<Thing>(2, maxVisible);
+		for(int i = 0; i < Species.types.length; i++){
+			int maxVisible = Species.types[i].maxVisible;
+			toAdd[i][0] = new ThingSet<Entity>(0, addBatchSize);//TODO use fraction of 'max visible' number instead of addBatchSize
+			toAdd[i][1] = new ThingSet<Entity>(1, addBatchSize);
+			toRemove[i] = new ThingSet<Entity>(2, maxVisible);
 		}
 	}
 	
@@ -64,7 +64,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 	 */
 	private void setCorrectStates() {
 		//remove any things that were missed by the window because of too high speed
-		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
+		for(int ttype = 0; ttype < Species.types.length; ttype++) {
 			vaos[ttype].free(ends[Dir.l].column().getX(), ends[Dir.l].column().getX() + (Column.COLUMN_WIDTH*dxPreparation));
 			vaos[ttype].free(ends[Dir.l].column().getX() + (Column.COLUMN_WIDTH*dxPreparation2), ends[Dir.r].column().getX());
 		}
@@ -101,9 +101,9 @@ public class ThingPreparationWindow extends RealWorldWindow {
 	 * @param end
 	 */
 	private void setFree(ColumnListElement c, int end) {
-		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
-			if(ThingType.types[ttype].ani == null) continue;
-			for(Thing t = c.column().firstThing(ttype); t != null; t = t.next()){
+		for(int ttype = 0; ttype < Species.types.length; ttype++) {
+			if(Species.types[ttype].ani == null) continue;
+			for(Entity t = c.column().firstThing(ttype); t != null; t = t.next()){
 				if(isVisible(t)) {
 					prepareRemoval(t);
 				} else if(isPreparedToBeAdded(t)){
@@ -113,9 +113,9 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		}
 	}
 	private void setPrepared(ColumnListElement c, int end) {
-		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
-			if(ThingType.types[ttype].ani == null) continue;
-			for(Thing t = c.column().firstThing(ttype); t != null; t = t.next()){
+		for(int ttype = 0; ttype < Species.types.length; ttype++) {
+			if(Species.types[ttype].ani == null) continue;
+			for(Entity t = c.column().firstThing(ttype); t != null; t = t.next()){
 				if(!isVisible(t)) {
 					prepareAddition(t, end);
 				}//else no need to be added
@@ -124,11 +124,11 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		}
 	}
 	private void setVisible(ColumnListElement c, int end) {
-		for(int ttype = 0; ttype < ThingType.types.length; ttype++) {
-			if(ThingType.types[ttype].ani == null) continue;
+		for(int ttype = 0; ttype < Species.types.length; ttype++) {
+			if(Species.types[ttype].ani == null) continue;
 			
 			boolean addNeeded = false;
-			for(Thing t = c.column().firstThing(ttype); t != null; t = t.next()){
+			for(Entity t = c.column().firstThing(ttype); t != null; t = t.next()){
 				if(!isVisible(t)) {
 					prepareAddition(t, end);
 					addNeeded = true;
@@ -143,27 +143,27 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		
 		//the attachements of things that aren't rendered are updated
 		//rendered things have an Animating plugin, which completes this task
-		for(int ttype = 0; ttype < ThingType.types.length; ttype++)
-			if(ThingType.types[ttype].ani == null && ThingType.types[ttype].attachment != null)
-				for(Thing t = c.column().firstThing(ttype); t != null; t = t.next())
+		for(int ttype = 0; ttype < Species.types.length; ttype++)
+			if(Species.types[ttype].ani == null && Species.types[ttype].attachment != null)
+				for(Entity t = c.column().firstThing(ttype); t != null; t = t.next())
 					t.attachment.onVisibilityChange(true);
 	}
 	private void removeInvisibles(ColumnListElement c) {
 
 		//the attachements of things that aren't rendered are updated
-		for(int ttype = 0; ttype < ThingType.types.length; ttype++)
-			if(ThingType.types[ttype].ani == null && ThingType.types[ttype].attachment != null)
-				for(Thing t = c.column().firstThing(ttype); t != null; t = t.next())
+		for(int ttype = 0; ttype < Species.types.length; ttype++)
+			if(Species.types[ttype].ani == null && Species.types[ttype].attachment != null)
+				for(Entity t = c.column().firstThing(ttype); t != null; t = t.next())
 					t.attachment.onVisibilityChange(false);
 	}
-	private boolean isPreparedToBeAdded(Thing t) {
-		return toAdd[t.getTypeOrdinal()][Dir.l].contains(t) || toAdd[t.getTypeOrdinal()][Dir.r].contains(t); 
+	private boolean isPreparedToBeAdded(Entity t) {
+		return toAdd[t.type.ordinal][Dir.l].contains(t) || toAdd[t.type.ordinal][Dir.r].contains(t); 
 	}
-	private boolean isVisible(Thing t) {
+	private boolean isVisible(Entity t) {
 		return t.aniPlug.addedToVAO();
 	}
 
-	private void prepareRemoval(Thing t) {
+	private void prepareRemoval(Entity t) {
 		t.aniPlug.setFreeToMakeInvisible( true);
 	}
 	public void loadCenter() {
@@ -171,19 +171,19 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		for(ColumnListElement c = start(); c != end(); c = c.next()) {
 			setPrepared(c, Dir.l);
 		}
-		for(int type = 0; type < ThingType.types.length; type++) {
+		for(int type = 0; type < Species.types.length; type++) {
 			addPreparedThings(type, Dir.l);
 		}
 		start = false;
 	}
 	
-	private void cancelRemoval(Thing t) {
+	private void cancelRemoval(Entity t) {
 		t.aniPlug.setFreeToMakeInvisible( false);
 	}
 	
-	protected boolean prepareAddition(Thing t, int iDir) {
+	protected boolean prepareAddition(Entity t, int iDir) {
 		
-		int type = t.getTypeOrdinal();
+		int type = t.type.ordinal;
 
 		if(toAdd[type][iDir].contains(t)) return false;//already listed
 		if(!start && toAdd[type][1-iDir].contains(t)) {
@@ -195,20 +195,20 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		
 		//in case the array is full, set all things visible and print an exception
 		if(toAdd[type][iDir].isFull()) {
-			addPreparedThings(t.getTypeOrdinal(), iDir);
+			addPreparedThings(t.type.ordinal, iDir);
 			System.err.println("Lazy list is too small! " + t.type.name);
 		}
 		return true;
 	}
 	
-	protected void cancelAddition(Thing t, int iDir) {
+	protected void cancelAddition(Entity t, int iDir) {
 
-		int type = t.getTypeOrdinal();
+		int type = t.type.ordinal;
 		
 		toAdd[type][iDir].remove(t);
 	}
 	
-	List<Thing> sideToAdd = new ArrayList<>();
+	List<Entity> sideToAdd = new ArrayList<>();
 	
 	protected void addPreparedThings(int type, int iDir) {
 		if(toAdd[type][iDir].size() <= 0) return;//nothing to add. may happen if the animating is null
@@ -224,7 +224,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 			
 			//add things to vao (not yet to vbos)
 			sideToAdd.clear();
-			for(Thing t : toAdd[type][iDir]) {
+			for(Entity t : toAdd[type][iDir]) {
 				if(DoubleThingVAO.whichSide(t.aniPlug) == side && !t.aniPlug.addedToVAO()) {
 					
 					//add Thing to VAO management
@@ -244,7 +244,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 			
 //			vaos[type].clearBuffers();//TODO maybe don't use internal buffers, because they're very large
 			buffers[0].clear(); buffers[1].clear();
-			for(Thing t : sideToAdd) {
+			for(Entity t : sideToAdd) {
 				//fill buffers with thing data
 //				vaos[type].fillBuffers(t);
 				vaos[type].fillBuffers(t.aniPlug, buffers[0], buffers[1]);
