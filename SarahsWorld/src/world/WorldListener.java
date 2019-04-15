@@ -26,7 +26,7 @@ public class WorldListener implements Listener {
 	
 	@Override
 	public boolean pressed(int button, Vec mousePos) {
-		if(world.avatar.health <= 0) return false;
+		if(world.avatar.lifePlug.health() <= 0) return false;
 		worldPos.set(mousePos);
 		world.window.toWorldPos(worldPos);
 		world.window.forEachEffect(e -> e.pressed(button, mousePos));
@@ -35,7 +35,7 @@ public class WorldListener implements Listener {
 
 	@Override
 	public boolean released(int button, Vec mousePos, Vec pathSincePress) {
-		if(world.avatar.health <= 0) return false;
+		if(world.avatar.lifePlug.health() <= 0) return false;
 //		Vec worldPos = mousePos.minus(SIZE.w/2, SIZE.h/2).shift(world.avatar.pos);
 
 		worldPos.set(mousePos);
@@ -45,7 +45,7 @@ public class WorldListener implements Listener {
 		switch(button){
 		case 0://ATTACK
 			if(world.avatar.where.water == 0){
-				world.avatar.attack.attack(world.avatar.type.inv.getSelectedItem(world.avatar), worldPos, livingsClickedOn);
+				world.avatar.attack.attack(world.avatar.invPlug.getSelectedItem(), worldPos, livingsClickedOn);
 			}
 			break;
 		case 1://USE
@@ -91,13 +91,13 @@ public class WorldListener implements Listener {
 
 	@Override
 	public boolean keyPressed(int key) {
-		if(world.avatar.health <= 0) return false;
+		if(world.avatar.lifePlug.health() <= 0) return false;
 		
 		Key bind = Key.getBinding(key);
 		
 		switch(bind){
 		case JUMP: if(world.avatar.where.g) world.avatar.type.movement.jump(world.avatar); break;
-		case DISMOUNT: if(world.avatar.isRiding) world.avatar.type.ride.dismount(world.avatar); break;
+		case DISMOUNT: if(world.avatar.ridePlug.isRiding()) world.avatar.ridePlug.dismount(); break;
 		case FASTER:
 			if(Settings.getBoolean("DEBUGGING"))
 				Settings.set("timeScale", Settings.getDouble("timeScale")*1.25);
@@ -137,10 +137,10 @@ public class WorldListener implements Listener {
 				world.thingWindow.add(new Thing(ThingType.COIN, world.avatar.newLink, world.window.toWorldPos(input.getMousePos()), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
 			break;
 		case THROW_ITEM:
-			ItemType type = world.avatar.type.inv.getSelectedItem(world.avatar);
+			ItemType type = world.avatar.invPlug.getSelectedItem();
 			if(type != null) {
 				world.thingWindow.add(new Thing(ThingType.ITEM, world.avatar.newLink, world.avatar.pos.copy().shift(0, 60), type, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
-				world.avatar.type.inv.addItem(world.avatar, type, -1);
+				world.avatar.invPlug.addItem(type, -1);
 			}
 			break;
 		case REFILL_BUFFERS:
@@ -155,12 +155,12 @@ public class WorldListener implements Listener {
 		return false;
 	}
 	public boolean keyReleased(int key) {
-		if(world.avatar.health <= 0) return false;
+		if(world.avatar.lifePlug.health() <= 0) return false;
 		return false;
 	}
 
 	public boolean charTyped(char ch) {
-		if(world.avatar.health <= 0) return false;
+		if(world.avatar.lifePlug.health() <= 0) return false;
 		return false;
 	}
 }

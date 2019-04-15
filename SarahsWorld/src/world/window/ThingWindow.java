@@ -207,7 +207,7 @@ public class ThingWindow extends RealWorldWindow {
 		for(int type = 0; type < Species.types.length; type++)
 		if(Species.types[type].inv != null)
 		for(ColumnListElement c = start(); c != end(); c = c.next())
-		for(Thing cursor = c.column().firstThing(Species.types[type]); cursor != null; cursor = (Thing)cursor.next()){
+		for(Thing cursor = (Thing)c.column().firstThing(Species.types[type]); cursor != null; cursor = (Thing)cursor.next()){
 			cursor.itemStacks[cursor.selectedItem].item.renderHand(cursor, cursor.itemAni);
 		}
 		Shader.bindNone();

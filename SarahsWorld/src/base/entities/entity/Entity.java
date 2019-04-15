@@ -52,7 +52,7 @@ public class Entity implements ThingEntity {
 		if(realLink != newLink || stateOfRealization == VIRTUAL) {
 			if(realLink != null)
 				realLink.remove(this);
-			newLink.add(this);
+			newLink.addCoins(this);
 			stateOfRealization = REAL;
 			realLink = newLink;
 		}

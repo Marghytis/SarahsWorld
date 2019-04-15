@@ -10,4 +10,10 @@ public interface Attribute {
 	 * @param delta
 	 */
 	public default void update(double delta){}
+	
+	/**
+	 * Put initialization code in here that uses other Attributes of an Entity.
+	 * This method is called directly after all attributes have been attributed.
+	 */
+	public default void finishInitialization() {}
 }

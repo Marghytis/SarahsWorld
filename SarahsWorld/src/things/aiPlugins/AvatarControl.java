@@ -25,9 +25,9 @@ public  class AvatarControl extends AiPlugin2 {
 			if(!thing.isAvatar)
 				return false;
 			
-			thing.immortal = Settings.getBoolean("IMMORTAL");
+			thing.lifePlug.setImmortal(Settings.getBoolean("IMMORTAL"));
 			
-			boolean riding = thing.isRiding;
+			boolean riding = thing.ridePlug.isRiding();
 			boolean debugging = Settings.getBoolean("DEBUGGING");
 
 			boolean walk_right = Main.input.isKeyDown(Main.WINDOW, Key.RIGHT.key);
@@ -39,7 +39,7 @@ public  class AvatarControl extends AiPlugin2 {
 			
 			
 			
-			double cowFactor = thing.isRiding ? 2 : 1;
+			double cowFactor = thing.ridePlug.isRiding() ? 2 : 1;
 			thing.maxWalkingSpeed = thing.accWalking*cowFactor/5;
 			
 			double a = 0;

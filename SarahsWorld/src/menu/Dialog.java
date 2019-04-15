@@ -344,7 +344,7 @@ public class Dialog extends Element {
 	public boolean released(int button, Vec mousePos, Vec pathSincePress){
 		for(int i = 0; i < answers.length; i++){
 			if(UsefulF.contains(mousePos.xInt(), mousePos.yInt(), Main.HALFSIZE.w + answersTex.pixelCoords[0], Main.HALFSIZE.h + ys[i], Main.HALFSIZE.w + answersTex.pixelCoords[2], ys[i] + Main.HALFSIZE.h + Res.menuFont.getHeight())){
-				other.currentSpeech = "";
+				other.speakPlug.say("");
 				quest.onAnswer(i);
 				Main.menu.setLast();
 			}

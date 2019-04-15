@@ -29,6 +29,9 @@ public class Inventory extends AiPlugin2 {
 	}
 	
 	public class InventoryPlugin extends ThingPlugin {
+		
+		private ItemStack[] itemStacks;
+		private int selectedItem;
 
 		public InventoryPlugin(Entity t) {
 			super(t);
@@ -53,11 +56,45 @@ public class Inventory extends AiPlugin2 {
 			}
 			if(coinAmount > 0){
 				
-				thing.coins += coinAmount;
+				thing.itemPlug.addCoins( coinAmount);
 				Res.coinSoundSource.play();
 			}
-			thing.itemAni.setTexture(getSelectedItem(thing).texHand);
+			thing.itemAni.setTexture(getSelectedItem().texHand);
 		}
+		
+		public void dropItems() {
+			for(ItemStack item : thing.itemStacks){
+				for(int i = 0; i < item.count; i++){
+					Main.world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item.item));
+				}
+			}
+		}
+		
+		public boolean addItem(ItemType item, int amount){
+			if(item == ItemType.COIN){
+				thing.itemPlug.addCoins(amount);
+			} else if(item == defaultItem) {
+				return false;
+			} else for(int i = 0; i < itemStacks.length; i++){
+				if(itemStacks[i].item == item){
+					itemStacks[i].count += amount;
+					if(itemStacks[i].count <= 0){
+						itemStacks[i].item = defaultItem;
+						itemStacks[i].count = 0;
+					}
+					return true;
+				} else if (itemStacks[i].item == defaultItem && amount > 0){
+					itemStacks[i].count = amount;
+					itemStacks[i].item = item;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public ItemType getSelectedItem(){
+			return itemStacks[selectedItem].item;
+		} 
 	}
 	
 	
@@ -65,28 +102,6 @@ public class Inventory extends AiPlugin2 {
 		return t.itemStacks[t.selectedItem].item;
 	} 
 	
-	public boolean addItem(Thing t, ItemType item, int amount){
-		if(item == ItemType.COIN){
-			t.coins += amount;
-		} else if(item == defaultItem) {
-			return false;
-		} else for(int i = 0; i < t.itemStacks.length; i++){
-			if(t.itemStacks[i].item == item){
-				t.itemStacks[i].count += amount;
-				if(t.itemStacks[i].count <= 0){
-					t.itemStacks[i].item = defaultItem;
-					t.itemStacks[i].count = 0;
-				}
-				return true;
-			} else if (t.itemStacks[i].item == defaultItem && amount > 0){
-				t.itemStacks[i].count = amount;
-				t.itemStacks[i].item = item;
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public void useSelectedItem(Thing src, Vec worldPos, Thing[] thingsAtThatLocation) {
 		ItemStack selected = src.itemStacks[src.selectedItem];
 		ItemType item = selected.item;//might change during specialUse due to collecting stuff, so have to store it in variable here

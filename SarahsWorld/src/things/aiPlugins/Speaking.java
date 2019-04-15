@@ -32,58 +32,71 @@ public class Speaking extends AiPlugin2 {
 	}
 	
 	public class SpeakingPlugin extends ThingPlugin {
+		
+		private ThoughtBubble tb;
+		private boolean speaking;
+		private String currentSpeech;
+		private String[] answers;
 
 		public SpeakingPlugin(Entity thing) {
 			super(thing);
-			this.thing.tb = new ThoughtBubble(this.thing);
+			this.tb = new ThoughtBubble(this.thing);
 		}
 
+		public boolean speaking() {
+			return speaking;
+		}
+		
 		@Override
 		public void update(double delta) {
-			if(thing.currentSpeech != null){
-				if(thing.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000 && !thing.speaking){// && "".equals(t.currentSpeech)
+			if(currentSpeech != null){
+				if(thing.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000 && !speaking){// && "".equals(t.currentSpeech)
 					if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
 						Main.menu.setMenu(MenuType.DIALOG);
 					} else {
-						thing.tb.popUp();
+						tb.popUp();
 					}
 				} else if(thing.pos.minus(Main.world.avatar.pos).lengthSquare() > 90000){
-					if(thing.tb.living) thing.tb.goAway();
+					if(tb.living) tb.goAway();
 					if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
 						Main.menu.setMenu(MenuType.EMPTY);
-						thing.speaking = false;
+						speaking = false;
 					}
 				}
 			}
 		}
-		
-	}
-	
-	public void say(Thing t, boolean thoughtBubble, ActiveQuest quest, String what, String[] answers){
-		t.quest = quest;
-		t.currentSpeech = what;
-		t.answers = answers;
 
-		if(!thoughtBubble && t.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000){
-			t.speaking = true;
-			String[] realAnswers = new String[answers.length];
-			for(int i = 0; i < answers.length; i++){
-				realAnswers[i] = Strings.get(answers[i], World.rand);
+		public void remove(){
+			if(tb.living){
+				tb.goAway();
 			}
-			((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(quest, t, Strings.get(what, World.rand), realAnswers);
-			Main.menu.setMenu(MenuType.DIALOG);
+			if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
+				Main.menu.setMenu(MenuType.EMPTY);
+				speaking = false;
+			}
+		}
+		
+		public void say(String what) {
+			currentSpeech = what;
+		}
+		
+		public void say(boolean thoughtBubble, ActiveQuest quest, String what, String[] answers){
+			thing.quest = quest;
+			currentSpeech = what;
+			this.answers = answers;
+
+			if(!thoughtBubble && thing.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000){
+				speaking = true;
+				String[] realAnswers = new String[answers.length];
+				for(int i = 0; i < answers.length; i++){
+					realAnswers[i] = Strings.get(answers[i], World.rand);
+				}
+				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(quest, thing, Strings.get(what, World.rand), realAnswers);
+				Main.menu.setMenu(MenuType.DIALOG);
+			}
 		}
 	}
 
-	public void remove(Thing t){
-		if(t.tb.living){
-			t.tb.goAway();
-		}
-		if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == t){
-			Main.menu.setMenu(MenuType.EMPTY);
-			t.speaking = false;
-		}
-	}
 	public static Texture bubble1 = Res.getTex("speechBubble");
 	public static TexAtlas bubble2 = Res.getAtlas("thoughtBubble");
 	public static Texture[] texs = {bubble2.tex(0, 0), bubble2.tex(0, 1), bubble2.tex(0, 2)};
@@ -178,12 +191,12 @@ public class Speaking extends AiPlugin2 {
 			if(pressed && contains(mousePos)){
 				pressed = false;
 				goAway();
-				speaker.speaking = true;
-				String[] realAnswers = new String[speaker.answers.length];
-				for(int i = 0; i < speaker.answers.length; i++){
-					realAnswers[i] = Strings.get(speaker.answers[i], World.rand);
+				speaker.speakPlug.speaking = true;
+				String[] realAnswers = new String[speaker.speakPlug.answers.length];
+				for(int i = 0; i < speaker.speakPlug.answers.length; i++){
+					realAnswers[i] = Strings.get(speaker.speakPlug.answers[i], World.rand);
 				}
-				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(speaker.quest, speaker, Strings.get(speaker.currentSpeech, World.rand), realAnswers);
+				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(speaker.quest, speaker, Strings.get(speaker.speakPlug.currentSpeech, World.rand), realAnswers);
 				Main.menu.setMenu(MenuType.DIALOG);
 				return true;
 			}

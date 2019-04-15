@@ -198,9 +198,9 @@ public enum Quest {
 			switch(method[0]){
 			case "bindAvatar": realActions[i] = (q,w)->{q.characters.put(args[0], World.world.avatar);}; break;
 			case "spawn": realActions[i] = (q, w) -> {w.requestSpawn(new QuestSpawner(characters.get(args[0]), q, args[0], args.length > 1 ? args[1] : -1)); q.eventFinished = false;}; break;
-			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).type.speak.say(q.characters.get(args[1]), Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
+			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).speakPlug.say(Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
 			//say(boolean thoughtBubble, villager, question, answers)break;
-			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).type.inv.addItem(q.characters.get(args[0]), ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
+			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).invPlug.addItem( ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
 			case "print": realActions[i] = (q, w) -> System.out.println(args[0]); break;
 			default: throw(new UnknownMethodException("action", method[0]));
 			}

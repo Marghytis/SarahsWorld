@@ -63,7 +63,7 @@ public class World {
 		Vec pos = new Vec(Settings.getVec("AVATAR_START_OFFSET").x, v.y() + Settings.getVec("AVATAR_START_OFFSET").y);
 		avatar = new Thing(ThingType.SARAH, v.getParent(), pos);
 		ThingType.SARAH.avatar.setAvatar(avatar);
-		avatar.type.inv.addItem(avatar, ItemType.UNICORN_HORN, 1);
+		avatar.invPlug.addItem( ItemType.UNICORN_HORN, 1);
 		
 		init(inputData);
 	}

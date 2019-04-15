@@ -10,7 +10,7 @@ import util.math.Vec;
 
 public class Technique {
 	
-	public static final HitEffect lifeHit = (src, dam, tgt) -> tgt.type.life.getHit(tgt, src, dam);
+	public static final HitEffect lifeHit = (src, dam, tgt) -> tgt.lifePlug.getHit( src, dam);
 	public static final AttackEffect instantHit = (source, item, technique, pos, selected) -> {
 		//hit selected targets
 		for(Thing target : selected)
@@ -62,7 +62,7 @@ public class Technique {
 	public int getManaUse() {
 		return manaUse;
 	}
-	
+
 	public boolean execute(Thing source, ItemType item, Vec worldPos, Thing[] targets) {
 		
 		if(targets.length > 0) {
@@ -86,7 +86,7 @@ public class Technique {
 			
 				source.attack.finishedAttack();
 				source.aniPlug.getAnimator().setLast();
-				source.lastAttack = this;
+				source.attack.setLastTechnique(this);
 			});
 			
 			return true;

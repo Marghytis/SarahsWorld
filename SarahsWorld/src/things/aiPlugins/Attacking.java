@@ -46,7 +46,7 @@ public class Attacking extends AiPlugin2 {
 	public int calculateDamage(Thing target, ItemType item, Technique attack){
 		double crit = World.rand.nextDouble() > item.critProb + critProb ? 1 : item.crit;
 		int baseDamage = (int)(crit*attack.damageMultiplier*(strength + item.attackStrength));
-		return baseDamage - target.armor;
+		return baseDamage - target.lifePlug.getArmor();
 	}
 	
 	public Technique getTechnique(String attackType) {
@@ -66,6 +66,8 @@ public class Attacking extends AiPlugin2 {
 		
 		private double attackCooldown;
 		private boolean attacking;
+		
+		private Technique lastTechnique;
 
 		public AttackPlugin(Entity thing) {
 			super(thing);
@@ -105,6 +107,13 @@ public class Attacking extends AiPlugin2 {
 				return true;
 			}
 			return false;
+		}
+		
+		public Technique getLastTechnique() {
+			return lastTechnique;
+		}
+		public void setLastTechnique(Technique technique) {
+			lastTechnique = technique;
 		}
 		
 		public void cancel() {

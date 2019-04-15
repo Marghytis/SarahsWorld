@@ -1,6 +1,6 @@
 package things;
 
-import java.util.ArrayList;
+import java.util.Hashtable;
 
 import effects.Effect;
 import effects.WorldEffect;
@@ -20,6 +20,7 @@ import things.aiPlugins.Animating;
 import things.aiPlugins.Attachement;
 import things.aiPlugins.Attacking;
 import things.aiPlugins.AvatarControl;
+import things.aiPlugins.ContainedItems;
 import things.aiPlugins.FlyAround;
 import things.aiPlugins.Following;
 import things.aiPlugins.Inventory;
@@ -29,6 +30,7 @@ import things.aiPlugins.Magic;
 import things.aiPlugins.MidgeAround;
 import things.aiPlugins.Movement;
 import things.aiPlugins.Physics;
+import things.aiPlugins.PhysicsExtension;
 import things.aiPlugins.Riding;
 import things.aiPlugins.Speaking;
 import things.aiPlugins.StateChangement;
@@ -42,10 +44,24 @@ import world.generation.Spawner;
 
 public class ThingType extends Species<Thing> {
 	
+	static Hashtable<Class<?>, Integer> updateOrder = new Hashtable<>();
 	static {
-		tempList = new ArrayList<>();
-		index = 0;
-	};
+		//only list plugins whose update(delta) method is used. action()s are called separately.
+		int i = 0;
+		updateOrder.put(LogicCombination.class, i++);//calculate logic first, i.e. what the entities plan is for this update cycle.
+		updateOrder.put(Physics.class, i++);//update position and velocity and "where"
+		updateOrder.put(Animating.class, i++);//update the animator
+		updateOrder.put(Inventory.class, i++);//collect coins and do item coolDown
+		updateOrder.put(Speaking.class, i++);//updates the thoughbubble's position
+		updateOrder.put(Life.class, i++);//removes the thing, if live is below zero
+		updateOrder.put(Attacking.class, i++);//attack cooldown
+		updateOrder.put(PhysicsExtension.class, i++);//repelling other things
+		//....
+	}
+	
+	static {
+		startSpeciesList();
+	}
 
 	//LIVING THINGS
 											protected static final Animation[][] sarah = {{
@@ -91,7 +107,7 @@ public class ThingType extends Species<Thing> {
 			new Animating(sarah[0][0], new Rect(Res.getAtlas("sarah").pixelCoords), 0, 0, 15, true, sarah),
 			new Movement("stand", "sneak", "walk", "sprint", "swim", "jump", "land", "fly", "dive", "plunge", "sneakyStand"),
 			new AvatarControl(),
-			new Life(20, 0, 1),
+			new Life(20, 1),
 			new Magic(20, 20),
 			new Attacking(4, 0.01, new Technique[]{
 					 new Technique("punch",  WeaponType.PUNCH,  1, 1, 0.5, new CloseRange(100,  -50, 100))//punch
@@ -128,7 +144,7 @@ public class ThingType extends Species<Thing> {
 				else return null;
 			}
 			,new Animating(snail[0], new Rect(Res.getAtlas("snail").pixelCoords), 0, 0, 5, false, snail)
-			,new Life(10, 10, 2, new ItemType[]{ItemType.SNAIL_SHELL, ItemType.SNAILS_EYE}, "getHit", 0.05, 2)
+			,new Life(10, 2, "getHit")
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
 			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, SARAH)
@@ -136,12 +152,13 @@ public class ThingType extends Species<Thing> {
 			,new Physics(1, 1, true, true, true, true, true, true),
 			new LogicCombination((t, delta) -> {
 					if(t.followPlug.followTarget(delta)){//follow
-						t.attack.attack("punch", t.target);//attack
-					} else if(t.target == null){
+						t.attack.attack("punch", t.followPlug.getTarget());//attack
+					} else if(t.followPlug.getTarget() == null){
 						t.walkAroundPlug.walkAround(delta);//walk around
 					}
 				}
-			)){
+			),
+			new ContainedItems(10, new ItemType[] {ItemType.SNAIL_SHELL,  ItemType.SNAILS_EYE}, 0.02, 2)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 		}
@@ -163,7 +180,7 @@ public class ThingType extends Species<Thing> {
 				else return null;
 			}
 			,new Animating(rabbit[0][0], new Rect(Res.getAtlas("rabbit").pixelCoords), 0, 0, 4, false, rabbit)
-			,new Life(10, 10, 2, new ItemType[]{ItemType.RABBITS_FOOT}, 0.01)
+			,new Life(10, 2)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
 			,new Attacking(2, 0.05, new Technique[]{new Technique("bite", WeaponType.BITE, 2, 5, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, SARAH)
@@ -171,12 +188,13 @@ public class ThingType extends Species<Thing> {
 			,new Physics(1, 1),
 			new LogicCombination((t, delta) -> {
 				if(t.followPlug.followTarget(delta)){//follow
-					t.attack.attack("bite", t.target);//attack
-				} else if(t.target == null){
+					t.attack.attack("bite", t.followPlug.getTarget());//attack
+				} else if(t.followPlug.getTarget() == null){
 					t.walkAroundPlug.walkAround(delta);//walk around
 				}
 			}
-		)){
+		),
+			new ContainedItems(10, new ItemType[] {ItemType.RABBITS_FOOT}, 0.01)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 			if(extraData.length > 0)
@@ -195,7 +213,7 @@ public class ThingType extends Species<Thing> {
 				else return null;
 			}
 			,new Animating(scorpion[0], new Rect(Res.getAtlas("scorpion").pixelCoords), 0, 0, 4, false, scorpion)
-			,new Life(10, 10, 2, new ItemType[]{ItemType.SCORPION_CLAW, ItemType.SCORPION_STING}, 0.05, 0.05)
+			,new Life(10, 2)
 			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
 			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 1, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, SARAH)
@@ -203,11 +221,12 @@ public class ThingType extends Species<Thing> {
 			,new Physics(1, 1),
 			new LogicCombination((t, delta) -> {
 				if(t.followPlug.followTarget(delta)){//follow
-					t.attack.attack("punch", t.target);//attack
-				} else if(t.target == null){
+					t.attack.attack("punch", t.followPlug.getTarget());//attack
+				} else if(t.followPlug.getTarget() == null){
 					t.walkAroundPlug.walkAround(delta);//walk around
 				}
-			})){
+			}),
+			new ContainedItems(10, new ItemType[] {ItemType.SCORPION_CLAW,  ItemType.SCORPION_STING}, 0.05, 0.05)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 		}
@@ -216,9 +235,10 @@ public class ThingType extends Species<Thing> {
 											new Animation("chew", Res.getAtlas("cow"), 10, 0, /**/0, 1, 2, 3, 4, 5, 6)};
 	public static final ThingType COW = new ThingType("COW", Res.getAtlas("cow"), 20, true, (p, f, ed) -> new Thing(ThingType.COW,p, f.shift(0, 100))
 		,new Animating(cow[0], new Rect(Res.getAtlas("cow").pixelCoords), 0, 0, 1, false, cow)
-		,new Life(4, 3, 1, new ItemType[]{ItemType.COWHIDE, ItemType.COW_LEG}, 0.4, 0.4)
+		,new Life(4, 1)
 		,new Movement("chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew", "chew")
-		,new Physics(200, 900));
+		,new Physics(200, 900),
+		new ContainedItems(3, new ItemType[] {ItemType.COWHIDE,  ItemType.COW_LEG}, 0.4, 0.4));
 											static final Animation[][] butterfly =  {{
 											new Animation("stand", Res.getAtlas("butterfly"), 0, 0),
 											new Animation("flap", Res.getAtlas("butterfly"), 16, 0, /**/1, 2, 3, 2, 1),
@@ -228,7 +248,8 @@ public class ThingType extends Species<Thing> {
 											new Animation("fly", Res.getAtlas("butterfly"), 2, 1)}};
 	public static final ThingType BUTTERFLY = new ThingType("BUTTERFLY", Res.getAtlas("butterfly"), 80, true, (p, f, ed) -> new Thing(ThingType.BUTTERFLY, p, f.shift(0, 100))
 			,new Animating(butterfly[0][2], new Rect(Res.getAtlas("butterfly").pixelCoords), 0, 0, 3, false, butterfly)
-			,new Life(1, 1, 0)
+			,new Life(1, 0)
+			,new ContainedItems(1)
 			,new Movement("stand", "stand", "stand", "stand", "stand", "flap", "stand", "fly", "stand", "fly", "stand")
 			,new Physics(0.04, 4)
 			,new FlyAround(),
@@ -245,7 +266,8 @@ public class ThingType extends Species<Thing> {
 											new Animation("stand", Res.getAtlas("midge"), 0, 0)}};
 	public static final ThingType MIDGE = new ThingType("MIDGE", Res.getAtlas("midge"), 1300, true, (p, f, ed) -> new Thing(ThingType.MIDGE, p, f.shift(0, 90))
 		,new Animating(midge[0][0], new Rect(Res.getAtlas("midge").pixelCoords), 0, 1, 1, false, midge)
-		,new Life(1, 1, 0)
+		,new Life(1, 0)
+		,new ContainedItems(1)
 		,new Movement("stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand")
 		,new Physics(0.001, 1, true, false, true, true, false, false)
 		,new MidgeAround(),
@@ -264,7 +286,8 @@ public class ThingType extends Species<Thing> {
 				else return null;
 			}
 			,new Animating(villager[0][0], new Rect(Res.getAtlas("villager").pixelCoords), 0, 0, 1, false, villager)
-			,new Life(10, 20, 0)
+			,new Life(10, 0)
+			,new ContainedItems(20)
 			,new Physics(1, 36)
 			,new Speaking()
 			,new Inventory(ItemType.NOTHING, 4)) {
@@ -286,7 +309,8 @@ public class ThingType extends Species<Thing> {
 											new Animation("punch", Res.getAtlas("zombie"), 15, 1,/**/0, 1, 2)};
 	public static final ThingType ZOMBIE = new ThingType("ZOMBIE", Res.getAtlas("zombie"), 40, true, (p, f, ed) -> new Thing(ThingType.ZOMBIE, p, f.shift(0, 100), ed)
 			,new Animating(zombie[0], new Rect(Res.getAtlas("zombie").pixelCoords), 0, 0, 4, false, zombie)
-			,new Life(10, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH}, 0.5, 0.5, 0.5)
+			,new Life(10, 2)
+			,new ContainedItems(10)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
 			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, SARAH)
@@ -295,11 +319,12 @@ public class ThingType extends Species<Thing> {
 			new LogicCombination((t, delta) -> {
 				
 				if(t.followPlug.followTarget(delta)){//follow
-					t.attack.attack("punch", t.target);//attack
-				} else if(t.target == null){
+					t.attack.attack("punch", t.followPlug.getTarget());//attack
+				} else if(t.followPlug.getTarget() == null){
 					t.walkAroundPlug.walkAround(delta);//walk around
 				}
-			})) {
+			}),
+			new ContainedItems(10, new ItemType[] {ItemType.ZOMBIE_EYE,  ItemType.ZOMBIE_BRAIN,  ItemType.ZOMBIE_FLESH}, 0.5, 0.5, 0.5)) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
 			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
 		};
@@ -335,7 +360,7 @@ public class ThingType extends Species<Thing> {
 						};
 					}
 				}.addSecondTex(Res.getAtlas("unicorn_hair").file)
-			,new Life(20, 10, 2, new ItemType[]{ItemType.ZOMBIE_EYE, ItemType.ZOMBIE_BRAIN, ItemType.ZOMBIE_FLESH, ItemType.UNICORN_HORN}, 0.5, 0.5, 0.5, 1.1)
+			,new Life(20, 2)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
 			,new Attacking(2, 0.05, new Technique[]{
 					new Technique("spit", WeaponType.SPELL, 2, 2, 0.5,
@@ -344,14 +369,15 @@ public class ThingType extends Species<Thing> {
 					int[] info = Res.getAtlas("unicorn").texs[0].info[0];
 					Main.world.window.addEffect(new RainbowSpit(new Vec(!source.aniPlug.getOrientation()? info[0] : (source.aniPlug.getAnimator().tex.w-info[0]), info[1]).shift(source.pos).shift(source.aniPlug.getRenderBox().pos), source.aniPlug.getOrientation()? 1 : -1, source, selected, Technique.lifeHit));
 							})})
-			,new Following(500.0, 50, SARAH)
+			,new Following(500.0, 50, SARAH),
+			new ContainedItems(10, new ItemType[] {ItemType.ZOMBIE_EYE,  ItemType.ZOMBIE_BRAIN,  ItemType.ZOMBIE_FLESH, ItemType.UNICORN_HORN}, 0.5, 0.5, 0.5, 1.0)
 			,new WalkAround()
 			,new Physics(1, 1),
 			new LogicCombination((t, delta) -> {
 				t.aniPlug.increaseTimeBy(delta*0.1);
 				if(t.followPlug.followTarget(delta)){//follow
-					t.attack.attack("spit", t.target);//attack
-				} else if(t.target == null){
+					t.attack.attack("spit", t.followPlug.getTarget());//attack
+				} else if(t.followPlug.getTarget() == null){
 					t.walkAroundPlug.walkAround(delta);//walk around
 				}
 			})) {
@@ -366,7 +392,8 @@ public class ThingType extends Species<Thing> {
 											new Animation("attack", Res.getAtlas("cat_giant"), 30, 1,/**/2, 0, 1, 2)};
 	public static final ThingType CAT_GIANT = new ThingType("CAT_GIANT", Res.getAtlas("cat_giant"), 10, true
 			,new Animating(cat_giant[0], new Rect(Res.getAtlas("cat_giant").pixelCoords), 0, 0, 4, false, cat_giant)
-			,new Life(10, 10, 2)
+			,new Life(10, 2),
+			new ContainedItems(10)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
 			,new Attacking(10, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 2, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 300, SARAH)
@@ -375,8 +402,8 @@ public class ThingType extends Species<Thing> {
 			new LogicCombination((t, delta) -> {
 				
 				if(t.followPlug.followTarget(delta)){//follow
-					t.attack.attack("punch", t.target);//attack
-				} else if(t.target == null){
+					t.attack.attack("punch", t.followPlug.getTarget());//attack
+				} else if(t.followPlug.getTarget() == null){
 					t.walkAroundPlug.walkAround(delta);//walk around
 				}
 			})) {
@@ -390,7 +417,8 @@ public class ThingType extends Species<Thing> {
 											new Animation("chew", Res.getAtlas("trex"), 30, 3,/**/0, 1, 2, 3)};
 	public static final ThingType TREX = new ThingType("TREX", Res.getAtlas("trex"), 10, true
 		,new Animating(trex[0], new Rect(Res.getAtlas("trex").pixelCoords), 0, 0, 6, false, trex)
-		,new Life(10, 10, 2, new ItemType[]{ItemType.TREX_TOOTH}, 0.9)
+		,new Life(10, 2),
+		new ContainedItems(10, new ItemType[] {ItemType.TREX_TOOTH}, 0.9)
 		,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
 		,new Attacking(10, 0.05, new Technique[]{
 				new Technique("eat", WeaponType.BITE, 2, 1, 5, new CloseRange(300, -300, 300)),
@@ -399,20 +427,20 @@ public class ThingType extends Species<Thing> {
 		,new WalkAround()
 		,new Physics(50, 300),
 		new LogicCombination((t, delta) -> {
-			if(t.lastAttack != null && "eat".equals(t.lastAttack.name)){
+			if(t.attack.getLastTechnique() != null && "eat".equals(t.attack.getLastTechnique().name)){
 				if(!t.attack.attacking()){
 					t.aniPlug.setAnimation("chew", () -> {
 						t.aniPlug.setAnimation("stand");
-						t.lastAttack = null;
+						t.attack.setLastTechnique(null);
 					});
 				}
 			} else if(t.followPlug.followTarget(delta)){//follow
 				if(World.rand.nextInt(100) < 70){//attack
-					t.attack.attack("tailhit", t.target);
+					t.attack.attack("tailhit", t.followPlug.getTarget());
 				} else {
-					t.attack.attack("eat", t.target);
+					t.attack.attack("eat", t.followPlug.getTarget());
 				}
-			} else if(t.target == null){
+			} else if(t.followPlug.getTarget() == null){
 				t.walkAroundPlug.walkAround(delta);//walk around
 				}
 			})) {
@@ -422,12 +450,13 @@ public class ThingType extends Species<Thing> {
 											{new Animation("hover", Res.getAtlas("heart"), 10, 1, /**/0, 1, 2, 3, 2, 1)}};
 	public static final ThingType HEART = new ThingType("HEART", Res.getAtlas("heart"), 300, true
 				,new Animating(heart[0][0], new Rect(Res.getAtlas("heart").pixelCoords), 0, 0, 1, false, heart),
-				new Life(300, 0, 0),
+				new Life(300, 0),
+				new ContainedItems(0),
 				new StateChangement((t,delta) -> {
 					t.healthTimer += delta*25;
-					t.health -= (int)t.healthTimer;
+					t.lifePlug.add(-(int)t.healthTimer);
 					t.healthTimer %= 1;
-					t.yOffset = 80*t.health/(double)t.type.life.maxHealth;
+					t.yOffset = 80*t.lifePlug.health()/(double)t.type.life.maxHealth;
 				})) {
 	
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
@@ -435,8 +464,8 @@ public class ThingType extends Species<Thing> {
 					t.aniPlug.getAnimator().pos = (int)extraData[0];
 				}
 				t.onRightClick = (src, p, dest) -> {
-					if(src.type.life != null) {
-						src.type.life.heal(src, 5*dest.health/t.type.life.maxHealth);
+					if(src.lifePlug != null) {
+						src.lifePlug.heal( 5*dest.lifePlug.health()/t.type.life.maxHealth);
 						Main.world.window.addEffect(new Hearts(dest.pos.shift(0, dest.yOffset)));
 						Main.world.engine.requestDeletion(dest);
 					}
@@ -495,6 +524,8 @@ public class ThingType extends Species<Thing> {
 			t.aniPlug.setAnimation("");
 		}
 	};
+	
+	static final ContainedItems containsItemsButNoCoins = new ContainedItems(0);
 											protected static final Animation[][] tree_normal = {
 											{new Animation(Res.getAtlas("tree"), 0, 0)},
 											{new Animation(Res.getAtlas("tree"), 0, 1)},
@@ -522,7 +553,8 @@ public class ThingType extends Species<Thing> {
 											{new Animation(Res.getAtlas("tree_jungle"), 0, 2)},
 											{new Animation(Res.getAtlas("tree_jungle"), 0, 3)}};
 	public static final ThingType TREE_NORMAL = new ThingType("TREE_NORMAL", Res.getAtlas("tree"), 50
-				,new Animating(tree_normal[0][0], new Rect(Res.getAtlas("tree").pixelCoords), 0, 1, 1, false, tree_normal)) {
+				,new Animating(tree_normal[0][0], new Rect(Res.getAtlas("tree").pixelCoords), 0, 1, 1, false, tree_normal),
+				containsItemsButNoCoins) {
 			
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
 				t.aniPlug.setAniSet( World.rand.nextInt(t.type.ani.animations.length));
@@ -535,22 +567,22 @@ public class ThingType extends Species<Thing> {
 				int stickAmount = World.rand.nextInt((int)(5*t.size));
 				for(int i = 0; i < stickAmount; i++) {
 					if(t.type == ThingType.TREE_CANDY)
-						t.fruits.add(ItemType.CANDY_CANE);
+						t.itemPlug.add(ItemType.CANDY_CANE);
 					else
-						t.fruits.add(ItemType.STICK);
+						t.itemPlug.add(ItemType.STICK);
 				}
 			}};
-	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.getAtlas("tree_fir"), 50, new Animating(tree_fir[0][0], new Rect(Res.getAtlas("tree_fir").pixelCoords), 0, 1, 1, false, tree_fir)){
+	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.getAtlas("tree_fir"), 50, new Animating(tree_fir[0][0], new Rect(Res.getAtlas("tree_fir").pixelCoords), 0, 1, 1, false, tree_fir), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType TREE_FIR_SNOW = new ThingType("TREE_FIR_SNOW", Res.getAtlas("tree_firSnow"), 100, new Animating(tree_firSnow[0][0], new Rect(Res.getAtlas("tree_firSnow").pixelCoords), 0, 1, 1, false, tree_firSnow)){
+	public static final ThingType TREE_FIR_SNOW = new ThingType("TREE_FIR_SNOW", Res.getAtlas("tree_firSnow"), 100, new Animating(tree_firSnow[0][0], new Rect(Res.getAtlas("tree_firSnow").pixelCoords), 0, 1, 1, false, tree_firSnow), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType TREE_CANDY = new ThingType("TREE_CANDY", Res.getAtlas("tree_candy"), 50, new Animating(tree_candy[0][0], new Rect(Res.getAtlas("tree_candy").pixelCoords), 0, 1, 1, false, tree_candy)){
+	public static final ThingType TREE_CANDY = new ThingType("TREE_CANDY", Res.getAtlas("tree_candy"), 50, new Animating(tree_candy[0][0], new Rect(Res.getAtlas("tree_candy").pixelCoords), 0, 1, 1, false, tree_candy), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType TREE_GRAVE = new ThingType("TREE_GRAVE", Res.getAtlas("tree_grave"), 30, new Animating(tree_grave[0][0], new Rect(Res.getAtlas("tree_grave").pixelCoords), 0, 0, 1, false, tree_grave)){
+	public static final ThingType TREE_GRAVE = new ThingType("TREE_GRAVE", Res.getAtlas("tree_grave"), 30, new Animating(tree_grave[0][0], new Rect(Res.getAtlas("tree_grave").pixelCoords), 0, 0, 1, false, tree_grave), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.getAtlas("tree_palm"), 50, new Animating(tree_palm[0][0], new Rect(Res.getAtlas("tree_palm").pixelCoords), 0, 1, 1, false, tree_palm)){
+	public static final ThingType TREE_PALM = new ThingType("TREE_PALM", Res.getAtlas("tree_palm"), 50, new Animating(tree_palm[0][0], new Rect(Res.getAtlas("tree_palm").pixelCoords), 0, 1, 1, false, tree_palm), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.getAtlas("tree_jungle"), 250, new Animating(tree_jungle[0][0], new Rect(Res.getAtlas("tree_jungle").pixelCoords), 0, 0.1, 1, false, tree_jungle)){
+	public static final ThingType TREE_JUNGLE = new ThingType("TREE_JUNGLE", Res.getAtlas("tree_jungle"), 250, new Animating(tree_jungle[0][0], new Rect(Res.getAtlas("tree_jungle").pixelCoords), 0, 0.1, 1, false, tree_jungle), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ TREE_NORMAL.setup(t, field, pos, extraData);}};
 											protected static final Animation[][] plant_giant = {
 											{new Animation(Res.getAtlas("plant_giant"), 0, 0)},
@@ -574,7 +606,8 @@ public class ThingType extends Species<Thing> {
 											{new Animation(Res.getAtlas("bush_candy"), 0, 0)},
 											{new Animation(Res.getAtlas("bush_candy"), 0, 1)}};
 	public static final ThingType BUSH_NORMAL = new ThingType("BUSH_NORMAL", Res.getAtlas("bush_normal"), 120
-		,new Animating(bush_normal[0][0], new Rect(Res.getAtlas("bush_normal").pixelCoords), 0, 0, 1, false, bush_normal)) {
+		,new Animating(bush_normal[0][0], new Rect(Res.getAtlas("bush_normal").pixelCoords), 0, 0, 1, false, bush_normal),
+		new ContainedItems()) {
 	
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniPlug.setAniSet(World.rand.nextInt(t.type.ani.animations.length));
@@ -591,12 +624,12 @@ public class ThingType extends Species<Thing> {
 			if(t.type == this && t.aniPlug.getAniSet() == 1){//not necessary, because the other bushes use this too
 				int berryAmount = 1 + World.rand.nextInt(3);
 				for(int i = 0; i < berryAmount; i++)
-					t.fruits.add(ItemType.BERRY);
+					t.itemPlug.add(ItemType.BERRY);
 			}
 		}};
-	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.getAtlas("bush_jungle"), 350,new Animating(bush_jungle[0][0], new Rect(Res.getAtlas("bush_jungle").pixelCoords), 0, 0, 1, false, bush_jungle)){
+	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.getAtlas("bush_jungle"), 350,new Animating(bush_jungle[0][0], new Rect(Res.getAtlas("bush_jungle").pixelCoords), 0, 0, 1, false, bush_jungle), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, field, pos, extraData);}};
-	public static final ThingType BUSH_CANDY = new ThingType("BUSH_CANDY", Res.getAtlas("bush_candy"), 30 ,new Animating(bush_candy[0][0], new Rect(Res.getAtlas("bush_candy").pixelCoords), 0, 0, 1, false, bush_candy)){
+	public static final ThingType BUSH_CANDY = new ThingType("BUSH_CANDY", Res.getAtlas("bush_candy"), 30 ,new Animating(bush_candy[0][0], new Rect(Res.getAtlas("bush_candy").pixelCoords), 0, 0, 1, false, bush_candy), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){ BUSH_NORMAL.setup(t, field, pos, extraData);}};
 											static final Animation[][] flower_normal = {
 											{new Animation(Res.getAtlas("flower_normal"), 0, 0)},
@@ -710,12 +743,13 @@ public class ThingType extends Species<Thing> {
 											{new Animation(Res.getAtlas("grave"), 0, 4)},
 											{new Animation(Res.getAtlas("grave"), 0, 5)},
 											{new Animation(Res.getAtlas("grave"), 0, 6)}};
-	public static final ThingType GRAVE = new ThingType("GRAVE", Res.getAtlas("grave"), 80,new Animating(grave[0][0], new Rect(Res.getAtlas("grave").pixelCoords), 0.5, 0, 1, false, grave)){
+	public static final ThingType GRAVE = new ThingType("GRAVE", Res.getAtlas("grave"), 80,new Animating(grave[0][0], new Rect(Res.getAtlas("grave").pixelCoords), 0.5, 0, 1, false, grave),
+			new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setOrientation( false);
 			t.aniPlug.setAnimation("");
-			t.fruits.add(ItemType.ZOMBIE_FLESH);
+			t.itemPlug.add(ItemType.ZOMBIE_FLESH);
 		}};
 											protected static final Animation[][] crack = {
 											{new Animation(Res.getAtlas("crack") , 0, 0)},
@@ -844,9 +878,8 @@ public class ThingType extends Species<Thing> {
 		}
 	};
 
-	
 	static {
-		types = tempList.toArray(new Species[tempList.size()]);
+		endSpeciesList();
 	}
 	
 	ThingType(String name, TexAtlas file, int maxVisible, AiPlugin2... plugins) {
@@ -859,7 +892,7 @@ public class ThingType extends Species<Thing> {
 	}
 	
 	ThingType(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, Spawner defaultSpawner, AiPlugin2... plugins){
-		super(name, file, maxVisible, alwaysUpdateVBO, defaultSpawner, plugins);
+		super(name, file, maxVisible, alwaysUpdateVBO, defaultSpawner, updateOrder, plugins);
 	}
 	
 }

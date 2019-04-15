@@ -26,61 +26,67 @@ public class Riding extends AiPlugin2 {
 	}
 	
 	public class RidingPlugin extends ThingPlugin {
+		
+		private Thing mountedThing;
+		private boolean isRiding;
 
 		public RidingPlugin(Entity thing) {
 			super(thing);
 		}
 		
-	}
-	
-	public void mount(Thing rider, Thing horse){
-		
-		rider.isRiding = true;
-		
-		rider.aniPlug.setRenderBox( ridingBox);
-		rider.aniPlug.setAniSet( 1);
-		rider.aniPlug.setNeedsUnusualRenderUpdate( true);
-		
-		if(rider.mountedThing != null){//rider is already riding on something
-			rider.aniPlug.getAnimator().setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount+1], () -> {
-				
-				freeHorse(rider);
+		public boolean isRiding() {
+			return isRiding;
+		}
 
-				rider.mountedThing = horse;
-				rider.pos.set(horse.pos);
-				rider.where = horse.where;
+		public void mount(Thing horse){
+			
+			isRiding = true;
+			
+			thing.aniPlug.setRenderBox( ridingBox);
+			thing.aniPlug.setAniSet( 1);
+			thing.aniPlug.setNeedsUnusualRenderUpdate( true);
+			
+			if(mountedThing != null){//rider is already riding on something
+				thing.aniPlug.getAnimator().setAnimation(thing.type.ani.animations[1][thing.type.ani.aniCount+1], () -> {
+					
+					freeHorse();
+
+					mountedThing = horse;
+					thing.pos.set(horse.pos);
+					thing.where = horse.where;
+					horse.hide();
+					thing.aniPlug.getAnimator().setAnimation(thing.type.ani.animations[1][thing.type.ani.aniCount], () -> thing.aniPlug.setAnimation( "stand"));
+				});
+			} else {
+				mountedThing = horse;
+				thing.pos.set(horse.pos);
+				thing.where = horse.where;
 				horse.hide();
-				rider.aniPlug.getAnimator().setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.aniPlug.setAnimation( "stand"));
+				thing.aniPlug.getAnimator().setAnimation(thing.type.ani.animations[1][thing.type.ani.aniCount], () -> thing.aniPlug.setAnimation( "stand"));
+			}
+		}
+		
+		public void dismount(){
+			thing.aniPlug.getAnimator().setAnimation(thing.type.ani.animations[1][thing.type.ani.aniCount+1], () -> {
+				isRiding = false;
+				freeHorse();
+				thing.aniPlug.setAniSet( 0);
+				thing.aniPlug.setRenderBox( normalBox);
+				thing.aniPlug.setNeedsUnusualRenderUpdate( true);
+				thing.aniPlug.setAnimation( "stand");
 			});
-		} else {
-			rider.mountedThing = horse;
-			rider.pos.set(horse.pos);
-			rider.where = horse.where;
-			horse.hide();
-			rider.aniPlug.getAnimator().setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount], () -> rider.aniPlug.setAnimation( "stand"));
+		}
+		
+		public void freeHorse() {
+			mountedThing.showUpAfterHiding(thing.newLink);
+			mountedThing.pos.set(thing.pos);
+			mountedThing.vel.set(thing.vel);
+			mountedThing.aniPlug.setOrientation( thing.aniPlug.getOrientation());
+			mountedThing.where = thing.where;
+			mountedThing = null;
 		}
 	}
 	
-	public void dismount(Thing rider){
-		rider.aniPlug.getAnimator().setAnimation(rider.type.ani.animations[1][rider.type.ani.aniCount+1], () -> {
-			rider.isRiding = false;
-			freeHorse(rider);
-			rider.aniPlug.setAniSet( 0);
-			rider.aniPlug.setRenderBox( normalBox);
-			rider.aniPlug.setNeedsUnusualRenderUpdate( true);
-			rider.aniPlug.setAnimation( "stand");
-		});
-	}
-	
-	public void freeHorse(Thing rider) {
-		rider.mountedThing.showUpAfterHiding(rider.newLink);
-		rider.mountedThing.pos.set(rider.pos);
-		rider.mountedThing.vel.set(rider.vel);
-		rider.mountedThing.aniPlug.setOrientation( rider.aniPlug.getOrientation());
-		rider.mountedThing.where = rider.where;
-		rider.mountedThing = null;
-	}
-
 	public String save() {
 		return null;
 	}

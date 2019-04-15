@@ -15,6 +15,7 @@ import things.aiPlugins.Physics.PhysicsPlugin;
 import things.aiPlugins.PhysicsExtension.PhysExPlugin;
 import things.aiPlugins.Riding.RidingPlugin;
 import things.aiPlugins.Speaking.SpeakingPlugin;
+import things.aiPlugins.ContainedItems.ItemsPlugin;
 import things.aiPlugins.WalkAround.WalkAroundPugin;
 import transition.ThingEntity;
 import util.math.Vec;
@@ -31,7 +32,6 @@ public class Thing extends DataThing implements ThingEntity {
 	public LifePlugin lifePlug;
 	public FlyPlugin flyAroundPlug;
 	public WalkAroundPugin walkAroundPlug;
-	public AttackPlugin attackingPlug;
 	public InventoryPlugin invPlug;
 	public RidingPlugin ridePlug;
 	public FollowPlugin followPlug;
@@ -39,6 +39,8 @@ public class Thing extends DataThing implements ThingEntity {
 	public MidgePlugin midgeAroundPlug;
 	public PhysExPlugin physExPlug;
 	public AttachementPlugin statePlug;
+	
+	public ItemsPlugin itemPlug;
 
 	public Thing(ThingType type, Column field, Vec pos, Object... extraData) {
 		super(type, field, pos, extraData);
@@ -60,7 +62,7 @@ public class Thing extends DataThing implements ThingEntity {
 		} else if(attrib instanceof WalkAroundPugin){
 			walkAroundPlug = (WalkAroundPugin)attrib;
 		} else if(attrib instanceof AttackPlugin){
-			attackingPlug = (AttackPlugin)attrib;
+			attack = (AttackPlugin)attrib;
 		} else if(attrib instanceof InventoryPlugin){
 			invPlug = (InventoryPlugin)attrib;
 		} else if(attrib instanceof MagicPlugin){
@@ -79,7 +81,11 @@ public class Thing extends DataThing implements ThingEntity {
 			physExPlug = (PhysExPlugin)attrib;
 		} else if(attrib instanceof AttachementPlugin){
 			statePlug = (AttachementPlugin)attrib;
-		} else {
+		} else if(attrib instanceof ItemsPlugin) {
+			itemPlug = (ItemsPlugin) attrib;
+		}
+		
+		else {
 			//...
 		}
 	}

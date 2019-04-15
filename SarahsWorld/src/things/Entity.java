@@ -47,11 +47,12 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 		//Create attributes from the species' traits.
 		plugins = new Attribute[type.plugins.length];
 		for(int i = 0; i < type.plugins.length; i++){
-			if(type.plugins[i] != null) {
-				Attribute attrib = type.plugins[i].createAttribute(this);
-				plugins[i] = attrib;
-				onAttributeAdded(attrib);
-			}
+			Attribute attrib = type.plugins[i].createAttribute(this);
+			plugins[i] = attrib;
+			onAttributeAdded(attrib);
+		}
+		for(Attribute attribute : plugins) {
+			attribute.finishInitialization();
 		}
 	}
 	

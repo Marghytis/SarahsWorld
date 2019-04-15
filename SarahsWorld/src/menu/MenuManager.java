@@ -440,7 +440,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			public void setElements(Menu menu, Main game, Object... extraData){
 				menu.setElements(
 						new Element(game, 7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0]*2, MONEYBAG.pixelCoords[1]*2 - 30, MONEYBAG.pixelCoords[2]*2, MONEYBAG.pixelCoords[3]*2 - 30, null, MONEYBAG),
-						new FlexibleTextField(game, () -> Main.world.avatar.coins + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, new Color(1, 1, 1, 0), null, true),
+						new FlexibleTextField(game, () -> Main.world.avatar.itemPlug.nCoins() + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, new Color(1, 1, 1, 0), null, true),
 						
 						new ItemContainer(game, Main.world.avatar, 0, 4/12.0, 1.0/8),
 						new ItemContainer(game, Main.world.avatar, 1, 5/12.0, 1.0/8),
@@ -448,7 +448,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 						new ItemContainer(game, Main.world.avatar, 3, 7/12.0, 1.0/8),
 						new ItemContainer(game, Main.world.avatar, 4, 8/12.0, 1.0/8),
 
-						new Bar(game, 0.3, 5.0/16, 0.7, 5.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.health/(double)Main.world.avatar.type.life.maxHealth),//Health
+						new Bar(game, 0.3, 5.0/16, 0.7, 5.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.lifePlug.health()/(double)Main.world.avatar.type.life.maxHealth),//Health
 						new Bar(game, 0.3, 4.0/16, 0.7, 4.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.magic.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
 				);
 			}
@@ -459,14 +459,14 @@ public class MenuManager implements Updater, Renderer, Listener {
 			int nContainers;
 			
 			public boolean trade(Thing vendor, Thing client, ItemType item) {
-				if(client.coins >= item.value) {
+				if(client.itemPlug.nCoins() >= item.value) {
 					//exchange item
-					client.type.inv.addItem(client, item, 1);
-					vendor.type.inv.addItem(vendor, item, -1);
+					client.invPlug.addItem( item, 1);
+					vendor.invPlug.addItem( item, -1);
 					
 					//exchange coins
-					client.coins -= item.value;//TODO move this to a function in 'Inventory'
-					vendor.coins += item.value;
+					client.itemPlug.addCoins( -item.value);//TODO move this to a function in 'Inventory'
+					vendor.itemPlug.addCoins( +item.value);
 					//TODO move both of these exchanges to functions maybe in Quest or somewhere else
 					return true;
 				}
@@ -496,7 +496,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 						public void released(int button) {
 							Thing buyer = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
 							Thing seller = Main.world.avatar;
-							ItemType item = seller.type.inv.getSelectedItem(seller);
+							ItemType item = seller.invPlug.getSelectedItem();
 							trade(seller, buyer, item);
 						}
 					});
@@ -593,7 +593,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 							if(t.type.physics != null)
 							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force + "\n";
 							if(t.type.life != null)
-								s += "health: " + t.health + "\n";
+								s += "health: " + t.lifePlug.health() + "\n";
 							if(t.newLink != null)
 								s += "link x index: " + t.newLink.getIndex() + "\n";
 							if(t.aniPlug != null)
@@ -617,7 +617,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 										"added to VAO: " + Main.world.avatar.aniPlug.addedToVAO() + "\n" +
 										"tex width: " + Main.world.avatar.aniPlug.getAnimator().tex.w + "\n" + 
 										"dir: " + Main.world.avatar.aniPlug.getOrientation() + "\n" +
-										"riding: " + Main.world.avatar.isRiding + "\n" +
+										"riding: " + Main.world.avatar.ridePlug.isRiding() + "\n" +
 										"where.water: " + Main.world.avatar.where.water + "\n" +
 										"left column: " + Main.world.landscapeWindow.start().getIndex() + "\n" +
 										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().getIndex() : "null") + "\n" +

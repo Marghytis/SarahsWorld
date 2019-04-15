@@ -174,19 +174,17 @@ public class ItemType {
 	public boolean useAt(Thing src, Vec pos){return false;}
 	public boolean useOn(Thing src, Vec pos, Thing dest){
 		boolean success = false;
-		if(dest.fruits != null && !dest.fruits.isEmpty() && src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
-			int index = World.rand.nextInt(dest.fruits.size());
-			ItemType i = dest.fruits.get(index);
-			dest.fruits.remove(index);
-			if(i != null) src.type.inv.addItem(src, i, 1);
+		if(dest.itemPlug != null && dest.itemPlug.containsItem() && src.invPlug != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
+			ItemType i = dest.itemPlug.removeRandomItem(World.rand);
+			if(i != null) src.invPlug.addItem( i, 1);
 			success = true;
 		} else {
 			if(dest.type == ThingType.COW){
-				src.type.ride.mount(src, dest);
+				src.ridePlug.mount(dest);
 				success = true;
 			} else if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE){
 				if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
-					src.type.inv.addItem(src, dest.itemBeing, 1);
+					src.invPlug.addItem( dest.itemBeing, 1);
 					Main.world.engine.requestDeletion(dest);
 					success = true;
 				}

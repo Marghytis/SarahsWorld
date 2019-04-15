@@ -1,5 +1,7 @@
 package things;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import render.TexAtlas;
@@ -27,10 +29,25 @@ import world.generation.Spawner;
 
 public class Species<T extends Entity> {
 
-	static List<Species<?>> tempList;
-	static int index;
+	private static List<Species<?>> tempList;
+	private static int index;
 	
-	public static Species<Thing>[] types;
+	protected static void startSpeciesList() {
+		tempList = new ArrayList<>();
+		index = 0;
+	}
+	
+	private static int addSpeciesGetOrdinal(Species<?> species) {
+		tempList.add(species);
+		index++;
+		return index-1;
+	}
+	
+	protected static void endSpeciesList() {
+		types = tempList.toArray(new Species[tempList.size()]);
+	}
+	
+	public static Species<?>[] types;
 	
 	public String name;
 	public int ordinal;
@@ -61,14 +78,45 @@ public class Species<T extends Entity> {
 	public int maxVisible;
 	public boolean alwaysUpdateVBO;
 	
+	static Hashtable<Class<?>, Integer> defaultOrder = new Hashtable<>();
+	static {
+		//only list plugins whose update(delta) method is used. action()s are called separately.
+		int i = 0;
+		defaultOrder.put(LogicCombination.class, i++);//calculate logic first, i.e. what the entities plan is for this update cycle.
+		defaultOrder.put(Physics.class, i++);//update position and velocity and "where"
+		defaultOrder.put(Animating.class, i++);//update the animator
+		defaultOrder.put(Inventory.class, i++);//collect coins and do item coolDown
+		defaultOrder.put(Speaking.class, i++);//updates the thoughbubble's position
+		defaultOrder.put(Life.class, i++);//removes the thing, if live is below zero
+		defaultOrder.put(Attacking.class, i++);//attack cooldown
+		defaultOrder.put(PhysicsExtension.class, i++);//repelling other things
+		//....
+	}
+	
+	private static final AiPlugin[] orderPluginsForUpdating(AiPlugin[] plugins, Hashtable<Class<?>, Integer> order) {
+		
+		for(int i = plugins.length - 1; i >= 0; i--) {
+			Integer destIndex = order.get(plugins[i].getClass());
+			if(destIndex != null && destIndex != i) {
+				AiPlugin temp = plugins[destIndex];
+				plugins[destIndex] = plugins[i];
+				plugins[i] = temp;
+			}
+		}
+		
+		return plugins;
+	}
+	
 	Species(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, Spawner defaultSpawner, AiPlugin... plugins){
+		this(name, file, maxVisible, alwaysUpdateVBO, defaultSpawner, defaultOrder, plugins);
+	}
+	Species(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, Spawner defaultSpawner, Hashtable<Class<?>, Integer> pluginOrder, AiPlugin... plugins){
 		this.name = name;
 		this.file = file;
 		this.maxVisible = maxVisible;
 		this.alwaysUpdateVBO = alwaysUpdateVBO;
-		this.plugins = new AiPlugin[18];
-		this.ordinal = index++;
-		tempList.add(this);
+		this.plugins = orderPluginsForUpdating(plugins, pluginOrder);
+		this.ordinal = addSpeciesGetOrdinal(this);
 		
 		for(AiPlugin plugin : plugins){
 			if(plugin instanceof Animating){
@@ -121,7 +169,8 @@ public class Species<T extends Entity> {
 		this.plugins[i++] = attacking;//attack cooldown
 		this.plugins[i++] = physEx;//repelling other things
 		
-		//no update
+		//no update, order doesn't matter
+//		for(int j = 0; i < )
 		this.plugins[i++] = ride;
 		this.plugins[i++] = avatar;
 		this.plugins[i++] = follow;

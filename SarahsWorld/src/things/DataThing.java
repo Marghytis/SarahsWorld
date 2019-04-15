@@ -1,15 +1,11 @@
 package things;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import effects.Effect;
 import item.ItemStack;
 import item.ItemType;
 import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
-import things.aiPlugins.Speaking.ThoughtBubble;
 import things.interfaces.Listable;
 import things.interfaces.StructureThing;
 import util.math.Vec;
@@ -45,42 +41,30 @@ public abstract class DataThing extends Entity implements StructureThing<Entity>
 	public boolean reallyAir, willLandInWater;
 	public double walkingForce, speed, maxWalkingSpeed, buoyancyForce;
 	public double rotation, /*aniRotation, */yOffsetToBalanceRotation;
-	public double damageCooldown;
 //	public double time;//just for unicorns at this point. Can be used to animate certain effects
 	
 	//Values that change, if needed
 //	public Animator ani;
 	public Animator itemAni;
 	public String backgroundAnimation = "";
-	public List<ItemType> fruits = new ArrayList<>();
 	public ItemStack[] itemStacks;
-	public ThoughtBubble tb;
 	public Effect effect;
 	public int effectTicket;
 //	public boolean dir;
-	public boolean immortal;
-	public boolean isRiding;
-	public boolean speaking;
 //	public boolean needsRenderUpdate, needsUnusualRenderUpdate, visible, addedToVAO, freeToMakeInvisible;
 	public boolean linked = false, real = false;
 	public boolean willingToTrade = false;
 	public boolean active = false;
 	
-	public Thing target;
-	public Thing mountedThing;
-	public Technique lastAttack;
 	public int selectedItem;
 //	public int aniSet;
 	public Where where = new Where();
 	public Where whereBefore = new Where();
-	public int coins;
-	public int health;
 	public double healthTimer;
 	public int armor;
 	public int amount;//for coins or items
 	public double xDest;
 	public double waitTime;//for the walk around plugin
-	public String currentSpeech;
 	public String[] answers;
 	public ActiveQuest quest;
 

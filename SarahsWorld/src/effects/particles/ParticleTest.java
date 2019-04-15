@@ -16,9 +16,9 @@ public class ParticleTest implements Listener, Renderer, Updater{
 		core.init(new Window("Particle Tester", false), clearColor);
 		ParticleTest test = new ParticleTest();
 		
-		Updater.updaters.add(test);
-		Listener.listeners.add(test);
-		Renderer.renderers.add(test);
+		Updater.updaters.addCoins(test);
+		Listener.listeners.addCoins(test);
+		Renderer.renderers.addCoins(test);
 		
 		core.coreLoop();
 	}

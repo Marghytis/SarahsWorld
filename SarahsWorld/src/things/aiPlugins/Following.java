@@ -28,21 +28,27 @@ public class Following extends AiPlugin2 {
 	}
 	
 	public class FollowPlugin extends ThingPlugin {
+		
+		private Thing target;
 
 		public FollowPlugin(Entity thing) {
 			super(thing);
 		}
 		
+		public Thing getTarget() {
+			return target;
+		}
+		
 		public boolean followTarget(double delta) {
 			if(Settings.getBoolean("AGGRESSIVE_CREATURES")){
-				findTarget(thing);
+				findTarget();
 				int acc = 0;
-				if(thing.target != null){
+				if(target != null){
 					double r = rAim + (thing.aniPlug.getRenderBox().size.x/2);
-					if(thing.target.pos.minus(thing.pos).lengthSquare() > r*r) {
-						if(thing.target.pos.x > thing.pos.x){
+					if(target.pos.minus(thing.pos).lengthSquare() > r*r) {
+						if(target.pos.x > thing.pos.x){
 							acc += 2;
-						} else if(thing.target.pos.x < thing.pos.x){
+						} else if(target.pos.x < thing.pos.x){
 							acc -= 2;
 						}
 					} else {
@@ -55,28 +61,28 @@ public class Following extends AiPlugin2 {
 						return true;
 				}
 			} else {
-				thing.target = null;
+				target = null;
 			}
 			return false;
 		}
 		
-	}
-
-	public void findTarget(Thing t){
-		if(t.target == null || t.target.pos.minus(t.pos).lengthSquare() > maxDistanceSquare || t.target.health <= 0){
-			Thing closest = null;
-			double distanceSquare = maxDistanceSquare+10;
-			for(int type = 0; type < targetClasses.length; type++){
-				for(ColumnListElement c = Main.world.landscapeWindow.start(); c != Main.world.landscapeWindow.end(); c = c.next())
-				for(Entity t2 = c.firstThing(targetClasses[type].ordinal); t2 != null; t2 = t2.next()){
-					double distSqu = t.pos.minus(t2.pos).lengthSquare();
-					if(distSqu < distanceSquare){
-						closest = (Thing)t2;
-						distanceSquare = distSqu;
+		private void findTarget(){
+			if(target == null || target.pos.minus(thing.pos).lengthSquare() > maxDistanceSquare || target.lifePlug.health() <= 0){
+				Thing closest = null;
+				double distanceSquare = maxDistanceSquare+10;
+				for(int type = 0; type < targetClasses.length; type++){
+					for(ColumnListElement c = Main.world.landscapeWindow.start(); c != Main.world.landscapeWindow.end(); c = c.next())
+					for(Entity t2 = c.firstThing(targetClasses[type].ordinal); t2 != null; t2 = t2.next()){
+						double distSqu = thing.pos.minus(t2.pos).lengthSquare();
+						if(distSqu < distanceSquare){
+							closest = (Thing)t2;
+							distanceSquare = distSqu;
+						}
 					}
 				}
+				target = closest;
 			}
-			t.target = closest;
 		}
+		
 	}
 }

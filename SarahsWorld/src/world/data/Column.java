@@ -4,7 +4,6 @@ import java.util.Random;
 
 import things.Entity;
 import things.Species;
-import things.Thing;
 import util.Color;
 import util.math.Vec;
 import world.generation.Biome;
@@ -48,7 +47,7 @@ public class Column extends ColumnListElement {
 			v.setParent(this);
 		}
 		setCollisionVecs(collisionVecs);
-		this.things = new Thing[Species.types.length];
+		this.things = new Entity[Species.types.length];
 	}
 	
 	/**

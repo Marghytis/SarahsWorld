@@ -2,45 +2,29 @@ package things.aiPlugins;
 
 import effects.particles.BloodSplash;
 import effects.particles.DeathDust;
-import item.ItemStack;
-import item.ItemType;
 import main.Main;
 import things.AiPlugin2;
 import things.Entity;
 import things.Thing;
 import things.ThingPlugin;
-import things.ThingType;
 import util.math.Vec;
-import world.World;
-
-
-
 
 public class Life extends AiPlugin2 {
 	
 	static double coolDownStart = 0.5;
 	
-	public int startCoins; //:P
-	public int maxHealth;
-	public int armor;
-	public ItemType[] fruits;
-	public double[] fruitProperties;
+	public int maxHealth, minHealth = 0;
+	public int defaultArmor;
 	private String getHitAnimation;
 	
-	public Life(int health, int coins, int armor){
-		this(health, coins, armor, null);
+	public Life(int health, int armor){
+		this(health, armor, null);
 	}
 
-	public Life(int health, int coins, int armor, ItemType[] fruits, double... fruitProperties){
-		this(health, coins, armor, fruits, null, fruitProperties);
-	}
-	public Life(int health, int coins, int armor, ItemType[] fruits, String getHitAnimation, double... fruitProperties){
+	public Life(int health, int armor, String getHitAnimation){
 		this.maxHealth = health;
-		this.startCoins = coins;
-		this.armor = armor;
-		this.fruits = fruits;
+		this.defaultArmor = armor;
 		this.getHitAnimation = getHitAnimation;
-		this.fruitProperties = fruitProperties;
 	}
 	
 	@Override
@@ -50,69 +34,95 @@ public class Life extends AiPlugin2 {
 	
 	public class LifePlugin extends ThingPlugin {
 		
-		private int health;
+		private double damageCooldown;
+		private int health, armor;
+		private boolean immortal;
 
 		public LifePlugin(Entity t) {
 			super(t);
-			thing.health = maxHealth;
-			thing.coins = startCoins;
-			thing.armor = armor;
-			if(fruits != null) for(int i = 0; i < fruits.length; i++){
-				for(int j = 1; j < fruitProperties[i]; j++)
-					thing.fruits.add(fruits[i]);
-				if(World.rand.nextDouble() < fruitProperties[i] - (int)fruitProperties[i]) thing.fruits.add(fruits[i]);
-			}
+			this.health = maxHealth;
+			this.armor = defaultArmor;
 		}
 		
 		 @Override
 		public void update(double delta) {
-			thing.damageCooldown -= delta;
+			 //decrease remaining time where the Thing is immune to damage
+			damageCooldown -= delta;
 			
-			if(thing.health <= 0 && !thing.immortal){
-				if(thing.itemStacks != null){
-					for(ItemStack item : thing.itemStacks){
-						for(int i = 0; i < item.count; i++){
-							Main.world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item.item));
-						}
-					}
-				}
-				for(int i = 0; i < thing.coins; i++){
-					Main.world.thingWindow.add(new Thing(ThingType.COIN, thing.newLink, thing.pos.copy(), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));//World.rand.nextInt(401)-200, 400
-				}
-				for(ItemType item : thing.fruits)
-					Main.world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item));
+			//Check whether the Thing is dead or not
+			if(thing.lifePlug.health() <= 0 && !immortal){
+				
+				//drop all items and money in the Thing's inventory
+				if(thing.invPlug != null)
+					thing.invPlug.dropItems();
+				
+				//drop all items contained in the Thing
+				if(thing.itemPlug != null)
+					thing.itemPlug.dropEverything();
+				
+				//remove the Thing in a cloud of dust
 				Main.world.engine.requestDeletion(thing);
 				Main.world.window.addEffect(new DeathDust(thing.pos));
+				
+				//if Sarah died, the game is over :(
 				if(thing == Main.world.avatar) {
 					Main.world.gameOver();
 				}
 			}
 		}
+
+		public void add(int nHealthPoints) {
+			this.health += nHealthPoints;
+			if(health > maxHealth) {
+				health = maxHealth;
+			} else if(health < minHealth) {
+				health = minHealth;
+			}
+		}
+		
+		public void heal(int iHealthPoints) {
+			add(iHealthPoints);
+		}
+		
+		public void damage(int nHealthPoints) {
+			add(-nHealthPoints);
+		}
+
+		public int health() {
+			return health;
+		}
+		
+		public boolean getHit(Thing src, int damage){
+			if(immortal) return false;
+			if(damage > 0 && damageCooldown <= 0){
+				if(thing.where.g){
+					thing.type.physics.leaveGround(thing, new Vec(thing.pos.x > src.pos.x ? 200 : -200, 300));
+					thing.where.g = false;
+					thing.reallyAir = true;
+				}
+				thing.lifePlug.add( -damage);
+				Main.world.window.addEffect(new BloodSplash(thing.pos));
+				if(getHitAnimation != null) {
+					thing.aniPlug.setAnimation( getHitAnimation, () -> thing.type.movement.setBackgroundAni(thing));
+				}
+				damageCooldown = coolDownStart;
+				return true;
+			}
+			return false;
+		}
+
+		public int getArmor() {
+			return armor;
+		}
+		
+		public boolean immortal() {
+			return immortal;
+		}
+
+		public void setImmortal(boolean immortal) {
+			this.immortal = immortal;
+		}
 		
 	}
-	
-	public void heal(Thing t, int healthPoints) {
-		t.health += healthPoints;
-		if(t.health > maxHealth)
-			t.health = maxHealth;
-	}
-	
-	public boolean getHit(Thing tgt, Thing src, int damage){
-		if(tgt.immortal) return false;
-		if(damage > 0 && tgt.damageCooldown <= 0){
-			if(tgt.where.g){
-				tgt.type.physics.leaveGround(tgt, new Vec(tgt.pos.x > src.pos.x ? 200 : -200, 300));
-				tgt.where.g = false;
-				tgt.reallyAir = true;
-			}
-			tgt.health -= damage;
-			Main.world.window.addEffect(new BloodSplash(tgt.pos));
-			if(getHitAnimation != null) {
-				tgt.aniPlug.setAnimation( getHitAnimation, () -> tgt.type.movement.setBackgroundAni(tgt));
-			}
-			tgt.damageCooldown = coolDownStart;
-			return true;
-		}
-		return false;
-	}
+
 }
