@@ -1,6 +1,7 @@
 package things;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -95,15 +96,19 @@ public class Species<T extends Entity> {
 	
 	private static final AiPlugin[] orderPluginsForUpdating(AiPlugin[] plugins, Hashtable<Class<?>, Integer> order) {
 		
-		for(int i = plugins.length - 1; i >= 0; i--) {
-			Integer destIndex = order.get(plugins[i].getClass());
-			if(destIndex != null && destIndex != i) {
-				AiPlugin temp = plugins[destIndex];
-				plugins[destIndex] = plugins[i];
-				plugins[i] = temp;
-			}
-		}
-		
+		Arrays.sort(plugins, (p1, p2) -> {
+			Integer i1 = order.get(p1.getClass());
+			Integer i2 = order.get(p2.getClass());
+			
+			if(i1 == null && i2 == null)
+				return 0;
+			else if(i1 == null && i2 != null)
+				return -1;
+			else if(i1 != null && i2 == null)
+				return 1;
+			else
+				return i1 - i2;
+		});
 		return plugins;
 	}
 	

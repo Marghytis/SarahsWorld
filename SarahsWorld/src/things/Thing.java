@@ -21,7 +21,6 @@ import things.aiPlugins.Speaking.SpeakingPlugin;
 import things.aiPlugins.WalkAround.WalkAroundPugin;
 import things.interfaces.Listable;
 import things.interfaces.StructureThing;
-import transition.ThingEntity;
 import util.math.Vec;
 import world.data.Column;
 
@@ -40,7 +39,6 @@ public class Thing extends Entity implements StructureThing<Entity>, Listable {
 	public RidingPlugin ridePlug;
 	public FollowPlugin followPlug;
 	public SpeakingPlugin speakPlug;
-	public MidgePlugin midgeAroundPlug;
 	public PhysExPlugin physExPlug;
 	public AttachementPlugin statePlug;
 	public NamePlugin name;
@@ -90,7 +88,7 @@ public class Thing extends Entity implements StructureThing<Entity>, Listable {
 		} else if(attrib instanceof AvatarPlugin){
 			avatar = (AvatarPlugin)attrib;
 		} else if(attrib instanceof MidgePlugin){
-			midgeAroundPlug = (MidgePlugin)attrib;
+			midgePlug = (MidgePlugin)attrib;
 		} else if(attrib instanceof PhysExPlugin){
 			physExPlug = (PhysExPlugin)attrib;
 		} else if(attrib instanceof AttachementPlugin){

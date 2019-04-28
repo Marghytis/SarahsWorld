@@ -61,7 +61,7 @@ public class ContainedItems extends AiPlugin2 {
 		}
 		public boolean addItem(ItemType item, int n) {
 			for(int i = 0; i < n; i++) {
-				addItem(item);
+				fruits.add(item);
 			}
 			return true;
 		}

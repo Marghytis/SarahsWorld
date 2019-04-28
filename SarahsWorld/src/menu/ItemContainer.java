@@ -59,7 +59,8 @@ public class ItemContainer extends Element {
 
 	public void setThing(InventoryPlugin thing2) {
 		this.thing = thing2;
-		this.itemStack = thing.getItemStack(ordinal);
+		if(thing != null)
+			this.itemStack = thing.getItemStack(ordinal);
 	}
 
 }

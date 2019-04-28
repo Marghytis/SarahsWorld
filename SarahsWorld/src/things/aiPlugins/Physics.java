@@ -294,7 +294,7 @@ public class Physics extends AiPlugin2 {
 		private void checkWater(Vec force, Vec pos){
 			buoyancyForce = 0;
 			//check, if the column the thing is in contains water:
-			if(thing.newLink.getTopSolidVertex() != thing.newLink.getTopFluidVertex() && thing.newLink.right() != null && thing.newLink.right().column().getTopSolidVertex() != thing.newLink.right().column().getTopFluidVertex()){
+			if(thing.aniPlug != null && thing.newLink.getTopSolidVertex() != thing.newLink.getTopFluidVertex() && thing.newLink.right() != null && thing.newLink.right().column().getTopSolidVertex() != thing.newLink.right().column().getTopFluidVertex()){
 				//get vertex of water surface
 				Vertex waterVertex = thing.newLink.getTopFluidVertex();
 
