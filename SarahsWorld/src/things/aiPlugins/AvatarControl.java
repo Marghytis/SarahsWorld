@@ -109,11 +109,8 @@ public  class AvatarControl extends AiPlugin2 {
 			int scroll = (int)Main.input.getDWheel(Main.WINDOW);
 			Main.input.resetDeltas(Main.WINDOW);
 
-			int selectedItem = thing.selectedItem - scroll;
-			selectedItem -= Math.floorDiv(selectedItem, thing.itemStacks.length)*thing.itemStacks.length;//accounts for large negative scrolls
-			if(thing.itemStacks[thing.selectedItem].item.ordinal != thing.itemStacks[selectedItem].item.ordinal)
-				thing.attack.cancel();
-			thing.selectedItem = selectedItem;
+			int selectedItem = thing.invPlug.getSelectedIndex() - scroll;
+			thing.invPlug.selectItemStack(selectedItem);
 			return true;
 		}
 		

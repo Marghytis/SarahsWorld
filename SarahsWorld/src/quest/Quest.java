@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
-import item.ItemStack;
 import item.ItemType;
 import things.Species;
 import world.World;
@@ -136,13 +135,8 @@ public enum Quest {
 			}; break;
 			case "timeDelta": leftSide = (q, w) -> System.currentTimeMillis()/1000.0 - q.lastEventTime;break;
 			case "has": leftSide = (q, w) -> {
-				ItemStack[] stacks = q.characters.get(args[0]).itemStacks;
-				for(int i1 = 0; i1 < stacks.length; i1++){
-					if(stacks[i1].item == ItemType.valueOf(args[1])){
-						return (stacks[i1].count >= Integer.parseInt(args[2])) ? "true" : "false";
-					}
-				}
-				return "false";
+				boolean has = q.characters.get(args[0]).invPlug.containsItems(ItemType.valueOf(args[1]), Integer.parseInt(args[2]));
+				return has ? "true" : "false";
 			};break;
 			default: throw(new UnknownMethodException("condition", method[0]));
 			}

@@ -13,8 +13,43 @@ import world.data.Column;
 
 
 public class Movement extends AiPlugin2 {
+	public static enum Location {
+		GROUND {
+			@Override
+			public void transitionTo(Location loc) {
+				switch(loc) {
+				case GROUND:
+				case WATER:
+				case AIR:
+				}
+			}
+		}, WATER {
+			@Override
+			public void transitionTo(Location loc) {
+				switch(loc) {
+				case GROUND:
+				case WATER:
+				case AIR:
+				}
+			}
+		}, AIR {
+			@Override
+			public void transitionTo(Location loc) {
+				switch(loc) {
+				case GROUND:
+				case WATER:
+				case AIR:
+				}
+			}
+		};
+		
+		private double acceleration;
+		
+		public abstract void transitionTo(Location loc);
+	}
 	
 	public String stand, sneak, walk1, walk2, fly, plunge, swim, sneakyStand;
+	//			  W->W   W->W   W->W   W->W   F->F P->P    S->S  W->W
 	public String liftOf, land, dive;
 
 	public Movement(String stand, String walk0, String walk1, String walk2, String swim, String jump, String land, String fly, String dive, String plunge, String sneakyStand){

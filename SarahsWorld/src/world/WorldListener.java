@@ -50,7 +50,7 @@ public class WorldListener implements Listener {
 			break;
 		case 1://USE
 			Thing[] objectsClickedOn = world.thingWindow.thingsAt(worldPos);
-			world.avatar.type.inv.useSelectedItem(world.avatar, worldPos, objectsClickedOn);
+			world.avatar.invPlug.useSelectedItem(worldPos, objectsClickedOn);
 			break;
 		case 2://MARK
 			if(Settings.getBoolean("DEBUGGING")) {

@@ -37,6 +37,7 @@ public class Speaking extends AiPlugin2 {
 		private boolean speaking;
 		private String currentSpeech;
 		private String[] answers;
+		private ActiveQuest quest;
 
 		public SpeakingPlugin(Entity thing) {
 			super(thing);
@@ -81,7 +82,7 @@ public class Speaking extends AiPlugin2 {
 		}
 		
 		public void say(boolean thoughtBubble, ActiveQuest quest, String what, String[] answers){
-			thing.quest = quest;
+			this.quest = quest;
 			currentSpeech = what;
 			this.answers = answers;
 
@@ -196,7 +197,7 @@ public class Speaking extends AiPlugin2 {
 				for(int i = 0; i < speaker.speakPlug.answers.length; i++){
 					realAnswers[i] = Strings.get(speaker.speakPlug.answers[i], World.rand);
 				}
-				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(speaker.quest, speaker, Strings.get(speaker.speakPlug.currentSpeech, World.rand), realAnswers);
+				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(speaker.speakPlug.quest, speaker, Strings.get(speaker.speakPlug.currentSpeech, World.rand), realAnswers);
 				Main.menu.setMenu(MenuType.DIALOG);
 				return true;
 			}

@@ -29,6 +29,7 @@ import things.aiPlugins.LogicCombination;
 import things.aiPlugins.Magic;
 import things.aiPlugins.MidgeAround;
 import things.aiPlugins.Movement;
+import things.aiPlugins.Named;
 import things.aiPlugins.Physics;
 import things.aiPlugins.PhysicsExtension;
 import things.aiPlugins.Riding;
@@ -671,10 +672,11 @@ public class ThingType extends Species<Thing> {
 			t.aniPlug.setAnimation("");
 		}};
 											protected static final Animation[] cake = {new Animation(Res.getAtlas("cake"), 0, 0)};
-	public static final ThingType CAKE = new ThingType("CAKE", Res.getAtlas("cake"), 20, new Animating(cake[0], new Rect(Res.getAtlas("cake").pixelCoords), -1, 0, 1, true, cake)){
+	public static final ThingType CAKE = new ThingType("CAKE", Res.getAtlas("cake"), 20, new Animating(cake[0], new Rect(Res.getAtlas("cake").pixelCoords), -1, 0, 1, true, cake),
+			new Named(ItemType.BIRTHDAY_CAKE.nameInv),
+			new ContainedItems(0, new ItemType[] {ItemType.BIRTHDAY_CAKE}, 1)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 		t.aniPlug.setAnimation("");
-		t.itemBeing = ItemType.BIRTHDAY_CAKE;
 		}};
 											static final Animation[][] house = {
 											{new Animation(Res.getAtlas("house"), 0, 0)},
@@ -776,7 +778,9 @@ public class ThingType extends Species<Thing> {
 											protected static final Animation[] item = {new Animation(Res.getAtlas("items_world"), 0, 0)};
 	public static final ThingType ITEM = new ThingType("ITEM", Res.getAtlas("items_inv"), 20, true
 		,new Animating(item[0], new Rect(Res.getAtlas("items_world").pixelCoords), 0, 0, 1, false, item)
-		,new Physics(1, 1)) {
+		,new Physics(1, 1),
+		new ContainedItems(0),
+		new Named()) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			ItemType type = ItemType.values[0];
 			if(extraData.length > 0 && extraData[0] != null) {
@@ -789,7 +793,8 @@ public class ThingType extends Species<Thing> {
 			t.aniPlug.getAnimator().setTexture(type.texWorld);
 			
 			t.aniPlug.getRenderBox().set(type.texWorld.pixelCoords);
-			t.itemBeing = type;
+			t.name.setName(type.nameInv);
+			t.itemPlug.add(type);
 		}};
 											static final Animation[] coin = {new Animation(Res.getAtlas("coin"), 0, 0)};
 	public static final ThingType COIN = new ThingType("COIN", Res.getAtlas("coin"), 100, true,

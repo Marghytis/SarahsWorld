@@ -35,15 +35,30 @@ public class Inventory extends AiPlugin2 {
 
 		public InventoryPlugin(Entity t) {
 			super(t);
-			thing.itemStacks = new ItemStack[itemAmount];
+			itemStacks = new ItemStack[itemAmount];
 			thing.itemAni =  new Animator(defaultItem.texHand);
 			for(int i = 0; i < itemAmount; i++){
-				thing.itemStacks[i] = new ItemStack(i, Inventory.this);
+				itemStacks[i] = new ItemStack(i, Inventory.this);
 			}
+		}
+		
+		public ItemStack getItemStack(int index) {
+			return itemStacks[index];
+		}
+		
+		public void selectItemStack(int index) {
+			index -= Math.floorDiv(index, itemStacks.length)*itemStacks.length;//accounts for large negative scrolls
+			if(itemStacks[selectedItem].item.ordinal != itemStacks[index].item.ordinal && thing.attack != null)
+				thing.attack.cancel();
+			selectedItem = index;
+		}
+		
+		public int getSize() {
+			return itemStacks.length;
 		}
 		@Override
 		public void update(double delta){
-			for(ItemStack stack : thing.itemStacks){
+			for(ItemStack stack : itemStacks){
 				stack.update(delta);
 			}
 			int coinAmount = 0;
@@ -63,11 +78,20 @@ public class Inventory extends AiPlugin2 {
 		}
 		
 		public void dropItems() {
-			for(ItemStack item : thing.itemStacks){
+			for(ItemStack item : itemStacks){
 				for(int i = 0; i < item.count; i++){
 					Main.world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item.item));
 				}
 			}
+		}
+		
+		public boolean containsItems(ItemType item, int amount) {
+			for(int i1 = 0; i1 < itemStacks.length; i1++){
+				if(itemStacks[i1].item == item){
+					return (itemStacks[i1].count >= amount) ? true : false;
+				}
+			}
+			return false;
 		}
 		
 		public boolean addItem(ItemType item, int amount){
@@ -94,24 +118,23 @@ public class Inventory extends AiPlugin2 {
 
 		public ItemType getSelectedItem(){
 			return itemStacks[selectedItem].item;
+		}
+
+		public int getSelectedIndex() {
+			return selectedItem;
 		} 
-	}
-	
-	
-	public ItemType getSelectedItem(Thing t){
-		return t.itemStacks[t.selectedItem].item;
-	} 
-	
-	public void useSelectedItem(Thing src, Vec worldPos, Thing[] thingsAtThatLocation) {
-		ItemStack selected = src.itemStacks[src.selectedItem];
-		ItemType item = selected.item;//might change during specialUse due to collecting stuff, so have to store it in variable here
-		if(selected.coolDown <= 0){
-			if(selected.item.use(src, worldPos, thingsAtThatLocation)){
-				if(item.oneWay) {
-					if(item == selected.item)
-						selected.remove(1);
-				} else {
-					selected.coolDown = item.coolDownTimeUsage;
+		
+		public void useSelectedItem(Vec worldPos, Thing[] thingsAtThatLocation) {
+			ItemStack selected = itemStacks[selectedItem];
+			ItemType item = selected.item;//might change during specialUse due to collecting stuff, so have to store it in variable here
+			if(selected.coolDown <= 0){
+				if(selected.item.use(thing, worldPos, thingsAtThatLocation)){
+					if(item.oneWay) {
+						if(item == selected.item)
+							selected.remove(1);
+					} else {
+						selected.coolDown = item.coolDownTimeUsage;
+					}
 				}
 			}
 		}

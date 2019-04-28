@@ -182,12 +182,6 @@ public class ItemType {
 			if(dest.type == ThingType.COW){
 				src.ridePlug.mount(dest);
 				success = true;
-			} else if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE){
-				if(src.itemStacks != null && src.pos.minus(dest.pos).lengthSquare() < 25000){
-					src.invPlug.addItem( dest.itemBeing, 1);
-					Main.world.engine.requestDeletion(dest);
-					success = true;
-				}
 			} else if(dest.willingToTrade) {
 				Main.menu.setMenu(MenuType.TRADE, dest);
 			} else {

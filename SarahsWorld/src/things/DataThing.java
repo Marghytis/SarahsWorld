@@ -3,7 +3,6 @@ package things;
 import effects.Effect;
 import item.ItemStack;
 import item.ItemType;
-import quest.ActiveQuest;
 import render.Animator;
 import things.aiPlugins.Physics.Where;
 import things.interfaces.Listable;
@@ -13,24 +12,13 @@ import world.data.Column;
 
 public abstract class DataThing extends Entity implements StructureThing<Entity>, Listable {
 
-	
-	//DEBUG
-//	public boolean selected;
-//	public boolean switchedSelected;
-	
-
 	//values, that don't change, but are entity specific
-//	public Color color = new Color(Color.WHITE);
-	public ItemType itemBeing;
 	public double accWalking = 1000, accSwimming = 250, accFlying;//accWalking is different from snail to snail for example
-//	public double z, 
 	double size = 1;
-//	public Rect box = new Rect();//NOT USED FOR DRAWING!!!
 	public OnInteraction onRightClick = (src, pos, dest) -> {};
 	public boolean isAvatar = false;
 
 	//dynamically changing values
-//	public short index = -1;
 	public int[] indices = {-1,-1,-1,-1,-1};//for diverse lists of things
 	public Vec nextPos = new Vec(), lastPos = new Vec();
 	public Vec vel = new Vec(), nextVelAvDelta = new Vec(), nextVel = new Vec();
@@ -47,7 +35,6 @@ public abstract class DataThing extends Entity implements StructureThing<Entity>
 //	public Animator ani;
 	public Animator itemAni;
 	public String backgroundAnimation = "";
-	public ItemStack[] itemStacks;
 	public Effect effect;
 	public int effectTicket;
 //	public boolean dir;
@@ -56,7 +43,6 @@ public abstract class DataThing extends Entity implements StructureThing<Entity>
 	public boolean willingToTrade = false;
 	public boolean active = false;
 	
-	public int selectedItem;
 //	public int aniSet;
 	public Where where = new Where();
 	public Where whereBefore = new Where();
@@ -65,8 +51,6 @@ public abstract class DataThing extends Entity implements StructureThing<Entity>
 	public int amount;//for coins or items
 	public double xDest;
 	public double waitTime;//for the walk around plugin
-	public String[] answers;
-	public ActiveQuest quest;
 
 	public double xDestMin, xDestMax;//for walking around
 	public double splashCooldown1, splashCooldown2, otherCooldown;

@@ -45,7 +45,7 @@ public class Nametag implements Effect {
 			TexFile.bindNone();
 			Color.WHITE.bind();
 			Main.world.thingWindow.forEach(ThingType.ITEM.ordinal, (t) -> {
-				MenuManager.font.drawString((float)(t.pos.x + Render.offsetX), (float)(t.pos.y + Render.offsetY), ((Thing)t).itemBeing.nameInv, 1, 1, scaleX, scaleY);
+				MenuManager.font.drawString((float)(t.pos.x + Render.offsetX), (float)(t.pos.y + Render.offsetY), ((Thing)t).name.get(), 1, 1, scaleX, scaleY);
 			});
 		}
 	}

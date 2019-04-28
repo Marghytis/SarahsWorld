@@ -509,7 +509,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 								Thing seller = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
 								Thing buyer = Main.world.avatar;
 								
-								ItemType item = seller.type.inv.getSelectedItem(seller);
+								ItemType item = seller.invPlug.getSelectedItem();
 								trade(seller, buyer, item);
 							}
 						});

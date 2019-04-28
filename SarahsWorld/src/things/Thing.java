@@ -4,6 +4,7 @@ import base.entities.Attribute;
 import things.aiPlugins.Attachement.AttachementPlugin;
 import things.aiPlugins.Attacking.AttackPlugin;
 import things.aiPlugins.AvatarControl.AvatarPlugin;
+import things.aiPlugins.ContainedItems.ItemsPlugin;
 import things.aiPlugins.FlyAround.FlyPlugin;
 import things.aiPlugins.Following.FollowPlugin;
 import things.aiPlugins.Inventory.InventoryPlugin;
@@ -11,11 +12,11 @@ import things.aiPlugins.Life.LifePlugin;
 import things.aiPlugins.Magic.MagicPlugin;
 import things.aiPlugins.MidgeAround.MidgePlugin;
 import things.aiPlugins.Movement.MovePlugin;
+import things.aiPlugins.Named.NamePlugin;
 import things.aiPlugins.Physics.PhysicsPlugin;
 import things.aiPlugins.PhysicsExtension.PhysExPlugin;
 import things.aiPlugins.Riding.RidingPlugin;
 import things.aiPlugins.Speaking.SpeakingPlugin;
-import things.aiPlugins.ContainedItems.ItemsPlugin;
 import things.aiPlugins.WalkAround.WalkAroundPugin;
 import transition.ThingEntity;
 import util.math.Vec;
@@ -39,6 +40,7 @@ public class Thing extends DataThing implements ThingEntity {
 	public MidgePlugin midgeAroundPlug;
 	public PhysExPlugin physExPlug;
 	public AttachementPlugin statePlug;
+	public NamePlugin name;
 	
 	public ItemsPlugin itemPlug;
 
@@ -83,6 +85,8 @@ public class Thing extends DataThing implements ThingEntity {
 			statePlug = (AttachementPlugin)attrib;
 		} else if(attrib instanceof ItemsPlugin) {
 			itemPlug = (ItemsPlugin) attrib;
+		} else if(attrib instanceof NamePlugin) {
+			name = (NamePlugin) attrib;
 		}
 		
 		else {
