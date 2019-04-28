@@ -118,7 +118,7 @@ public class Attacking extends AiPlugin2 {
 		
 		public void cancel() {
 			if(attacking) {
-				thing.type.movement.setBackgroundAni(thing);
+				thing.movementPlug.setBackgroundAni();
 				attacking = false;
 			}
 		}

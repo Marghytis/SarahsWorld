@@ -174,18 +174,16 @@ public class ItemType {
 	public boolean useAt(Thing src, Vec pos){return false;}
 	public boolean useOn(Thing src, Vec pos, Thing dest){
 		boolean success = false;
-		if(dest.itemPlug != null && dest.itemPlug.containsItem() && src.invPlug != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
-			ItemType i = dest.itemPlug.removeRandomItem(World.rand);
+		if(dest.itemPlug != null && dest.itemPlug.containsAnyItems() && src.invPlug != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
+			ItemType i = dest.itemPlug.removeRandomFruit(World.rand);
 			if(i != null) src.invPlug.addItem( i, 1);
 			success = true;
 		} else {
 			if(dest.type == ThingType.COW){
 				src.ridePlug.mount(dest);
 				success = true;
-			} else if(dest.willingToTrade) {
-				Main.menu.setMenu(MenuType.TRADE, dest);
-			} else {
-				dest.onRightClick.run(src, pos, dest);
+			} else if(dest.interaction != null){
+				dest.interaction.onInteraction(src, pos);
 			}
 		}
 		return success;

@@ -50,7 +50,7 @@ public class PhysicsExtension extends AiPlugin2 {
 						} else {
 							force = (action - dist)*(action - dist)*100;
 						}
-						thing.force.shift(conn, -force);
+						thing.physicsPlug.applyForce(conn.scale(-force));
 					}
 				});
 			}

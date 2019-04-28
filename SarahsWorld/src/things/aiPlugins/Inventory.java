@@ -5,22 +5,29 @@ import item.ItemType;
 import main.Main;
 import main.Res;
 import render.Animator;
-import things.AiPlugin2;
 import things.Entity;
 import things.Thing;
-import things.ThingPlugin;
 import things.ThingType;
 import util.math.Vec;
 import world.data.ColumnListElement;
 
-public class Inventory extends AiPlugin2 {
+public class Inventory extends ContainedItems {
 
 	public int itemAmount;
 	public ItemType defaultItem;
 	
-	public Inventory(ItemType defaultItem, int itemAmount){
+	public Inventory(ItemType defaultItem, int stackAmount, int startCoins, ItemType[] itemTypes, double... probabilities){
+		super(startCoins, itemTypes, probabilities);
 		this.defaultItem = defaultItem;
-		this.itemAmount = itemAmount;
+		this.itemAmount = stackAmount;
+	}
+	
+	public Inventory(ItemType defaultItem, int stackAmount, int nCoins) {
+		this(defaultItem, stackAmount, nCoins, new ItemType[0]);
+	}
+
+	public Inventory(ItemType defaultItem, int stackAmount) {
+		this(defaultItem, stackAmount, 0);
 	}
 	
 	@Override
@@ -28,15 +35,16 @@ public class Inventory extends AiPlugin2 {
 		return new InventoryPlugin(thing);
 	}
 	
-	public class InventoryPlugin extends ThingPlugin {
+	public class InventoryPlugin extends ItemsPlugin {
 		
 		private ItemStack[] itemStacks;
 		private int selectedItem;
+		private Animator itemAni;
 
 		public InventoryPlugin(Entity t) {
 			super(t);
 			itemStacks = new ItemStack[itemAmount];
-			thing.itemAni =  new Animator(defaultItem.texHand);
+			itemAni =  new Animator(defaultItem.texHand);
 			for(int i = 0; i < itemAmount; i++){
 				itemStacks[i] = new ItemStack(i, Inventory.this);
 			}
@@ -74,10 +82,12 @@ public class Inventory extends AiPlugin2 {
 				thing.itemPlug.addCoins( coinAmount);
 				Res.coinSoundSource.play();
 			}
-			thing.itemAni.setTexture(getSelectedItem().texHand);
+			itemAni.setTexture(getSelectedItem().texHand);
 		}
 		
-		public void dropItems() {
+		@Override
+		public void dropEverything() {
+			super.dropEverything();
 			for(ItemStack item : itemStacks){
 				for(int i = 0; i < item.count; i++){
 					Main.world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item.item));
@@ -94,6 +104,19 @@ public class Inventory extends AiPlugin2 {
 			return false;
 		}
 		
+		public Animator getItemAnimator() {
+			return itemAni;
+		}
+		
+		public boolean addInvisibleItem(ItemType item, int amount) {
+			super.addItem(item, amount);
+			return true;
+		}
+		
+		/**
+		 * In contrast to ContainedItems, the item here is added to the visible inventory.
+		 * To add it to the fruit list, use 'addInvisibleItem(...)'.
+		 */
 		public boolean addItem(ItemType item, int amount){
 			if(item == ItemType.COIN){
 				thing.itemPlug.addCoins(amount);
@@ -137,6 +160,17 @@ public class Inventory extends AiPlugin2 {
 					}
 				}
 			}
+		}
+		
+		@Override
+		public boolean containsAnyItems() {
+			boolean invEmpty = true;
+			for(int i = 0; i < itemStacks.length; i++)
+				if(itemStacks[i].count > 0) {
+					invEmpty = false;
+					break;
+				}
+			return super.containsAnyItems() || !invEmpty;
 		}
 	}
 }

@@ -69,6 +69,7 @@ public class Animating extends AiPlugin2 {
 	public class AnimatingPlugin extends ThingPlugin implements Attribute {
 		
 		double zPos;
+		double size;
 		boolean ori;
 		Animator animator;
 		Rect renderBox;
@@ -94,6 +95,7 @@ public class Animating extends AiPlugin2 {
 			this.animator = new Animator(defaultAni);
 			this.renderBox = defaultBox != null ? defaultBox.copy() : new Rect(defaultAni.atlas.pixelCoords);
 			this.color = new Color(Color.WHITE);
+			this.size = 1;
 		}
 		
 		public void update(double delta) {
@@ -159,6 +161,7 @@ public class Animating extends AiPlugin2 {
 		public void 	increaseTimeBy(double d) { 					time += d; 								}
 		public void 	changeBox(int[] pixelCoords) {				this.renderBox.set(pixelCoords);		}
 //Setters
+		public void		setSize(double size) {						this.size = size;						}
 		public void 	setAnimator(Animator ani) {					this.animator = ani;					}
 		public void 	setRenderBox(Rect box) {					this.renderBox = box;					}
 		public void 	setColor(Color c) {							this.color = c;							}
@@ -185,6 +188,7 @@ public class Animating extends AiPlugin2 {
 		public boolean 	getOrientation() { 							return dir; 							}
 		public int		getTime() { 								return time; 							}
 		public int		getAniSet() { 								return aniSet; 							}
+		public double	getSize() {									return size;							}
 		
 		public boolean 	needsRenderUpdate() {						return needsRenderUpdate;				}
 		public boolean 	needsUnusualRenderUpdate() {				return needsUnusualRenderUpdate;		}

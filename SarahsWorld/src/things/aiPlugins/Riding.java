@@ -53,14 +53,14 @@ public class Riding extends AiPlugin2 {
 
 					mountedThing = horse;
 					thing.pos.set(horse.pos);
-					thing.where = horse.where;
+					thing.physicsPlug.copyWhere(horse);
 					horse.hide();
 					thing.aniPlug.getAnimator().setAnimation(thing.type.ani.animations[1][thing.type.ani.aniCount], () -> thing.aniPlug.setAnimation( "stand"));
 				});
 			} else {
 				mountedThing = horse;
 				thing.pos.set(horse.pos);
-				thing.where = horse.where;
+				thing.physicsPlug.copyWhere(horse);
 				horse.hide();
 				thing.aniPlug.getAnimator().setAnimation(thing.type.ani.animations[1][thing.type.ani.aniCount], () -> thing.aniPlug.setAnimation( "stand"));
 			}
@@ -80,9 +80,9 @@ public class Riding extends AiPlugin2 {
 		public void freeHorse() {
 			mountedThing.showUpAfterHiding(thing.newLink);
 			mountedThing.pos.set(thing.pos);
-			mountedThing.vel.set(thing.vel);
+			mountedThing.physicsPlug.setVel(thing.physicsPlug.velX(), thing.physicsPlug.velY());
 			mountedThing.aniPlug.setOrientation( thing.aniPlug.getOrientation());
-			mountedThing.where = thing.where;
+			mountedThing.physicsPlug.copyWhere(thing);
 			mountedThing = null;
 		}
 	}

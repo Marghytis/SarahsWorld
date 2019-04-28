@@ -62,7 +62,7 @@ public class World {
 		Vertex v = data.getRightColumn().getTopSolidVertex();
 		Vec pos = new Vec(Settings.getVec("AVATAR_START_OFFSET").x, v.y() + Settings.getVec("AVATAR_START_OFFSET").y);
 		avatar = new Thing(ThingType.SARAH, v.getParent(), pos);
-		ThingType.SARAH.avatar.setAvatar(avatar);
+		avatar.avatar.setAvatar(null);
 		avatar.invPlug.addItem( ItemType.UNICORN_HORN, 1);
 		
 		init(inputData);

@@ -66,10 +66,10 @@ public class ThingVAO {
 		VBO vboUsual = createVBO(new VBOContent[]{
 			new VBOContent(2, GL11.GL_FLOAT, false,//vec2 in_position
 					(t) -> (float)t.getThing().pos.x,
-					(t) -> (float)(t.getThing().pos.y + t.getThing().getYOffset() + t.getThing().getYOffsetToBalanceRotation())),
+					(t) -> (float)(t.getThing().pos.y + t.getThing().getYOffset() + (t.getThing().movementPlug != null ? t.getThing().movementPlug.getYOffsetToBalanceRotation() : 0))),
 			
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_rotation
-					(t) -> (float)(t.getThing().getRotation() + t.getAniRotation())),
+					(t) -> (float)((t.getThing().movementPlug != null ? t.getThing().movementPlug.getMovementRotation() : 0) + t.getAniRotation())),
 			
 			new VBOContent(2, GL11.GL_SHORT, true,//vec2 in_texCoords
 					(t)-> (short)(Short.MAX_VALUE*t.getAnimator().tex.texCoords[0]),
@@ -88,7 +88,7 @@ public class ThingVAO {
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_z
 					(t) -> (float)t.getZ()),
 			new VBOContent(1, GL11.GL_FLOAT, false,//float in_size
-					(t) -> (float)t.getThing().getSize()),
+					(t) -> (float)t.getSize()),
 			new VBOContent(4, GL11.GL_SHORT, false,//vec4 in_box
 					(t) -> (short)t.getRenderBox().pos.x,
 					(t) -> (short)t.getRenderBox().pos.y,
@@ -227,7 +227,7 @@ public class ThingVAO {
 		}
 		lastUsedIndex++;
 		if(lastUsedIndex >= capacity){//yes, same if!!
-			System.err.println("Not enough space for " + t.getThing().getType().name + "s! Current capacity: " + capacity + " quads. Default: " + t.getThing().getType().maxVisible);
+			System.err.println("Not enough space for " + t.getThing().type().name + "s! Current capacity: " + capacity + " quads. Default: " + t.getThing().type().maxVisible);
 			enlarge();
 		}
 		t.onVisibilityChange(true);
@@ -261,11 +261,11 @@ public class ThingVAO {
 	
 	public void remove(AnimatingPlugin t, boolean vboAsWell) {
 		if(lastUsedIndex < 0){
-			new Exception("You removed one " + t.getThing().getType().name + " too much!!!!").printStackTrace();
+			new Exception("You removed one " + t.getThing().type().name + " too much!!!!").printStackTrace();
 			return;
 		}
 		if(t.getIndex() == -1) {
-			new Exception("This " + t.getThing().getType().name + " is already deleted in the VAO!!");
+			new Exception("This " + t.getThing().type().name + " is already deleted in the VAO!!");
 			return;
 		}
 		t.onVisibilityChange(false);

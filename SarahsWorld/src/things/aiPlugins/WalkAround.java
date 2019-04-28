@@ -13,6 +13,10 @@ public class WalkAround extends AiPlugin2 {
 	}
 	
 	public class WalkAroundPugin extends ThingPlugin {
+		
+		private double waitTime;//for the walk around plugin
+
+		private double xDestMin, xDestMax;//for walking around
 
 		public WalkAroundPugin(Entity thing) {
 			super(thing);
@@ -20,32 +24,32 @@ public class WalkAround extends AiPlugin2 {
 		}
 		
 		public boolean walkAround(double delta) {
-			if(thing.where.g) {
+			if(thing.physicsPlug.onGround()) {
 				int acc = 0;
-				if(thing.waitTime > 0){
-					thing.waitTime -= delta;
-				} else if(thing.pos.x < thing.xDestMin){
+				if(waitTime > 0){
+					waitTime -= delta;
+				} else if(thing.pos.x < xDestMin){
 					acc++;
-				} else if(thing.pos.x > thing.xDestMax){
+				} else if(thing.pos.x > xDestMax){
 					acc--;
 				} else {
 					if(World.rand.nextBoolean()){
-						thing.waitTime = World.rand.nextInt(9)+1;
+						waitTime = World.rand.nextInt(9)+1;
 					} else {
 						setup();
 					}
 				}
-				thing.type.movement.setAni(thing, acc);
-				thing.walkingForce = acc*thing.accWalking;
-				thing.maxWalkingSpeed = thing.accWalking/5;
+				thing.movementPlug.setAni( acc);
+				thing.physicsPlug.setWalkingForce( acc*thing.movementPlug.accWalking());
+				thing.physicsPlug.setMaxWalkingSpeed(thing.movementPlug.accWalking()/5);
 				return true;
 			}
 			return false;
 		}
 		
 		private void setup() {
-			thing.xDestMin = thing.pos.x + World.rand.nextInt(500) - 250;
-			thing.xDestMax = thing.xDestMin + 50;
+			xDestMin = thing.pos.x + World.rand.nextInt(500) - 250;
+			xDestMax = xDestMin + 50;
 		}
 		
 	}

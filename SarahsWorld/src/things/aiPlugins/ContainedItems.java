@@ -56,13 +56,14 @@ public class ContainedItems extends AiPlugin2 {
 			}
 		}
 		
-		public void add(ItemType item) {
-			fruits.add(item);
+		public boolean addItem(ItemType item) {
+			return addItem(item, 1);
 		}
-		public void add(ItemType item, int n) {
+		public boolean addItem(ItemType item, int n) {
 			for(int i = 0; i < n; i++) {
-				add(item);
+				addItem(item);
 			}
+			return true;
 		}
 		
 		public int nCoins() {
@@ -86,14 +87,14 @@ public class ContainedItems extends AiPlugin2 {
 			fruits.clear();
 		}
 		
-		public ItemType removeRandomItem(Random rand) {
+		public ItemType removeRandomFruit(Random rand) {
 			int index = rand.nextInt(fruits.size());
 			ItemType i = fruits.get(index);
 			fruits.remove(index);
 			return i;
 		}
 		
-		public boolean containsItem() {
+		public boolean containsAnyItems() {
 			return !fruits.isEmpty();
 		}
 	}

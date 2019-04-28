@@ -54,7 +54,7 @@ public class Life extends AiPlugin2 {
 				
 				//drop all items and money in the Thing's inventory
 				if(thing.invPlug != null)
-					thing.invPlug.dropItems();
+					thing.invPlug.dropEverything();
 				
 				//drop all items contained in the Thing
 				if(thing.itemPlug != null)
@@ -95,15 +95,15 @@ public class Life extends AiPlugin2 {
 		public boolean getHit(Thing src, int damage){
 			if(immortal) return false;
 			if(damage > 0 && damageCooldown <= 0){
-				if(thing.where.g){
-					thing.type.physics.leaveGround(thing, new Vec(thing.pos.x > src.pos.x ? 200 : -200, 300));
-					thing.where.g = false;
-					thing.reallyAir = true;
+				if(thing.physicsPlug.onGround()){
+					thing.physicsPlug.leaveGround( new Vec(thing.pos.x > src.pos.x ? 200 : -200, 300));
+					if(thing.movementPlug != null)
+						thing.movementPlug.setReallyAir();
 				}
 				thing.lifePlug.add( -damage);
 				Main.world.window.addEffect(new BloodSplash(thing.pos));
 				if(getHitAnimation != null) {
-					thing.aniPlug.setAnimation( getHitAnimation, () -> thing.type.movement.setBackgroundAni(thing));
+					thing.aniPlug.setAnimation( getHitAnimation, () -> thing.movementPlug.setBackgroundAni());
 				}
 				damageCooldown = coolDownStart;
 				return true;

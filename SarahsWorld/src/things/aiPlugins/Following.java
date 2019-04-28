@@ -53,9 +53,9 @@ public class Following extends AiPlugin2 {
 						}
 					} else {
 					}
-					thing.type.movement.setAni(thing, acc);
-					thing.walkingForce = acc*2*thing.accWalking;
-					thing.maxWalkingSpeed = thing.accWalking/5;
+					thing.movementPlug.setAni(acc);
+					thing.physicsPlug.setWalkingForce(acc*2*thing.movementPlug.accWalking());
+					thing.physicsPlug.setMaxWalkingSpeed(thing.movementPlug.accWalking()/5);
 
 					if(acc == 0)
 						return true;

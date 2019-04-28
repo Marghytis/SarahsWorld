@@ -208,7 +208,7 @@ public class ThingWindow extends RealWorldWindow {
 		if(Species.types[type].inv != null)
 		for(ColumnListElement c = start(); c != end(); c = c.next())
 		for(Thing cursor = (Thing)c.column().firstThing(Species.types[type]); cursor != null; cursor = (Thing)cursor.next()){
-			cursor.invPlug.getSelectedItem().renderHand(cursor, cursor.itemAni);
+			cursor.invPlug.getSelectedItem().renderHand(cursor, cursor.invPlug.getItemAnimator());
 		}
 		Shader.bindNone();
 		TexFile.bindNone();

@@ -13,6 +13,7 @@ import item.ItemType.WeaponType;
 import main.Main;
 import main.Res;
 import main.UsefulStuff;
+import menu.MenuManager.MenuType;
 import render.Animation;
 import render.TexAtlas;
 import things.Technique.CloseRange;
@@ -23,6 +24,7 @@ import things.aiPlugins.AvatarControl;
 import things.aiPlugins.ContainedItems;
 import things.aiPlugins.FlyAround;
 import things.aiPlugins.Following;
+import things.aiPlugins.Interaction;
 import things.aiPlugins.Inventory;
 import things.aiPlugins.Life;
 import things.aiPlugins.LogicCombination;
@@ -50,7 +52,8 @@ public class ThingType extends Species<Thing> {
 		//only list plugins whose update(delta) method is used. action()s are called separately.
 		int i = 0;
 		updateOrder.put(LogicCombination.class, i++);//calculate logic first, i.e. what the entities plan is for this update cycle.
-		updateOrder.put(Physics.class, i++);//update position and velocity and "where"
+		updateOrder.put(Physics.class, i++);//update position and velocity
+		updateOrder.put(Movement.class, i++);//update which standard animation to execute
 		updateOrder.put(Animating.class, i++);//update the animator
 		updateOrder.put(Inventory.class, i++);//collect coins and do item coolDown
 		updateOrder.put(Speaking.class, i++);//updates the thoughbubble's position
@@ -146,7 +149,7 @@ public class ThingType extends Species<Thing> {
 			}
 			,new Animating(snail[0], new Rect(Res.getAtlas("snail").pixelCoords), 0, 0, 5, false, snail)
 			,new Life(10, 2, "getHit")
-			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring")
+			,new Movement("boring", "walk", "walk", "sprint", "walk", "boring", "boring", "boring", "boring", "boring", "boring").keepOrthoToFloor()
 			,new Attacking(2, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 0.5, new CloseRange(300, -300, 300))})
 			,new Following(500.0, 50, SARAH)
 			,new WalkAround()
@@ -161,7 +164,7 @@ public class ThingType extends Species<Thing> {
 			),
 			new ContainedItems(10, new ItemType[] {ItemType.SNAIL_SHELL,  ItemType.SNAILS_EYE}, 0.02, 2)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
+			t.movementPlug.setAccWalking(750*(0.5*World.rand.nextDouble()+0.75));
 		}
 	};
 											protected static final Animation[][] rabbit = {{
@@ -197,7 +200,7 @@ public class ThingType extends Species<Thing> {
 		),
 			new ContainedItems(10, new ItemType[] {ItemType.RABBITS_FOOT}, 0.01)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
+			t.movementPlug.setAccWalking(750*(0.5*World.rand.nextDouble()+0.75));
 			if(extraData.length > 0)
 				t.aniPlug.setAniSet((int)extraData[0]);
 		}
@@ -229,7 +232,7 @@ public class ThingType extends Species<Thing> {
 			}),
 			new ContainedItems(10, new ItemType[] {ItemType.SCORPION_CLAW,  ItemType.SCORPION_STING}, 0.05, 0.05)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
+			t.movementPlug.setAccWalking(750*(0.5*World.rand.nextDouble()+0.75));
 		}
 	};
 											protected static final Animation[] cow = {
@@ -288,10 +291,10 @@ public class ThingType extends Species<Thing> {
 			}
 			,new Animating(villager[0][0], new Rect(Res.getAtlas("villager").pixelCoords), 0, 0, 1, false, villager)
 			,new Life(10, 0)
-			,new ContainedItems(20)
 			,new Physics(1, 36)
 			,new Speaking()
-			,new Inventory(ItemType.NOTHING, 4)) {
+			,new Inventory(ItemType.NOTHING, 4, 20),
+			 new Interaction((src, pos, dest) -> Main.menu.setMenu(MenuType.TRADE, dest))) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			if(extraData.length >= 1 && Integer.parseInt((String)extraData[0]) > 0){
@@ -300,7 +303,6 @@ public class ThingType extends Species<Thing> {
 				t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			}
 			t.aniPlug.setAnimation("stand");
-			t.willingToTrade = true;
 		}
 	};
 											protected static final Animation[] zombie = {
@@ -327,7 +329,7 @@ public class ThingType extends Species<Thing> {
 			}),
 			new ContainedItems(10, new ItemType[] {ItemType.ZOMBIE_EYE,  ItemType.ZOMBIE_BRAIN,  ItemType.ZOMBIE_FLESH}, 0.5, 0.5, 0.5)) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
-			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
+			t.movementPlug.setAccWalking(750*(0.5*World.rand.nextDouble()+0.75));
 		};
 	};
 											protected static final Animation[][] unicorn = {{
@@ -383,7 +385,7 @@ public class ThingType extends Species<Thing> {
 				}
 			})) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
-			t.accWalking = 750*(0.5*World.rand.nextDouble()+0.75);
+			t.movementPlug.setAccWalking(750*(0.5*World.rand.nextDouble()+0.75));
 		};
 	};
 											static final Animation[] cat_giant = {
@@ -453,24 +455,28 @@ public class ThingType extends Species<Thing> {
 				,new Animating(heart[0][0], new Rect(Res.getAtlas("heart").pixelCoords), 0, 0, 1, false, heart),
 				new Life(300, 0),
 				new ContainedItems(0),
-				new StateChangement((t,delta) -> {
-					t.healthTimer += delta*25;
-					t.lifePlug.add(-(int)t.healthTimer);
-					t.healthTimer %= 1;
+				new StateChangement(1, (t, delta, vars) -> {
+					double healthTimer = vars[0];
+					
+					healthTimer += delta*25;
+					t.lifePlug.add(-(int)healthTimer);
+					healthTimer %= 1;
 					t.yOffset = 80*t.lifePlug.health()/(double)t.type.life.maxHealth;
+					
+					vars[0] = healthTimer;
+				}),
+				new Interaction((src, p, dest) -> {
+					if(src.lifePlug != null) {
+						src.lifePlug.heal( 5*dest.lifePlug.health()/dest.type.life.maxHealth);
+						Main.world.window.addEffect(new Hearts(dest.pos.shift(0, dest.yOffset)));
+						Main.world.engine.requestDeletion(dest);
+					}
 				})) {
 	
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
 				if(extraData.length > 0 && extraData[0] != null) {
 					t.aniPlug.getAnimator().pos = (int)extraData[0];
 				}
-				t.onRightClick = (src, p, dest) -> {
-					if(src.lifePlug != null) {
-						src.lifePlug.heal( 5*dest.lifePlug.health()/t.type.life.maxHealth);
-						Main.world.window.addEffect(new Hearts(dest.pos.shift(0, dest.yOffset)));
-						Main.world.engine.requestDeletion(dest);
-					}
-						};
 			}
 		};
 		//	public static final ThingType BIRD_NORMAL = new ThingType(Res.bird){
@@ -492,14 +498,13 @@ public class ThingType extends Species<Thing> {
 											static final Animation[] cloud = {new Animation(Res.getAtlas("cloud"), 0, 0)};
 	public static final ThingType CLOUD = new ThingType("CLOUD", Res.getAtlas("cloud"), 30, true
 			,new Animating(cloud[0], new Rect(Res.getAtlas("cloud").pixelCoords), 0, 0.25, 1, false, cloud)
-			,new Physics(1, 1000, true, false, true, false, true, false),
-			new LogicCombination((t, delta) -> {
-				t.walkingForce = 100;
-			})){
+			,new Physics(1, 1000, true, false, true, false, true, false)
+			){
 	
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniPlug.setRenderBox(new Rect(file.pixelCoords).scale(World.rand.nextDouble() + 0.5));
 			t.yOffset = 200 + World.rand.nextInt(100);
+			t.physicsPlug.setWalkingForce(100);
 			if(extraData.length > 0){
 				t.aniPlug.setColor((Color)extraData[0]);
 			}
@@ -560,17 +565,17 @@ public class ThingType extends Species<Thing> {
 			public void setup(Thing t, Column field, Vec pos, Object... extraData){
 				t.aniPlug.setAniSet( World.rand.nextInt(t.type.ani.animations.length));
 				t.aniPlug.setAnimation("");
-				t.size = 0.5 + World.rand.nextDouble();
-				t.aniPlug.getRenderBox().scale(t.size);
+				t.aniPlug.setSize(0.5 + World.rand.nextDouble());
+				t.aniPlug.getRenderBox().scale(t.aniPlug.getSize());
 	//			t.box.set(t.ani.createBox());//
 				if(t.aniPlug.getZ() == 0) t.aniPlug.setZ(-0.1);
 				else if(t.aniPlug.getZ() == 0.1) t.aniPlug.setZ(0.2);
-				int stickAmount = World.rand.nextInt((int)(5*t.size));
+				int stickAmount = World.rand.nextInt((int)(5*t.aniPlug.getSize()));
 				for(int i = 0; i < stickAmount; i++) {
 					if(t.type == ThingType.TREE_CANDY)
-						t.itemPlug.add(ItemType.CANDY_CANE);
+						t.itemPlug.addItem(ItemType.CANDY_CANE);
 					else
-						t.itemPlug.add(ItemType.STICK);
+						t.itemPlug.addItem(ItemType.STICK);
 				}
 			}};
 	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.getAtlas("tree_fir"), 50, new Animating(tree_fir[0][0], new Rect(Res.getAtlas("tree_fir").pixelCoords), 0, 1, 1, false, tree_fir), new ContainedItems()){
@@ -613,7 +618,7 @@ public class ThingType extends Species<Thing> {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniPlug.setAniSet(World.rand.nextInt(t.type.ani.animations.length));
 			t.aniPlug.setAnimation("");
-			t.size = World.rand.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5;
+			t.aniPlug.setSize(World.rand.nextDouble()*(extraData.length >= 1 ? (double)extraData[0] : 1) + 0.5);
 			if(t.aniPlug.getRenderBox().size.y > 80){
 				t.aniPlug.setZ(-1);
 			}
@@ -625,7 +630,7 @@ public class ThingType extends Species<Thing> {
 			if(t.type == this && t.aniPlug.getAniSet() == 1){//not necessary, because the other bushes use this too
 				int berryAmount = 1 + World.rand.nextInt(3);
 				for(int i = 0; i < berryAmount; i++)
-					t.itemPlug.add(ItemType.BERRY);
+					t.itemPlug.addItem(ItemType.BERRY);
 			}
 		}};
 	public static final ThingType BUSH_JUNGLE = new ThingType("BUSH_JUNGLE", Res.getAtlas("bush_jungle"), 350,new Animating(bush_jungle[0][0], new Rect(Res.getAtlas("bush_jungle").pixelCoords), 0, 0, 1, false, bush_jungle), new ContainedItems()){
@@ -710,7 +715,7 @@ public class ThingType extends Species<Thing> {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
-			t.size = 0.5 + World.rand.nextDouble();
+			t.aniPlug.setSize(0.5 + World.rand.nextDouble());
 			t.aniPlug.setZ(World.rand.nextInt(100) < 30 ? 1 : -1);
 		}};
 											protected static final Animation[][] plant_jungle = {
@@ -751,7 +756,7 @@ public class ThingType extends Species<Thing> {
 			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setOrientation( false);
 			t.aniPlug.setAnimation("");
-			t.itemPlug.add(ItemType.ZOMBIE_FLESH);
+			t.itemPlug.addItem(ItemType.ZOMBIE_FLESH);
 		}};
 											protected static final Animation[][] crack = {
 											{new Animation(Res.getAtlas("crack") , 0, 0)},
@@ -787,14 +792,14 @@ public class ThingType extends Species<Thing> {
 				type = (ItemType)extraData[0];
 			}
 			if(extraData.length > 1 && extraData[1] != null) {
-				t.vel.set((Vec) extraData[1]);
+				t.physicsPlug.setVel((Vec) extraData[1]);
 			}
 				
 			t.aniPlug.getAnimator().setTexture(type.texWorld);
 			
 			t.aniPlug.getRenderBox().set(type.texWorld.pixelCoords);
 			t.name.setName(type.nameInv);
-			t.itemPlug.add(type);
+			t.itemPlug.addItem(type);
 		}};
 											static final Animation[] coin = {new Animation(Res.getAtlas("coin"), 0, 0)};
 	public static final ThingType COIN = new ThingType("COIN", Res.getAtlas("coin"), 100, true,
@@ -802,8 +807,8 @@ public class ThingType extends Species<Thing> {
 			new Physics(1, 1),
 			new Movement("","","","","","","","","","","")){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
-			if(extraData.length > 0) t.amount = (int) extraData[0];
-			if(extraData.length > 1) t.vel.set((Vec) extraData[1]);
+//			if(extraData.length > 0) t.amount = (int) extraData[0];
+			if(extraData.length > 1) t.physicsPlug.setVel((Vec) extraData[1]);
 		}
 	};
 	/**
@@ -813,16 +818,16 @@ public class ThingType extends Species<Thing> {
 	public static final ThingType WORLD_EFFECT = new ThingType("WORLD_EFFECT", TexAtlas.emptyAtlas, 30, true,
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
-					if(!t.active && visible) {
-						t.effectTicket = ((WorldEffect)t.effect).spawn(t.pos.x, t.pos.y);
-						t.active = true;
-					} else if(t.active && !visible) {
-						((WorldEffect)t.effect).despawn(t.effectTicket);
-						t.active = false;
+					if(!t.attachment.active() && visible) {
+						t.attachment.setEffectTicket( ((WorldEffect)t.attachment.getEffect()).spawn(t.pos.x, t.pos.y));
+						t.attachment.setActive( true);
+					} else if(t.attachment.active() && !visible) {
+						((WorldEffect)t.attachment.getEffect()).despawn(t.attachment.getEffectTicket());
+						t.attachment.setActive( false);
 					}
 				}}) {
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
-			t.effect = (WorldEffect) extraData[0];
+			t.attachment.setEffect( (WorldEffect) extraData[0]);
 		}
 	};
 	/**
@@ -833,29 +838,29 @@ public class ThingType extends Species<Thing> {
 			new Physics(1, 0, false, false, false, false, false, false),
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
-					if(!t.active && visible) {
-						Main.world.window.addEffect(t.effect);
-						t.active = true;
-					} else if(t.active && !visible) {
-						Main.world.window.removeEffect(t.effect);
-						t.active = false;
+					if(!t.attachment.active() && visible) {
+						Main.world.window.addEffect(t.attachment.getEffect());
+						t.attachment.setActive( true);
+					} else if(t.attachment.active() && !visible) {
+						Main.world.window.removeEffect(t.attachment.getEffect());
+						t.attachment.setActive( false);
 					}
 				}},
 			new LogicCombination((t, delta) -> {
-				((MovingEffect)t.effect).setPos(t.pos);
-				if(!t.effect.living()) {
+				((MovingEffect)t.attachment.getEffect()).setPos(t.pos);
+				if(!t.attachment.getEffect().living()) {
 					t.remove();
 				}
 			})) {
 		@Override
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
-			t.effect = (MovingEffect) extraData[0];
-			Main.world.window.addEffect(t.effect);
-			t.active = true;
+			t.attachment.setEffect( (MovingEffect) extraData[0]);
+			Main.world.window.addEffect(t.attachment.getEffect());
+			t.attachment.setActive( true);
 			if(extraData.length > 1) {
-				t.vel.set((Vec)extraData[1]);
+				t.physicsPlug.setVel((Vec)extraData[1]);
 			} else {
-				t.vel.set(0, 0);
+				t.physicsPlug.setVel(0, 0);
 			}
 		}
 	};
@@ -863,23 +868,23 @@ public class ThingType extends Species<Thing> {
 			new Physics(1, 0, false, false, false, false, false, false),
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
-					if(t.effectTicket == -1 && visible) {
-						Main.world.window.addEffect(t.effect);
-						t.effectTicket = 0;
-					} else if(t.effectTicket >= 0 && !visible) {
-						Main.world.window.removeEffect(t.effect);
-						t.effectTicket = -1;
+					if(t.attachment.getEffectTicket() == -1 && visible) {
+						Main.world.window.addEffect(t.attachment.getEffect());
+						t.attachment.setEffectTicket(0);
+					} else if(t.attachment.getEffectTicket() >= 0 && !visible) {
+						Main.world.window.removeEffect(t.attachment.getEffect());
+						t.attachment.setEffectTicket(-1);
 					}
 				}},
 			new LogicCombination((t, delta) -> {
-				if(!t.effect.living()) {
+				if(!t.attachment.getEffect().living()) {
 					t.remove();
 				}
 			})) {
 		@Override
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
-			t.effect = (Effect) extraData[0];
-			Main.world.window.addEffect(t.effect);
+			t.attachment.setEffect( (Effect) extraData[0]);
+			Main.world.window.addEffect(t.attachment.getEffect());
 		}
 	};
 

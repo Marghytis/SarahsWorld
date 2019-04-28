@@ -25,6 +25,7 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 	public Species<?> type;
 	public Vec pos;
 	Attribute[] plugins;
+	public int[] indices = {-1,-1,-1,-1,-1};//for diverse lists of things
 
 	@SuppressWarnings("unchecked")
 	protected <T extends Entity> Entity(Species<T> type, Column field, Vec pos, Object... extraData){
@@ -55,6 +56,10 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 			attribute.finishInitialization();
 		}
 	}
+
+	public double getYOffset() {
+		return yOffset;
+	}
 	
 	public void applyLink() {
 		if(realLink != newLink || !linked) {
@@ -68,23 +73,38 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 	
 	protected Entity next;
 	protected Entity prev;
-	
+
+	@Override
 	public Entity next() {
 		return next;
 	}
 
+	@Override
 	public Entity prev() {
 		return prev;
 	}
-	
+
+	@Override
 	public void setNext(Entity t) {
 		next = t;
 	}
-	
+
+	@Override
 	public void setPrev(Entity t) {
 		prev = t;
 	}
-	
+
+	@Override
+	public int getIndex(int indexIndex) {
+		if(indexIndex >= indices.length) throw new RuntimeException("Entity list index is too high!");
+		return indices[indexIndex];
+	}
+
+	@Override
+	public void setIndex(int indexIndex, int index) {
+		if(indexIndex >= indices.length) throw new RuntimeException("Entity list index is too high!");
+		indices[indexIndex] = index;
+	}
 
 	/**
 	 * This method is called when a new Attribute is added to this Entity.

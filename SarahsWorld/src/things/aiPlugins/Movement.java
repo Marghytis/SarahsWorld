@@ -4,7 +4,6 @@ import main.Main;
 import menu.Settings.Key;
 import things.AiPlugin2;
 import things.Entity;
-import things.Thing;
 import things.ThingPlugin;
 import util.math.Function;
 import util.math.Vec;
@@ -51,7 +50,17 @@ public class Movement extends AiPlugin2 {
 	public String stand, sneak, walk1, walk2, fly, plunge, swim, sneakyStand;
 	//			  W->W   W->W   W->W   W->W   F->F P->P    S->S  W->W
 	public String liftOf, land, dive;
+	
+	private double defaultAccWalking = 1000, defaultAccSwimming = 250, defaultAccFlying = 0;
+	private boolean keepOrthoToFloor;
 
+	public Movement(String stand, String walk0, String walk1, String walk2, String swim, String jump, String land, String fly, String dive, String plunge, String sneakyStand, double defaultAccWalking, double defalutAccSwimming, double defaultAccFlying){
+		this(stand, walk0, walk1, walk2, swim, jump, land, fly, dive, plunge, sneakyStand);
+		this.defaultAccWalking = defaultAccWalking;
+		this.defaultAccSwimming = defalutAccSwimming;
+		this.defaultAccFlying = defaultAccFlying;
+	}
+	
 	public Movement(String stand, String walk0, String walk1, String walk2, String swim, String jump, String land, String fly, String dive, String plunge, String sneakyStand){
 		this.stand = stand;
 		this.sneak = walk0;
@@ -66,163 +75,242 @@ public class Movement extends AiPlugin2 {
 		this.sneakyStand = sneakyStand;
 	}
 	
+	/**
+	 * Pipe command to reduce constructor
+	 * @return this same Movement
+	 */
+	public Movement keepOrthoToFloor() {
+		this.keepOrthoToFloor = true;
+		return this;
+	}
+	
 	@Override
 	public MovePlugin createAttribute(Entity thing) {
-		return new MovePlugin(thing);
+		return new MovePlugin(thing, defaultAccWalking, defaultAccSwimming, defaultAccFlying);
 	}
 	
 	public class MovePlugin extends ThingPlugin {
+		
+		private double accWalking, accSwimming, accFlying;
+		private double airTime;
+		private double movementRotation, yOffsetToBalanceRotation;
+		
+		private boolean reallyAir;
+		private boolean willLandInWater;
 
-		public MovePlugin(Entity thing) {
+		private String backgroundAnimation = "";
+
+		public MovePlugin(Entity thing, double accWalking, double accSwimming, double accFlying) {
 			super(thing);
+			this.accWalking = accWalking;
+			this.accSwimming = accSwimming;
+			this.accFlying = accFlying;
 		}
 		
-	}
-	
-	public void setBackgroundAni(Thing t) {
-		t.aniPlug.setAnimation(t.backgroundAnimation, null);
-	}
+		@Override
+		public void update(double delta) {
 
-	public void setAni(Thing t, double acc) {
-//		String aniName = t.ani.ani.name;
-		String foregroundRequest = "";
-		if(t.where.g){
-			if(t.where.water < 0.3){
-				if(acc != 0){
-					if(Math.abs(acc) > 1){
-						t.backgroundAnimation = walk2;
-					} else if(Math.abs(acc) == 1){
-						t.backgroundAnimation = walk1;
-					} else {
-						t.backgroundAnimation = sneak;
-					}
-				} else {
-					if(Main.input.isKeyDown(Main.WINDOW, Key.CROUCH.key)) {
-						t.backgroundAnimation = sneakyStand;
-					} else {
-						t.backgroundAnimation = stand;
-					}
-				}
-			}
-			else if(t.where.water < 0.3 && t.aniPlug.getAnimator().ani.name != swim){
-				foregroundRequest = dive;
-				t.backgroundAnimation = swim;
-			}
-		} else {
-			if(t.where.water > 0){
-				if(acc != 0){
-					t.backgroundAnimation = swim;
-					//TODO add animation for keeping itself at the surface and possibly a transition with rotation
-				} else {
-					t.backgroundAnimation = fly;
-				}
-			} else if(!t.willLandInWater){
-				if(t.reallyAir){
-					t.backgroundAnimation = fly;
-				}
+			if(thing.physicsPlug.onGround()){
+				if(airTime > 0.5 && thing.type.movement != null)
+					land();
+				reallyAir = false;
+				airTime = 0;
 			} else {
-				t.backgroundAnimation = plunge;
+				airTime += delta;
+				if(!reallyAir && airTime > 0.4){
+					reallyAir = true;
+					if(thing.type.movement != null)
+						thing.aniPlug.setAnimation(thing.type.movement.fly);
+				}
 			}
+			
+			updateRotation();
+		}
+		
+		private void updateRotation() {
+			yOffsetToBalanceRotation = 0;
+			movementRotation = 0;
+			if(!thing.physicsPlug.onGround()){
+				if(thing.physicsPlug.waterDepth() > 0.3){
+//					Vec ori = t.vel.copy();
+//					double speed = ori.length();
+//					ori.shift(0, 70);
+//					t.rotation = Math.atan2(ori.x, ori.y);
+//					t.yOffsetToBalanceRotation = 0.65*t.box.size.y*(1-Math.cos(t.rotation));
+//					double v = t.vel.length();
+//					if(v > 10 && (t.force.y != 0 || t.force.x != 0)){
+//						if(t.vel.dot(t.orientation) >= 0){
+//							t.orientation.set(t.vel).shift(1, 0);
+//						} else {
+//							t.orientation.set(t.vel).scale(-1).shift(1, 0);
+//						}
+//						t.rotation = t.orientation.angle() + Math.PI/2;
+	//
+//						t.rotation = Math.atan2(t.vel.x, t.vel.y);
+//					} else {
+//						t.rotation = 0;
+//					}
+				} else if(willLandInWater){
+					movementRotation = Math.atan2(thing.physicsPlug.velX(), thing.physicsPlug.velY());
+				}
+			} else if(thing.physicsPlug.onGround()){
+				willLandInWater = false;
+				if(keepOrthoToFloor){
+					movementRotation = -thing.newLink.getCollisionLine(new Vec()).angle();
+				} else {
+					movementRotation = 0;
+				}
+			}
+		}
+		
+		public double accWalking() { return accWalking; }
+		public double accSwimming() { return accSwimming; }
+		public double accFlying() {			return accFlying;		}
+		public double getMovementRotation() { 		return movementRotation;}
+		public double getYOffsetToBalanceRotation() {			return yOffsetToBalanceRotation;		}
+		
+		public void setAccWalking(double accWalking) {			this.accWalking = accWalking;		}
+		public void setAccSwimming(double accSwimming) {			this.accSwimming = accSwimming;		}
+		public void setAccFlying(double accFlying) {			this.accFlying = accFlying;		}
+
+		public void setReallyAir() { 							this.reallyAir = true;}
+		
+		public void setBackgroundAni() {
+			thing.aniPlug.setAnimation(backgroundAnimation, null);
 		}
 
-		if(t.aniPlug.getAnimator().endTask == null){
-			if(acc > 0) t.aniPlug.setOrientation( false);
-			else if(acc < 0) t.aniPlug.setOrientation( true);
-			t.whereBefore.water = t.where.water;
-			t.whereBefore.g = t.where.g;
-			if(foregroundRequest != "") {
-				t.aniPlug.setAnimation(foregroundRequest, () -> t.aniPlug.setAnimation(t.backgroundAnimation));
-			} else if(t.backgroundAnimation != ""){
-				t.aniPlug.setAnimation(t.backgroundAnimation);
-			}
-		}
-	}
-	
-	//TRANSITIONS
-	Vec topLine = new Vec();
-	/**
-	 * Transitions from GROUND to AIR
-	 * @param t
-	 */
-	public void jump(Thing t){
-		t.aniPlug.setAnimation( liftOf, () -> {
-			if(t.where.g){
-				t.willLandInWater = willLandInWater(t);
-				t.type.physics.leaveGround(t, t.vel.copy().shift(0, Physics.jump));//ortho(t.vel.x > 0)
-				t.reallyAir = true;
-				t.where.g = false;
-				if(t.willLandInWater){
-					t.aniPlug.setAnimation( dive, () -> {
-						t.aniPlug.setAnimation( plunge);
-					});
-				} else {
-					t.willLandInWater = false;
-					t.aniPlug.setAnimation( fly);
-					t.backgroundAnimation = fly;
-				}
-			} else {
-				t.willLandInWater = false;
-			}
-		});
-	}
-	
-	public boolean willLandInWater(Thing t){
-		double vX = t.vel.x, vY = t.vel.y + Physics.jump;
-//		double xPeak = (vX*vY)/Physics.gravity.y + t.pos.x;
-		double a = vY/vX, b = 0.5*Physics.gravity.y/(t.type.physics.mass*vX*vX);
-		Function f = (x) -> t.pos.y + (a*x) + (b*x*x);
-		Column cursor = t.newLink;
-		boolean lastOne = false;
-		while(cursor != null){
-			if(/*cursor.xReal > xPeak && */cursor.getCollisionY() != cursor.getCollisionYFluid()){
-				double y = f.f(cursor.getX() - t.pos.x);
-				//if one cursor is below the graph and the other above, that's where she'll collide
-				if(cursor.getTopFluidVertex().y() < y){
-					lastOne = true;
-				} else {
-					if(lastOne){
-						return true;
+		public void setAni(double acc) {
+//			String aniName = t.ani.ani.name;
+			String foregroundRequest = "";
+			if(thing.physicsPlug.onGround()){
+				if(thing.physicsPlug.waterDepth() < 0.3){
+					if(acc != 0){
+						if(Math.abs(acc) > 1){
+							backgroundAnimation = walk2;
+						} else if(Math.abs(acc) == 1){
+							backgroundAnimation = walk1;
+						} else {
+							backgroundAnimation = sneak;
+						}
 					} else {
-						return false;
+						if(Main.input.isKeyDown(Main.WINDOW, Key.CROUCH.key)) {
+							backgroundAnimation = sneakyStand;
+						} else {
+							backgroundAnimation = stand;
+						}
 					}
 				}
+				else if(thing.physicsPlug.waterDepth() < 0.3 && thing.aniPlug.getAnimator().ani.name != swim){
+					foregroundRequest = dive;
+					backgroundAnimation = swim;
+				}
 			} else {
-				lastOne = false;
+				if(thing.physicsPlug.waterDepth() > 0){
+					if(acc != 0){
+						backgroundAnimation = swim;
+						//TODO add animation for keeping itself at the surface and possibly a transition with rotation
+					} else {
+						backgroundAnimation = fly;
+					}
+				} else if(!willLandInWater){
+					if(reallyAir){
+						backgroundAnimation = fly;
+					}
+				} else {
+					backgroundAnimation = plunge;
+				}
 			}
-			cursor = t.vel.x > 0 ? cursor.right() :  cursor.left();
+
+			if(thing.aniPlug.getAnimator().endTask == null){
+				if(acc > 0) thing.aniPlug.setOrientation( false);
+				else if(acc < 0) thing.aniPlug.setOrientation( true);
+				if(foregroundRequest != "") {
+					thing.aniPlug.setAnimation(foregroundRequest, () -> thing.aniPlug.setAnimation(backgroundAnimation));
+				} else if(backgroundAnimation != ""){
+					thing.aniPlug.setAnimation(backgroundAnimation);
+				}
+			}
 		}
-		return false;
+		
+		/**
+		 * Transitions from GROUND to AIR
+		 */
+		public void jump(){
+			thing.aniPlug.setAnimation( liftOf, () -> {
+				if(thing.physicsPlug.onGround()){
+					willLandInWater = willLandInWater();
+					thing.physicsPlug.leaveGround(thing.physicsPlug.velX(), thing.physicsPlug.velY() + Physics.jump);//ortho(t.vel.x > 0)
+					reallyAir = true;
+					if(willLandInWater){
+						thing.aniPlug.setAnimation( dive, () -> {
+							thing.aniPlug.setAnimation( plunge);
+						});
+					} else {
+						thing.aniPlug.setAnimation( fly);
+						backgroundAnimation = fly;
+					}
+				} else {
+					willLandInWater = false;
+				}
+			});
+		}
+		
+		private boolean willLandInWater(){
+			double vX = thing.physicsPlug.velX(), vY = thing.physicsPlug.velY() + Physics.jump;
+//			double xPeak = (vX*vY)/Physics.gravity.y + t.pos.x;
+			double a = vY/vX, b = 0.5*Physics.gravity.y/(thing.type.physics.mass*vX*vX);
+			Function f = (x) -> thing.pos.y + (a*x) + (b*x*x);
+			Column cursor = thing.newLink;
+			boolean lastOne = false;
+			while(cursor != null){
+				if(/*cursor.xReal > xPeak && */cursor.getCollisionY() != cursor.getCollisionYFluid()){
+					double y = f.f(cursor.getX() - thing.pos.x);
+					//if one cursor is below the graph and the other above, that's where she'll collide
+					if(cursor.getTopFluidVertex().y() < y){
+						lastOne = true;
+					} else {
+						if(lastOne){
+							return true;
+						} else {
+							return false;
+						}
+					}
+				} else {
+					lastOne = false;
+				}
+				cursor = thing.physicsPlug.velX() > 0 ? cursor.right() :  cursor.left();
+			}
+			return false;
+		}
+		
+		/**
+		 * Transitions from AIR to GROUND
+		 */
+		public void land() {
+			thing.aniPlug.setAnimation( land, () -> {
+				thing.aniPlug.setAnimation( stand);
+				backgroundAnimation = stand;
+			});
+		}
+		
+		/**
+		 * Transitions from GROUND to AIR
+		 */
+		public void liftOf() {
+			thing.aniPlug.setAnimation( liftOf, () -> {
+				thing.aniPlug.setAnimation( fly);
+				backgroundAnimation = fly;
+			});
+		}
+		
+		/**
+		 * Transitions from GROUND to WATER
+		 */
+		public void dive(){
+			thing.aniPlug.setAnimation( dive, () -> {
+				thing.aniPlug.setAnimation( swim);
+			});
+		}
 	}
 	
-	/**
-	 * Transitions from AIR to GROUND
-	 * @param t
-	 */
-	public void land(Thing t) {
-		t.aniPlug.setAnimation( land, () -> {
-			t.aniPlug.setAnimation( stand);
-			t.backgroundAnimation = stand;
-		});
-	}
-	
-	/**
-	 * Transitions from GROUND to AIR
-	 * @param t
-	 */
-	public void liftOf(Thing t) {
-		t.aniPlug.setAnimation( liftOf, () -> {
-			t.aniPlug.setAnimation( fly);
-			t.backgroundAnimation = fly;
-		});
-	}
-	
-	/**
-	 * Transitions from GROUND to WATER
-	 * @param t
-	 */
-	public void dive(Thing t){
-		t.aniPlug.setAnimation( dive, () -> {
-			t.aniPlug.setAnimation( swim);
-		});
-	}
 }

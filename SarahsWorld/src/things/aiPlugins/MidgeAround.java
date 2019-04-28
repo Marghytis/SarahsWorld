@@ -30,12 +30,12 @@ public class MidgeAround extends AiPlugin2 {
 				//TODO the random walk below might walk away... i.e. don't allow arbitrarily high force.
 				flyForce.shift((0.50 - World.rand.nextDouble())*3, (0.40 - World.rand.nextDouble())*3);
 			}
-			if(thing.where.g && World.rand.nextInt(100)==0){
+			if(thing.physicsPlug.onGround() && World.rand.nextInt(100)==0){
 				thing.pos.y++;
-				thing.where.g = false;
+				thing.physicsPlug.setNotOnGround();
 				flyForce.y = 3;
 			}
-			thing.force.set(flyForce);//.shift((0.5f - World.rand.nextDouble())*3f, (0.49f - World.rand.nextDouble())*3f);
+			thing.physicsPlug.applyForce(flyForce);//.shift((0.5f - World.rand.nextDouble())*3f, (0.49f - World.rand.nextDouble())*3f);
 			return true;
 		}
 	}

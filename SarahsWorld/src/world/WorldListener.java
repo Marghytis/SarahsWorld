@@ -44,7 +44,7 @@ public class WorldListener implements Listener {
 		
 		switch(button){
 		case 0://ATTACK
-			if(world.avatar.where.water == 0){
+			if(world.avatar.physicsPlug.waterDepth() == 0){
 				world.avatar.attack.attack(world.avatar.invPlug.getSelectedItem(), worldPos, livingsClickedOn);
 			}
 			break;
@@ -96,7 +96,7 @@ public class WorldListener implements Listener {
 		Key bind = Key.getBinding(key);
 		
 		switch(bind){
-		case JUMP: if(world.avatar.where.g) world.avatar.type.movement.jump(world.avatar); break;
+		case JUMP: if(world.avatar.physicsPlug.onGround()) world.avatar.movementPlug.jump(); break;
 		case DISMOUNT: if(world.avatar.ridePlug.isRiding()) world.avatar.ridePlug.dismount(); break;
 		case FASTER:
 			if(Settings.getBoolean("DEBUGGING"))
@@ -113,7 +113,7 @@ public class WorldListener implements Listener {
 		case JUMPDOWN:
 			if(Settings.getBoolean("DEBUGGING")) {
 				World.world.avatar.pos.y -= 200;
-				World.world.avatar.where.g = false;
+				World.world.avatar.physicsPlug.setNotOnGround();
 			}
 			break;
 		case LAYERCOUNT_UP:

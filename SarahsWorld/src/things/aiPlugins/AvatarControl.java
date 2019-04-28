@@ -16,13 +16,15 @@ public  class AvatarControl extends AiPlugin2 {
 	}
 	
 	public class AvatarPlugin extends ThingPlugin {
+		
+		private boolean isAvatar;
 
 		public AvatarPlugin(Entity thing) {
 			super(thing);
 		}
 		
 		public boolean processPlayerInput(double delta) {
-			if(!thing.isAvatar)
+			if(!thing.avatar.isAvatar)
 				return false;
 			
 			thing.lifePlug.setImmortal(Settings.getBoolean("IMMORTAL"));
@@ -40,24 +42,25 @@ public  class AvatarControl extends AiPlugin2 {
 			
 			
 			double cowFactor = thing.ridePlug.isRiding() ? 2 : 1;
-			thing.maxWalkingSpeed = thing.accWalking*cowFactor/5;
+			thing.physicsPlug.setMaxWalkingSpeed(thing.movementPlug.accWalking()*cowFactor/5);
 			
 			double a = 0;
-			if(thing.where.g)
-				if(thing.where.water < 0.5) {//normal walking
-					a = thing.accWalking*cowFactor;
+			if(thing.physicsPlug.onGround())
+				if(thing.physicsPlug.waterDepth() < 0.5) {//normal walking
+					a = thing.movementPlug.accWalking()*cowFactor;
 				} else {//walking under water
-					a = thing.accSwimming/cowFactor;
-					thing.maxWalkingSpeed = thing.accWalking/cowFactor/5;
+					a = thing.movementPlug.accSwimming()/cowFactor;
+					thing.physicsPlug.setMaxWalkingSpeed(thing.movementPlug.accWalking()/cowFactor/5);
 				}
-			else if(thing.where.water > 0) {//swimming
-				a = thing.accSwimming/cowFactor;
-				thing.maxWalkingSpeed = thing.accWalking/cowFactor/5;
+			else if(thing.physicsPlug.waterDepth() > 0) {//swimming
+				a = thing.movementPlug.accSwimming()/cowFactor;
+				thing.physicsPlug.setMaxWalkingSpeed(thing.movementPlug.accWalking()/cowFactor/5);
 			} else {//flying
-				a = thing.accFlying*cowFactor;
+				a = thing.movementPlug.accFlying()*cowFactor;
 			}
 			
 			double walkingDir = 0;
+			double maxSpeedMultiplier = 1;
 			if(walk_right )
 			{
 				walkingDir++;
@@ -70,38 +73,40 @@ public  class AvatarControl extends AiPlugin2 {
 			{
 				a *= 2;
 				walkingDir *= 0.5;
-				thing.maxWalkingSpeed *= 0.5;
+				maxSpeedMultiplier *= 0.5;
 			}
 			
 			if(sprint )
 			{
 				walkingDir *= 2;
-				thing.maxWalkingSpeed *= 2;
+				maxSpeedMultiplier *= 2;
 				if(super_sprint )
 				{
 					walkingDir *= 4;
-					thing.maxWalkingSpeed *= 4;
+					maxSpeedMultiplier *= 4;
 					if(mega_sprint )
 					{
 						walkingDir *= 4;
-						thing.maxWalkingSpeed *= 4;
+						maxSpeedMultiplier *= 4;
 					}
 				}
 			}
-			thing.type.movement.setAni(thing, walkingDir);
-			thing.walkingForce = walkingDir*a;
+			thing.physicsPlug.multiplyMaxWalkingSpeed(maxSpeedMultiplier);
+			thing.movementPlug.setAni( walkingDir);
+			thing.physicsPlug.setWalkingForce( walkingDir*a);
+
 			if(debugging) {
 				if(Main.input.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
-					thing.force.shift(0, 5000);
+					thing.physicsPlug.applyForce(0, 5000);
 				}
 				if(Main.input.isKeyDown(Main.WINDOW, Key.SUPERGRAVITY.key)){
-					thing.force.shift(0, -5000);
+					thing.physicsPlug.applyForce(0, -5000);
 				}
 				if(Main.input.isKeyDown(Main.WINDOW, Key.FLY_RIGHT.key)){
-					thing.force.shift(5000, 1100);
+					thing.physicsPlug.applyForce(5000, 1100);
 				}
 				if(Main.input.isKeyDown(Main.WINDOW, Key.FLY_LEFT.key)){
-					thing.force.shift(-5000, 1100);
+					thing.physicsPlug.applyForce(-5000, 1100);
 				}
 			}
 			
@@ -114,10 +119,16 @@ public  class AvatarControl extends AiPlugin2 {
 			return true;
 		}
 		
+		public void setNotAvatar() {
+			isAvatar = false;
+		}
+		
+		public void setAvatar(Thing oldAvatar) {
+			if(oldAvatar != null)
+				oldAvatar.avatar.setNotAvatar();
+			isAvatar = true;
+		}
+		
 	}
 	
-	public void setAvatar(Thing t) {
-		t.isAvatar = true;
-	}
-
 }

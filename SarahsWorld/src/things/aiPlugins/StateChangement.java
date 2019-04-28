@@ -1,7 +1,5 @@
 package things.aiPlugins;
 
-import java.util.function.BiConsumer;
-
 import things.AiPlugin2;
 import things.Entity;
 import things.Thing;
@@ -9,10 +7,19 @@ import things.ThingPlugin;
 
 public class StateChangement extends AiPlugin2 {
 
-	BiConsumer<Thing, Double> action;
+	public static interface TriConsumer<S1, S2, S3> {
+		public void accept(S1 s1, S2 s2, S3 s3);
+	}
 	
-	public StateChangement(BiConsumer<Thing, Double> action) {
+	TriConsumer<Thing, Double, double[]> action;
+	int nVariables;
+
+	public StateChangement(TriConsumer<Thing, Double, double[]> action) {
+		this(0, action);
+	}
+	public StateChangement(int nVariables, TriConsumer<Thing, Double, double[]> action) {
 		this.action = action;
+		this.nVariables = nVariables;
 	}
 	
 	@Override
@@ -21,14 +28,17 @@ public class StateChangement extends AiPlugin2 {
 	}
 	
 	public class StatePlugin extends ThingPlugin {
+		
+		private double[] stateVariables;
 
 		public StatePlugin(Entity thing) {
 			super(thing);
+			this.stateVariables = new double[nVariables];
 		}
 		
 		@Override
 		public void update(double delta) {
-			action.accept(thing, delta);
+			action.accept(thing, delta, stateVariables);
 		}
 		
 	}

@@ -18,6 +18,7 @@ import menu.Settings.Key;
 import render.Texture;
 import things.Thing;
 import things.ThingType;
+import things.aiPlugins.Inventory.InventoryPlugin;
 import things.Species;
 import util.Anim;
 import util.Color;
@@ -442,11 +443,11 @@ public class MenuManager implements Updater, Renderer, Listener {
 						new Element(game, 7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0]*2, MONEYBAG.pixelCoords[1]*2 - 30, MONEYBAG.pixelCoords[2]*2, MONEYBAG.pixelCoords[3]*2 - 30, null, MONEYBAG),
 						new FlexibleTextField(game, () -> Main.world.avatar.itemPlug.nCoins() + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, new Color(1, 1, 1, 0), null, true),
 						
-						new ItemContainer(game, Main.world.avatar, 0, 4/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar, 1, 5/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar, 2, 6/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar, 3, 7/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar, 4, 8/12.0, 1.0/8),
+						new ItemContainer(game, Main.world.avatar.invPlug, 0, 4/12.0, 1.0/8),
+						new ItemContainer(game, Main.world.avatar.invPlug, 1, 5/12.0, 1.0/8),
+						new ItemContainer(game, Main.world.avatar.invPlug, 2, 6/12.0, 1.0/8),
+						new ItemContainer(game, Main.world.avatar.invPlug, 3, 7/12.0, 1.0/8),
+						new ItemContainer(game, Main.world.avatar.invPlug, 4, 8/12.0, 1.0/8),
 
 						new Bar(game, 0.3, 5.0/16, 0.7, 5.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.lifePlug.health()/(double)Main.world.avatar.type.life.maxHealth),//Health
 						new Bar(game, 0.3, 4.0/16, 0.7, 4.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.magic.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
@@ -458,15 +459,15 @@ public class MenuManager implements Updater, Renderer, Listener {
 			int indexFirstContainer;
 			int nContainers;
 			
-			public boolean trade(Thing vendor, Thing client, ItemType item) {
-				if(client.itemPlug.nCoins() >= item.value) {
+			public boolean trade(InventoryPlugin vendor, InventoryPlugin client, ItemType item) {
+				if(client.nCoins() >= item.value) {
 					//exchange item
-					client.invPlug.addItem( item, 1);
-					vendor.invPlug.addItem( item, -1);
+					client.addItem( item, 1);
+					vendor.addItem( item, -1);
 					
 					//exchange coins
-					client.itemPlug.addCoins( -item.value);//TODO move this to a function in 'Inventory'
-					vendor.itemPlug.addCoins( +item.value);
+					client.addCoins( -item.value);//TODO move this to a function in 'Inventory'
+					vendor.addCoins( +item.value);
 					//TODO move both of these exchanges to functions maybe in Quest or somewhere else
 					return true;
 				}
@@ -494,9 +495,9 @@ public class MenuManager implements Updater, Renderer, Listener {
 							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
 							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
 						public void released(int button) {
-							Thing buyer = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
-							Thing seller = Main.world.avatar;
-							ItemType item = seller.invPlug.getSelectedItem();
+							InventoryPlugin buyer = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
+							InventoryPlugin seller = Main.world.avatar.invPlug;
+							ItemType item = seller.getSelectedItem();
 							trade(seller, buyer, item);
 						}
 					});
@@ -506,10 +507,10 @@ public class MenuManager implements Updater, Renderer, Listener {
 								new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
 								Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
 							public void released(int button) {
-								Thing seller = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
-								Thing buyer = Main.world.avatar;
+								InventoryPlugin seller = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
+								InventoryPlugin buyer = Main.world.avatar.invPlug;
 								
-								ItemType item = seller.invPlug.getSelectedItem();
+								ItemType item = seller.getSelectedItem();
 								trade(seller, buyer, item);
 							}
 						});
@@ -520,7 +521,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			public void updateElements(Menu menu, Object... extraData) {
 				Thing thing = (Thing)extraData[0];
 				for(int i = indexFirstContainer; i < indexFirstContainer + nContainers; i++) {
-					((ItemContainer)menu.getElement(i)).setThing(thing);
+					((ItemContainer)menu.getElement(i)).setThing(thing.invPlug);
 				}
 			}
 		},
@@ -591,7 +592,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 							String s = t.type.name + ": \n";
 							s += "position: " + t.pos + "\n";
 							if(t.type.physics != null)
-							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force + "\n";
+							s += "Physics: g = " + t.physicsPlug.onGround() + ", vel = " + t.physicsPlug.velString() + ", force = " + t.physicsPlug.forceString() + "\n";
 							if(t.type.life != null)
 								s += "health: " + t.lifePlug.health() + "\n";
 							if(t.newLink != null)
@@ -612,13 +613,13 @@ public class MenuManager implements Updater, Renderer, Listener {
 //						}
 //						, 0, 0.25, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(game, () -> {
-							String s =  "Sarah: " + Main.world.avatar.vel + "\n" +
+							String s =  "Sarah: " + Main.world.avatar.physicsPlug.velString() + "\n" +
 										"box: " + Main.world.avatar.aniPlug.getRenderBox().toString() + "\n" +
 										"added to VAO: " + Main.world.avatar.aniPlug.addedToVAO() + "\n" +
 										"tex width: " + Main.world.avatar.aniPlug.getAnimator().tex.w + "\n" + 
 										"dir: " + Main.world.avatar.aniPlug.getOrientation() + "\n" +
 										"riding: " + Main.world.avatar.ridePlug.isRiding() + "\n" +
-										"where.water: " + Main.world.avatar.where.water + "\n" +
+										"where.water: " + Main.world.avatar.physicsPlug.waterDepth() + "\n" +
 										"left column: " + Main.world.landscapeWindow.start().getIndex() + "\n" +
 										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().getIndex() : "null") + "\n" +
 										"Biome: " + Main.world.avatar.newLink.getBiome().toString();
@@ -699,7 +700,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 		},
 		DEBUG_SPAWNER(false, false){
 			public void setElements(Menu menu, Main game, Object... extraData){
-				Species[] values = Species.types;
+				Species<?>[] values = Species.types;
 				menu.clearElements();
 				double x = 0.25, y = 0.9;
 				int i = 0, columns = 0;
