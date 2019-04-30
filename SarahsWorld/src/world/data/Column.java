@@ -2,8 +2,8 @@ package world.data;
 
 import java.util.Random;
 
-import things.Entity;
-import things.Species;
+import basis.entities.Entity;
+import basis.entities.Species;
 import util.Color;
 import util.math.Vec;
 import world.generation.Biome;

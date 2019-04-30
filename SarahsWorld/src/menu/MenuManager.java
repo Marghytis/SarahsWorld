@@ -8,18 +8,18 @@ import java.util.Stack;
 
 import org.lwjgl.opengl.GL11;
 
+import basis.entities.Species;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
+import extra.things.Thing;
+import extra.things.ThingType;
+import extra.things.traits.Inventory.InventoryPlugin;
 import item.ItemType;
 import main.Main;
 import main.Res;
 import menu.Settings.Key;
 import render.Texture;
-import things.Thing;
-import things.ThingType;
-import things.aiPlugins.Inventory.InventoryPlugin;
-import things.Species;
 import util.Anim;
 import util.Color;
 import util.TrueTypeFont;

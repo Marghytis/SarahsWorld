@@ -1,13 +1,13 @@
 package menu;
 
-import item.ItemStack;
+import extra.things.traitExtensions.ItemStack;
+import extra.things.traits.Inventory.InventoryPlugin;
 import item.ItemType;
 import main.Main;
 import main.Res;
 import render.TexAtlas;
 import render.TexFile;
 import render.Texture;
-import things.aiPlugins.Inventory.InventoryPlugin;
 import util.TrueTypeFont;
 import util.math.Vec;
 

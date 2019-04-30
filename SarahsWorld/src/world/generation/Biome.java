@@ -1,9 +1,9 @@
 package world.generation;
 
 import effects.WorldEffect;
+import extra.things.Thing;
+import extra.things.ThingType;
 import main.Main;
-import things.Thing;
-import things.ThingType;
 import util.Color;
 import util.math.Function;
 import util.math.Vec;

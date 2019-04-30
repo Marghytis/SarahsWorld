@@ -1,7 +1,7 @@
 package quest;
 
-import things.Thing;
-import things.Species;
+import basis.entities.Species;
+import extra.things.Thing;
 import util.math.Vec;
 import world.data.Column;
 import world.generation.Spawner;

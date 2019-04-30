@@ -7,14 +7,14 @@ import java.util.Random;
 
 import exceptions.WorldCreationException;
 import exceptions.WorldTooSmallException;
+import extra.things.Thing;
+import extra.things.ThingType;
 import input.PollData;
 import item.ItemType;
 import main.Main;
 import menu.MenuManager.MenuType;
 import moveToLWJGLCore.Dir;
 import menu.Settings;
-import things.Thing;
-import things.ThingType;
 import util.math.Vec;
 import world.data.Column;
 import world.data.Vertex;

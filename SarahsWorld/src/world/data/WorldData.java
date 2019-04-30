@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import extra.things.Thing;
+import extra.things.ThingType;
 import quest.ActiveQuest;
 import quest.Quest;
-import things.Thing;
-import things.ThingType;
 import util.math.Vec;
 import world.Weather;
 import world.World;

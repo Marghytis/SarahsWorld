@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import basis.entities.Species;
 import item.ItemType;
-import things.Species;
 import world.World;
 import world.data.WorldData;
 import world.generation.Zone.Attribute;

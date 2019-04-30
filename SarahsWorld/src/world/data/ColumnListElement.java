@@ -1,8 +1,8 @@
 package world.data;
 
+import basis.entities.Entity;
+import basis.entities.Species;
 import moveToLWJGLCore.DirListElement;
-import things.Entity;
-import things.Species;
 
 /**
  * An abstract specification of an element in a directed list of Columns. Is implemented fully in Column.

@@ -7,17 +7,17 @@ import java.util.function.Predicate;
 
 import org.lwjgl.opengl.GL11;
 
+import basis.entities.Entity;
+import basis.entities.Species;
+import extra.things.Thing;
+import extra.things.ThingType;
+import extra.things.traits.Animating.AnimatingPlugin;
 import item.ItemType;
 import main.Main;
 import main.Res;
 import render.Render;
 import render.Shader;
 import render.TexFile;
-import things.Entity;
-import things.Species;
-import things.Thing;
-import things.ThingType;
-import things.aiPlugins.Animating.AnimatingPlugin;
 import util.math.Vec;
 import world.data.ColumnListElement;
 import world.render.DoubleThingVAO;

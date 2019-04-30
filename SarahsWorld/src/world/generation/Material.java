@@ -1,8 +1,8 @@
 package world.generation;
 
+import extra.things.traits.Physics;
 import main.Res;
 import render.Texture;
-import things.aiPlugins.Physics;
 import util.Color;
 
 public enum Material {

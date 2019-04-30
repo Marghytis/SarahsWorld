@@ -3,7 +3,7 @@ package world.generation.environment;
 import java.util.Random;
 import java.util.function.Function;
 
-import things.ThingType;
+import extra.things.ThingType;
 import world.data.Vertex;
 import world.generation.Biome;
 import world.generation.Biome.ThingSpawner;

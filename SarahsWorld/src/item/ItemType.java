@@ -4,17 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import effects.particles.BerryEat;
-import effects.particles.FireEffect;
+import effects.particleEffects.BerryEat;
+import effects.particleEffects.FireEffect;
+import extra.things.Thing;
+import extra.things.ThingType;
 import main.Main;
 import main.Res;
-import menu.MenuManager.MenuType;
 import render.Animator;
 import render.Render;
 import render.TexFile;
 import render.Texture;
-import things.Thing;
-import things.ThingType;
 import util.Color;
 import util.math.Vec;
 import world.World;
@@ -179,7 +178,7 @@ public class ItemType {
 			if(i != null) src.invPlug.addItem( i, 1);
 			success = true;
 		} else {
-			if(dest.type == ThingType.COW){
+			if(dest.ridePlug != null && dest.ridePlug.canRide(dest.type)){
 				src.ridePlug.mount(dest);
 				success = true;
 			} else if(dest.interaction != null){

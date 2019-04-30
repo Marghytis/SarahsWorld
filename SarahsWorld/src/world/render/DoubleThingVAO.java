@@ -1,7 +1,7 @@
 package world.render;
 
+import extra.things.traits.Animating.AnimatingPlugin;
 import main.Main;
-import things.aiPlugins.Animating.AnimatingPlugin;
 
 public class DoubleThingVAO extends ThingVAO {
 

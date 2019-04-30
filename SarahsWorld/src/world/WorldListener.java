@@ -1,12 +1,12 @@
 package world;
 
 import core.Listener;
+import extra.things.Thing;
+import extra.things.ThingType;
 import input.PollData;
 import item.ItemType;
 import menu.Settings;
 import menu.Settings.Key;
-import things.Thing;
-import things.ThingType;
 import util.math.Vec;
 
 public class WorldListener implements Listener {

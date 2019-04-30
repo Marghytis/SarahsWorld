@@ -2,7 +2,7 @@ package quest;
 
 import java.util.Hashtable;
 
-import things.Thing;
+import extra.things.Thing;
 import world.World;
 
 public class ActiveQuest {

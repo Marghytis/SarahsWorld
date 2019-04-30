@@ -6,10 +6,10 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
+import extra.things.traits.Animating.AnimatingPlugin;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
-import things.aiPlugins.Animating.AnimatingPlugin;
 import world.window.ThingWindow;
 
 public class ThingVAO {

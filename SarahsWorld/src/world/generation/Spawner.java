@@ -1,6 +1,6 @@
 package world.generation;
 
-import things.Thing;
+import extra.things.Thing;
 import util.math.Vec;
 import world.data.Column;
 

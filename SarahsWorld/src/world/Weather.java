@@ -1,6 +1,6 @@
 package world;
 
-import effects.particles.FogWorld;
+import effects.particleEffects.FogWorld;
 
 /**
  * Should contain wind, fog, rain, snow, clouds, sunshine, thunder and lightning

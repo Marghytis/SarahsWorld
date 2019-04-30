@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import basis.entities.Entity;
 import core.Updater;
 import quest.ActiveQuest;
-import things.Entity;
 import util.Time;
 import util.math.Vec;
 import world.data.Column;

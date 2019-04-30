@@ -26,6 +26,8 @@ public class Main implements Game {
 	public final static String SETTINGS_PATH = "res/Settings.txt";
 	
 	private static Window window;
+	private static Speaker speaker;
+	private static Game game;
 	public static Input input;
 	public static PollData input2;
 	public static MenuManager menu;
@@ -49,6 +51,14 @@ public class Main implements Game {
 		core.start(true);
 	}
 	
+	public static void prepareTest(String worldName) {
+		initializeGame(worldName);
+
+		window.init();
+		speaker.init();
+		game.init();
+	}
+	
 	/**
 	 * Initializes the window, core object, menu and world.
 	 * @param worldName name of the world to be loaded or created 
@@ -58,8 +68,8 @@ public class Main implements Game {
 		out = new Out(10);
 		input = new Input();
 		window = new Window("Sarahs World", false, 1, 1, true, true, input);
-		Speaker speaker = new Speaker();
-		Game game = new Main();
+		speaker = new Speaker();
+		game = new Main();
 		//create a core object
 		core = new Core(window, speaker, game, 60);
 		if(Settings.getInt("DEBUG_LEVEL") > 1)
@@ -74,7 +84,7 @@ public class Main implements Game {
 		WINDOW = core.getWindow().getHandle();
 		//create a menu object and load or create a world object
 		if(Save.worldSaved("worlds/world.sw")){//TODO make the path variable
-			world = Save.loadWorld("worlds/world.sw");
+			world = Save.loadWorld("worlds/world.sw", input2);
 		} else {
 			world = new World(input2);
 		}

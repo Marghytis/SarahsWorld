@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 
+import basis.entities.Entity;
+import basis.entities.EntitySet;
+import basis.entities.Species;
 import moveToLWJGLCore.Dir;
-import things.Entity;
-import things.Species;
-import things.ThingSet;
 import world.data.Column;
 import world.data.ColumnListElement;
 import world.render.DoubleThingVAO;
@@ -26,9 +26,9 @@ public class ThingPreparationWindow extends RealWorldWindow {
 
 	private DoubleThingVAO[] vaos;
 	@SuppressWarnings("unchecked")
-	private ThingSet<Entity>[][] toAdd = new ThingSet[Species.types.length][2];
+	private EntitySet<Entity>[][] toAdd = new EntitySet[Species.types.length][2];
 	@SuppressWarnings("unchecked")
-	private ThingSet<Entity>[] toRemove = new ThingSet[Species.types.length];
+	private EntitySet<Entity>[] toRemove = new EntitySet[Species.types.length];
 	
 	private int dxPreparation, dxVisibility, dxDontCare, dxPreparation2, dxVisibility2, dxDontCare2, dxFree2;
 
@@ -44,9 +44,9 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		this.vaos = vaos;
 		for(int i = 0; i < Species.types.length; i++){
 			int maxVisible = Species.types[i].maxVisible;
-			toAdd[i][0] = new ThingSet<Entity>(0, addBatchSize);//TODO use fraction of 'max visible' number instead of addBatchSize
-			toAdd[i][1] = new ThingSet<Entity>(1, addBatchSize);
-			toRemove[i] = new ThingSet<Entity>(2, maxVisible);
+			toAdd[i][0] = new EntitySet<Entity>(0, addBatchSize);//TODO use fraction of 'max visible' number instead of addBatchSize
+			toAdd[i][1] = new EntitySet<Entity>(1, addBatchSize);
+			toRemove[i] = new EntitySet<Entity>(2, maxVisible);
 		}
 	}
 	

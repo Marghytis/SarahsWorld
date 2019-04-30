@@ -2,7 +2,7 @@ package world.generation.zones;
 
 import java.util.Random;
 
-import things.ThingType;
+import extra.things.ThingType;
 import util.math.*;
 import world.data.Column;
 import world.generation.*;

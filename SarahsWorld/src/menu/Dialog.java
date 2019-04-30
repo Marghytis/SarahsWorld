@@ -8,6 +8,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
+import extra.things.Thing;
 import main.Main;
 import main.Res;
 import quest.ActiveQuest;
@@ -19,7 +20,6 @@ import render.Texture;
 import render.VAO;
 import render.VBO;
 import render.VBO.VAP;
-import things.Thing;
 import util.Anim;
 import util.Anim.AnimPart;
 import util.Anim.Func;

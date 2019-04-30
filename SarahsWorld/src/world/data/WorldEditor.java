@@ -1,6 +1,6 @@
 package world.data;
 
-import things.Entity;
+import basis.entities.Entity;
 import world.window.ThingWindow;
 
 public class WorldEditor {
