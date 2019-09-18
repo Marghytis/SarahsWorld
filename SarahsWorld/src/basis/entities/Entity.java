@@ -1,8 +1,8 @@
 package basis.entities;
 
+import extra.Main;
 import extra.things.traits.Animating.AnimatingPlugin;
 import extra.things.traits.Attachement.AttachementPlugin;
-import main.Main;
 import moveToLWJGLCore.DefaultListElement;
 import moveToLWJGLCore.Listable;
 import util.math.Vec;
@@ -128,7 +128,7 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 		for(Attribute plugin : plugins){
 			if(plugin != null) plugin.remove();
 		}
-		Main.world.thingWindow.remove(this);
+		Main.game().world.thingWindow.remove(this);
 	}
 	public void showUpAfterHiding(Column link) {
 		this.realLink = link;

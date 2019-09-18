@@ -1,6 +1,6 @@
 package world.window;
 
-import exceptions.WorldTooSmallException;
+import basis.exceptions.WorldTooSmallException;
 import moveToLWJGLCore.Dir;
 import world.data.ColumnListElement;
 

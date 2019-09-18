@@ -9,12 +9,12 @@ import org.lwjgl.opengl.GL11;
 
 import basis.entities.Entity;
 import basis.entities.Species;
+import extra.Main;
+import extra.Res;
+import extra.items.ItemType;
 import extra.things.Thing;
 import extra.things.ThingType;
 import extra.things.traits.Animating.AnimatingPlugin;
-import item.ItemType;
-import main.Main;
-import main.Res;
 import render.Render;
 import render.Shader;
 import render.TexFile;
@@ -93,10 +93,6 @@ public class ThingWindow extends RealWorldWindow {
 		vaos[t.getThing().type.ordinal].changeUnusual(t);
 	}
 	
-	Consumer<Thing> boundingBoxRenderer = (t) -> {
-//		Render.bounds(t.ani.tex.pixelCoords, t.pos.x, t.pos.y + t.yOffset);TODO
-//		t.pos.drawPoint();
-	};
 	public void renderBoundingBoxes(){
 //		forEach(boundingBoxRenderer);
 		renderThings(t -> true, Res.thingBoxShader, 0);
@@ -171,14 +167,13 @@ public class ThingWindow extends RealWorldWindow {
 				t.aniPlug.prepareRender();
 			}
 
-
 			if(type == ThingType.SARAH.ordinal) {
 //				double[] vaoData = vaos[type].convertToNumbers(vaos[type].getVBOdata(0));
 //				for(int i = 0; i < vaoData.length; i++) {
 //					System.out.println(vaoData[i]);
 //				}
 //				System.out.println("-------------------");
-//				System.out.println(Main.world.avatar.aniPlug.getOrientation());
+//				System.out.println(Main.game().world.avatar.aniPlug.getOrientation());
 			}
 			vaos[type].bindStuff();
 				GL11.glDrawArrays(GL11.GL_POINTS, vaos[type].start(side), vaos[type].size(side));
@@ -248,7 +243,7 @@ public class ThingWindow extends RealWorldWindow {
 	public Thing[] livingsAt(Vec loc){
 		thingsAt.clear();
 		forEach(t -> 
-		{if(t.type.life != null && !t.equals(Main.world.avatar) && t.containsCoords(loc)){
+		{if(t.type.life != null && !t.equals(Main.game().world.avatar) && t.containsCoords(loc)){
 			thingsAt.add(t);
 		}});
 		thingsAt.sort((t1, t2) -> t1.aniPlug.z() > t2.aniPlug.z() ? 1 : t1.aniPlug.z() < t2.aniPlug.z() ?  -1 : 0);
@@ -258,7 +253,7 @@ public class ThingWindow extends RealWorldWindow {
 	public Entity[] objectsAt(Vec loc){
 		objectsAt.clear();
 		forEach(t -> {
-			if(t.type.life == null && !t.equals(Main.world.avatar) && t.containsCoords(loc)){
+			if(t.type.life == null && !t.equals(Main.game().world.avatar) && t.containsCoords(loc)){
 				objectsAt.add(t);
 			}
 		});
@@ -269,7 +264,7 @@ public class ThingWindow extends RealWorldWindow {
 	public Thing[] thingsAt(Vec loc){
 		objectsAt.clear();
 		forEach(t -> {
-			if(!t.equals(Main.world.avatar) && t.containsCoords(loc)){
+			if(!t.equals(Main.game().world.avatar) && t.containsCoords(loc)){
 				objectsAt.add(t);
 			}
 		});

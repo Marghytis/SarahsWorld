@@ -3,14 +3,18 @@ package extra.things;
 import java.util.Hashtable;
 
 import basis.entities.Trait;
+import basis.effects.Effect;
+import basis.effects.WorldEffect;
 import basis.entities.Entity;
 import basis.entities.Species;
-import effects.Effect;
-import effects.WorldEffect;
-import effects.particleEffects.BasicMagicEffect;
-import effects.particleEffects.Hearts;
-import effects.particleEffects.MovingEffect;
-import effects.particleEffects.RainbowSpit;
+import extra.Main;
+import extra.Res;
+import extra.effects.particleEffects.BasicMagicEffect;
+import extra.effects.particleEffects.Hearts;
+import extra.effects.particleEffects.MovingEffect;
+import extra.effects.particleEffects.RainbowSpit;
+import extra.items.ItemType;
+import extra.items.ItemType.WeaponType;
 import extra.things.traitExtensions.Technique;
 import extra.things.traitExtensions.Technique.CloseRange;
 import extra.things.traits.Animating;
@@ -34,12 +38,8 @@ import extra.things.traits.Riding;
 import extra.things.traits.Speaking;
 import extra.things.traits.StateChangement;
 import extra.things.traits.WalkAround;
-import item.ItemType;
-import item.ItemType.WeaponType;
-import main.Main;
-import main.Res;
-import main.UsefulStuff;
 import menu.MenuManager.MenuType;
+import moveToLWJGLCore.UsefulStuff;
 import render.Animation;
 import render.TexAtlas;
 import util.Color;
@@ -129,7 +129,7 @@ public class ThingType extends Species<Thing> {
 								ThingType.MOVING_EFFECT.defaultSpawner.spawn(source.newLink, start, new BasicMagicEffect(3, source, selected, ThingType.SARAH.attacking.getTechnique("spell")), vel);
 							},
 							(src, dam, tgt) -> {
-								return Technique.lifeHit.start(src, dam, tgt);}) //spell TODO add Effect
+								return Technique.lifeHit.start(src, dam, tgt);}) //spell
 							
 					}),
 			new Riding(new Rect(Res.getAtlas("sarah").pixelCoords), new Rect(Res.getAtlas("sarah_onCow").pixelCoords), ThingType.COW),
@@ -298,7 +298,7 @@ public class ThingType extends Species<Thing> {
 			,new Physics(1, 36)
 			,new Speaking()
 			,new Inventory(ItemType.NOTHING, 4, 20),
-			 new Interaction((src, pos, dest) -> Main.menu.setMenu(MenuType.TRADE, dest))) {
+			 new Interaction((src, pos, dest) -> Main.game().menu.setMenu(MenuType.TRADE, dest))) {
 		
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			if(extraData.length >= 1 && Integer.parseInt((String)extraData[0]) > 0){
@@ -360,7 +360,7 @@ public class ThingType extends Species<Thing> {
 								UsefulStuff.colorFromHue(getTime(), getColor());
 								z -= 0.001;
 								//update the color in the vbo
-								Main.world.thingWindow.changeUnusual(this);
+								Main.game().world.thingWindow.changeUnusual(this);
 								//return the color to normal in the next render cycle
 								setNeedsUnusualRenderUpdate(true);
 							}
@@ -374,7 +374,7 @@ public class ThingType extends Species<Thing> {
 							Technique.selectAll,
 							(source, item, technique, pos, selected) -> {
 					int[] info = Res.getAtlas("unicorn").texs[0].info[0];
-					Main.world.window.addEffect(new RainbowSpit(new Vec(!source.aniPlug.getOrientation()? info[0] : (source.aniPlug.getAnimator().tex.w-info[0]), info[1]).shift(source.pos).shift(source.aniPlug.getRenderBox().pos), source.aniPlug.getOrientation()? 1 : -1, source, selected, Technique.lifeHit));
+					Main.game().world.window.addEffect(new RainbowSpit(new Vec(!source.aniPlug.getOrientation()? info[0] : (source.aniPlug.getAnimator().tex.w-info[0]), info[1]).shift(source.pos).shift(source.aniPlug.getRenderBox().pos), source.aniPlug.getOrientation()? 1 : -1, source, selected, Technique.lifeHit));
 							})})
 			,new Following(500.0, 50, SARAH),
 			new ContainedItems(10, new ItemType[] {ItemType.ZOMBIE_EYE,  ItemType.ZOMBIE_BRAIN,  ItemType.ZOMBIE_FLESH, ItemType.UNICORN_HORN}, 0.5, 0.5, 0.5, 1.0)
@@ -472,8 +472,8 @@ public class ThingType extends Species<Thing> {
 				new Interaction((src, p, dest) -> {
 					if(src.lifePlug != null) {
 						src.lifePlug.heal( 5*dest.lifePlug.health()/dest.type.life.maxHealth);
-						Main.world.window.addEffect(new Hearts(dest.pos.shift(0, dest.yOffset)));
-						Main.world.engine.requestDeletion(dest);
+						Main.game().world.window.addEffect(new Hearts(dest.pos.shift(0, dest.yOffset)));
+						Main.game().world.engine.requestDeletion(dest);
 					}
 				})) {
 	
@@ -843,10 +843,10 @@ public class ThingType extends Species<Thing> {
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
 					if(!t.attachment.active() && visible) {
-						Main.world.window.addEffect(t.attachment.getEffect());
+						Main.game().world.window.addEffect(t.attachment.getEffect());
 						t.attachment.setActive( true);
 					} else if(t.attachment.active() && !visible) {
-						Main.world.window.removeEffect(t.attachment.getEffect());
+						Main.game().world.window.removeEffect(t.attachment.getEffect());
 						t.attachment.setActive( false);
 					}
 				}},
@@ -859,7 +859,7 @@ public class ThingType extends Species<Thing> {
 		@Override
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
 			t.attachment.setEffect( (MovingEffect) extraData[0]);
-			Main.world.window.addEffect(t.attachment.getEffect());
+			Main.game().world.window.addEffect(t.attachment.getEffect());
 			t.attachment.setActive( true);
 			if(extraData.length > 1) {
 				t.physicsPlug.setVel((Vec)extraData[1]);
@@ -873,10 +873,10 @@ public class ThingType extends Species<Thing> {
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
 					if(t.attachment.getEffectTicket() == -1 && visible) {
-						Main.world.window.addEffect(t.attachment.getEffect());
+						Main.game().world.window.addEffect(t.attachment.getEffect());
 						t.attachment.setEffectTicket(0);
 					} else if(t.attachment.getEffectTicket() >= 0 && !visible) {
-						Main.world.window.removeEffect(t.attachment.getEffect());
+						Main.game().world.window.removeEffect(t.attachment.getEffect());
 						t.attachment.setEffectTicket(-1);
 					}
 				}},
@@ -888,7 +888,7 @@ public class ThingType extends Species<Thing> {
 		@Override
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
 			t.attachment.setEffect( (Effect) extraData[0]);
-			Main.world.window.addEffect(t.attachment.getEffect());
+			Main.game().world.window.addEffect(t.attachment.getEffect());
 		}
 	};
 

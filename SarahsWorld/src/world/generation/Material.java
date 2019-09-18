@@ -1,7 +1,7 @@
 package world.generation;
 
+import extra.Res;
 import extra.things.traits.Physics;
-import main.Res;
 import render.Texture;
 import util.Color;
 

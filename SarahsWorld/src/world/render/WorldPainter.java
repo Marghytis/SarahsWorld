@@ -6,15 +6,15 @@ import java.util.function.Consumer;
 
 import org.lwjgl.opengl.GL11;
 
+import basis.effects.Effect;
+import basis.effects.particleEffects.ParticleEffect;
+import basis.effects.particleEffects.ParticleEmitter;
 import core.Renderer;
 import core.Updater;
-import effects.Effect;
-import effects.particleEffects.ParticleEffect;
-import effects.particleEffects.ParticleEmitter;
-import effects.specialEffects.Nametag;
+import extra.Main;
+import extra.Res;
+import extra.effects.specialEffects.Nametag;
 import extra.things.Thing;
-import main.Main;
-import main.Res;
 import menu.Settings;
 import render.Animator;
 import render.Framebuffer;
@@ -53,8 +53,8 @@ public class WorldPainter implements Updater, Renderer{
 		this.terrain = landscape;
 		this.background = background;
 
-		landscapeBuffer = new Framebuffer("Landscape", Main.SIZE.w, Main.SIZE.h);
-		this.completeWindow = Render.quadInScreen(-Main.HALFSIZE.w, Main.HALFSIZE.h, Main.HALFSIZE.w, -Main.HALFSIZE.h);
+		landscapeBuffer = new Framebuffer("Landscape", Main.game().SIZE.w, Main.game().SIZE.h);
+		this.completeWindow = Render.quadInScreen(-Main.game().SIZE_HALF.w, Main.game().SIZE_HALF.h, Main.game().SIZE_HALF.w, -Main.game().SIZE_HALF.h);
 		GL11.glClearColor(0, 0, 0, 0);
 		GL11.glClearStencil(0);
 		
@@ -64,7 +64,7 @@ public class WorldPainter implements Updater, Renderer{
 	}
 	
 	public Vec toWorldPos(Vec windowPos) {
-		windowPos.shift(-Main.HALFSIZE.w, -Main.HALFSIZE.h);
+		windowPos.shift(-Main.game().SIZE_HALF.w, -Main.game().SIZE_HALF.h);
 		windowPos.scale(1/Settings.getDouble("ZOOM"));
 		windowPos.shift(-Render.offsetX, -Render.offsetY);
 		return windowPos;
@@ -106,11 +106,11 @@ public class WorldPainter implements Updater, Renderer{
 	Vec lastAvatarPos = new Vec(), avatarPos = new Vec(), offset = new Vec();
 	public void updateTransform(double interpolationShift) {
 
-		Render.scaleX = (float)(Settings.getDouble("ZOOM")/Main.HALFSIZE.w);
-		Render.scaleY = (float)(Settings.getDouble("ZOOM")/Main.HALFSIZE.h);
+		Render.scaleX = (float)(Settings.getDouble("ZOOM")/Main.game().SIZE_HALF.w);
+		Render.scaleY = (float)(Settings.getDouble("ZOOM")/Main.game().SIZE_HALF.h);
 		
-		lastAvatarPos.set(Main.world.engine.lastAvatarPosition).set(Main.world.avatar.pos);
-		avatarPos.set(Main.world.avatar.pos);
+		lastAvatarPos.set(Main.game().world.engine.lastAvatarPosition).set(Main.game().world.avatar.pos);
+		avatarPos.set(Main.game().world.avatar.pos);
 		
 		offset.set(avatarPos).shift(avatarPos.shift(lastAvatarPos, -1), interpolationShift);
 		
@@ -121,11 +121,11 @@ public class WorldPainter implements Updater, Renderer{
 	public void draw(double interpolationShift){
 		
 //		if(Core.updatedToLong) {
-//			for(int i = 0; i < Main.world.engine.timeIndex; i++) {
-//				System.out.println(Main.world.engine.lastTimes[0][i] + "  " + Main.world.engine.lastTimes[1][i] + "  " + Main.world.engine.lastTimes[2][i] + "  " + Main.world.engine.lastTimes[3][i]);
+//			for(int i = 0; i < Main.game().world.engine.timeIndex; i++) {
+//				System.out.println(Main.game().world.engine.lastTimes[0][i] + "  " + Main.game().world.engine.lastTimes[1][i] + "  " + Main.game().world.engine.lastTimes[2][i] + "  " + Main.game().world.engine.lastTimes[3][i]);
 //			}
 //		}
-//		Main.world.engine.timeIndex = 0;
+//		Main.game().world.engine.timeIndex = 0;
 		
 		updateTransform(interpolationShift);
 
@@ -142,7 +142,7 @@ public class WorldPainter implements Updater, Renderer{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.4f);
 		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);
-		Render.drawSingleQuad(completeWindow, Color.WHITE, landscapeBuffer.getTex(), 0, 0, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, true, 0);
+		Render.drawSingleQuad(completeWindow, Color.WHITE, landscapeBuffer.getTex(), 0, 0, 1f/Main.game().SIZE_HALF.w, 1f/Main.game().SIZE_HALF.h, true, 0);
 		
 		if(Settings.getBoolean("RENDER_THINGS"))
 			things.renderThings();
@@ -174,7 +174,7 @@ public class WorldPainter implements Updater, Renderer{
 		
 		//effects
 		ParticleEmitter.offset.set(Render.offsetX, Render.offsetY);
-		ParticleEffect.wind.set((Main.input.getMousePos(Main.WINDOW).x - Main.HALFSIZE.w)*60f/Main.HALFSIZE.w, 0);
+		ParticleEffect.wind.set((Main.game().input2.getMousePos().x - Main.game().SIZE_HALF.w)*60f/Main.game().SIZE_HALF.w, 0);
 		effects.forEach(Effect::render);
 
 		//quests
@@ -182,7 +182,7 @@ public class WorldPainter implements Updater, Renderer{
 		
 		if(world.isGameOver()) {
 
-			Render.drawSingleQuad(completeWindow, Color.BLACK, null, 0, 0, 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h, false, 0);
+			Render.drawSingleQuad(completeWindow, Color.BLACK, null, 0, 0, 1f/Main.game().SIZE_HALF.w, 1f/Main.game().SIZE_HALF.h, false, 0);
 			GL11.glEnable(GL11.GL_ALPHA_TEST);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			death.bindTex();

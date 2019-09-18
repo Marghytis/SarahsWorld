@@ -1,12 +1,12 @@
 package extra.things.traits;
 
 import basis.entities.Entity;
+import extra.Main;
+import extra.Res;
+import extra.items.ItemType;
 import extra.things.Thing;
 import extra.things.ThingType;
 import extra.things.traitExtensions.ItemStack;
-import item.ItemType;
-import main.Main;
-import main.Res;
 import render.Animator;
 import util.math.Vec;
 import world.data.ColumnListElement;
@@ -70,10 +70,10 @@ public class Inventory extends ContainedItems {
 				stack.update(delta);
 			}
 			int coinAmount = 0;
-			for(ColumnListElement c = Main.world.thingWindow.start(); c != Main.world.thingWindow.end(); c = c.next())
+			for(ColumnListElement c = Main.game().world.thingWindow.start(); c != Main.game().world.thingWindow.end(); c = c.next())
 			for(Entity t2 = c.firstThing(ThingType.COIN.ordinal); t2 != null; t2 = t2.next()){
 				if(t2.pos.minus(thing.pos).lengthSquare() < 1000){
-					Main.world.engine.requestDeletion(t2);
+					Main.game().world.engine.requestDeletion(t2);
 					coinAmount++;
 				}
 			}
@@ -90,7 +90,7 @@ public class Inventory extends ContainedItems {
 			super.dropEverything();
 			for(ItemStack item : itemStacks){
 				for(int i = 0; i < item.count; i++){
-					Main.world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item.item));
+					Main.game().world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item.item));
 				}
 			}
 		}

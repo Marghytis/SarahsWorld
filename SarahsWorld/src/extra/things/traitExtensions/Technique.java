@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import extra.items.ItemType;
+import extra.items.ItemType.WeaponType;
 import extra.things.Thing;
-import item.ItemType;
-import item.ItemType.WeaponType;
 import util.math.Vec;
 
 public class Technique {

@@ -163,33 +163,6 @@ public class Species<T extends Entity> {
 			}
 			//...
 		}
-//		int i = 0;
-		
-//		this.plugins[i++] = logic;//calculate logic first, i.e. what the entities plan is.
-//		this.plugins[i++] = physics;//update position and velocity and "where"
-//		this.plugins[i++] = ani;//update the animator
-//		this.plugins[i++] = inv;//collect coins and do item coolDown
-//		this.plugins[i++] = speak;//updates the thoughbubble's position
-//		this.plugins[i++] = life;//removes the thing, if live is below zero
-//		this.plugins[i++] = attacking;//attack cooldown
-//		this.plugins[i++] = physEx;//repelling other things
-//		
-//		//no update, order doesn't matter
-////		for(int j = 0; i < )
-//		this.plugins[i++] = ride;
-//		this.plugins[i++] = avatar;
-//		this.plugins[i++] = follow;
-//		this.plugins[i++] = flyAround;
-//		this.plugins[i++] = walkAround;
-//		this.plugins[i++] = movement;
-//		this.plugins[i++] = magic;
-//		this.plugins[i++] = midgeAround;
-//		this.plugins[i++] = attachment;
-//		this.plugins[i++] = state;
-		//TODO go on
-//		if(defaultSpawner == null) //now is made sure not to happen in ThingType
-//			throw new RuntimeException("default Spawner may not be null. Should be something like (p, f, ed) -> new Thing(this, p, f, ed), where Thing extends Entity.");
-//		else 
 		this.defaultSpawner = defaultSpawner;
 	}
 	

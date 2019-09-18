@@ -12,13 +12,26 @@ import basis.entities.Species;
 import core.Listener;
 import core.Renderer;
 import core.Updater;
+import extra.Main;
+import extra.Res;
+import extra.SarahsWorld;
+import extra.items.ItemType;
 import extra.things.Thing;
 import extra.things.ThingType;
 import extra.things.traits.Inventory.InventoryPlugin;
-import item.ItemType;
-import main.Main;
-import main.Res;
 import menu.Settings.Key;
+import menu.elements.Bar;
+import menu.elements.Button;
+import menu.elements.CommandInput;
+import menu.elements.Debugger;
+import menu.elements.Dialog;
+import menu.elements.FlexibleButton;
+import menu.elements.FlexibleTextField;
+import menu.elements.ItemContainer;
+import menu.elements.KeyBinding;
+import menu.elements.TextField;
+import menu.elements.TextInput;
+import menu.elements.ToggleButton;
 import render.Texture;
 import util.Anim;
 import util.Color;
@@ -40,14 +53,14 @@ public class MenuManager implements Updater, Renderer, Listener {
 	public MenuType open = MenuType.EMPTY, last = MenuType.EMPTY, next = MenuType.EMPTY;
 	public Menu openActive;
 	public Element[] elements;
-	private Main game;
+	private SarahsWorld game;
 	
 	private Menu[] allMenus = new Menu[MenuType.values().length];
 	
 	TextField continuePlaying;
 	Button back;
 	
-	public MenuManager(Main game) {
+	public MenuManager(SarahsWorld game) {
 		this.game = game;
 	}
 	
@@ -304,15 +317,15 @@ public class MenuManager implements Updater, Renderer, Listener {
 	
 	public static enum MenuType {
 		EMPTY(false, false) {
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 //				menu.setElements(
-////						new FlexibleTextField(() -> "Gravity: " + Main.world.avatar.where.g + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
-////						new FlexibleTextField(() -> "Water: " + Main.world.avatar.where.water + "", 7/8.0f, 6/8.0f, 7/8.0f, 6/8.0f, -35, -5, -5, 5, null, null)
+////						new FlexibleTextField(() -> "Gravity: " + Main.game().world.avatar.where.g + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, null, null),
+////						new FlexibleTextField(() -> "Water: " + Main.game().world.avatar.where.water + "", 7/8.0f, 6/8.0f, 7/8.0f, 6/8.0f, -35, -5, -5, 5, null, null)
 //				);
 			}
 		},
 		MAIN(false, false) {
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				menu.setElements(
 					new Button(game, "Exit", 0.3, 0.5, 0.3, 0.5,
 							Button.button.pixelCoords[0], Button.button.pixelCoords[1], Button.button.pixelCoords[2], Button.button.pixelCoords[3],
@@ -366,7 +379,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 		},
 		OPTIONS(false, false){
 
-			public void setElements(Menu menu, Main game, Object... extraData) {
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData) {
 
 				menu.setElements(
 					new Button(game, "Key bindings", 0.1, 0.9, 0.1, 0.9,
@@ -429,7 +442,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 							return Settings.getBoolean("DEBUGGING");
 						}
 						public void released(int button) {
-							Main.menu.setMenu(MenuType.DEBUG);
+							Main.game().menu.setMenu(MenuType.DEBUG);
 						}
 					},
 					game.getMenu().getBack(),
@@ -438,19 +451,19 @@ public class MenuManager implements Updater, Renderer, Listener {
 			}
 		},
 		INVENTORY(false, false){
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				menu.setElements(
 						new Element(game, 7/8.0, 7/8.0, 7/8.0, 7/8.0, MONEYBAG.pixelCoords[0]*2, MONEYBAG.pixelCoords[1]*2 - 30, MONEYBAG.pixelCoords[2]*2, MONEYBAG.pixelCoords[3]*2 - 30, null, MONEYBAG),
-						new FlexibleTextField(game, () -> Main.world.avatar.itemPlug.nCoins() + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, new Color(1, 1, 1, 0), null, true),
+						new FlexibleTextField(game, () -> Main.game().world.avatar.itemPlug.nCoins() + "", 7/8.0f, 7/8.0f, 7/8.0f, 7/8.0f, -35, -5, -5, 5, new Color(1, 1, 1, 0), null, true),
 						
-						new ItemContainer(game, Main.world.avatar.invPlug, 0, 4/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar.invPlug, 1, 5/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar.invPlug, 2, 6/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar.invPlug, 3, 7/12.0, 1.0/8),
-						new ItemContainer(game, Main.world.avatar.invPlug, 4, 8/12.0, 1.0/8),
+						new ItemContainer(game, Main.game().world.avatar.invPlug, 0, 4/12.0, 1.0/8),
+						new ItemContainer(game, Main.game().world.avatar.invPlug, 1, 5/12.0, 1.0/8),
+						new ItemContainer(game, Main.game().world.avatar.invPlug, 2, 6/12.0, 1.0/8),
+						new ItemContainer(game, Main.game().world.avatar.invPlug, 3, 7/12.0, 1.0/8),
+						new ItemContainer(game, Main.game().world.avatar.invPlug, 4, 8/12.0, 1.0/8),
 
-						new Bar(game, 0.3, 5.0/16, 0.7, 5.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.world.avatar.lifePlug.health()/(double)Main.world.avatar.type.life.maxHealth),//Health
-						new Bar(game, 0.3, 4.0/16, 0.7, 4.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.world.avatar.magic.mana/(double)Main.world.avatar.type.magic.maxMana)//Mana
+						new Bar(game, 0.3, 5.0/16, 0.7, 5.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0f, 0.5f), null, true, () -> Main.game().world.avatar.lifePlug.health()/(double)Main.game().world.avatar.type.life.maxHealth),//Health
+						new Bar(game, 0.3, 4.0/16, 0.7, 4.0/16, 0, -20, 0, 6, new Color(0.8f, 0, 0.8f, 0.5f), null, true, () -> Main.game().world.avatar.magic.mana/(double)Main.game().world.avatar.type.magic.maxMana)//Mana
 				);
 			}
 		},
@@ -474,7 +487,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 				return false;
 			}
 			
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				//keep the elements from the inventory menu
 				INVENTORY.setElements(menu, game);
 				indexFirstContainer = menu.elements.size();
@@ -495,8 +508,8 @@ public class MenuManager implements Updater, Renderer, Listener {
 							new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
 							Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
 						public void released(int button) {
-							InventoryPlugin buyer = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
-							InventoryPlugin seller = Main.world.avatar.invPlug;
+							InventoryPlugin buyer = ((ItemContainer)menu.getElement(indexFirstContainer)).getThing();
+							InventoryPlugin seller = Main.game().world.avatar.invPlug;
 							ItemType item = seller.getSelectedItem();
 							trade(seller, buyer, item);
 						}
@@ -507,8 +520,8 @@ public class MenuManager implements Updater, Renderer, Listener {
 								new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
 								Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
 							public void released(int button) {
-								InventoryPlugin seller = ((ItemContainer)menu.getElement(indexFirstContainer)).thing;
-								InventoryPlugin buyer = Main.world.avatar.invPlug;
+								InventoryPlugin seller = ((ItemContainer)menu.getElement(indexFirstContainer)).getThing();
+								InventoryPlugin buyer = Main.game().world.avatar.invPlug;
 								
 								ItemType item = seller.getSelectedItem();
 								trade(seller, buyer, item);
@@ -526,7 +539,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			}
 		},
 		DIALOG(false, true){
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				menu.setElements(new Dialog(game));
 				menu.ani = ((Dialog)menu.getElement(0)).ani;
 			}
@@ -535,7 +548,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			}
 		},
 		DEBUG(false, false){
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				menu.setElements(new Debugger(game),
 						new FlexibleButton(game, () -> Settings.getBoolean("IMMORTAL")? "Immortal" : "Mortal", 0.7, 0.1, 0.7, 0.1, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.8f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
@@ -568,12 +581,12 @@ public class MenuManager implements Updater, Renderer, Listener {
 						},
 						new Button(game, "Spawn Things", 0.7, 0.5, 0.7, 0.5, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
-								Main.menu.setMenu(MenuType.DEBUG_SPAWNER);
+								Main.game().menu.setMenu(MenuType.DEBUG_SPAWNER);
 							}
 						},
 						new Button(game, "Infos", 0.7, 0.6, 0.7, 0.6, -300, -50, 300, 50, new Color(0.5f, 0.4f, 0.7f), new Color(0.4f, 0.3f, 0.6f), null, null){
 							public void released(int button) {
-								Main.menu.setMenu(MenuType.INFOS);
+								Main.game().menu.setMenu(MenuType.INFOS);
 							}
 						},
 						new FlexibleTextField(game, () -> Main.out.getContent(), 0, 0.2, 0.5, 0.7, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
@@ -583,12 +596,12 @@ public class MenuManager implements Updater, Renderer, Listener {
 			}
 		},
 		INFOS(false, false){
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				menu.setElements(
 						new TextField(game, "Select a single thing using the middle mouse button", 0, 1, 0.5, 0.9, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(game, () -> {
 							if(World.world.window.selectionSize() != 1) return "";
-							Thing t = Main.world.window.getSelection(0);
+							Thing t = Main.game().world.window.getSelection(0);
 							String s = t.type.name + ": \n";
 							s += "position: " + t.pos + "\n";
 							if(t.type.physics != null)
@@ -605,7 +618,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 						, 0, 0.7, 0.5, 0.9, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 //						new FlexibleTextField(() -> {
 //							if(World.world.window.selectionSize() != 1) return "";
-//							Thing t = Main.world.window.getSelection(0);
+//							Thing t = Main.game().world.window.getSelection(0);
 //							String s = t.type.name + ": ";
 //							if(t.type.physics != null)
 //							s += "Physics: g = " + t.where.g + ", vel = " + t.vel.toString() + ", force = " + t.force;
@@ -613,16 +626,16 @@ public class MenuManager implements Updater, Renderer, Listener {
 //						}
 //						, 0, 0.25, 0.5, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
 						new FlexibleTextField(game, () -> {
-							String s =  "Sarah: " + Main.world.avatar.physicsPlug.velString() + "\n" +
-										"box: " + Main.world.avatar.aniPlug.getRenderBox().toString() + "\n" +
-										"added to VAO: " + Main.world.avatar.aniPlug.addedToVAO() + "\n" +
-										"tex width: " + Main.world.avatar.aniPlug.getAnimator().tex.w + "\n" + 
-										"dir: " + Main.world.avatar.aniPlug.getOrientation() + "\n" +
-										"riding: " + Main.world.avatar.ridePlug.isRiding() + "\n" +
-										"where.water: " + Main.world.avatar.physicsPlug.waterDepth() + "\n" +
-										"left column: " + Main.world.landscapeWindow.start().getIndex() + "\n" +
-										"right column: " + (Main.world.landscapeWindow.end() != null ? Main.world.landscapeWindow.end().getIndex() : "null") + "\n" +
-										"Biome: " + Main.world.avatar.newLink.getBiome().toString();
+							String s =  "Sarah: " + Main.game().world.avatar.physicsPlug.velString() + "\n" +
+										"box: " + Main.game().world.avatar.aniPlug.getRenderBox().toString() + "\n" +
+										"added to VAO: " + Main.game().world.avatar.aniPlug.addedToVAO() + "\n" +
+										"tex width: " + Main.game().world.avatar.aniPlug.getAnimator().tex.w + "\n" + 
+										"dir: " + Main.game().world.avatar.aniPlug.getOrientation() + "\n" +
+										"riding: " + Main.game().world.avatar.ridePlug.isRiding() + "\n" +
+										"where.water: " + Main.game().world.avatar.physicsPlug.waterDepth() + "\n" +
+										"left column: " + Main.game().world.landscapeWindow.start().getIndex() + "\n" +
+										"right column: " + (Main.game().world.landscapeWindow.end() != null ? Main.game().world.landscapeWindow.end().getIndex() : "null") + "\n" +
+										"Biome: " + Main.game().world.avatar.newLink.getBiome().toString();
 							return s;
 						}
 						, 0, 0, 0.5, 0.7, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
@@ -632,7 +645,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			}
 		},
 		COLUMN_INFOS(false, false){
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				menu.setElements(
 						new FlexibleTextField(game, () -> {
 							ColumnListElement c = game.getWorld().landscapeWindow.at(game.getWorld().window.toWorldPos(game.getInputData().getMousePos()).x);
@@ -653,7 +666,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			}
 		},
 		KEY_BINDINGS(false, false){
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				Key[] values = Key.values();
 				int nKeys = values.length - 1;
 				int nElements = nKeys*2;
@@ -690,7 +703,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 		},
 		CREDITS(false, false){
 
-			public void setElements(Menu menu, Main game, Object... extraData) {
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData) {
 				menu.setElements(
 					new TextField(game, "Graphics: Evelyn\n\nCode: Mario\n\nMusic: Urs & Vlad\n\nDocumentation: Elli", 0.1, 0.1, 0.9, 0.9, 0, 0, 0, 0, new Color(0, 0, 0, 0.6f), null, true),
 					game.getMenu().getBack()
@@ -699,7 +712,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			
 		},
 		DEBUG_SPAWNER(false, false){
-			public void setElements(Menu menu, Main game, Object... extraData){
+			public void setElements(Menu menu, SarahsWorld game, Object... extraData){
 				Species<?>[] values = Species.types;
 				menu.clearElements();
 				double x = 0.25, y = 0.9;
@@ -725,10 +738,10 @@ public class MenuManager implements Updater, Renderer, Listener {
 					menu.addElement(new Button(game, values[j].name, x, y, x, y, -170, -30, 170, 30, Color.BROWN, Color.GRAY, null, null){
 						public void released(int button) {
 							if(values[j] == ThingType.ITEM){
-								Thing t = values[j].defaultSpawner.spawn(Main.world.avatar.newLink, Main.world.avatar.pos.copy().shift(0, 1), ItemType.valueOf(((TextField)menu.getElement(j)).text));
+								Thing t = values[j].defaultSpawner.spawn(Main.game().world.avatar.newLink, Main.game().world.avatar.pos.copy().shift(0, 1), ItemType.valueOf(((TextField)menu.getElement(j)).text));
 								t.showUpAfterHiding(t.newLink);
 							} else {
-								Thing t = values[j].defaultSpawner.spawn(Main.world.avatar.newLink, Main.world.avatar.pos.copy());
+								Thing t = values[j].defaultSpawner.spawn(Main.game().world.avatar.newLink, Main.game().world.avatar.pos.copy());
 								t.showUpAfterHiding(t.newLink);
 							}
 							((TextInput)menu.getElement(j)).selected = false;
@@ -751,7 +764,7 @@ public class MenuManager implements Updater, Renderer, Listener {
 			menu.ani = null;
 		}
 		
-		public abstract void setElements(Menu menu, Main game, Object... extraData);
+		public abstract void setElements(Menu menu, SarahsWorld game, Object... extraData);
 		
 		public void updateElements(Menu menu, Object... extraData) {
 			

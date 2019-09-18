@@ -3,10 +3,10 @@ package extra.things.traits;
 import java.util.HashMap;
 
 import basis.entities.Trait;
+import extra.Main;
 import extra.things.ThingAttribute;
 import basis.entities.Attribute;
 import basis.entities.Entity;
-import main.Main;
 import render.Animation;
 import render.Animator;
 import render.TexFile;
@@ -112,14 +112,14 @@ public class Animating extends Trait {
 		
 		public void prepareRender(){
 			if(visible && (thing.type().alwaysUpdateVBO || needsRenderUpdate() || switchedSelected())){
-				Main.world.thingWindow.changeUsual(this);
+				Main.game().world.thingWindow.changeUsual(this);
 				if(switchedSelected() || needsUnusualRenderUpdate()){
 					if(thing.aniPlug.selected()){
 						setColor( new Color(1, 0, 0, 1));
-						Main.world.thingWindow.changeUnusual(this);
+						Main.game().world.thingWindow.changeUnusual(this);
 					} else {
 						setColor( new Color(1, 1, 1, 1));
-						Main.world.thingWindow.changeUnusual(this);
+						Main.game().world.thingWindow.changeUnusual(this);
 					}
 					setSwitchedSelected(false);
 					setNeedsUnusualRenderUpdate(false);
@@ -182,7 +182,7 @@ public class Animating extends Trait {
 		public Rect 	getRenderBox() {							return renderBox;						}
 		public Color 	getColor() {								return color;							}
 		public int		getIndex() {								return index;							}
-		public double 	getZ() {									return z;								}
+		public double 	getZ() {									return zPos;								}
 		public double 	z() {										return getZ();							}
 		public double 	getAniRotation() { 							return aniRotation; 					}
 		public boolean 	getOrientation() { 							return dir; 							}

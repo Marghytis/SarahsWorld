@@ -1,11 +1,11 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
+import extra.Main;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
 import extra.things.ThingType;
 import basis.entities.Entity;
-import main.Main;
 import menu.Settings;
 import world.data.ColumnListElement;
 
@@ -71,7 +71,7 @@ public class Following extends Trait {
 				Thing closest = null;
 				double distanceSquare = maxDistanceSquare+10;
 				for(int type = 0; type < targetClasses.length; type++){
-					for(ColumnListElement c = Main.world.landscapeWindow.start(); c != Main.world.landscapeWindow.end(); c = c.next())
+					for(ColumnListElement c = Main.game().world.landscapeWindow.start(); c != Main.game().world.landscapeWindow.end(); c = c.next())
 					for(Entity t2 = c.firstThing(targetClasses[type].ordinal); t2 != null; t2 = t2.next()){
 						double distSqu = thing.pos.minus(t2.pos).lengthSquare();
 						if(distSqu < distanceSquare){

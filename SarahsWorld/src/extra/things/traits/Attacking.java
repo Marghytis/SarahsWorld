@@ -1,13 +1,13 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
+import extra.items.ItemType;
+import extra.items.ItemType.WeaponType;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
 import extra.things.ThingType;
 import extra.things.traitExtensions.Technique;
 import basis.entities.Entity;
-import item.ItemType;
-import item.ItemType.WeaponType;
 import menu.Settings;
 import util.math.Vec;
 import world.World;

@@ -1,10 +1,10 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
+import extra.Main;
 import extra.things.ThingAttribute;
 import extra.things.ThingType;
 import basis.entities.Entity;
-import main.Main;
 import util.math.Vec;
 
 public class PhysicsExtension extends Trait {
@@ -37,7 +37,7 @@ public class PhysicsExtension extends Trait {
 		@Override
 		public void update(double delta){
 			for(ThingType tt : typesToRepell){
-				Main.world.thingWindow.forEach(tt.ordinal, (t) -> {
+				Main.game().world.thingWindow.forEach(tt.ordinal, (t) -> {
 					Vec conn = t.pos.minus(thing.pos);
 					double action = tt.physEx.radius + radius;
 					double distSq = conn.lengthSquare();

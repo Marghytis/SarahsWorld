@@ -50,8 +50,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Set;
 
-import main.Main;
+import extra.Main;
 import util.math.Vec;
 
 public class Settings {
@@ -61,6 +62,10 @@ public class Settings {
 	static Hashtable<String, Double> doubles = new Hashtable<>();
 	static Hashtable<String, Vec> vecs = new Hashtable<>();
 	static Hashtable<String, String> strings = new Hashtable<>();
+	
+	public static Set<String> getBooleanKeys(){
+		return booleans.keySet();
+	}
 	
 	public static boolean getBoolean(String setting) {
 		Boolean out = booleans.get(setting);
@@ -226,11 +231,10 @@ public class Settings {
 		}
 	}
 
-	public static boolean friction = true, airFriction = true;//TODO add these to the txt!!!
 	public boolean keyPressed(int key) {
 		switch(key){
-		case GLFW_KEY_0: friction = !friction; return true;
-		case GLFW_KEY_1: airFriction = !airFriction; return true;
+		case GLFW_KEY_0: set("FRICTION", !getBoolean("FRICTION")); return true;
+		case GLFW_KEY_1: set("AIR_FRICTION", !getBoolean("AIR_FRICTION")); return true;
 		}
 		Key bind = Key.getBinding(key);
 		

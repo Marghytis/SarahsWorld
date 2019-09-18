@@ -199,8 +199,12 @@ public class Column extends ColumnListElement {
 	public Color getLowColor() {						return lowColor;	}
 	public Vec getTopLine(Vec topLine) {
 		return topLine.set(right.getX() - xReal, right.vertices[topSolidVertex.getYIndex()].y() - topSolidVertex.y());}
+	/**Modifies the argument Vec to be the collision line of this Column.*/
 	public Vec getCollisionLine(Vec topLine){
 		return topLine.set(right.getX() - xReal, right.getCollisionY() - getCollisionY());}
+	public Vec getCollisionLine() {
+		return getCollisionLine(new Vec());
+	}
 	
 	//Setters
 	public void setTopColor(Color color) {				this.topColor = color;	}

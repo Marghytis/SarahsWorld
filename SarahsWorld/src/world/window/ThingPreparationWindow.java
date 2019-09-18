@@ -184,6 +184,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 	protected boolean prepareAddition(Entity t, int iDir) {
 		
 		int type = t.type.ordinal;
+		
 
 		if(toAdd[type][iDir].contains(t)) return false;//already listed
 		if(!start && toAdd[type][1-iDir].contains(t)) {
@@ -192,7 +193,6 @@ public class ThingPreparationWindow extends RealWorldWindow {
 
 		//assign ticket and add thing to array
 		toAdd[type][iDir].add(t);
-		
 		//in case the array is full, set all things visible and print an exception
 		if(toAdd[type][iDir].isFull()) {
 			addPreparedThings(t.type.ordinal, iDir);
@@ -211,7 +211,9 @@ public class ThingPreparationWindow extends RealWorldWindow {
 	List<Entity> sideToAdd = new ArrayList<>();
 	
 	protected void addPreparedThings(int type, int iDir) {
-		if(toAdd[type][iDir].size() <= 0) return;//nothing to add. may happen if the animating is null
+		if(toAdd[type][iDir].size() <= 0) {
+			return;//nothing to add. may happen if the animating is null
+		}
 //		System.out.println("Adding " + nToAdd[type][iDir] + " prepared " + ThingType.types[type].name + "s!");
 		
 		

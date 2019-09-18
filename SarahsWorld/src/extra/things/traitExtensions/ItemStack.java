@@ -1,8 +1,8 @@
 package extra.things.traitExtensions;
 
+import extra.Main;
+import extra.items.ItemType;
 import extra.things.traits.Inventory;
-import item.ItemType;
-import main.Main;
 import util.math.Rect;
 
 
@@ -15,7 +15,7 @@ public class ItemStack extends Rect{
 	public int coolDown;
 	
 	public ItemStack(int slot, Inventory inventory2){
-		super((slot+1)*(Main.SIZE.w/7) -50, Main.SIZE.h/5 -50, 100, 100);
+		super((slot+1)*(Main.game().SIZE.w/7) -50, Main.game().SIZE.h/5 -50, 100, 100);
 		this.slot = slot;
 		this.inv = inventory2;
 		this.item = inv.defaultItem;

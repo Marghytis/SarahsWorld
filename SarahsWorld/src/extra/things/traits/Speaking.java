@@ -1,14 +1,14 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
+import basis.effects.Effect;
 import basis.entities.Entity;
-import effects.Effect;
+import extra.Main;
+import extra.Res;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
-import main.Main;
-import main.Res;
-import menu.Dialog;
 import menu.MenuManager.MenuType;
+import menu.elements.Dialog;
 import quest.ActiveQuest;
 import quest.Strings;
 import render.Render;
@@ -51,16 +51,16 @@ public class Speaking extends Trait {
 		@Override
 		public void update(double delta) {
 			if(currentSpeech != null){
-				if(thing.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000 && !speaking){// && "".equals(t.currentSpeech)
-					if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
-						Main.menu.setMenu(MenuType.DIALOG);
+				if(thing.pos.minus(Main.game().world.avatar.pos).lengthSquare() < 90000 && !speaking){// && "".equals(t.currentSpeech)
+					if(Main.game().menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).other == thing){
+						Main.game().menu.setMenu(MenuType.DIALOG);
 					} else {
 						tb.popUp();
 					}
-				} else if(thing.pos.minus(Main.world.avatar.pos).lengthSquare() > 90000){
+				} else if(thing.pos.minus(Main.game().world.avatar.pos).lengthSquare() > 90000){
 					if(tb.living) tb.goAway();
-					if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
-						Main.menu.setMenu(MenuType.EMPTY);
+					if(Main.game().menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).other == thing){
+						Main.game().menu.setMenu(MenuType.EMPTY);
 						speaking = false;
 					}
 				}
@@ -71,8 +71,8 @@ public class Speaking extends Trait {
 			if(tb.living){
 				tb.goAway();
 			}
-			if(Main.menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).other == thing){
-				Main.menu.setMenu(MenuType.EMPTY);
+			if(Main.game().menu.openActive.type == MenuType.DIALOG && ((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).other == thing){
+				Main.game().menu.setMenu(MenuType.EMPTY);
 				speaking = false;
 			}
 		}
@@ -86,14 +86,14 @@ public class Speaking extends Trait {
 			currentSpeech = what;
 			this.answers = answers;
 
-			if(!thoughtBubble && thing.pos.minus(Main.world.avatar.pos).lengthSquare() < 90000){
+			if(!thoughtBubble && thing.pos.minus(Main.game().world.avatar.pos).lengthSquare() < 90000){
 				speaking = true;
 				String[] realAnswers = new String[answers.length];
 				for(int i = 0; i < answers.length; i++){
 					realAnswers[i] = Strings.get(answers[i], World.rand);
 				}
-				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(quest, thing, Strings.get(what, World.rand), realAnswers);
-				Main.menu.setMenu(MenuType.DIALOG);
+				((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).setup(quest, thing, Strings.get(what, World.rand), realAnswers);
+				Main.game().menu.setMenu(MenuType.DIALOG);
 			}
 		}
 	}
@@ -156,7 +156,7 @@ public class Speaking extends Trait {
 			if(!living){
 				living = true;
 				ani.time = 0;
-				Main.world.window.addEffect(this);
+				Main.game().world.window.addEffect(this);
 			}
 		}
 		
@@ -165,15 +165,15 @@ public class Speaking extends Trait {
 		}
 
 		public void render(){
-			render(1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
+			render(1f/Main.game().SIZE_HALF.w, 1f/Main.game().SIZE_HALF.h);
 		}
 		public void render(float scaleX, float scaleY) {
 			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
 			for(int i = 0, s = 1; i < 8; i += 2, s += 3){
 				double r = rs[i/2].v*s;
 				if(r >= 0){
-					double x = speaker.pos.x + shift.x*positions[i] - Main.world.avatar.pos.x;
-					double y = speaker.pos.y + shift.y*positions[i+1] + 60 - Main.world.avatar.pos.y;
+					double x = speaker.pos.x + shift.x*positions[i] - Main.game().world.avatar.pos.x;
+					double y = speaker.pos.y + shift.y*positions[i+1] + 60 - Main.game().world.avatar.pos.y;
 					Render.drawSingleQuad(quad, Color.WHITE, bubble1, x, y, Render.scaleX, Render.scaleY, true, 0, r);
 				}
 			}
@@ -181,7 +181,7 @@ public class Speaking extends Trait {
 			double bR = rs[4].v*(pressed ? 0.16 : 0.2);
 			bubbleR = bR;
 			if(bR >= 0){
-				Render.drawSingleQuad(quad, Color.WHITE, texs[tex], speaker.pos.x + shift.x - Main.world.avatar.pos.x, speaker.pos.y + shift.y+60 - Main.world.avatar.pos.y, Render.scaleX, Render.scaleY, true, 0, bR*texs[tex].w/2);
+				Render.drawSingleQuad(quad, Color.WHITE, texs[tex], speaker.pos.x + shift.x - Main.game().world.avatar.pos.x, speaker.pos.y + shift.y+60 - Main.game().world.avatar.pos.y, Render.scaleX, Render.scaleY, true, 0, bR*texs[tex].w/2);
 			}
 		}
 		public boolean living() {
@@ -197,8 +197,8 @@ public class Speaking extends Trait {
 				for(int i = 0; i < speaker.speakPlug.answers.length; i++){
 					realAnswers[i] = Strings.get(speaker.speakPlug.answers[i], World.rand);
 				}
-				((Dialog)Main.menu.active(MenuType.DIALOG).getElement(0)).setup(speaker.speakPlug.quest, speaker, Strings.get(speaker.speakPlug.currentSpeech, World.rand), realAnswers);
-				Main.menu.setMenu(MenuType.DIALOG);
+				((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).setup(speaker.speakPlug.quest, speaker, Strings.get(speaker.speakPlug.currentSpeech, World.rand), realAnswers);
+				Main.game().menu.setMenu(MenuType.DIALOG);
 				return true;
 			}
 			return false;
@@ -207,7 +207,7 @@ public class Speaking extends Trait {
 		public boolean contains(Vec mousePos){
 			Vec shift = pos.copy().shift(relPos).minus(speaker.pos);
 			return UsefulF.contains(
-					mousePos.x + Main.world.avatar.pos.x - Main.HALFSIZE.w, mousePos.y + Main.world.avatar.pos.y - Main.HALFSIZE.h,
+					mousePos.x + Main.game().world.avatar.pos.x - Main.game().SIZE_HALF.w, mousePos.y + Main.game().world.avatar.pos.y - Main.game().SIZE_HALF.h,
 					bubble2.pixelCoords[0]*bubbleR + speaker.pos.x + shift.x,
 					bubble2.pixelCoords[1]*bubbleR + speaker.pos.y + shift.y+60,
 					bubble2.pixelCoords[2]*bubbleR + speaker.pos.x + shift.x,

@@ -101,11 +101,6 @@ public class Generator implements GeneratorInterface {
 		
 		return true;
 	}
-
-	public boolean extendLeft() {
-
-		return true;
-	}
 	
 	public Zone newZone(BiomeManager biomeM, double originX, boolean left) {
 		ZoneType startZone = newZoneType();
@@ -121,10 +116,14 @@ public class Generator implements GeneratorInterface {
 		
 		return zoneType;
 	}
+
+	@Override
+	public boolean extendLeft() {
+		return extend(Dir.left);
+	}
 	
 	@Override
 	public boolean extendRight() {
-		// TODO Auto-generated method stub
-		return false;
+		return extend(Dir.right);
 	}
 }

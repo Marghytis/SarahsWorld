@@ -1,12 +1,12 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
-import effects.particleEffects.BloodSplash;
-import effects.particleEffects.DeathDust;
 import basis.entities.Entity;
+import extra.Main;
+import extra.effects.particleEffects.BloodSplash;
+import extra.effects.particleEffects.DeathDust;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
-import main.Main;
 import util.math.Vec;
 
 public class Life extends Trait {
@@ -61,12 +61,12 @@ public class Life extends Trait {
 					thing.itemPlug.dropEverything();
 				
 				//remove the Thing in a cloud of dust
-				Main.world.engine.requestDeletion(thing);
-				Main.world.window.addEffect(new DeathDust(thing.pos));
+				Main.game().world.engine.requestDeletion(thing);
+				Main.game().world.window.addEffect(new DeathDust(thing.pos));
 				
 				//if Sarah died, the game is over :(
-				if(thing == Main.world.avatar) {
-					Main.world.gameOver();
+				if(thing == Main.game().world.avatar) {
+					Main.game().world.gameOver();
 				}
 			}
 		}
@@ -101,7 +101,7 @@ public class Life extends Trait {
 						thing.movementPlug.setReallyAir();
 				}
 				thing.lifePlug.add( -damage);
-				Main.world.window.addEffect(new BloodSplash(thing.pos));
+				Main.game().world.window.addEffect(new BloodSplash(thing.pos));
 				if(getHitAnimation != null) {
 					thing.aniPlug.setAnimation( getHitAnimation, () -> thing.movementPlug.setBackgroundAni());
 				}

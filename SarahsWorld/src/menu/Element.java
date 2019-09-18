@@ -5,7 +5,8 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import main.Main;
+import extra.Main;
+import extra.SarahsWorld;
 import render.Render;
 import render.Shader;
 import render.TexFile;
@@ -16,7 +17,7 @@ import util.math.Vec;
 
 public class Element {
 	
-	protected Main game;
+	protected SarahsWorld game;
 
 	public double relX1, relY1, relX2, relY2;
 	public int x1O, y1O, x2O, y2O;
@@ -28,7 +29,7 @@ public class Element {
 	 */
 	public VAO vao;
 	
-	public Element(Main game, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex){
+	public Element(SarahsWorld game, double relX1, double relY1, double relX2, double relY2, int x1, int y1, int x2, int y2, Color color, Texture tex){
 		this.game = game;
 		this.relX1 = relX1;
 		this.relY1 = relY1;
@@ -41,34 +42,34 @@ public class Element {
 		this.color = color;
 		this.tex = tex;
 		setCoords();
-		this.vao = Render.quadInScreen((short)(this.x1-Main.HALFSIZE.w), (short)(this.y1-Main.HALFSIZE.h), (short)(this.x2-Main.HALFSIZE.w), (short)(this.y2-Main.HALFSIZE.h));
+		this.vao = Render.quadInScreen((short)(this.x1-Main.game().SIZE_HALF.w), (short)(this.y1-Main.game().SIZE_HALF.h), (short)(this.x2-Main.game().SIZE_HALF.w), (short)(this.y2-Main.game().SIZE_HALF.h));
 	}
 	
 	public void setCoords(){
-		this.x1 = (int)(Main.SIZE.w*relX1) + x1O;
-		this.y1 = (int)(Main.SIZE.h*relY1) + y1O;
-		this.x2 = (int)(Main.SIZE.w*relX2) + x2O;
-		this.y2 = (int)(Main.SIZE.h*relY2) + y2O;
+		this.x1 = (int)(Main.game().SIZE.w*relX1) + x1O;
+		this.y1 = (int)(Main.game().SIZE.h*relY1) + y1O;
+		this.x2 = (int)(Main.game().SIZE.w*relX2) + x2O;
+		this.y2 = (int)(Main.game().SIZE.h*relY2) + y2O;
 		this.w = x2 - x1;
 		this.h = y2 - y1;
 	}
 	
 	public void updateVertexBuffer(){
 		ByteBuffer newCoords = BufferUtils.createByteBuffer(16*Float.BYTES);
-		newCoords.putShort((short)(x1-Main.HALFSIZE.w));
-		newCoords.putShort((short)(y1-Main.HALFSIZE.h));
+		newCoords.putShort((short)(x1-Main.game().SIZE_HALF.w));
+		newCoords.putShort((short)(y1-Main.game().SIZE_HALF.h));
 		newCoords.putShort((short)(0));
 		newCoords.putShort((short)(0));
-		newCoords.putShort((short)(x2-Main.HALFSIZE.w));
-		newCoords.putShort((short)(y1-Main.HALFSIZE.h));
+		newCoords.putShort((short)(x2-Main.game().SIZE_HALF.w));
+		newCoords.putShort((short)(y1-Main.game().SIZE_HALF.h));
 		newCoords.putShort((short)(1));
 		newCoords.putShort((short)(0));
-		newCoords.putShort((short)(x2-Main.HALFSIZE.w));
-		newCoords.putShort((short)(y2-Main.HALFSIZE.h));
+		newCoords.putShort((short)(x2-Main.game().SIZE_HALF.w));
+		newCoords.putShort((short)(y2-Main.game().SIZE_HALF.h));
 		newCoords.putShort((short)(1));
 		newCoords.putShort((short)(1));
-		newCoords.putShort((short)(x1-Main.HALFSIZE.w));
-		newCoords.putShort((short)(y2-Main.HALFSIZE.h));
+		newCoords.putShort((short)(x1-Main.game().SIZE_HALF.w));
+		newCoords.putShort((short)(y2-Main.game().SIZE_HALF.h));
 		newCoords.putShort((short)(0));
 		newCoords.putShort((short)(1));
 		newCoords.flip();
@@ -90,7 +91,7 @@ public class Element {
 				Shader.singleQuad.set("texCoords", tex.texCoords[0], tex.texCoords[1], tex.texCoords[2] - tex.texCoords[0], tex.texCoords[3] - tex.texCoords[1]);
 			}
 			Shader.singleQuad.set("textured", tex != null);
-			Shader.singleQuad.set("scale", 1f/Main.HALFSIZE.w, 1f/Main.HALFSIZE.h);
+			Shader.singleQuad.set("scale", 1f/Main.game().SIZE_HALF.w, 1f/Main.game().SIZE_HALF.h);
 			Shader.singleQuad.set("offset", 0f, 0f);
 			Shader.singleQuad.set("size", 1f);
 			Shader.singleQuad.set("z", 0f);

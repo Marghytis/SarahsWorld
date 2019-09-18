@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Random;
 
 import basis.entities.Trait;
+import extra.Main;
+import extra.items.ItemType;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
 import extra.things.ThingType;
 import basis.entities.Attribute;
 import basis.entities.Entity;
-import item.ItemType;
-import main.Main;
 import util.math.Vec;
 import world.World;
 
@@ -77,13 +77,13 @@ public class ContainedItems extends Trait {
 		public void dropEverything() {
 			//first, remove all coins and drop them via COIN Things
 			for(int i = 0; i < nCoins; i++){
-				Main.world.thingWindow.add(new Thing(ThingType.COIN, thing.newLink, thing.pos.copy(), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));//World.rand.nextInt(401)-200, 400
+				Main.game().world.thingWindow.add(new Thing(ThingType.COIN, thing.newLink, thing.pos.copy(), 1, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));//World.rand.nextInt(401)-200, 400
 			}
 			nCoins = 0;
 			
 			//then remove all items and drop them via ITEM Things
 			for(ItemType item : fruits)
-				Main.world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
+				Main.game().world.thingWindow.add(new Thing(ThingType.ITEM, thing.newLink, thing.pos.copy(), item, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
 			fruits.clear();
 		}
 		

@@ -1,9 +1,9 @@
 package extra.things.traits;
 
-import basis.entities.Trait;
-import extra.things.ThingAttribute;
 import basis.entities.Entity;
-import main.Main;
+import basis.entities.Trait;
+import extra.Main;
+import extra.things.ThingAttribute;
 import menu.Settings.Key;
 import util.math.Function;
 import util.math.Vec;
@@ -193,7 +193,7 @@ public class Movement extends Trait {
 							backgroundAnimation = sneak;
 						}
 					} else {
-						if(Main.input.isKeyDown(Main.WINDOW, Key.CROUCH.key)) {
+						if(Main.game().input2.isKeyDown(Key.CROUCH.key)) {
 							backgroundAnimation = sneakyStand;
 						} else {
 							backgroundAnimation = stand;

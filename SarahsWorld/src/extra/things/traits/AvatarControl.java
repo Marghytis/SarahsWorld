@@ -1,10 +1,10 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
+import extra.Main;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
 import basis.entities.Entity;
-import main.Main;
 import menu.Settings;
 import menu.Settings.Key;
 
@@ -32,12 +32,12 @@ public  class AvatarControl extends Trait {
 			boolean riding = thing.ridePlug.isRiding();
 			boolean debugging = Settings.getBoolean("DEBUGGING");
 
-			boolean walk_right = Main.input.isKeyDown(Main.WINDOW, Key.RIGHT.key);
-			boolean walk_left = Main.input.isKeyDown(Main.WINDOW, Key.LEFT.key);
-			boolean crouch = Main.input.isKeyDown(Main.WINDOW, Key.CROUCH.key);
-			boolean sprint = Main.input.isKeyDown(Main.WINDOW, Key.SPRINT.key);
-			boolean super_sprint = debugging && Main.input.isKeyDown(Main.WINDOW, Key.SUPERSPRINT.key);
-			boolean mega_sprint = debugging && Main.input.isKeyDown(Main.WINDOW, Key.MEGASPRINT.key);
+			boolean walk_right = Main.game().input2.isKeyDown(Key.RIGHT.key);
+			boolean walk_left = Main.game().input2.isKeyDown(Key.LEFT.key);
+			boolean crouch = Main.game().input2.isKeyDown(Key.CROUCH.key);
+			boolean sprint = Main.game().input2.isKeyDown(Key.SPRINT.key);
+			boolean super_sprint = debugging && Main.game().input2.isKeyDown(Key.SUPERSPRINT.key);
+			boolean mega_sprint = debugging && Main.game().input2.isKeyDown(Key.MEGASPRINT.key);
 			
 			
 			
@@ -96,23 +96,23 @@ public  class AvatarControl extends Trait {
 			thing.physicsPlug.setWalkingForce( walkingDir*a);
 
 			if(debugging) {
-				if(Main.input.isKeyDown(Main.WINDOW, Key.ANTIGRAVITY.key)){
+				if(Main.game().input2.isKeyDown(Key.ANTIGRAVITY.key)){
 					thing.physicsPlug.applyForce(0, 5000);
 				}
-				if(Main.input.isKeyDown(Main.WINDOW, Key.SUPERGRAVITY.key)){
+				if(Main.game().input2.isKeyDown(Key.SUPERGRAVITY.key)){
 					thing.physicsPlug.applyForce(0, -5000);
 				}
-				if(Main.input.isKeyDown(Main.WINDOW, Key.FLY_RIGHT.key)){
+				if(Main.game().input2.isKeyDown(Key.FLY_RIGHT.key)){
 					thing.physicsPlug.applyForce(5000, 1100);
 				}
-				if(Main.input.isKeyDown(Main.WINDOW, Key.FLY_LEFT.key)){
+				if(Main.game().input2.isKeyDown(Key.FLY_LEFT.key)){
 					thing.physicsPlug.applyForce(-5000, 1100);
 				}
 			}
 			
 			//Scroll through inventory
-			int scroll = (int)Main.input.getDWheel(Main.WINDOW);
-			Main.input.resetDeltas(Main.WINDOW);
+			int scroll = (int)Main.game().input2.getDWheel();
+			Main.game().input2.resetDeltas();
 
 			int selectedItem = thing.invPlug.getSelectedIndex() - scroll;
 			thing.invPlug.selectItemStack(selectedItem);

@@ -70,8 +70,8 @@ public class RealWorldWindow {
 		}
 		Time.update(13);
 		if(this instanceof ThingWindow) {
-//			Main.world.engine.lastTimes[1][Main.world.engine.timeIndex] = Time.delta[12];
-//			Main.world.engine.lastTimes[2][Main.world.engine.timeIndex] = Time.delta[13];
+//			Main.game().world.engine.lastTimes[1][Main.game().world.engine.timeIndex] = Time.delta[12];
+//			Main.game().world.engine.lastTimes[2][Main.game().world.engine.timeIndex] = Time.delta[13];
 		}
 	}
 

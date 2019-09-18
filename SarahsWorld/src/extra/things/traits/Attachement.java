@@ -1,8 +1,8 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
+import basis.effects.Effect;
 import basis.entities.Entity;
-import effects.Effect;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
 

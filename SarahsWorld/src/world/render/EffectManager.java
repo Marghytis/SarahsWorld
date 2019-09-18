@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import effects.Effect;
+import basis.effects.Effect;
 
 public class EffectManager {
 	

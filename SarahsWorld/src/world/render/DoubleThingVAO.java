@@ -1,7 +1,7 @@
 package world.render;
 
+import extra.Main;
 import extra.things.traits.Animating.AnimatingPlugin;
-import main.Main;
 
 public class DoubleThingVAO extends ThingVAO {
 
@@ -11,7 +11,7 @@ public class DoubleThingVAO extends ThingVAO {
 	static {dirs[lowerSide] = 1; dirs[higherSide] = -1;}
 	
 	private int[] lastUsedIndices = new int[2];
-	private final int[] ends = new int[2];
+	private final int[] ends = new int[2];//ends are usable indices
 	
 	public DoubleThingVAO(int capacity) {
 		super(capacity);
@@ -49,6 +49,44 @@ public class DoubleThingVAO extends ThingVAO {
 	public boolean empty() {
 		return empty(BACK) && empty(FRONT);
 	}
+
+	/*
+	 * dirLeft = +1					dirRight = -1
+	 *  endLeft luiLeft       luiRight   endRight
+	 *  |       |             |          |
+	 * ;---------0000000000000------------;
+	 */
+	public void printArray() {
+		String output =   "dirs[0] = +1;              dirs[1] = -1               \n"
+						+ "eL := ends[0];             eR := ends[1]              (eL, eR) = (" + ends[0] + ", " + ends[1] + ")\n"
+						+ "lL := lastUsedIndices[0];  lR := lastUsedIndices[1]   (lL, lR) = (" + lastUsedIndices[0] + ", " + lastUsedIndices[1] + ")\n";
+		char[] text = new char[capacity+2];
+		char[] pointers = new char[capacity+1];
+		char[] values = new char[capacity];
+		for(int i = 0; i < capacity; i++) {
+			text[i] = ' ';
+			pointers[i] = ' ';
+			if(i <= lastUsedIndices[0] || i >= lastUsedIndices[1]){
+				values[i] = '-';
+			} else {
+				values[i] = '0';
+			}
+		}
+		text[ends[0]] = 'e'; text[ends[0]+1] = 'L';
+		pointers[ends[0]] = '|';
+		text[lastUsedIndices[0]] = 'l'; text[lastUsedIndices[0]+1] = 'L';
+		pointers[lastUsedIndices[0]] = '|';
+		text[lastUsedIndices[1]] = 'l'; text[lastUsedIndices[1]+1] = 'R';
+		pointers[lastUsedIndices[1]] = '|';
+		text[ends[1]] = 'e'; text[ends[1]+1] = 'R';
+		pointers[ends[1]] = '|';
+
+		output += " " + new String(text) + "\n";
+		output += " " + new String(pointers) + "\n";
+		output += " " + new String(values);
+		
+		System.out.println(output);
+	}
 	
 	protected int nextUsedIndex(int i) {
 		if(i == lastUsedIndices[lowerSide])
@@ -73,6 +111,7 @@ public class DoubleThingVAO extends ThingVAO {
 		t.onVisibilityChange(true);
 		int side = whichSide(t);
 
+		//if the lastUsedIndices would cross, freed things are removed to make space
 		if(dirs[side]*lastUsedIndices[side] + 1 >= dirs[side]*lastUsedIndices[1-side]){
 			if(automaticallyRemoveFreedThings) {
 				Main.out.println("removing freed things");
@@ -81,10 +120,13 @@ public class DoubleThingVAO extends ThingVAO {
 				throw new RuntimeException("VAO is full!");
 			}
 		}
+		//if the removal of freed things didn't help, the array is enlarged
 		if(dirs[side]*lastUsedIndices[side] + 1 >= dirs[side]*lastUsedIndices[1-side]){
 			System.err.println("Not enough space for " + t.getThing().type.name + "s! Current capacity: " + capacity + " quads. Default: " + t.getThing().type.maxVisible);
 			enlarge();
 		}
+		
+		//last used index is shifted by one and the thing is placed at the new index.
 		lastUsedIndices[side] += dirs[side];
 		things[lastUsedIndices[side]] = t;
 		t.setIndex((short) lastUsedIndices[side]);

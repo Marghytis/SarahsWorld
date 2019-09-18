@@ -1,10 +1,10 @@
 package world;
 
 import core.Updater;
-import main.Main;
-import main.Music;
-import main.Res;
+import extra.Main;
+import extra.Res;
 import menu.MenuManager.MenuType;
+import moveToLWJGLCore.Music;
 import menu.Settings;
 import util.SoundSource;
 
@@ -27,14 +27,14 @@ public class SoundManager implements Updater {
 		
 		music.update(delta);
 		
-		if(Settings.getBoolean("SOUND") && Settings.getBoolean("MUSIC") && !music.isMusicRunning() && !death.isPlaying() && !Main.world.isGameOver()){
+		if(Settings.getBoolean("SOUND") && Settings.getBoolean("MUSIC") && !music.isMusicRunning() && !death.isPlaying() && !Main.game().world.isGameOver()){
 			music.startMusic();
 		} else if((!Settings.getBoolean("SOUND") || !Settings.getBoolean("MUSIC")) && music.isMusicRunning()) {
 			music.pauseMusic();
 		}
 		
-		if(Main.world.isGameOver() && !death.isPlaying()) {
-			Main.menu.setMenu(MenuType.MAIN);
+		if(Main.game().world.isGameOver() && !death.isPlaying()) {
+			Main.game().menu.setMenu(MenuType.MAIN);
 		}
 		
 		return false;

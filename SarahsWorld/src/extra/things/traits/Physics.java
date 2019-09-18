@@ -1,10 +1,10 @@
 package extra.things.traits;
 
 import basis.entities.Trait;
+import extra.Main;
 import extra.things.Thing;
 import extra.things.ThingAttribute;
 import basis.entities.Entity;
-import main.Main;
 import menu.Settings;
 import util.math.UsefulF;
 import util.math.Vec;
@@ -62,9 +62,7 @@ public class Physics extends Trait {
 				nextPos = new Vec(),
 				nextVelAvDelta = new Vec(),
 				nextVel = new Vec(),
-				force = new Vec(),
-				collisionVec = new Vec(),
-				circleCollision = new Vec();
+				force = new Vec();
 		
 		private Column collisionC = null;
 		public double walkingForce, speed, maxWalkingSpeed, buoyancyForce;
@@ -119,8 +117,12 @@ public class Physics extends Trait {
 				double step = delta/steps;
 				for(int i = 0; i < steps; i++){
 					double time = step;
+					
+					//if not on ground, do free fall or collide with the ground
 					if(!thing.physicsPlug.onGround())
 						time = freeFallOrCollision( constantForce, time);
+					
+					//if on ground now, walk on it or lift of, if momentum is too high
 					if(thing.physicsPlug.onGround() && walk)
 						walkOrLiftOf( constantForce, time);
 				}
@@ -140,38 +142,70 @@ public class Physics extends Trait {
 			updateRotation(delta);
 			
 			//UPDATE WORLD LINK
-
 			int column = (int)Math.floor(thing.pos.x/Column.COLUMN_WIDTH);
 			while(thing.newLink.getIndex() < column && thing.newLink.right() != null) thing.newLink = thing.newLink.right().column();
 			while(thing.newLink.getIndex() > column && thing.newLink.left() != null) thing.newLink = thing.newLink.left().column();
 		}
 		
 	//PRIVATE FUNCTIONS
-		private void updateRotation(double delta){
+		
+		/**
+		 * Updates the rotational angle of the thing according to physical effects. Does nothing at the moment.
+		 * @param delta
+		 */
+		private void updateRotation(double delta){}
+		
+		private void updatePosVelG_FreeFalling() {
+
+			updatePosAndVel();
+			where.g = false;
 		}
 		
+		private void updatePosVelLinkG_Walking(double speed, Collision collision) {
+			if(speed == 0){
+				vel.set(0, 0);
+			} else {
+				thing.pos.set(collision.position);
+				vel.set(collision.column.getCollisionLine()).setLength(speed);
+				thing.newLink = collision.column;
+			}
+			where.g = true;
+		}
+		
+		/**
+		 * Calculates the things position and velocity after the time delta, or at the point in time when it hits the ground.
+		 * @param constantForce Forces that are constant during the evaluation of physics, e.g. walking force or gravity
+		 * @param delta
+		 * @return The time remaining from delta when colliding, zero otherwise
+		 */
 		private double freeFallOrCollision(Vec constantForce, double delta){
 			//constant Force minus air friction, nextVel and nextPos get set
 			updateForceNextVelAndNextPos( constantForce, null, delta, true);
-			if(collision( thing.pos, nextVelAvDelta)){
-//				if(t.type == ThingType.SARAH) System.out.println("Collision! " + collisionVec);
-				double t1 = calculateCollisionTime(collisionVec.minus(thing.pos).length(), force.length()/mass, vel.length());
-				Vec topLine = collisionC.getCollisionLine(new Vec()).normalize();
+			
+			//test for collisions
+			Collision collision = collision( thing.pos, nextVelAvDelta); 
+			
+			if(collision != null){ //thing collided with the ground -> start walking
+				
+				//calculate time of collision, set the thing to that exact location 
+				double t1 = calculateCollisionTime(collision.position.minus(thing.pos).length(), force.length()/mass, vel.length());
+				
+				//calculate next pos and next vel at the place and time of collision
 				updateForceNextVelAndNextPos( constantForce, null, t1, true);
-				thing.pos.set(collisionVec);
-				thing.newLink = collisionC;
-				
+
+				//calculate the tangential speed
+				Vec topLine = collision.column.getCollisionLine(new Vec()).normalize();
 				speed = nextVel.dot(topLine);
-				vel.set(topLine).scale(speed);
 				
-				where.g = true;
+				//go to the location of impact and update the state variables in walking mode
+				updatePosVelLinkG_Walking(speed, collision);
 				
+				//return the unused time to walk during it
 				return delta - t1;
 			} else {
-//				if(t.type == ThingType.BUTTERFLY) System.out.println(t.vel + "  " + t.pos);
-				updatePosAndVel();
-//				if(t.type == ThingType.BUTTERFLY) System.out.println("2: " + t.vel + "  " + t.pos);
-				where.g = false;
+
+				//update the state variables in free falling mode
+				updatePosVelG_FreeFalling();
 				return 0;
 			}
 		}
@@ -183,28 +217,26 @@ public class Physics extends Trait {
 
 			//constant Force with walking force minus air friction, nextVel and nextPos get set
 			updateForceNextVelAndNextPos( constantForce, topLine, delta, true);
-//			if(t.type == ThingType.SARAH) System.out.println(t.force);
 
 			calculateSpeed(topLine, ortho, delta);
 			
-			//test if the thing stays on the ground, or if it lifts of
-			if(( speed == 0 && /*topLine.y >= nextVel.y*/ortho.dot(nextVel) <= 0) ||/*circleCollision.minus(t.pos).y >= nextVel.y*///ortho dot nextVel is <= 0, if nextVel points in the ground
-				(speed != 0 && circleCollision(thing.pos, Math.abs(speed*delta), speed > 0) && circleCollision.minus(thing.pos).ortho(speed > 0).dot(nextVel) <= 0 )
-			   ){
-				if(speed == 0){
-					vel.set(0, 0);
-				} else {
-					thing.pos.set(circleCollision);
-					vel.set(collisionC.getCollisionLine(topLine)).setLength(speed);
-					thing.newLink = collisionC;
-				}
-				where.g = true;
-			} else {
-//				if(t.type == ThingType.SARAH) System.out.println("Lift of!");
-				updatePosAndVel();
-				where.g = false;
+			Collision collision = null;
+			if(speed != 0) {
+				collision = circleCollision(thing.pos, Math.abs(speed*delta), speed > 0);
+				if(collision != null)
+					ortho = collision.position.minus(thing.pos).ortho(speed > 0);
 			}
-		}//-1.7763568394002505E-15
+			
+			//if the thing stays on the ground, walk! ortho dot nextVel is <= 0, if nextVel points in the ground
+			if(( (speed == 0 || collision != null) && ortho.dot(nextVel) <= 0)){	
+				
+				updatePosVelLinkG_Walking(speed, collision);
+				
+			} else {//if it lifts of, fall freely!
+				
+				updatePosVelG_FreeFalling();
+			}
+		}
 		
 
 		private void updateForceNextVelAndNextPos(Vec constantForce, Vec topLine, double delta, boolean applyWalkingForce){
@@ -230,7 +262,7 @@ public class Physics extends Trait {
 			//forces
 			double normal = force.dot(ortho);
 			double downhill = force.dot(topLine);//walking force already included from before
-			double friction = -(Settings.friction ? 1 : 0)*normal*Physics.this.friction*collisionC.getTopSolidVertex().getAverageDeceleration();
+			double friction = -(Settings.getBoolean("FRICTION") ? 1 : 0)*normal*Physics.this.friction*collisionC.getTopSolidVertex().getAverageDeceleration();
 //								+ (Settings.airFriction ? 1 : 0)*t.speed*t.speed*airFriction*airea
 								;
 
@@ -247,43 +279,48 @@ public class Physics extends Trait {
 			else if(speed < -maxWalkingSpeed) speed = -maxWalkingSpeed;
 		}
 		
-		private boolean circleCollision(Vec pos1, double r, boolean right){
+		private class Collision {
+			Vec position;
+			Column column;
+			
+			public Collision(Vec position, Column column) {
+				this.position = position;
+				this.column = column;
+			}
+		}
+		
+		private Collision circleCollision(Vec pos1, double r, boolean right){
 			Vec vec1 = new Vec(), vec2 = new Vec();
-			for(ColumnListElement c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
+			for(ColumnListElement c = Main.game().world.landscapeWindow.start(); c.next() != Main.game().world.landscapeWindow.end(); c = c.next()){
 				Vec[] output = UsefulF.circleIntersection(
 						vec1.set(c.column().getX(), c.column().getCollisionY()),
 						vec2.set(c.right().column().getX(), c.right().column().getCollisionY()),
 						pos1,
 						r);
 				if(right && output[1] != null){
-					collisionC = c.column();
-					circleCollision.set(output[1]);
-					return true;
+					return new Collision(output[1], c.column());
 				} else if(!right && output[0] != null){
-					collisionC = c.column();
-					circleCollision.set(output[0]);
-					return true;
+					return new Collision(output[0], c.column());
 				}
 			}
-			return false;
+			return null;
 		}
 		
-		private boolean collision(Vec pos1, Vec velt){
+		private Collision collision(Vec pos1, Vec velt){
 			if(coll){
-				Vec vec1 = new Vec(), vec2 = new Vec();
+				Vec vec1 = new Vec(), vec2 = new Vec(), collisionVec = new Vec();
 
-				for(ColumnListElement c = Main.world.landscapeWindow.start(); c.next() != Main.world.landscapeWindow.end(); c = c.next()){
+				for(ColumnListElement c = Main.game().world.landscapeWindow.start(); c.next() != Main.game().world.landscapeWindow.end(); c = c.next()){
 					if(UsefulF.intersectionLines2(
 							pos1,
 							velt,
 							vec1.set(c.column().getX(), c.column().getCollisionY()),
 							vec2.set(c.right().column().getX(), c.right().column().getCollisionY()), collisionVec)){
-						collisionC = c.column();
-						return true;//can only collide with one vertex
+						return new Collision(collisionVec, c.column());//can only collide with one vertex
 					}
 				}
 			}
-			return false;
+			return null;
 		}
 		
 		/**

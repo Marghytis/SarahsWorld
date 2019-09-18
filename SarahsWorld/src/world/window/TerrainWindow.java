@@ -11,8 +11,8 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
-import exceptions.WorldTooSmallException;
-import main.Res;
+import basis.exceptions.WorldTooSmallException;
+import extra.Res;
 import menu.Settings;
 import render.Render;
 import render.Shader;
@@ -63,7 +63,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 	
 	public void reload() {
 //		try {
-//			loadAllColumns(ends[Dir.l], (int)Math.floor(Main.world.avatar.pos.x/Column.COLUMN_WIDTH));
+//			loadAllColumns(ends[Dir.l], (int)Math.floor(Main.game().world.avatar.pos.x/Column.COLUMN_WIDTH));
 //		} catch (WorldTooSmallException e) {
 //			e.printStackTrace();
 //			throw new RuntimeException("World is too small?!?!?!");

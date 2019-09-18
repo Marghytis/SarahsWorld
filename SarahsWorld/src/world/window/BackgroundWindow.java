@@ -6,8 +6,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 
-import exceptions.WorldTooSmallException;
-import main.Res;
+import basis.exceptions.WorldTooSmallException;
+import extra.Res;
 import render.Render;
 import render.Shader;
 import render.VAO;

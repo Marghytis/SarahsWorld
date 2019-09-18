@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 import basis.entities.Species;
-import item.ItemType;
+import extra.items.ItemType;
 import world.World;
 import world.data.WorldData;
 import world.generation.Zone.Attribute;

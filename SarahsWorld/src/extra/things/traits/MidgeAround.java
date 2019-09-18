@@ -27,7 +27,6 @@ public class MidgeAround extends Trait {
 			otherCooldown -= delta;
 			if(otherCooldown < 0){
 				otherCooldown = 1 + World.rand.nextDouble()*1;
-				//TODO the random walk below might walk away... i.e. don't allow arbitrarily high force.
 				flyForce.shift((0.50 - World.rand.nextDouble())*3, (0.40 - World.rand.nextDouble())*3);
 			}
 			if(thing.physicsPlug.onGround() && World.rand.nextInt(100)==0){

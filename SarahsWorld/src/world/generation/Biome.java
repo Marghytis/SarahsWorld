@@ -1,9 +1,9 @@
 package world.generation;
 
-import effects.WorldEffect;
+import basis.effects.WorldEffect;
+import extra.Main;
 import extra.things.Thing;
 import extra.things.ThingType;
-import main.Main;
 import util.Color;
 import util.math.Function;
 import util.math.Vec;
@@ -125,12 +125,12 @@ public enum Biome {
 				new ThingSpawner(ThingType.TREE_GRAVE.defaultSpawner, 0.1),
 				new ThingSpawner(ThingType.ZOMBIE.defaultSpawner, 0.05),
 				new ThingSpawner(ThingType.GRAVE.defaultSpawner, 0.2),
-				new ThingSpawner((c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, c, pos, Main.world.data.getWeather().fog),1.5)
-	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Main.HALFSIZE.w, pos.yInt() + Main.HALFSIZE.h + 50, 100, 4, 50)); return null;}, 0.01),
-	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.weather.fog.emittFog(pos.x + Main.HALFSIZE.w, pos.y + Main.HALFSIZE.h); return null;}, 1)
+				new ThingSpawner((c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, c, pos, Main.game().world.data.getWeather().fog),1.5)
+	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.toAdd.add(new Fog(pos.xInt() + Main.game().SIZE_HALF.w, pos.yInt() + Main.game().SIZE_HALF.h + 50, 100, 4, 50)); return null;}, 0.01),
+	//			new ThingSpawner((w, c, pos, ed) -> {WorldWindow.weather.fog.emittFog(pos.x + Main.game().SIZE_HALF.w, pos.y + Main.game().SIZE_HALF.h); return null;}, 1)
 			},
 			new EffectSpawner[]{
-//					new EffectSpawner(Main.world.window.getWeather().fog, 1.5)
+//					new EffectSpawner(Main.game().world.window.getWeather().fog, 1.5)
 			}),
 	MEADOW(new Color(0.65f, 0.83f, 1f), new Color(0.27f, 0.47f, 0.81f),
 			new Stratum[]{

@@ -12,7 +12,6 @@ boolean STOP_GRAPH							false
 boolean printSarahPhysics					true
 double	timeScale							1
 int		DEBUG_LEVEL							0
-double	GENERATION_RADIUS					1800
 Vec		AVATAR_START_OFFSET					100		500
 int		LAYERS_TO_DRAW						48
 double	ZOOM								1
@@ -20,5 +19,7 @@ boolean	SOUND								true
 boolean	MUSIC								false
 boolean	DEBUGGING							true
 boolean IMMORTAL							true
-String	ZONETYPE							JUNGLE
+String	ZONETYPE							RANDOM
 boolean RENDER_THINGS						true
+boolean FRICTION							true
+boolean AIR_FRICTION						true

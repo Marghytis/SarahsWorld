@@ -1,10 +1,10 @@
 package world;
 
 import core.Listener;
+import extra.items.ItemType;
 import extra.things.Thing;
 import extra.things.ThingType;
 import input.PollData;
-import item.ItemType;
 import menu.Settings;
 import menu.Settings.Key;
 import util.math.Vec;
