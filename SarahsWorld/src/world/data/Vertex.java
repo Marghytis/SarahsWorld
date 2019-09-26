@@ -25,6 +25,9 @@ public class Vertex {
 		private Column parent;
 		private int yIndex;
 		
+		/**
+		 * This boolean says whether the texture coordinates 'texCoordsPrepared' fit to the vertex's real coordinates. If not, the vertex has to be prepared before being put into a vbo.
+		 */
 		private boolean prepared;
 		private float[] texCoordsPrepared = new float[4];
 		
@@ -67,6 +70,10 @@ public class Vertex {
 				texCoordsPrepared[i] = texCoords[i];
 			}
 			prepared = true;
+		}
+		
+		public void setUnprepared() {
+			prepared = false;
 		}
 		
 		/**
@@ -148,6 +155,6 @@ public class Vertex {
 		public double alpha(int index) {						return alphas[index];	}
 		
 		//Setters
-		public void setNewY(double y) {							this.y = y;		}
+		public void setNewY(double y) {							this.y = y;		prepared = false;}
 		public void setParent(Column c) {						this.parent = c;		}
 }

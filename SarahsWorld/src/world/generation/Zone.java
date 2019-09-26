@@ -10,6 +10,7 @@ import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
 import world.generation.zones.Ocean;
 import world.generation.zones.Rough;
+import world.generation.zones.Test;
 import world.generation.zones.Village;
 import world.generation.zones.Winter;
 
@@ -33,7 +34,8 @@ public abstract class Zone {
 		 OCEAN((r,b,o,l) -> new Ocean (r, b, o, l), Biome.OCEAN),
 		ROUGH((r,b,o,l) -> new Rough(r, b, o, l), Biome.CANDY),
 		VILLAGE((r,b,o,l) -> new Village(r, b, o, l), Biome.FIR_VILLAGE),
-		WINTER((r,b,o,l) -> new Winter(r, b, o, l), Biome.WINTER_FORREST);		
+		WINTER((r,b,o,l) -> new Winter(r, b, o, l), Biome.WINTER_FORREST),
+		TEST((r,b,o,l) -> new Test(r, b, o, l), Biome.TEST);		
 		public ZoneSupplier supply;
 		public Biome startBiome;
 		

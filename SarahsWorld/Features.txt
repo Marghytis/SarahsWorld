@@ -15,6 +15,7 @@ _camp fire (e.g. when hitting a stack of sticks with a magic spell)
 _frozen lakes in winter biome
 _take every item -> einblenden, dass man was bekommen hat
 _water splashing when swimming
+_allow to change vertices' x-position -> would give huge possibilities for world generation and manipulation (e.g. water edges, smooth deformation)
 
 optimisation:
 _vaos for name tags (make it a real effect)

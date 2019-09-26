@@ -26,6 +26,18 @@ public class Column extends ColumnListElement {
 	private double collisionYSolid, collisionYFluid;
 	private Biome biome;
 	private Color topColor, lowColor;
+	
+	public int arrayIndex;
+	
+	public String toString() {
+		String out = "Column:\n";
+		out += "xIndex = " + xIndex + "\n";
+		out += "xReal = " + xReal + "\n";
+		out += "arrayIndex = " + arrayIndex + "\n";
+		
+		
+		return out;
+	}
 
 	/**
 	 * Constructs a column.
@@ -69,6 +81,15 @@ public class Column extends ColumnListElement {
 			this.collisionYFluid = topFluidVertex.y();
 		}
 		
+	}
+	
+	public void shiftColumnY(double dy) {
+		for(int i = 0; i < vertices.length; i++) {
+			Vertex v = vertices[i];
+			v.setNewY(v.getY() + dy);
+		}
+		this.collisionYSolid += dy;
+		this.collisionYFluid += dy;
 	}
 	
 	/**

@@ -262,7 +262,7 @@ public class Physics extends Trait {
 			//forces
 			double normal = force.dot(ortho);
 			double downhill = force.dot(topLine);//walking force already included from before
-			double friction = -(Settings.getBoolean("FRICTION") ? 1 : 0)*normal*Physics.this.friction*collisionC.getTopSolidVertex().getAverageDeceleration();
+			double friction = -(Settings.getBoolean("FRICTION") ? 1 : 0)*normal*Physics.this.friction*thing.newLink.getTopSolidVertex().getAverageDeceleration();
 //								+ (Settings.airFriction ? 1 : 0)*t.speed*t.speed*airFriction*airea
 								;
 

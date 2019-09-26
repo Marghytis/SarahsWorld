@@ -639,6 +639,14 @@ public class MenuManager implements Updater, Renderer, Listener {
 							return s;
 						}
 						, 0, 0, 0.5, 0.7, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						new Button(game, "Column infos", 0.1, 0.7, 0.1, 0.7,
+								Button.button.pixelCoords[0] + Button.button.w1, Button.button.pixelCoords[1], Button.button.pixelCoords[2] + Button.button.w1, Button.button.pixelCoords[3],
+								new Color(1, 1, 1), new Color(1, 1, 1), new Color(0.7f, 0.7f, 0.7f),
+								Button.button.texs[0], Button.button.texs[1], Button.button.texs[1]){
+							public void released(int button) {
+								Main.game().menu.setMenu(MenuType.COLUMN_INFOS);
+							}
+						},
 						game.getMenu().getBack(),
 						game.getMenu().getContinuePlaying()
 				);
@@ -650,12 +658,23 @@ public class MenuManager implements Updater, Renderer, Listener {
 						new FlexibleTextField(game, () -> {
 							ColumnListElement c = game.getWorld().landscapeWindow.at(game.getWorld().window.toWorldPos(game.getInputData().getMousePos()).x);
 							String s = "";
-							for(int i = 0; i < Biome.layerCount; i++) {
-								Vertex v = c.vertices(i);
-								for(int mat = 0; mat < Vertex.maxMatCount; mat++) {
-									s += "[" + v.mats(mat) + ", a = " + v.alpha(mat) + "]";
+							if(c != null) {
+								s += c.column().toString();
+							}
+							return s;
+						}
+						, 0, 0, 0.6, 0.5, 0, 0, 0, 0, new Color(0.5f,0.5f,0.5f,0.5f), null, false),
+						new FlexibleTextField(game, () -> {
+							ColumnListElement c = game.getWorld().landscapeWindow.at(game.getWorld().window.toWorldPos(game.getInputData().getMousePos()).x);
+							String s = "";
+							if(c != null) {
+								for(int i = 0; i < Biome.layerCount; i++) {
+									Vertex v = c.vertices(i);
+									for(int mat = 0; mat < Vertex.maxMatCount; mat++) {
+										s += "[" + v.mats(mat) + ", a = " + v.alpha(mat) + "]";
+									}
+									s += "\n";
 								}
-								s += "\n";
 							}
 							return s;
 						}

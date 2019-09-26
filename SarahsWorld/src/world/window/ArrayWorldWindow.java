@@ -70,6 +70,14 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		}
 	}
 	
+	public void reload(double startX, double endX) {
+		for(int i = 0; i < columns.length; i++) {
+			if(columns[i].column().getX() <= endX && columns[i].column().getX() >= startX) {
+				addAt(columns[i], i);
+			}
+		}
+	}
+	
 	protected void shiftOutwards(int end) {
 		super.shiftOutwards(end);
 		addColumn(ends[end], end);
@@ -92,9 +100,11 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	protected void removeColumn(int iDir) {
 		nextIndex[iDir] = shiftBy1(nextIndex[iDir], 1-iDir);
 		sideLastInwards = iDir;
+		ends[iDir].column().arrayIndex = -1;
 	}
 	protected void addColumn(ColumnListElement c, int iDir) {
 		columns[nextIndex[iDir]] = c;
+		c.column().arrayIndex = nextIndex[iDir];
 		addAt(c, nextIndex[iDir]);
 //		if(nextIndex[iDir] == shiftBy1(nextIndex[1-iDir], iDir)) {
 //			nextIndex[1 - iDir] = shiftBy1(nextIndex[1-iDir], iDir);//this has to run prior to the other two statements
@@ -129,6 +139,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	void insertColumn(ColumnListElement c, boolean modifiyNeighbors){
 		int index = c.getIndex() - (center - radius);//index relative to the most left location of this window
 		columns[index] = c;
+		c.column().arrayIndex = index;
 		if(modifiyNeighbors) {
 			if(index > 0 && columns[index-1] != null){
 				c.setLeft(columns[index-1]);

@@ -24,6 +24,7 @@ import world.data.WorldEditor;
 import world.generation.Generator;
 import world.generation.GeneratorInterface;
 import world.render.WorldPainter;
+import world.window.ArrayWorldWindow;
 import world.window.BackgroundWindow;
 import world.window.GeneratingWorldWindow;
 import world.window.TerrainWindow;
@@ -101,7 +102,7 @@ public class World implements Savable {
 		} catch (WorldTooSmallException e) {
 			throw new WorldCreationException("World data is not large enough yet : (" + genWindow.getEnd(Dir.l).getIndex() + " <-> " + genWindow.getEnd(Dir.r).getIndex() + ")", e);
 		}
-		engine = new WorldEngine(data, editor, thingWindow, /*genWindow,*/ landscapeWindow, backgroundRenderingWindow, thingWindow);
+		engine = new WorldEngine(data, editor, thingWindow, genWindow, landscapeWindow, backgroundRenderingWindow, thingWindow);
 		window = new WorldPainter(data, thingWindow, landscapeWindow, backgroundRenderingWindow);
 		listener = new WorldListener(this, inputData);
 	}
@@ -131,5 +132,9 @@ public class World implements Savable {
 
 	public void attachLeft(Column column) {
 		data.addLeft(column);
+	}
+
+	public BackgroundWindow getBackgroundWindow() {
+		return backgroundRenderingWindow;
 	}
 }

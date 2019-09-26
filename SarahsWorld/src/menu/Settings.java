@@ -3,6 +3,7 @@ package menu;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_0;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_1;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_B;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_C;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
@@ -193,6 +194,7 @@ public class Settings {
 		DEBUG(GLFW_KEY_F1, "open debug screen"),
 		REFILL_BUFFERS(GLFW_KEY_F2, "refill buffers"),
 		RELOAD_TERRAIN(GLFW_KEY_F3, "refill buffers"),
+		BOMB(GLFW_KEY_B, "make explosion at mouse location"),
 		NONE(0, "");
 		
 		public int key;

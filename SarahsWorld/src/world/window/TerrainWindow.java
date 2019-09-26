@@ -117,18 +117,6 @@ public class TerrainWindow extends ArrayWorldWindow {
 		Shader.bindNone();
 	}
 	
-	protected void addAt(ColumnListElement c, int index) {
-		//landscape
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.vbos[0].handle);
-			for(int yIndex = 0; yIndex < pointsY; yIndex++){
-				putPointData(changer, c.column(), yIndex);
-				changer.flip();
-				GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (yIndex*pointsX + index)*verticesPerPoint*bytesPerVertex, changer);
-			}
-		//Unbind buffer
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-	}
-	
 	private void drawNormalQuads(){
 		drawPatches2(0, false);
 	}
@@ -278,6 +266,18 @@ public class TerrainWindow extends ArrayWorldWindow {
 			GL20.glUniform1i(Res.landscapeShader.uniformLoc("matSlot"), index);
 			/*draw patch*/  GL11.glDrawElements(Settings.getInt("DRAW"), size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
 			if(size2 != 0)	GL11.glDrawElements(Settings.getInt("DRAW"), size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
+	}
+	
+	protected void addAt(ColumnListElement c, int index) {
+		//landscape
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vao.vbos[0].handle);
+			for(int yIndex = 0; yIndex < pointsY; yIndex++){
+				putPointData(changer, c.column(), yIndex);
+				changer.flip();
+				GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, (yIndex*pointsX + index)*verticesPerPoint*bytesPerVertex, changer);
+			}
+		//Unbind buffer
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 	}
 	
 	/**

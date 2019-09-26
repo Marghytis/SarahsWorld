@@ -8,6 +8,8 @@ import input.PollData;
 import menu.Settings;
 import menu.Settings.Key;
 import util.math.Vec;
+import world.data.Vertex;
+import world.generation.Biome;
 
 public class WorldListener implements Listener {
 
@@ -54,12 +56,32 @@ public class WorldListener implements Listener {
 			break;
 		case 2://MARK
 			if(Settings.getBoolean("DEBUGGING")) {
-				objectsClickedOn = world.thingWindow.thingsAt(worldPos);
-				for(Thing t : objectsClickedOn){
-					if(t.aniPlug.selected()) {
-						world.window.deselect(t);
-					} else {
-						world.window.select(t);
+				if(input.isKeyDown(Key.BOMB.key)) {
+					int radius = 200;
+					Vec startEnd = new Vec(worldPos.x, worldPos.x);
+					world.landscapeWindow.forEachColumn(column -> {
+						double xDist = column.getX() - worldPos.x;
+						if(xDist < radius) {
+							double y = worldPos.y - Math.sqrt(radius*radius - (xDist*xDist));
+							double dy = y - column.getTopSolidVertex().getY();
+							if(dy < 0) {
+								if(column.getX() < startEnd.x) startEnd.x = column.getX();
+								if(column.getX() > startEnd.y) startEnd.y = column.getX();
+								
+								column.shiftColumnY(dy);
+							}
+						}
+					});
+					world.landscapeWindow.reload(startEnd.x, startEnd.y);
+					world.getBackgroundWindow().reload(startEnd.x, startEnd.y);
+				} else {
+					objectsClickedOn = world.thingWindow.thingsAt(worldPos);
+					for(Thing t : objectsClickedOn){
+						if(t.aniPlug.selected()) {
+							world.window.deselect(t);
+						} else {
+							world.window.select(t);
+						}
 					}
 				}
 			}
