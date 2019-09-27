@@ -68,6 +68,7 @@ TexAtlas	cat_giant		res/creatures/GiantCat.png			d	d	d	d	5	2	-0.5f	-0.05f
 TexAtlas	villager		@NPC_plus_Handheld_Items			0	0	45	340	1	4	-0.5f	-0.05f	@villager_HandPos
 TexAtlas	zombie			res/creatures/Zombie.png			d	d	d	d	4	2	-0.5f	-0.05f
 TexAtlas	sloth			res/creatures/Sloth.png				d	d	d	d	5	1	-0.5f	-0.05f
+TexAtlas 	meteor   		res/creatures/Meteor.png 			d	d	d	d	4	1	-0.23f	-0.2f
 
 TexInfo		items_handheld_gripPos		res/items/ItemsHandheld.txt
 TexAtlas	coin						res/Items/Coin.png				d	d	d	d	1	1	-0.5f	-0.2f
