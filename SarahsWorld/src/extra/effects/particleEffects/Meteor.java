@@ -45,9 +45,9 @@ public class Meteor extends MovingEffect {
 		}
 		public void colorInterpolator(Particle p, float delta) {
 			if(p.lived/lifeSpan < 0.1) {
-				p.col.a = (float) 10*p.lived/lifeSpan;
+				p.col.a = (float) 10*p.lived/(lifeSpan);
 			} else {
-				p.col.a = (float) 1.11*((lifeSpan-p.lived) /lifeSpan);
+				p.col.a = (float) 1.11*(1 - (p.lived/(lifeSpan)));
 			}
 		}
 		public void radiusInterpolator(Particle p, float delta){
@@ -122,16 +122,19 @@ public class Meteor extends MovingEffect {
 		fire.terminate();
 	}
 	
+	boolean liveBool = true;
+	
 	public boolean onTerrainCollision(Vec pos) {
 		Main.game().world.window.addEffect(new MeteorExplosion(pos));
 		Main.game().world.window.removeEffect(this);
 		Main.game().world.editor.makeCrater(pos, 200);
+		liveBool = false;
 		return true;
 	}
 
 	@Override
 	public boolean living() {
-		return true;
+		return liveBool;
 	}
 
 	@Override

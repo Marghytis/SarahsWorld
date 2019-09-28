@@ -237,10 +237,13 @@ public class Physics extends Trait {
 				collision = circleCollision(thing.pos, Math.abs(speed*delta), speed > 0);
 				if(collision != null)
 					ortho = collision.position.minus(thing.pos).ortho(speed > 0);
+			} else {
+				//check if the terrain below changed
+				collision = standingCollision();
 			}
 			
 			//if the thing stays on the ground, walk! ortho dot nextVel is <= 0, if nextVel points in the ground
-			if(( (speed == 0 || collision != null) && ortho.dot(nextVel) <= 0)){	
+			if(( collision != null && ortho.dot(nextVel) <= 0)){	
 				
 				updatePosVelLinkG_Walking(speed, collision);
 				
@@ -331,6 +334,24 @@ public class Physics extends Trait {
 						return new Collision(collisionVec, c.column());//can only collide with one vertex
 					}
 				}
+			}
+			return null;
+		}
+		
+		/**
+		 * Checks whether the thing should still be standing by shifting it up a bit, let it fall on it's link column and check it falls approximately the right distance (+-0.1)
+		 * @param pos
+		 * @param c
+		 * @return
+		 */
+		private Collision standingCollision() {
+			Vec pos1 = thing.pos.copy().shift(0, 0.1);
+			Vec diff = new Vec(0, -0.2);
+			Vec vec1 = new Vec(thing.newLink.getX(), thing.newLink.getCollisionY());
+			Vec vec2 = new Vec(thing.newLink.right().getX(), thing.newLink.right().getCollisionY());
+			Vec collisionVec = new Vec();
+			if(UsefulF.intersectionLines2(pos1, diff, vec1, vec2, collisionVec)) {
+				return new Collision(thing.pos, thing.newLink);
 			}
 			return null;
 		}

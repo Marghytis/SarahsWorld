@@ -10,68 +10,70 @@ import util.math.Vec;
 
 public class MeteorExplosion implements ParticleEffect {
 	
-	public static final ParticleType SPARKLE = new ParticleType(Res.getTex("sparkleParticle"));
+	public static final ParticleType FIRE_BALL = new ParticleType(Res.getTex("fireBall"));
 	
-	public ParticleEmitter sparkle = new ParticleEmitter(100, 1, SPARKLE, 3){
+	public ParticleEmitter fire = new ParticleEmitter(120, 0, FIRE_BALL, 3){
 
 		@Override
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x, pos.y);
 			float angle = random.nextFloat()*(float)(Math.PI*2);
+			double speed = 500*random.nextFloat();
 			
-			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f).scale(Main.game().SIZE_HALF.w,Main.game().SIZE_HALF.h);//-0.8f
-			p.col.set(1f, 0.7f, 0.0f, 0.8f);
-			p.rad = 5f;
+			p.vel.set((float)Math.cos(angle)*speed, (float)Math.sin(angle)*speed + 0.1f);//-0.8f
+//			p.col.set(0.69f, 0.15f, 0.10f, 0.5f);
+			p.rad = random.nextFloat()*3+0.7f;
 			p.lived = lifeSpan;
 		}
 
 		@Override
 		public void velocityInterpolator(Particle p, float delta) {
-			p.vel.x *= 0.97f;
-			p.vel.y *= 0.97f;
+			p.vel.scale(0.97f);
 		}
 
 		@Override
 		public void colorInterpolator(Particle p, float delta) {
-			p.col.a = (float) -p.lived /lifeSpan+1;
-		}
-
-	};
-
-	public static final ParticleType SMOKE = new ParticleType(Res.getTex("smokeParticle"));
-	
-	public ParticleEmitter smoke = new ParticleEmitter(60, 0, SMOKE, 1){
-
-		@Override
-		public void makeParticle(Particle p) {
-			p.pos.set(pos.x, pos.y);
-			float angle = random.nextFloat()*(float)(Math.PI*2);
-			
-			p.vel.set((float)Math.cos(angle)*(random.nextFloat()*0.3f), (float)Math.sin(angle)*(random.nextFloat()*0.3f) + 0.1f).scale(Main.game().SIZE_HALF.w,Main.game().SIZE_HALF.h);//-0.8f
-			p.col.set(1, 0, 0, 0.1f);
-			p.rot = random.nextBoolean() ? 0.1f : -0.1f;
-			p.rad = 10;
-			p.lived = lifeSpan;
-		}
-
-		@Override
-		public void velocityInterpolator(Particle p, float delta) {
-			p.vel.x *= 0.97f;
-			p.vel.y *= 0.97f;
-		}
-
-		@Override
-		public void colorInterpolator(Particle p, float delta) {
-			p.col.a -= 0.001f;
+			p.col.a = 0.5f*(1 - (p.lived/lifeSpan));
 		}
 
 		@Override
 		public void rotationInterpolator(Particle p, float delta) {
-			if(p.rot > 0){
-				p.rot = ((float)Math.PI/100)*p.lived;
-			} else {
-				p.rot = -((float)Math.PI/100)*p.lived;
-			}
+		}
+
+	};
+	
+
+	public static final ParticleType LIGHT = new ParticleType(Res.getTex("fogParticle"));
+
+	
+	public ParticleEmitter smoke = new ParticleEmitter(120, 0, LIGHT, 10){
+
+		@Override
+		public void makeParticle(Particle p) {
+			p.pos.set(pos.x, pos.y);
+			float angle = random.nextFloat()*(float)(Math.PI*2);
+			double speed = 1200*random.nextFloat();
+			
+			p.vel.set((float)Math.cos(angle)*speed, (float)Math.sin(angle)*speed + 0.1f);//-0.8f
+			p.col.set(0.01f, 0.01f, 0.01f, 0.5f);
+			p.rad = random.nextFloat()*10+2;
+			p.lived = lifeSpan;
+			p.someFloat = random.nextFloat();//less life so they don't all dissappear at the same time...
+		}
+
+		@Override
+		public void velocityInterpolator(Particle p, float delta) {
+			p.vel.scale(0.97f);
+		}
+
+		@Override
+		public void colorInterpolator(Particle p, float delta) {
+			p.col.a = 0.5f*(1 - (p.lived/(lifeSpan - p.someFloat)));
+			p.col.a = Math.max(0, p.col.a);
+		}
+
+		@Override
+		public void rotationInterpolator(Particle p, float delta) {
 		}
 
 	};
@@ -81,20 +83,20 @@ public class MeteorExplosion implements ParticleEffect {
 
 	public MeteorExplosion(Vec pos){
 		this.pos = pos.copy();
-		for(int i = 0; i < 60; i++){
+		for(int i = 0; i < 120; i++){
 			smoke.emittParticle(0);
 		}
-		for(int i = 0; i < 60; i++){
-			sparkle.emittParticle(0);
+		for(int i = 0; i < 120; i++){
+			fire.emittParticle(0);
 		}
 		smoke.emitting = false;
-		sparkle.emitting = false;
+		fire.emitting = false;
 	}
 	
 	@Override
 	public void update(double dTime){
 		smoke.tick((float)dTime);
-		sparkle.tick((float)dTime);
+		fire.tick((float)dTime);
 		count -= dTime;
 		if(!living())
 			Main.game().world.window.removeEffect(this);
@@ -103,13 +105,13 @@ public class MeteorExplosion implements ParticleEffect {
 	@Override
 	public void render(float scaleX, float scaleY){
 		smoke.render(scaleX, scaleY);
-		sparkle.render(scaleX, scaleY);
+		fire.render(scaleX, scaleY);
 	}
 	
 	@Override
 	public void terminate(){
 		smoke.terminate();
-		sparkle.terminate();
+		fire.terminate();
 	}
 
 	@Override

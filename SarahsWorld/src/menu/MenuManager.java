@@ -75,6 +75,9 @@ public class MenuManager implements Updater, Renderer, Listener {
 			
 			public void released(int button) {
 				game.getMenu().goBack();
+				for(int i = 0; i < history.size(); i++) {
+					System.out.println(i + ": " + history.elementAt(i).name());
+				}
 			}
 		};
 		dialog = new Dialog(game);
@@ -85,7 +88,6 @@ public class MenuManager implements Updater, Renderer, Listener {
 		}
 		
 		openActive = active(MenuType.EMPTY);
-		history.push(openActive.type);
 		history.push(openActive.type);
 	}
 	
@@ -113,8 +115,8 @@ public class MenuManager implements Updater, Renderer, Listener {
 	}
 	
 	public void goBack() {
-		history.pop();
-		next = history.peek();
+		history.pop();//don't save the menu that's currently open
+		next = history.pop();//pop the menu we're going to too
 		openActive.close();
 	}
 	
@@ -698,7 +700,13 @@ public class MenuManager implements Updater, Renderer, Listener {
 						x += 0.3;
 						y = 0.9;
 					}
-					menu.addElement(new KeyBinding(game, values[i], x, y, x, y, -100, -30, 100, 30, new Color(0, 0.7f, 0), null));
+
+					final int iFinal = i;
+					menu.addElement(new KeyBinding(game, values[i], x, y, x, y, -100, -30, 100, 30, new Color(0, 0.7f, 0), null) {
+						public boolean visible() {
+							return Settings.getBoolean("DEBUGGING") || iFinal < Settings.firstDebugKey;
+						}
+					});
 				}
 				x = 0.1;
 				y = 0.9;

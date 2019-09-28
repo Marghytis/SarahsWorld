@@ -100,6 +100,7 @@ Texture	rainParticle	res/particles/Raindrop.png			-0.5	-0.5
 Texture	fogParticle		res/particles/Fog.png				-0.5	-0.5
 Texture christmasBallPartile res/particles/ChristmasBall.png -0.5	-0.5
 Texture snowFlakeParticle	 res/particles/SnowFlake.png	-0.5	-0.5
+Texture fireBall		 res/particles/FireBallColor.png	-0.5	-0.5
 
 Texture	grass		res/materials/Grass.png			0	0
 Texture	earth		res/materials/Earth.png			0	0

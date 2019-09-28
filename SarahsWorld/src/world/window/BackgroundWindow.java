@@ -103,7 +103,7 @@ public class BackgroundWindow extends ArrayWorldWindow {
 		buffer.put(dark);
 		
 		buffer.putFloat((float)c.getX());
-		buffer.putFloat(-2000);
+		buffer.putFloat((float)(c.getTopSolidVertex().y() - darknessDistance - 5000));
 		buffer.put(dark);
 	}
 	
