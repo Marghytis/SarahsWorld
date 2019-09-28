@@ -1,17 +1,14 @@
 package extra.effects.particleEffects;
 
-import org.lwjgl.opengl.GL11;
-
 import basis.effects.particleEffects.Particle;
 import basis.effects.particleEffects.Particle.ParticleType;
 import basis.effects.particleEffects.ParticleEffect;
 import basis.effects.particleEffects.ParticleEmitter;
+import extra.Main;
 import extra.Res;
 import util.math.Vec;
 
-public class Meteor implements ParticleEffect {
-	
-	double vel = 400;
+public class Meteor extends MovingEffect {
 	
 	public static final ParticleType METEOR = new ParticleType(Res.getAtlas("meteor").tex(0, 0));
 	
@@ -19,11 +16,15 @@ public class Meteor implements ParticleEffect {
 
 		@Override
 		public void makeParticle(Particle p) {
-			p.pos.set(pos.x, pos.y);
-			p.rot = 0.375f;
+			p.pos.set(movingPos.x, movingPos.y);//                 v this 1 may be any hole number, just to make the angle positive semi definite
+			p.rot = (float)(Math.atan2(dir.y, dir.x)/(2*Math.PI) + 1 + 0.375f)%1;
 			
 			p.rad = 3f;
 			p.lived = lifeSpan;
+		}
+		
+		public void velocityInterpolator(Particle p, float delta) {
+			p.pos.set(movingPos);
 		}
 	};
 	public static final ParticleType SMOKE = new ParticleType(Res.getTex("smokeParticle"));
@@ -32,11 +33,12 @@ public class Meteor implements ParticleEffect {
 		public void makeParticle(Particle p) {
 			double r = random.nextInt(particleRadius)*1.5;
 			double phi = random.nextDouble()*2*Math.PI; 
-			p.pos.set(pos.x + (r*Math.cos(phi)), pos.y + (r*Math.sin(phi)));
-			p.vel.set(-vel, (random.nextFloat() - 0.5f)*vel*0.5);
+			p.pos.set(movingPos.x + (r*Math.cos(phi)), movingPos.y + (r*Math.sin(phi)));
+			p.vel.set(dir).scale(-speed).shift(dir.ortho(true), (random.nextFloat() - 0.5f)*speed*0.5);
 			p.col.set(0.05f, 0.05f, 0.05f, 1f);
 			p.lived = 0;
 			p.rad = 3;
+			p.rot = random.nextFloat();
 		}
 		public void velocityInterpolator(Particle p, float delta) {
 			p.vel.shift(ParticleEffect.wind, delta);
@@ -45,7 +47,7 @@ public class Meteor implements ParticleEffect {
 			if(p.lived/lifeSpan < 0.1) {
 				p.col.a = (float) 10*p.lived/lifeSpan;
 			} else {
-				p.col.a = (float) 1*(0.1f + (lifeSpan-p.lived) /lifeSpan);
+				p.col.a = (float) 1.11*((lifeSpan-p.lived) /lifeSpan);
 			}
 		}
 		public void radiusInterpolator(Particle p, float delta){
@@ -58,8 +60,8 @@ public class Meteor implements ParticleEffect {
 		public void makeParticle(Particle p) {
 			double r = random.nextInt(particleRadius);
 			double phi = random.nextDouble()*2*Math.PI; 
-			p.pos.set(pos.x + (r*Math.cos(phi)), pos.y + (r*Math.sin(phi)));
-			p.vel.set(-vel, (random.nextFloat() - 0.5f)*vel*0.5);
+			p.pos.set(movingPos.x + (r*Math.cos(phi)), movingPos.y + (r*Math.sin(phi)));
+			p.vel.set(dir).scale(-speed).shift(dir.ortho(true), (random.nextFloat() - 0.5f)*speed*0.5);
 			p.col.set(0.69f, 0.15f, 0.10f, 1f);
 			p.lived = 0;
 			p.rad = 3;
@@ -79,7 +81,7 @@ public class Meteor implements ParticleEffect {
 			if(p.lived/lifeSpan < 0.1) {
 				p.col.a = (float) 10*p.lived/lifeSpan;
 			} else {
-				p.col.a = (float) 1*(0.1f + (lifeSpan-p.lived) /lifeSpan);
+				p.col.a = (float) 1.11*(lifeSpan-p.lived) /lifeSpan;
 			}
 		}
 		public void radiusInterpolator(Particle p, float delta){
@@ -87,11 +89,13 @@ public class Meteor implements ParticleEffect {
 		}
 	};
 	
-	private Vec pos;
 	private int particleRadius = 100;
+	private Vec dir;
+	private double speed;
 	
-	public Meteor(Vec pos) {
-		this.pos = pos.copy();
+	public Meteor(Vec dir, double speed) {
+		this.dir = dir.copy();
+		this.speed = speed;
 		meteor.emittParticle(0);
 		meteor.emitting = false;
 	}
@@ -116,6 +120,13 @@ public class Meteor implements ParticleEffect {
 		meteor.terminate();
 		smoke.terminate();
 		fire.terminate();
+	}
+	
+	public boolean onTerrainCollision(Vec pos) {
+		Main.game().world.window.addEffect(new MeteorExplosion(pos));
+		Main.game().world.window.removeEffect(this);
+		Main.game().world.editor.makeCrater(pos, 200);
+		return true;
 	}
 
 	@Override

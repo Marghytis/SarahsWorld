@@ -51,6 +51,13 @@ public class Physics extends Trait {
 		this(mass, airea, true, true, true, true, walk, false);
 	}
 	
+	/**
+	 * Is called when the thing collides with the terrain. To be overridden
+	 * @param thing
+	 * @return should return true, if the physics calculation should be stopped (e.g. because the meteor exploded).
+	 */
+	protected boolean onCollision(Entity thing, Vec collisionVec) { return false;}
+	
 	@Override
 	public PhysicsPlugin createAttribute(Entity thing) {
 		return new PhysicsPlugin(thing);
@@ -200,8 +207,13 @@ public class Physics extends Trait {
 				//go to the location of impact and update the state variables in walking mode
 				updatePosVelLinkG_Walking(speed, collision);
 				
-				//return the unused time to walk during it
-				return delta - t1;
+				//call the user function onCollision (it may stop the calculations)
+				if(onCollision(thing, collision.position.copy()))
+					return 0;
+				
+				else
+					//return the unused time to walk during it
+					return delta - t1;
 			} else {
 
 				//update the state variables in free falling mode

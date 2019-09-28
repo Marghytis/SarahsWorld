@@ -1,6 +1,7 @@
 package world;
 
 import core.Listener;
+import extra.effects.particleEffects.Meteor;
 import extra.items.ItemType;
 import extra.things.Thing;
 import extra.things.ThingType;
@@ -8,8 +9,6 @@ import input.PollData;
 import menu.Settings;
 import menu.Settings.Key;
 import util.math.Vec;
-import world.data.Vertex;
-import world.generation.Biome;
 
 public class WorldListener implements Listener {
 
@@ -58,22 +57,11 @@ public class WorldListener implements Listener {
 			if(Settings.getBoolean("DEBUGGING")) {
 				if(input.isKeyDown(Key.BOMB.key)) {
 					int radius = 200;
-					Vec startEnd = new Vec(worldPos.x, worldPos.x);
-					world.landscapeWindow.forEachColumn(column -> {
-						double xDist = column.getX() - worldPos.x;
-						if(xDist < radius) {
-							double y = worldPos.y - Math.sqrt(radius*radius - (xDist*xDist));
-							double dy = y - column.getTopSolidVertex().getY();
-							if(dy < 0) {
-								if(column.getX() < startEnd.x) startEnd.x = column.getX();
-								if(column.getX() > startEnd.y) startEnd.y = column.getX();
-								
-								column.shiftColumnY(dy);
-							}
-						}
-					});
-					world.landscapeWindow.reload(startEnd.x, startEnd.y);
-					world.getBackgroundWindow().reload(startEnd.x, startEnd.y);
+					world.editor.makeCrater(worldPos.copy(), radius);
+				} else if(input.isKeyDown(Key.METEOR.key)){
+					double speed = 400;
+					Vec dir = worldPos.minus(world.window.toWorldPos(input.buttonsPressed[2]).copy()).normalize();
+					ThingType.MOVING_EFFECT.defaultSpawner.spawn(world.landscapeWindow.at(worldPos.x).column(), worldPos.copy(), new Meteor(dir, speed), dir.scale(speed));
 				} else {
 					objectsClickedOn = world.thingWindow.thingsAt(worldPos);
 					for(Thing t : objectsClickedOn){

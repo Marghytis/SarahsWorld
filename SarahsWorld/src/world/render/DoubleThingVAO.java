@@ -117,7 +117,7 @@ public class DoubleThingVAO extends ThingVAO {
 				Main.out.println("removing freed things");
 				removeFreedThings();
 			} else {
-				throw new RuntimeException("VAO is full!");
+				throw new RuntimeException("VAO is full! " + t.getThing().type().name);
 			}
 		}
 		//if the removal of freed things didn't help, the array is enlarged

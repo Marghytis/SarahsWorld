@@ -10,6 +10,8 @@ public abstract class MovingEffect implements ParticleEffect {
 	public MovingEffect(){
 	}
 	
+	public boolean onTerrainCollision(Vec pos) {return false;}
+	
 	public void setPos(Vec newPos) {
 		setPos(newPos.x, newPos.y);
 	}

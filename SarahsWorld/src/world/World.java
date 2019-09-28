@@ -37,7 +37,7 @@ public class World implements Savable {
 	
 	
 	public WorldData data;
-	WorldEditor editor;
+	public WorldEditor editor;
 	public GeneratorInterface generator;
 	
 	private GeneratingWorldWindow genWindow;

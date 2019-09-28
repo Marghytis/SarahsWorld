@@ -582,7 +582,7 @@ public class ThingType extends Species<Thing> {
 						t.itemPlug.addItem(ItemType.STICK);
 				}
 			}};
-	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.getAtlas("tree_fir"), 50, new Animating(tree_fir[0][0], new Rect(Res.getAtlas("tree_fir").pixelCoords), 0, 1, 1, false, tree_fir), new ContainedItems()){
+	public static final ThingType TREE_FIR = new ThingType("TREE_FIR", Res.getAtlas("tree_fir"), 100, new Animating(tree_fir[0][0], new Rect(Res.getAtlas("tree_fir").pixelCoords), 0, 1, 1, false, tree_fir), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
 	public static final ThingType TREE_FIR_SNOW = new ThingType("TREE_FIR_SNOW", Res.getAtlas("tree_firSnow"), 100, new Animating(tree_firSnow[0][0], new Rect(Res.getAtlas("tree_firSnow").pixelCoords), 0, 1, 1, false, tree_firSnow), new ContainedItems()){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){TREE_NORMAL.setup(t, field, pos, extraData);}};
@@ -839,7 +839,12 @@ public class ThingType extends Species<Thing> {
 	 * 
 	 */
 	public static final ThingType MOVING_EFFECT = new ThingType("MOVING_EFFECT", TexAtlas.emptyAtlas, 30, true,
-			new Physics(1, 0, false, false, false, false, false, false),
+			new Physics(1, 0, false, false, true, false, false, false) {
+				@Override
+				protected boolean onCollision(Entity t, Vec pos) {
+					return ((MovingEffect)t.attachment.getEffect()).onTerrainCollision(pos);
+				}
+	},
 			new Attachement() {
 				public void onVisibilityChange(Thing t, boolean visible){
 					if(!t.attachment.active() && visible) {

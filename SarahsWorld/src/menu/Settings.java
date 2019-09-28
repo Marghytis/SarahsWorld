@@ -32,6 +32,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ADD;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_L;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_M;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_MINUS;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_O;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_Q;
@@ -195,6 +196,7 @@ public class Settings {
 		REFILL_BUFFERS(GLFW_KEY_F2, "refill buffers"),
 		RELOAD_TERRAIN(GLFW_KEY_F3, "refill buffers"),
 		BOMB(GLFW_KEY_B, "make explosion at mouse location"),
+		METEOR(GLFW_KEY_M, "spawn meteor"),
 		NONE(0, "");
 		
 		public int key;

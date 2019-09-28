@@ -1,6 +1,7 @@
 package world.data;
 
 import basis.entities.Entity;
+import util.math.Vec;
 import world.window.ThingWindow;
 
 public class WorldEditor {
@@ -9,6 +10,25 @@ public class WorldEditor {
 	
 	public WorldEditor(WorldData data) {
 		this.data = data;
+	}
+	
+	public void makeCrater(Vec pos, double radius) {
+		Vec startEnd = new Vec(pos.x, pos.x);
+		data.world.landscapeWindow.forEachColumn(column -> {
+			double xDist = column.getX() - pos.x;
+			if(xDist < radius) {
+				double y = pos.y - Math.sqrt(radius*radius - (xDist*xDist));
+				double dy = y - column.getTopSolidVertex().getY();
+				if(dy < 0) {
+					if(column.getX() < startEnd.x) startEnd.x = column.getX();
+					if(column.getX() > startEnd.y) startEnd.y = column.getX();
+					
+					column.shiftColumnY(dy);
+				}
+			}
+		});
+		data.world.landscapeWindow.reload(startEnd.x, startEnd.y);
+		data.world.getBackgroundWindow().reload(startEnd.x, startEnd.y);
 	}
 	
 //	/**
