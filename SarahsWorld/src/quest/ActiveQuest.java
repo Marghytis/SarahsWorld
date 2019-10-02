@@ -13,11 +13,17 @@ public class ActiveQuest {
 	public int answer;
 	public boolean eventFinished = true;
 	private World world;
+	private Quest quest;
 	
 	public ActiveQuest(World world, Quest quest){
 		this.world = world;
+		this.quest = quest;
 		this.currentEvent = quest.start;
 		characters.put("sarah", world.avatar);
+	}
+	
+	public Quest getQuest() {
+		return quest;
 	}
 	
 	public void onAnswer(int number){

@@ -92,8 +92,12 @@ public class Speaking extends Trait {
 				for(int i = 0; i < answers.length; i++){
 					realAnswers[i] = Strings.get(answers[i], World.rand);
 				}
-				((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).setup(quest, thing, Strings.get(what, World.rand), realAnswers);
-				Main.game().menu.setMenu(MenuType.DIALOG);
+				if(Main.game().menu.openActive.type != MenuType.DIALOG) {
+					((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).setup(quest, thing, Strings.get(what, World.rand), realAnswers);
+					Main.game().menu.setMenu(MenuType.DIALOG);
+				} else {
+					((Dialog)Main.game().menu.active(MenuType.DIALOG).getElement(0)).setupWithoutAnimation(quest, thing, Strings.get(what, World.rand), realAnswers);
+				}
 			}
 		}
 	}

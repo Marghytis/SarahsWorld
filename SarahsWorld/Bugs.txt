@@ -12,10 +12,10 @@ _item positions are not correct when rotating
 _after giving Evelyn a cake, I can give other evelyns a cake too, even though I don't have one
 _item is at strange position when punching
 _text in textfields isn't vertically centered
-_you can throw away fists
 _when passing the maxVisible amount of things of a type (by spawning them/throwing away items), newly created things are not visible
 _thing rendering still not working as expected when walking through a jungle
 _material transitions have some problems with the indices
+_speech bubble behaves strange when speaking to different characters directly after one another
 
 optional
 _schweben bei antigravity etc.
@@ -40,3 +40,4 @@ _right click for mounting cows work only with empty hands
 _magic effect doesn't work or interaction in general
 _speech bubble has wrong texture
 _there are no particle effects, if you go far to the right (left not tested)
+_you can throw away fists

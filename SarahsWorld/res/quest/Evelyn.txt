@@ -1,12 +1,16 @@
-Attributes{
+MAIN {
+	scriptName = Evelyn;
+	scriptType = QUEST
+}
+ATTRIBUTES{
     TREES;
     EVELYN
 }
-Characters{
+CHARACTERS{
     mario = SARAH;
     evelyn = VILLAGER
 }
-Start{
+START{
 	IF
         random(100)<=1
     ~DO
@@ -22,6 +26,13 @@ Hello?{
         Ready_Yes;
         Ready_No
 }
+Walk_Away{
+	IF
+		has(mario, BIRTHDAY_CAKE, 1) == false ||
+		distance(mario, evelyn) >> 300
+	~NEXT
+		Hello?
+}
 Ready_Yes{
 	IF
 		has(mario, BIRTHDAY_CAKE, 1) == true
@@ -29,7 +40,8 @@ Ready_Yes{
         say(true, evelyn, quests.evelyn.greeting, quests.evelyn.greeting | quests.evelyn.birthdayWish)
 	~NEXT
 		1: OnlyGreeting;
-		2: ThankYou
+		2: ThankYou;
+        Ready_No
 }
 OnlyGreeting{
 	NEXT

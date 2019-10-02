@@ -23,7 +23,7 @@ public enum Quest {
 	static {
 		values = values();
 	}
-	public Hashtable<String, Species> characters = new Hashtable<>();
+	public Hashtable<String, Species<?>> characters = new Hashtable<>();
 	public int[] startAttributes;
 	public Event start;
 	
@@ -55,23 +55,23 @@ public enum Quest {
 		String[] blocks = file.split("\\}");
 		
 		//attributes
-		String[] attribs = blocks[0].split("\\{")[1].split(";");
+		String[] attribs = blocks[1].split("\\{")[1].split(";");
 		startAttributes = new int[attribs.length];
 		for(int i = 0; i < attribs.length; i++){
 			startAttributes[i] = Attribute.valueOf(attribs[i]).ordinal();
 		}
 		
 		//characters
-		String[] chars = blocks[1].split("\\{")[1].split(";");
+		String[] chars = blocks[2].split("\\{")[1].split(";");
 		for(int i = 0; i < chars.length; i++){
 			String[] data = chars[i].split("=");
 			characters.put(data[0], Species.valueOf(data[1]));
 		}
 		
 		//names
-		String[] names = new String[blocks.length-2];//first two are not used
-		String[] blocks2 = new String[blocks.length-2];
-		for(int i = 2, i2 = 0; i < blocks.length; i++, i2++){
+		String[] names = new String[blocks.length-3];//first two are not used
+		String[] blocks2 = new String[blocks.length-3];
+		for(int i = 3, i2 = 0; i < blocks.length; i++, i2++){
 			String[] data = blocks[i].split("\\{");
 			names[i2] = data[0];
 			if(data.length > 1)
@@ -175,7 +175,7 @@ public enum Quest {
 		case ">=": return (q, w) -> ((Number)left.object(q, w)).intValue() >= Integer.parseInt(rightSide);
 		case "<<": return (q, w) -> ((Number)left.object(q, w)).intValue() < Integer.parseInt(rightSide);
 		case ">>": return (q, w) -> ((Number)left.object(q, w)).intValue() > Integer.parseInt(rightSide);
-		default: return null;
+		default: throw new RuntimeException("operator not known.");
 		}
 	}
 	
@@ -183,7 +183,7 @@ public enum Quest {
 		public Object object(ActiveQuest quest, WorldData world);
 	}
 	
-	public Action compileAction(String action) throws UnknownMethodException {
+	public static Action compileAction(String action) throws UnknownMethodException {
 		String[] actions = action.split(";");
 		Action[] realActions = new Action[actions.length];
 		for(int i = 0; i < actions.length; i++){
@@ -191,7 +191,7 @@ public enum Quest {
 			String[] args = method[1].split(",");
 			switch(method[0]){
 			case "bindAvatar": realActions[i] = (q,w)->{q.characters.put(args[0], World.world.avatar);}; break;
-			case "spawn": realActions[i] = (q, w) -> {w.requestSpawn(new QuestSpawner(characters.get(args[0]), q, args[0], args.length > 1 ? args[1] : -1)); q.eventFinished = false;}; break;
+			case "spawn": realActions[i] = (q, w) -> {w.requestSpawn(new QuestSpawner(q.getQuest().characters.get(args[0]), q, args[0], args.length > 1 ? args[1] : -1)); q.eventFinished = false;}; break;
 			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).speakPlug.say(Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
 			//say(boolean thoughtBubble, villager, question, answers)break;
 			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).invPlug.addItem( ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
@@ -228,7 +228,7 @@ public enum Quest {
 		return out;
 	}
 	
-	public class UnknownMethodException extends Exception {
+	public static class UnknownMethodException extends Exception {
 		private static final long serialVersionUID = 1L; 
 		public UnknownMethodException(String type, String event){
 			super("Script file has an unknown " + event + " function in " + type);

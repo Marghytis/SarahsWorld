@@ -148,7 +148,7 @@ public class WorldListener implements Listener {
 			break;
 		case THROW_ITEM:
 			ItemType type = world.avatar.invPlug.getSelectedItem();
-			if(type != null) {
+			if(type != null && type != ThingType.SARAH.inv.defaultItem) {
 				world.thingWindow.add(new Thing(ThingType.ITEM, world.avatar.newLink, world.avatar.pos.copy().shift(0, 60), type, new Vec(World.rand.nextInt(401)-200, World.rand.nextInt(300) + 100)));
 				world.avatar.invPlug.addItem(type, -1);
 			}

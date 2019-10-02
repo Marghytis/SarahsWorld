@@ -35,6 +35,7 @@ public class Res extends ResourceDatabase {
 	
 	public static void init() {
 		readTexTable(Main.TEX_ATLAS_TABLE_PATH);
+		readScriptTable(Main.SCRIPT_TABLE_PATH);
 		//these animations can only be created here, when their TexAtlas has been loaded
 		death = new Animation("death", Res.getAtlas("sarah_death"), 4, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13);
 	}

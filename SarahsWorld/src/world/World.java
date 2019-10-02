@@ -9,6 +9,7 @@ import basis.Savable;
 import basis.exceptions.WorldCreationException;
 import basis.exceptions.WorldTooSmallException;
 import extra.Main;
+import extra.Res;
 import extra.items.ItemType;
 import extra.things.Thing;
 import extra.things.ThingType;
@@ -16,6 +17,8 @@ import input.PollData;
 import menu.MenuManager.MenuType;
 import menu.Settings;
 import moveToLWJGLCore.Dir;
+import quest.script.GameSetupScript;
+import quest.script.ScriptParser.ScriptType;
 import util.math.Vec;
 import world.data.Column;
 import world.data.Vertex;
@@ -24,7 +27,6 @@ import world.data.WorldEditor;
 import world.generation.Generator;
 import world.generation.GeneratorInterface;
 import world.render.WorldPainter;
-import world.window.ArrayWorldWindow;
 import world.window.BackgroundWindow;
 import world.window.GeneratingWorldWindow;
 import world.window.TerrainWindow;
@@ -54,6 +56,11 @@ public class World implements Savable {
 	public World(PollData inputData){
 		world = this;
 		Main.game().world = this;
+		
+		GameSetupScript gameSetupScript = (GameSetupScript) Res.getScript(ScriptType.GAME_SETUP.name());
+		if(gameSetupScript != null) {
+			gameSetupScript.changeSettings();
+		}
 
 		data = new WorldData(this);
 		editor = new WorldEditor(data);
@@ -66,6 +73,9 @@ public class World implements Savable {
 		avatar.invPlug.addItem( ItemType.UNICORN_HORN, 1);
 		
 		init(inputData);
+		
+		if(gameSetupScript != null)
+			gameSetupScript.startGame();
 	}
 
 	public World(DataInputStream input, PollData inputData) throws IOException {

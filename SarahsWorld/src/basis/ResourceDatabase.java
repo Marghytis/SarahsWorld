@@ -5,6 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import quest.script.Script;
+import quest.script.ScriptError;
+import quest.script.ScriptParser;
 import render.TexAtlas;
 import render.TexFile;
 import render.TexInfo;
@@ -16,6 +19,8 @@ public class ResourceDatabase {
 	static Hashtable<String, TexInfo> texInfos = new Hashtable<>();
 	static Hashtable<String, Texture> textures = new Hashtable<>();
 	static Hashtable<String, TexAtlas> texAtlases = new Hashtable<>();
+	
+	static Hashtable<String, Script> scripts = new Hashtable<>();
 	
 	public static TexAtlas getAtlas(String key) {
 		TexAtlas out = texAtlases.get(key);
@@ -123,6 +128,39 @@ public class ResourceDatabase {
 				// read next line
 				line = reader.readLine();
 				lineIndex++;
+			}
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Script getScript(String name) {
+		return scripts.get(name);
+	}
+	
+	public static void readScriptTable(String tablePath) {
+
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(tablePath));
+			String line = reader.readLine();
+			while (line != null) {
+
+				String[] words = line.split("\\s+");
+				
+				if(words.length != 0 && !words[0].startsWith("//")) {
+					try {
+						Script script = ScriptParser.parseScriptFile(words[0]);
+						scripts.put(script.getName(), script);
+					} catch (ScriptError e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				// read next line
+				line = reader.readLine();
 			}
 			reader.close();
 		} catch (IOException e) {

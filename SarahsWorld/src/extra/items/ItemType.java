@@ -61,7 +61,8 @@ public class ItemType {
 		public boolean useAt(Thing src, Vec pos){
 			pos = pos.copy();
 			src.newLink.getRandomTopLocation(World.rand, pos);
-			ThingType.CAKE.defaultSpawner.spawn(src.newLink, pos);
+			Thing cake = new Thing(ThingType.CAKE, src.newLink, pos);
+			cake.showUpAfterHiding(src.newLink);
 			Main.game().world.window.addEffect(new BerryEat(new Vec(Main.game().world.avatar.pos.x + (Main.game().world.avatar.aniPlug.getAnimator().tex.w/2), Main.game().world.avatar.pos.y + (Main.game().world.avatar.aniPlug.getAnimator().tex.h/2))));
 			return true;
 		}
@@ -150,19 +151,29 @@ public class ItemType {
 		if(needsTarget){
 			//prefer to pick up items
 			for(Thing t : dest){
-				if(t.type == ThingType.ITEM){
+				if(t.type == ThingType.ITEM || t.type == ThingType.CAKE){
 					if(useOn(src, pos, t)){
-						return true;
+						return false;
 					}
 				}
 			}
 			//and only then use on other things
 			for(Thing t : dest){
-				if(useOn(src, pos, t)){
-					return true;
+				if(t.type != ThingType.ITEM && t.type != ThingType.CAKE){
+					if(useOn(src, pos, t)){
+						return true;
+					}
 				}
 			}
 		} else {
+			//prefer to pick up items
+			for(Thing t : dest){
+				if(t.type == ThingType.ITEM || t.type == ThingType.CAKE){
+					if(useOn(src, pos, t)){
+						return false;
+					}
+				}
+			}
 			return useAt(src, pos);
 		}
 		return false;
@@ -175,6 +186,9 @@ public class ItemType {
 		if(dest.itemPlug != null && dest.itemPlug.containsAnyItems() && src.invPlug != null && src.pos.minus(dest.pos).lengthSquare() < 100000){
 			ItemType i = dest.itemPlug.removeRandomFruit(World.rand);
 			if(i != null) src.invPlug.addItem( i, 1);
+			if(dest.type == ThingType.ITEM || dest.type == ThingType.CAKE) {
+				Main.game().world.editor.delete(dest);
+			}
 			success = true;
 		} else {
 			if(src.ridePlug != null && src.ridePlug.canRide(dest.type)){

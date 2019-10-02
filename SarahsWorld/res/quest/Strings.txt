@@ -11,4 +11,4 @@ rejected="Oh ok."; "O.k. I understand"; "Well then I'm going to get it by myself
 questions.ready="Hi, are you ready?"; "Have you executed my task?"; "Nice to see you again! Are you ready?"
 answers.notYet.kind="No, not yet, sorry."; "No, I'll be back later."; "Not yet, but soon!"
 answers.yes.kind="Yes, here you go!"; "Yep I did it!"; "Yeah I have finished!"
-thankYou.kind="Thank you very much, sir! Here you have 30 gold :)"; "I'm very pleased! Here's your reward."; "You're my hero for today, my friend! Have some of my gold coins!"
+thankYou.kind="Thank you very much! Here you have 30 gold :)"; "I'm very pleased! Here's your reward."; "You're my hero for today, my friend! Have some of my gold coins!"

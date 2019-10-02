@@ -70,6 +70,13 @@ public class Dialog extends Element {
 	}
 	
 	public void setup(ActiveQuest quest, Thing other, String text1, String[] answers){
+		setupWithoutAnimation(quest, other, text1, answers);
+		
+		//Animation
+		setupAnimation();
+	}
+	
+	public void setupWithoutAnimation(ActiveQuest quest, Thing other, String text1, String[] answers){
 		this.quest = quest;
 		this.other = other;
 		this.text1 = text1.split("\\|");
@@ -93,9 +100,6 @@ public class Dialog extends Element {
 		relPos = new Vec(rDefault, rDefault);
 		pos = other.pos.copy();
 		bubbleRenderUpdateNeeded = true;
-		
-		//Animation
-		setupAnimation();
 	}
 	
 	/**

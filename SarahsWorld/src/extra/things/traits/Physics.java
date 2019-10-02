@@ -71,7 +71,8 @@ public class Physics extends Trait {
 				nextVel = new Vec(),
 				force = new Vec();
 		
-		private Column collisionC = null;
+		private boolean physicsDisabled = false;
+		
 		public double walkingForce, speed, maxWalkingSpeed, buoyancyForce;
 		private Where where = new Where();
 
@@ -118,7 +119,7 @@ public class Physics extends Trait {
 			where.water = 0;
 //			t.g = false;
 			
-			{//COLLISION TESTING-------------------------------------------O
+			if(!physicsDisabled){//COLLISION TESTING-------------------------------------------O
 				//Test for collision in time intervals of dt=0.01s length
 				int steps = (int)(delta/dt);
 				double step = delta/steps;
@@ -412,6 +413,8 @@ public class Physics extends Trait {
 	//Setters
 		public void		setVel(Vec vel) {						setVel(vel.x, vel.y); }
 		public void		setVel(double velX, double velY) {		this.vel.set(velX, velY); }		
+		public void		enable() {								this.physicsDisabled = false;}/**Disables collision testing and position update. Other functionality like force reset and rotation stay active.*/
+		public void		disable() {								this.physicsDisabled = true;}
 	}
 	
 	public double angleDist(double a, double b){

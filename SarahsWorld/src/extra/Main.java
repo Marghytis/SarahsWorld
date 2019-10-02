@@ -15,6 +15,7 @@ public class Main extends BasisMain {
 
 	//configuration parameters. TODO: read from a file
 	public final static String TEX_ATLAS_TABLE_PATH = "res/TexAtlasTable.res";
+	public final static String SCRIPT_TABLE_PATH = "res/Scripts.res";
 	public final static String SETTINGS_PATH = "res/Settings.txt";
 	
 	private static SarahsWorld myGame;
