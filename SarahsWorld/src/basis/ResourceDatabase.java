@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 
 import quest.script.Script;
-import quest.script.ScriptError;
 import quest.script.ScriptParser;
 import render.TexAtlas;
 import render.TexFile;
@@ -150,14 +149,8 @@ public class ResourceDatabase {
 				String[] words = line.split("\\s+");
 				
 				if(words.length != 0 && !words[0].startsWith("//")) {
-					try {
-						Script script = ScriptParser.parseScriptFile(words[0]);
-						scripts.put(script.getName(), script);
-					} catch (ScriptError e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					Script script = ScriptParser.parseScriptFile(words[0]);
+					scripts.put(script.getName(), script);
 				}
 				// read next line
 				line = reader.readLine();

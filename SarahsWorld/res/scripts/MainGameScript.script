@@ -6,16 +6,21 @@ GAME_SETUP {
 	AVATAR_START_OFFSET = (VEC,0,1000));
 	ZONETYPE = (STRING, VILLAGE))
 }
+ATTRIBUTES {}
 CHARACTERS {
 	sarah = SARAH;
 	meteor = MOVING_EFFECT
 }
 START {
 	DO
-		spawn(meteor, sarah.link, sarah.pos, METEOR, (VEC, 400, -10), 400);
-		stick(sarah, meteor)
+		give(sara, stick, 31)
 	~NEXT
 		Wake_up
+	//DO
+	//	spawn(meteor, sarah.link, sarah.pos, METEOR, (VEC, 400, -10), 400);
+	//	stick(sarah, meteor)
+	//~NEXT
+	//	Wake_up
 }
 Wake_up {
 	EMPTY

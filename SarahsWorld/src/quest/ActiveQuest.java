@@ -18,7 +18,7 @@ public class ActiveQuest {
 	public ActiveQuest(World world, Quest quest){
 		this.world = world;
 		this.quest = quest;
-		this.currentEvent = quest.start;
+		this.currentEvent = quest.getStart();
 		characters.put("sarah", world.avatar);
 	}
 	

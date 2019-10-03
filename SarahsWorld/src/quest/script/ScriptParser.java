@@ -5,9 +5,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import quest.Quest;
+import quest.Quest.UnknownMethodException;
+import quest.script.Block.CommandBlock;
 import quest.script.Block.ListBlock;
 import quest.script.Block.SettingsBlock;
 import quest.script.Block.SettingsBlock.Value;
+import quest.script.ScriptError.NameError;
 import quest.script.ScriptError.StructureError;
 import quest.script.ScriptError.SyntaxError;
 
@@ -22,23 +26,29 @@ public class ScriptParser {
 	//main settings names
 	private static final String SCRIPT_NAME_settingName = "scriptName", SCRIPT_TYPE_settingName = "scriptType";
 
-	public static Script parseScriptFile(String filePath) throws IOException, ScriptError {
+	public static Script parseScriptFile(String filePath) {
 
-		FileReader fileReader = new FileReader(filePath);
-		BufferedReader reader = new BufferedReader(fileReader);
-
-		String completeFile = "", line = "";
-		
-		while((line = reader.readLine()) != null){
-			completeFile += line;
+		try {
+			FileReader fileReader = new FileReader(filePath);
+			BufferedReader reader = new BufferedReader(fileReader);
+	
+			String completeFile = "", line = "";
+			
+			while((line = reader.readLine()) != null){
+				if(!line.startsWith("\\s+//"))//would be a comment
+					completeFile += line;
+			}
+			
+			Script out = parseScriptText(completeFile);
+			
+			fileReader.close();
+			reader.close();
+			
+			return out;
+		} catch (IOException | ScriptError e) {
+			e.printStackTrace();
+			return null;
 		}
-		
-		Script out = parseScriptText(completeFile);
-		
-		fileReader.close();
-		reader.close();
-		
-		return out;
 	}
 	
 	/**
@@ -60,7 +70,8 @@ public class ScriptParser {
 		
 		for(int i = 0; i < blocks.length; i++) {
 			String[] blockStrings = blocks[i].split("\\{");
-			Block block = parseBlock(blockStrings[0], blockStrings[1]);
+			
+			Block block = parseBlock(blockStrings[0], blockStrings.length > 1 ? blockStrings[1] : "");
 			
 			if(block != null)
 				blocksHashed.put(blockStrings[0], block);
@@ -87,8 +98,9 @@ public class ScriptParser {
 		if(!blocks.containsKey(MAIN_blockName))
 			throw new StructureError("There needs to be at least one block called '" + MAIN_blockName + "' in a script.");
 		
-		String name = ((SettingsBlock)blocks.get(MAIN_blockName)).settings.get(SCRIPT_NAME_settingName).asString();
-		String type = ((SettingsBlock)blocks.get(MAIN_blockName)).settings.get(SCRIPT_TYPE_settingName).asString();
+		SettingsBlock mainBlock = ((SettingsBlock)blocks.get(MAIN_blockName)); 
+		String name = mainBlock.settings.get(SCRIPT_NAME_settingName).asString();
+		String type = mainBlock.settings.get(SCRIPT_TYPE_settingName).asString();
 		
 		switch(type) {
 		case GAME_SETUP_scriptTypeName: return new GameSetupScript(blocks);
@@ -103,26 +115,12 @@ public class ScriptParser {
 	}
 	
 	private static Block parseEventBlock(String name, String content) throws ScriptError {
-//		String[] commands = content.split(";");
-//		Action[] actions = new Action[commands.length];
-//		
-//		for(int i = 0; i < commands.length; i++) {
-//			actions[i] = parseCommand(commands[i]);
-//		}
-//		
-		//TODO use quest compiler...
-		
-//		return new CommandBlock(actions);
-		return null;
+		try {
+			return new CommandBlock(Quest.compileEvent(name, content));
+		} catch (UnknownMethodException e) {
+			throw new NameError("Function not recognized: " + e.getMessage());
+		}
 	}
-	
-//	private static Action parseCommand(String commandString) throws NameError {
-//		try {
-//			return Quest.compileAction(commandString);
-//		} catch (UnknownMethodException e) {
-//			throw new NameError(e.getMessage());
-//		}
-//	}
 	
 	private static Block parseKeyValueBlock(String name, String content) throws ScriptError {
 		String[] settingsStrings = content.split(";");

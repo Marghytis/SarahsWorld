@@ -2,19 +2,18 @@ package quest.script;
 
 import java.util.Hashtable;
 
-import basis.entities.Species;
 import menu.Settings;
-import quest.Action;
+import quest.Event;
 import quest.script.ScriptError.SyntaxError;
 import util.math.Vec;
 
 public class Block {
 	
 	public static class CommandBlock extends Block {
-		public Action[] actions;
+		public Event event;
 		
-		public CommandBlock(Action... actions) {
-			this.actions = actions;
+		public CommandBlock(Event event) {
+			this.event = event;
 		}
 	}
 	
@@ -62,13 +61,6 @@ public class Block {
 					values = new String[] {value};
 				}
 				
-			}
-
-			public Species<?> asSpecies() {
-				if(type == ValueType.STRING || type == ValueType.ENUM)
-					return Species.valueOf(values[0]);
-				else
-					throw new RuntimeException("Value can't be a Species.");
 			}
 
 			public String asString() {

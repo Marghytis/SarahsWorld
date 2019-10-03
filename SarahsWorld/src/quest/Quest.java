@@ -1,55 +1,63 @@
 package quest;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
 
 import basis.entities.Species;
 import extra.items.ItemType;
+import quest.script.Block;
+import quest.script.QuestScript;
+import quest.script.ScriptError.StructureError;
+import quest.script.ScriptParser;
 import world.World;
 import world.data.WorldData;
 import world.generation.Zone.Attribute;
 import world.render.WorldPainter;
 
-public enum Quest {
-//	FIREFIGHTER("res/quest/Firefighter.txt"),
-//	TEST("res/quest/Test.txt"),
-	EVELYN("res/quest/Evelyn.txt")
-	;
+public class Quest extends QuestScript {
+	
+	private static List<Quest> tempValues = new ArrayList<>();
 
+//	public static final Quest FIREFIGHTER = new Quest("res/quest/Firefighter.txt");
+//	public static final Quest TEST = new Quest("res/quest/Test.txt");
+	public static final QuestScript EVELYN = (QuestScript) ScriptParser.parseScriptFile("res/quest/Evelyn.txt");
+	
 	public static Quest[] values;
-	
 	static {
-		values = values();
+		values = tempValues.toArray(new Quest[tempValues.size()]);
 	}
-	public Hashtable<String, Species<?>> characters = new Hashtable<>();
-	public int[] startAttributes;
-	public Event start;
 	
-	Quest(String filePath){
-		try {
-			FileReader fileReader = new FileReader(filePath);
-			BufferedReader reader = new BufferedReader(fileReader);
-
-			String completeFile = "", line = "";
-			
-			while((line = reader.readLine()) != null){
-				completeFile += line;
-			}
-			
-			completeFile = completeFile.replaceAll("\\s+","");
-			
-			compile(completeFile);
-			
-			fileReader.close();
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (UnknownMethodException e) {
-			e.printStackTrace();
-		}
+	public Quest(String name, Hashtable<String, Block> blocks) throws StructureError {
+		super(name, blocks);
 	}
+	
+//	private Quest(String filePath){
+//		try {
+//			FileReader fileReader = new FileReader(filePath);
+//			BufferedReader reader = new BufferedReader(fileReader);
+//
+//			String completeFile = "", line = "";
+//			
+//			while((line = reader.readLine()) != null){
+//				completeFile += line;
+//			}
+//			
+//			completeFile = completeFile.replaceAll("\\s+","");
+//			
+//			compile(completeFile);
+//			
+//			fileReader.close();
+//			reader.close();
+//			
+//			tempValues.add(this);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (UnknownMethodException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	public void compile(String file) throws UnknownMethodException {
 		String[] blocks = file.split("\\}");
@@ -65,56 +73,90 @@ public enum Quest {
 		String[] chars = blocks[2].split("\\{")[1].split(";");
 		for(int i = 0; i < chars.length; i++){
 			String[] data = chars[i].split("=");
-			characters.put(data[0], Species.valueOf(data[1]));
+			characters.put(data[0], data[1]);
 		}
 		
-		//names
-		String[] names = new String[blocks.length-3];//first two are not used
-		String[] blocks2 = new String[blocks.length-3];
-		for(int i = 3, i2 = 0; i < blocks.length; i++, i2++){
+		//events
+		Hashtable<String, Event> events = new Hashtable<>();
+		
+		for(int i = 3; i < blocks.length; i++){
 			String[] data = blocks[i].split("\\{");
-			names[i2] = data[0];
-			if(data.length > 1)
-				blocks2[i2] = data[1];
-			else
-				blocks2[i2] = "";
+			events.put(data[0], compileEvent(data[0], data[1]));
 		}
 		
-		//actual quest
-		Event[] events = new Event[blocks2.length];
-		for(int i = 0; i < blocks2.length; i++){
-			events[i] = new Event(i, names[i]);
-			String[] paragraphs = blocks2[i].split("~");
-			for(int i2 = 0; i2 < paragraphs.length; i2++)
-			switch(paragraphs[i2].charAt(0)){
-			case 'I'://IF
-				events[i].condition = compileCondition(paragraphs[i2].substring(2));
-				break;
-			case 'D'://DO
-				events[i].action = compileAction(paragraphs[i2].substring(2));
-				break;
-			case 'N'://NEXT
-				events[i].nextTemp = compileNext(names, paragraphs[i2].substring(4));
-				break;
-			case 'E'://EMPTY
-				break;
-			}
-			if(events[i].condition == null) events[i].condition = (q, w) -> true;
-			if(events[i].action == null) events[i].action = (q, w) -> {};
-			if(events[i].nextTemp == null) events[i].nextTemp = new int[0];
-		}
-		for(int i = 0; i < events.length; i++){
-			events[i].next = new Event[events[i].nextTemp.length];
-			events[i].answerCondition = new int[events[i].nextTemp.length];
-			for(int i2 = 0; i2 < events[i].nextTemp.length; i2++){
-				events[i].next[i2] = events[events[i].nextTemp[i2]%1000];
-				events[i].answerCondition[i2] = events[i].nextTemp[i2]/1000;
-			}
-		}
-		start = events[0];
+		//link events and set start event
+		linkEvents2(events);
+		start = events.get(QuestScript.START_blockName);
 	}
 	
-	public Condition compileCondition(String condition) throws UnknownMethodException {
+	public static void linkEvents2(Hashtable<String, Event> events) {
+		Set<String> names = events.keySet();
+		for(String name : names) {
+			Event event = events.get(name);
+			if(event.nextTemp2 != null) {
+				event.next = new Event[event.nextTemp2.length];
+				event.answerCondition = new int[event.nextTemp2.length];
+				for(int i2 = 0; i2 < event.nextTemp2.length; i2++) {
+					String[] nextStrings = event.nextTemp2[i2].split(":");
+					if(nextStrings.length == 1) {
+						event.next[i2] = events.get(nextStrings[0]);
+					} else if(nextStrings.length == 2) {
+						event.next[i2] = events.get(nextStrings[1]);
+						event.answerCondition[i2] = Integer.parseInt(nextStrings[0]);
+					} else {
+						throw new RuntimeException("What?! Too many colons..");
+					}
+				}
+			} else {
+				event.next = new Event[0];
+				event.answerCondition = new int[0];
+			}
+		}
+	}
+	
+	public static void linkEvents(Event[] events) {
+		for(int i = 0; i < events.length; i++){
+			if(events[i].nextTemp != null) {
+				events[i].next = new Event[events[i].nextTemp.length];
+				events[i].answerCondition = new int[events[i].nextTemp.length];
+				for(int i2 = 0; i2 < events[i].nextTemp.length; i2++){
+					events[i].next[i2] = events[events[i].nextTemp[i2]%1000];
+					events[i].answerCondition[i2] = events[i].nextTemp[i2]/1000;
+				}
+			} else {
+				events[i].next = new Event[0];
+				events[i].answerCondition = new int[0];
+			}
+		}
+	}
+	
+	public static Event compileEvent(String name, String content) throws UnknownMethodException {
+		Event out = new Event(name);
+		String[] paragraphs = content.split("~");
+		for(int i2 = 0; i2 < paragraphs.length; i2++)
+		switch(paragraphs[i2].charAt(0)){
+		case 'I'://IF
+			out.condition = compileCondition(paragraphs[i2].substring(2));
+			break;
+		case 'D'://DO
+			out.action = compileAction(paragraphs[i2].substring(2));
+			break;
+		case 'N'://NEXT
+//			out.nextTemp = compileNext(names, paragraphs[i2].substring(4));
+			out.nextTemp2 = paragraphs[i2].substring(4).split(";");
+			break;
+		case 'E'://EMPTY
+			break;
+		}
+		if(out.condition == null) out.condition = (q, w) -> true;
+		if(out.action == null) out.action = (q, w) -> {};
+//		if(out.nextTemp == null) out.nextTemp = new int[0];
+		if(out.nextTemp2 == null) out.nextTemp2 = new String[0];
+		
+		return out;
+	}
+	
+	public static Condition compileCondition(String condition) throws UnknownMethodException {
 		String[] conditions = condition.split("&&|\\|\\|");
 		boolean[] operators = new boolean[conditions.length];
 		for(int i = 1, i1 = conditions[0].length(); i < conditions.length; i1 += 2 + conditions[i].length(), i++){
@@ -164,7 +206,7 @@ public enum Quest {
 		}
 	}
 	
-	public Condition getCondition(Objector left, String operator, String rightSide){
+	public static Condition getCondition(Objector left, String operator, String rightSide){
 		switch(operator){
 		case "==": return (q, w) -> {
 			if(left instanceof Number){
@@ -191,7 +233,7 @@ public enum Quest {
 			String[] args = method[1].split(",");
 			switch(method[0]){
 			case "bindAvatar": realActions[i] = (q,w)->{q.characters.put(args[0], World.world.avatar);}; break;
-			case "spawn": realActions[i] = (q, w) -> {w.requestSpawn(new QuestSpawner(q.getQuest().characters.get(args[0]), q, args[0], args.length > 1 ? args[1] : -1)); q.eventFinished = false;}; break;
+			case "spawn": realActions[i] = (q, w) -> {w.requestSpawn(new QuestSpawner(Species.valueOf(q.getQuest().characters.get(args[0])), q, args[0], args.length > 1 ? args[1] : -1)); q.eventFinished = false;}; break;
 			case "say": realActions[i] = (q, w) -> {q.characters.get(args[1]).speakPlug.say(Boolean.parseBoolean(args[0]), q, args[2], args.length == 4 ? args[3].split("\\|") : new String[0]);};break;
 			//say(boolean thoughtBubble, villager, question, answers)break;
 			case "give": realActions[i] = (q, w) -> q.characters.get(args[0]).invPlug.addItem( ItemType.valueOf(args[1]), Integer.parseInt(args[2])); break;
@@ -207,7 +249,7 @@ public enum Quest {
 		};
 	}
 	
-	public int[] compileNext(String[] names, String next){
+	public static int[] compileNext(String[] names, String next){
 		String[] nexts = next.split(";");
 		int[] out = new int[nexts.length];
 		for(int i = 0; i < nexts.length; i++){

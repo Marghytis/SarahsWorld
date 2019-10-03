@@ -101,14 +101,14 @@ public class WorldData {
 	private void tryToStartQuests(boolean[] description) {
 		for(Quest quest : Quest.values){
 			boolean attributesMatch = true;
-			for(int attrib : quest.startAttributes){
+			for(int attrib : quest.getStartAttributes()){
 				if(!description[attrib]) attributesMatch = false;
 				break;
 			}
-			if(attributesMatch && quest.start.condition.isMet(null, this)){
+			if(attributesMatch && quest.getStart().condition.isMet(null, this)){
 				ActiveQuest newOne = new ActiveQuest(world, quest);
 				quests.add(newOne);
-				quest.start.action.run(newOne, this);
+				quest.getStart().action.run(newOne, this);
 			}
 		}
 	}
