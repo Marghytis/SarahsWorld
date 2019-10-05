@@ -7,7 +7,7 @@ import world.generation.*;
 
 public class Useful extends Zone2 {
 
-	public static boolean[] description = describe(Attribute.HILLY);
+	public static boolean[] description = describe(ZoneAttribute.HILLY);
 	
 	protected Roughness roughness;
 	private Roughness baseTerrain;
@@ -15,7 +15,7 @@ public class Useful extends Zone2 {
 	
 	double aimWidth;
 	
-	public Useful(Random random, Biome startBiome, BiomeManager biome, double originX, double aimWidth, double startHeight, boolean left, Attribute... attribs) {
+	public Useful(Random random, Biome startBiome, BiomeManager biome, double originX, double aimWidth, double startHeight, boolean left, ZoneAttribute... attribs) {
 		super(random, startBiome, biome, originX, left, attribs.length > 0 ? describe(attribs) : Useful.description);
 		
 		this.aimWidth = aimWidth;

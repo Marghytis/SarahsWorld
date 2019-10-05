@@ -148,6 +148,7 @@ public class Vertex {
 		public double getAverageSolidity() {					return averageSolidity;		}
 		public double getAverageDeceleration() {				return averageDeceleration;		}
 		public double getAverageBouyancy() {					return averageBouyancy;		}
+		public double getX() {									return parent.getX();		}
 		public double getY() {									return y;		}
 		public double y() {										return getY();		}
 		public Material mats(int index) {						return mats[index];}
@@ -157,4 +158,5 @@ public class Vertex {
 		//Setters
 		public void setNewY(double y) {							this.y = y;		prepared = false;}
 		public void setParent(Column c) {						this.parent = c;		}
+		public void setTransitionHeight(int th) {				this.transitionHeight = th;	prepared = false;}
 }

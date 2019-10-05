@@ -3,6 +3,7 @@ package quest;
 import java.util.Hashtable;
 
 import extra.things.Thing;
+import quest.script.QuestScript;
 import world.World;
 
 public class ActiveQuest {
@@ -13,16 +14,16 @@ public class ActiveQuest {
 	public int answer;
 	public boolean eventFinished = true;
 	private World world;
-	private Quest quest;
+	private QuestScript quest;
 	
-	public ActiveQuest(World world, Quest quest){
+	public ActiveQuest(World world, QuestScript quest){
 		this.world = world;
 		this.quest = quest;
 		this.currentEvent = quest.getStart();
 		characters.put("sarah", world.avatar);
 	}
 	
-	public Quest getQuest() {
+	public QuestScript getQuest() {
 		return quest;
 	}
 	

@@ -17,6 +17,7 @@ import input.PollData;
 import menu.MenuManager.MenuType;
 import menu.Settings;
 import moveToLWJGLCore.Dir;
+import quest.ActiveQuest;
 import quest.script.GameSetupScript;
 import quest.script.ScriptParser.ScriptType;
 import util.math.Vec;
@@ -74,7 +75,11 @@ public class World implements Savable {
 		
 		init(inputData);
 		
-		if(gameSetupScript != null)
+		if(gameSetupScript != null && gameSetupScript.getStart().condition.isMet(null, data)){
+				ActiveQuest newOne = new ActiveQuest(world, gameSetupScript);
+				data.addQuest(newOne);
+				gameSetupScript.getStart().action.run(newOne, data);
+			}
 			gameSetupScript.startGame();
 	}
 

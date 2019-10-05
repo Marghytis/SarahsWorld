@@ -2,13 +2,18 @@ package world.generation.zones;
 
 import java.util.Random;
 
-import util.math.*;
+import util.math.Function;
+import util.math.UsefulF;
+import util.math.Vec;
 import world.data.Column;
-import world.generation.*;
+import world.generation.Biome;
+import world.generation.BiomeManager;
+import world.generation.Zone;
+import world.generation.ZoneAttribute;
 
 public class Hills extends Zone {
 
-	public static boolean[] description = describe(Attribute.HILLY);
+	public static boolean[] description = describe(ZoneAttribute.HILLY);
 	
 	double aimWidth;
 	int partWidth;

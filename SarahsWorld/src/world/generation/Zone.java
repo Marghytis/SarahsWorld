@@ -8,19 +8,17 @@ import world.generation.zones.Desert;
 import world.generation.zones.Graveyard;
 import world.generation.zones.Jungle;
 import world.generation.zones.Meadow;
+import world.generation.zones.Mountains;
 import world.generation.zones.Ocean;
 import world.generation.zones.Rough;
 import world.generation.zones.Test;
 import world.generation.zones.Village;
 import world.generation.zones.Winter;
+import world.generation.zones.useful.Useful;
 
 
 public abstract class Zone {
 
-	public static enum Attribute {
-		TREES, DRY, MOIST, LAKES, ROUGH, FLAT, LONELY, BUSY, HOT, HILLY, SWEET, EVELYN, COLD
-	}
-	
 	@FunctionalInterface
 	public static interface ZoneSupplier {
 		public Zone get(Random rand, BiomeManager biomeM, double originX, boolean left);
@@ -31,11 +29,13 @@ public abstract class Zone {
 		GRAVEYARD((r,b,o,l) -> new Graveyard(r, b, o, l), Biome.GRAVEYARD),
 		CANDY((r,b,o,l) -> new Candy(r, b, o, l), Biome.CANDY),
 		MEADOW((r,b,o,l) -> new Meadow(r, b, o, l), Biome.MEADOW),
-		 OCEAN((r,b,o,l) -> new Ocean (r, b, o, l), Biome.OCEAN),
+		OCEAN((r,b,o,l) -> new Ocean (r, b, o, l), Biome.OCEAN),
 		ROUGH((r,b,o,l) -> new Rough(r, b, o, l), Biome.CANDY),
 		VILLAGE((r,b,o,l) -> new Village(r, b, o, l), Biome.FIR_VILLAGE),
 		WINTER((r,b,o,l) -> new Winter(r, b, o, l), Biome.WINTER_FORREST),
-		TEST((r,b,o,l) -> new Test(r, b, o, l), Biome.TEST);		
+		TEST((r,b,o,l) -> new Test(r, b, o, l), Biome.TEST),
+		FIR_FORREST((r,b,o,l) -> new Mountains(r, b, o, l), Biome.FIR_FORREST),
+		BAMBOO_FORREST((r,b,o,l) -> new Useful(r, Biome.BAMBOO_FORREST, b, o, 3000, 100, l), Biome.BAMBOO_FORREST);
 		public ZoneSupplier supply;
 		public Biome startBiome;
 		
@@ -72,9 +72,9 @@ public abstract class Zone {
 			biomeManager.switchToBiome(startBiome);
 	}
 	
-	public static boolean[] describe(Attribute... attributes){
-		boolean[] out = new boolean[Attribute.values().length];
-		for(Attribute attr : attributes){
+	public static boolean[] describe(ZoneAttribute... attributes){
+		boolean[] out = new boolean[ZoneAttribute.values().length];
+		for(ZoneAttribute attr : attributes){
 			out[attr.ordinal()] = true;
 		}
 		return out;

@@ -16,7 +16,7 @@ TexAtlas	plant_giant		res/objects/GiantPlant.png		d	d	d	d	1	4	-0.5f	0
 TexAtlas	grass_giant		res/objects/GiantGras.png		d	d	d	d	1	3	-0.5f	0
 TexAtlas	tree_palm		res/objects/PalmTree.png		d	d	d	d	1	3	-0.5f	0
 TexAtlas	tree_candy		res/objects/CandyTree.png		d	d	d	d	1	1	-0.5f	-0.12
-TexAtlas	bamboo			res/objects/Bamboo.png			d	d	d	d	1	4	-0.5f	0
+TexAtlas	bamboo			res/objects/Bamboo.png			d	d	d	d	1	4	-0.5f	-0.07
 TexAtlas	bush_normal		res/objects/Bush.png			d	d	d	d	1	2	-0.5f	0
 TexAtlas	bush_candy		res/objects/CandyBush.png		d	d	d	d	1	2	-0.5f	0
 TexAtlas	cactus			res/objects/Cactus.png			d	d	d	d	1	3	-0.5f	0

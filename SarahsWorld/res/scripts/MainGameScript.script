@@ -3,24 +3,20 @@ MAIN {
 	scriptType = GAME_SETUP
 }
 GAME_SETUP {
-	AVATAR_START_OFFSET = (VEC,0,1000));
-	ZONETYPE = (STRING, VILLAGE))
+	AVATAR_START_OFFSET = VEC: 0:1000;
+	ZONETYPE = STRING: BAMBOO_FORREST
 }
-ATTRIBUTES {}
+ATTRIBUTES {IMPOSSIBLE}
 CHARACTERS {
 	sarah = SARAH;
 	meteor = MOVING_EFFECT
 }
 START {
 	DO
-		give(sara, stick, 31)
+		instantSpawn(meteor, sarah, METEOR, VEC: 400 : -100, 400);
+		stick(sarah, meteor)
 	~NEXT
 		Wake_up
-	//DO
-	//	spawn(meteor, sarah.link, sarah.pos, METEOR, (VEC, 400, -10), 400);
-	//	stick(sarah, meteor)
-	//~NEXT
-	//	Wake_up
 }
 Wake_up {
 	EMPTY

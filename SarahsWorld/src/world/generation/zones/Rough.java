@@ -5,10 +5,11 @@ import java.util.Random;
 import world.generation.Biome;
 import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.generation.ZoneAttribute;
 
 public class Rough extends Zone {
 	
-public static boolean[] description = describe(Attribute.HILLY);
+public static boolean[] description = describe(ZoneAttribute.HILLY);
 	
 	double width;
 	double height;

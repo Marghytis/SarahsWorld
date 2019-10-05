@@ -1,5 +1,4 @@
-Just created a function that enables deformation (shifting of columns) after the landscape has been generated.
-This will be used for the meteor impact. For now a crater is created around the mouse position when pressing middle mouse button while holding B.
+Sarah now crashes into the ground at the beginning using a script
 To do (crater):
 _ Water maybe should flow into the resulting hole.
 _ Creatures and other objects should react
@@ -8,11 +7,4 @@ _ Creatures and other objects should react
 _ make the crater a bit more rough
 To do (meteor impact -> explosion) 
 _ make pieces of the terrain fly around?
-_ dust
-_ fire blast
 _ camera shaking
-
-Bugs:
-_ If a walking thing is standing still, Physics doesn't check whether there is still ground below it, so it hovers when making a crater.
-	-> might not be relevant when adding acceleration due to the impact blast
-	-> should still be fixed for the sake of correctness of the underlying engine

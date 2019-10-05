@@ -45,10 +45,10 @@ public class Block {
 			public String[] values;
 			
 			public Value(String value) throws SyntaxError {
-				if(value.contains(",")) {//means it's a tuple
+				if(value.contains(":")) {//means it's a tuple
 					value = value.replaceAll("\\(", "");
 					value = value.replaceAll("\\)", "");
-					String[] parts = value.split(",");
+					String[] parts = value.split(":");
 					this.type = ValueType.valueOf(parts[0]);
 					
 					if(parts.length - 1 != type.nValues)
@@ -68,6 +68,20 @@ public class Block {
 					return values[0];
 				else
 					throw new RuntimeException("Value can't be a String.");
+			}
+
+			public Vec asVec() {
+				if(values.length == 2)
+					return new Vec(Double.parseDouble(values[0]), Double.parseDouble(values[1]));
+				else
+					throw new RuntimeException("Value can't be a Vec.");
+			}
+
+			public double asDouble() {
+				if(values.length == 1)
+					return Double.parseDouble(values[0]);
+				else
+					throw new RuntimeException("Value can't be a Double.");
 			}
 		}
 		

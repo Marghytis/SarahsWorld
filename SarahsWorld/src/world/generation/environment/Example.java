@@ -8,7 +8,7 @@ import world.data.Vertex;
 import world.generation.Biome;
 import world.generation.Biome.ThingSpawner;
 import world.generation.Material;
-import world.generation.Zone.Attribute;
+import world.generation.ZoneAttribute;
 import world.generation.environment.modules.FluidFilling;
 import world.generation.environment.modules.ModulationModule;
 import world.generation.environment.modules.ScalingLayerModule;
@@ -21,7 +21,7 @@ import world.generation.zones.useful.SplineModulation;
 
 public class Example extends Environment {
 
-	public static boolean[] description = describe(Attribute.DRY, Attribute.HOT, Attribute.LONELY, Attribute.FLAT);
+	public static boolean[] description = describe(ZoneAttribute.DRY, ZoneAttribute.HOT, ZoneAttribute.LONELY, ZoneAttribute.FLAT);
 	Random random = new Random();
 	Biome biome;
 	

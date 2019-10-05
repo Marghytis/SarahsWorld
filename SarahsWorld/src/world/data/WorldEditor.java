@@ -1,7 +1,9 @@
 package world.data;
 
 import basis.entities.Entity;
+import extra.things.Thing;
 import util.math.Vec;
+import world.World;
 import world.window.ThingWindow;
 
 public class WorldEditor {
@@ -23,12 +25,18 @@ public class WorldEditor {
 					if(column.getX() < startEnd.x) startEnd.x = column.getX();
 					if(column.getX() > startEnd.y) startEnd.y = column.getX();
 					
-					column.shiftColumnY(dy);
+					column.shiftColumnTop(dy + (20*World.rand.nextDouble()));
 				}
 			}
 		});
 		data.world.landscapeWindow.reload(startEnd.x, startEnd.y);
 		data.world.getBackgroundWindow().reload(startEnd.x, startEnd.y);
+		
+		Thing[] thingsIn = data.world.thingWindow.thingsIn(pos, radius);
+		
+		for(Thing t : thingsIn) {
+			delete(t);
+		}
 	}
 	
 //	/**

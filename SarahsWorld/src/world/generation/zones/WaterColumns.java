@@ -2,7 +2,8 @@ package world.generation.zones;
 
 import java.util.Random;
 
-import world.generation.*;
+import world.generation.BiomeManager;
+import world.generation.Zone;
 
 public class WaterColumns extends Zone {
 

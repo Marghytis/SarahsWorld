@@ -2,15 +2,16 @@ package extra.things;
 
 import java.util.Hashtable;
 
-import basis.entities.Trait;
 import basis.effects.Effect;
 import basis.effects.WorldEffect;
 import basis.entities.Entity;
 import basis.entities.Species;
+import basis.entities.Trait;
 import extra.Main;
 import extra.Res;
 import extra.effects.particleEffects.BasicMagicEffect;
 import extra.effects.particleEffects.Hearts;
+import extra.effects.particleEffects.Meteor;
 import extra.effects.particleEffects.MovingEffect;
 import extra.effects.particleEffects.RainbowSpit;
 import extra.items.ItemType;
@@ -37,9 +38,11 @@ import extra.things.traits.PhysicsExtension;
 import extra.things.traits.Riding;
 import extra.things.traits.Speaking;
 import extra.things.traits.StateChangement;
+import extra.things.traits.Sticky;
 import extra.things.traits.WalkAround;
 import menu.MenuManager.MenuType;
 import moveToLWJGLCore.UsefulStuff;
+import quest.script.Block.SettingsBlock.Value;
 import render.Animation;
 import render.TexAtlas;
 import util.Color;
@@ -64,6 +67,7 @@ public class ThingType extends Species<Thing> {
 		updateOrder.put(Life.class, i++);//removes the thing, if live is below zero
 		updateOrder.put(Attacking.class, i++);//attack cooldown
 		updateOrder.put(PhysicsExtension.class, i++);//repelling other things
+		updateOrder.put(Sticky.class, i++);//stick to other things
 		//....
 	}
 	
@@ -137,7 +141,8 @@ public class ThingType extends Species<Thing> {
 			new Physics(1, 1),
 			new LogicCombination((t, delta) -> {
 					t.avatar.processPlayerInput(delta);
-				})
+				}),
+			new Sticky()
 	);
 											protected static final Animation[] snail = {
 											new Animation("boring", Res.getAtlas("snail"), 0, 0),
@@ -715,7 +720,7 @@ public class ThingType extends Species<Thing> {
 											{new Animation(Res.getAtlas("bamboo") , 0, 1)},
 											{new Animation(Res.getAtlas("bamboo") , 0, 2)},
 											{new Animation(Res.getAtlas("bamboo") , 0, 3)}};
-	public static final ThingType BAMBOO = new ThingType("BAMBOO", Res.getAtlas("bamboo") , 200, new Animating(ThingType.bamboo[0][0], new Rect(Res.getAtlas("bamboo").pixelCoords), 0, 0, 1, false, ThingType.bamboo)){
+	public static final ThingType BAMBOO = new ThingType("BAMBOO", Res.getAtlas("bamboo") , 500, new Animating(ThingType.bamboo[0][0], new Rect(Res.getAtlas("bamboo").pixelCoords), 0, 0, 1, false, ThingType.bamboo)){
 		public void setup(Thing t, Column field, Vec pos, Object... extraData){
 			t.aniPlug.setAniSet(World.rand.nextInt(ani.animations.length));
 			t.aniPlug.setAnimation("");
@@ -863,14 +868,30 @@ public class ThingType extends Species<Thing> {
 			})) {
 		@Override
 		public void setup(Thing t, Column field, Vec pos, Object... extraData) {
-			t.attachment.setEffect( (MovingEffect) extraData[0]);
+			Vec vel = null;
+			if(extraData.length > 1) {
+				if(extraData[1] instanceof Vec)
+					vel = (Vec)extraData[1];
+				else if(extraData[1] instanceof Value)
+					vel = ((Value)extraData[1]).asVec();
+			} else {
+				vel = new Vec(0,0);
+			}
+			t.physicsPlug.setVel(vel);
+			
+			if(extraData[0] instanceof MovingEffect)
+				t.attachment.setEffect( (MovingEffect) extraData[0]);
+			else if(extraData[0] instanceof Value) {
+				MovingEffect effect = null;
+				switch(((Value)extraData[0]).asString()) {
+				case "METEOR": effect = new Meteor(vel.normalize(), ((Value)extraData[2]).asDouble()); break;
+				default: throw new RuntimeException("Effect name can't be resolved...");
+				}
+				t.attachment.setEffect(effect);
+			}
 			Main.game().world.window.addEffect(t.attachment.getEffect());
 			t.attachment.setActive( true);
-			if(extraData.length > 1) {
-				t.physicsPlug.setVel((Vec)extraData[1]);
-			} else {
-				t.physicsPlug.setVel(0, 0);
-			}
+			
 		}
 	};
 	public static final ThingType EFFECT = new ThingType("EFFECT", TexAtlas.emptyAtlas, 30, true,
@@ -907,7 +928,9 @@ public class ThingType extends Species<Thing> {
 
 	ThingType(String string, TexAtlas atlas, int i, boolean b, Trait... traits) {
 		this(string, atlas, i, b, null, traits);
-		defaultSpawner = (p, f, ed) -> new Thing(this, p, f, ed);
+		defaultSpawner = (p, f, ed) -> {
+			return new Thing(this, p, f, ed);
+		};
 	}
 	
 	ThingType(String name, TexAtlas file, int maxVisible, boolean alwaysUpdateVBO, Spawner defaultSpawner, Trait... plugins){

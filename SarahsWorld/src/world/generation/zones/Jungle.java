@@ -6,10 +6,11 @@ import util.math.Function;
 import world.generation.Biome;
 import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.generation.ZoneAttribute;
 
 public class Jungle extends Zone {
 	
-	public static boolean[] description = describe(Attribute.MOIST, Attribute.HOT, Attribute.TREES);
+	public static boolean[] description = describe(ZoneAttribute.MOIST, ZoneAttribute.HOT, ZoneAttribute.TREES);
 
 	Function f;
 	double width;

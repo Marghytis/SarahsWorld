@@ -5,10 +5,11 @@ import java.util.Random;
 import world.generation.Biome;
 import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.generation.ZoneAttribute;
 
 public class Graveyard extends Zone {
 
-public static boolean[] description = describe(Attribute.LONELY, Attribute.MOIST, Attribute.TREES, Attribute.FLAT);
+public static boolean[] description = describe(ZoneAttribute.LONELY, ZoneAttribute.MOIST, ZoneAttribute.TREES, ZoneAttribute.FLAT);
 	
 	double width;
 

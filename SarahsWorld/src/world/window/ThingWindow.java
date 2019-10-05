@@ -18,7 +18,9 @@ import extra.things.traits.Animating.AnimatingPlugin;
 import render.Render;
 import render.Shader;
 import render.TexFile;
+import util.math.UsefulF;
 import util.math.Vec;
+import util.shapes.Circle;
 import world.data.ColumnListElement;
 import world.render.DoubleThingVAO;
 
@@ -269,6 +271,29 @@ public class ThingWindow extends RealWorldWindow {
 			}
 		});
 		objectsAt.sort((t1, t2) -> t1.aniPlug.z() > t2.aniPlug.z() ? 1 : t1.aniPlug.z() < t2.aniPlug.z() ?  -1 : 0);
+		return objectsAt.toArray(new Thing[objectsAt.size()]);
+	}
+	
+	public Thing[] thingsIn(Vec center, double radius) {
+		objectsAt.clear();
+		forEach(t -> {
+			if(!t.equals(Main.game().world.avatar) && UsefulF.distSquare(t.pos.x - center.x, t.pos.y - center.y) <= (radius*radius)){
+				objectsAt.add(t);
+			}
+		});
+		objectsAt.sort((t1, t2) -> {
+			if(t1.aniPlug == null || t2.aniPlug == null) {
+				return 0;
+			} else if(t1.aniPlug.z() > t2.aniPlug.z()) {
+				return 1;
+			} else {
+				 if(t1.aniPlug.z() < t2.aniPlug.z()) {
+					 return -1;
+				 } else {
+					 return 0;
+				 }
+			}
+		});
 		return objectsAt.toArray(new Thing[objectsAt.size()]);
 	}
 

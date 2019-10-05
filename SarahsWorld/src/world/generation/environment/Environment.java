@@ -7,7 +7,7 @@ import util.Color;
 import world.data.Column;
 import world.data.Vertex;
 import world.generation.Biome;
-import world.generation.Zone.Attribute;
+import world.generation.ZoneAttribute;
 import world.generation.environment.modules.Module;
 
 /**
@@ -84,9 +84,9 @@ public abstract class Environment {
 		things.populate(c);
 	}
 	
-	public static boolean[] describe(Attribute... attributes){
-		boolean[] out = new boolean[Attribute.values().length];
-		for(Attribute attr : attributes){
+	public static boolean[] describe(ZoneAttribute... attributes){
+		boolean[] out = new boolean[ZoneAttribute.values().length];
+		for(ZoneAttribute attr : attributes){
 			out[attr.ordinal()] = true;
 		}
 		return out;

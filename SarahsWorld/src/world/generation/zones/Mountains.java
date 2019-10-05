@@ -6,10 +6,11 @@ import util.math.Function;
 import world.generation.Biome;
 import world.generation.BiomeManager;
 import world.generation.Zone;
+import world.generation.ZoneAttribute;
 
 public class Mountains extends Zone {
 
-	public static boolean[] description = describe(Attribute.LAKES,Attribute.TREES, Attribute.LONELY);
+	public static boolean[] description = describe(ZoneAttribute.LAKES,ZoneAttribute.TREES, ZoneAttribute.LONELY);
 	
 	Function f;
 	double width;

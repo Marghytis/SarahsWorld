@@ -33,6 +33,27 @@ public enum Biome {
 			new EffectSpawner[]{
 			}
 	),
+	BAMBOO_FORREST(new Color(0.2f, 0.4f, 0.65f), new Color(0.73f, 0.84f, 0.95f),
+			new Stratum[]{
+					null,
+					new Stratum(Material.SOIL, 50, 3.0, 0.15, 40, 5, 4),
+					new Stratum(Material.EARTH, 100.0, 20.0, 3, 40, 5, 4),
+					new Stratum(Material.STONE2, 50, 20.0, 20, 40, 5, 4),
+					new Stratum(Material.STONE, 100, 20.0, 20, 40, 5, 4),
+					new Stratum(Material.STONE2, 100, 20.0, 20, 40, 5, 4),
+					null,
+					new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 5, 5),
+					null
+				},
+			new ThingSpawner[]{
+					new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.1),
+					new ThingSpawner(spawnZ(ThingType.BAMBOO, -0.2, 0.2), 3),
+					new ThingSpawner(spawnZ(ThingType.FLOWER_JUNGLE, -0.2, 0.2), 0.2),
+					new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.02),
+				},
+				new EffectSpawner[]{
+				}
+		),
 	OASIS(new Color(0.2f, 0.4f, 0.65f), new Color(0.73f, 0.84f, 0.95f),
 			new Stratum[]{
 				null,
@@ -242,13 +263,7 @@ public enum Biome {
 						new ThingSpawner(spawnBetween(ThingType.BAMBOO, 			0,	-25, true),	0.1),
 						new ThingSpawner(spawnBetween(ThingType.FERN, 			0,	-25, true),	0.5),
 						new ThingSpawner(spawnZ(ThingType.TREE_JUNGLE, -0.2),		0.05),
-//					new ThingSpawner(posSpawner(ThingType.BAMBOO, 0, 0.1, -5), 0.2)
-//					,new ThingSpawner(posSpawner(ThingType.BUSH_NORMAL, 0, 0.1, 0), 0.2)
-//					,new ThingSpawner(posSpawner(ThingType.GIANT_GRASS, 0, 0.1, 0), 0.1)
-//					,new ThingSpawner((w, c, pos, ed) -> new Thing(ThingType.BUSH_JUNGLE, w, c, pos, 1.5, -4), 0.5)
-//					,new ThingSpawner(posSpawner(ThingType.FLOWER_NORMAL, 0, 0.1, 0), 0.1)
-//					,new ThingSpawner(ThingType.GRASS.defaultSpawner, 01.2)
-					
+						
 					new ThingSpawner((c, pos, ed) -> new Thing(ThingType.CRACK, c, pos.shift(0, -100 - World.rand.nextInt(1000))), 0.3),
 					new ThingSpawner((c, pos, ed) -> new Thing(ThingType.FOSSIL, c, pos.shift(0, -200 - World.rand.nextInt(1000))), 0.1)
 //					,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)

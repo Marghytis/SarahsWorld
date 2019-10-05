@@ -4,7 +4,8 @@ import java.util.Random;
 
 import util.math.Vec;
 import world.generation.BiomeManager;
-import world.generation.zones.useful.*;
+import world.generation.zones.useful.EvenedModulation;
+import world.generation.zones.useful.Useful;
 
 public class Birthday extends Useful {
 

@@ -44,8 +44,8 @@ public class ThingPreparationWindow extends RealWorldWindow {
 		this.vaos = vaos;
 		for(int i = 0; i < Species.types.length; i++){
 			int maxVisible = Species.types[i].maxVisible;
-			toAdd[i][0] = new EntitySet<Entity>(0, addBatchSize);//TODO use fraction of 'max visible' number instead of addBatchSize
-			toAdd[i][1] = new EntitySet<Entity>(1, addBatchSize);
+			toAdd[i][0] = new EntitySet<Entity>(0, Math.max(2, maxVisible/2));//TODO use fraction of 'max visible' number instead of addBatchSize
+			toAdd[i][1] = new EntitySet<Entity>(1, Math.max(2, maxVisible/2));
 			toRemove[i] = new EntitySet<Entity>(2, maxVisible);
 		}
 	}
@@ -256,10 +256,7 @@ public class ThingPreparationWindow extends RealWorldWindow {
 
 			//put thing data into VBOs as a block
 			if(sideToAdd.size() > 0) {//means no thing on this side
-//				vaos[type].updateVBOs(sideToAdd.get(0));
 				vaos[type].updateVBOs(sideToAdd.get(0).aniPlug, buffers[0], buffers[1]);
-			} else {
-				System.out.println("nothing to add on " + Dir.names[side] + " side.");
 			}
 		}
 		//clear toAdd list

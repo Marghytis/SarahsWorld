@@ -20,6 +20,7 @@ import extra.things.traits.Physics.PhysicsPlugin;
 import extra.things.traits.PhysicsExtension.PhysExPlugin;
 import extra.things.traits.Riding.RidingPlugin;
 import extra.things.traits.Speaking.SpeakingPlugin;
+import extra.things.traits.Sticky.StickPlugin;
 import extra.things.traits.WalkAround.WalkAroundPugin;
 import moveToLWJGLCore.Listable;
 import util.math.Vec;
@@ -44,12 +45,12 @@ public class Thing extends Entity implements Listable {
 	public AttachementPlugin statePlug;
 	public NamePlugin name;
 	public InteractionPlugin interaction;
+	public StickPlugin sticky;
 	
 	public ItemsPlugin itemPlug;
 
 	public Thing(ThingType type, Column field, Vec pos, Object... extraData) {
 		super(type, field, pos, extraData);
-		type.prepare(this, field, extraData);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -97,6 +98,8 @@ public class Thing extends Entity implements Listable {
 			name = (NamePlugin) attrib;
 		} else if(attrib instanceof InteractionPlugin) {
 			interaction = (InteractionPlugin) attrib;
+		} else if(attrib instanceof StickPlugin) {
+			sticky = (StickPlugin) attrib;
 		}
 		
 		else {

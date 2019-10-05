@@ -3,13 +3,15 @@ package world.data;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import extra.Res;
 import extra.things.Thing;
 import extra.things.ThingType;
 import quest.ActiveQuest;
-import quest.Quest;
+import quest.script.QuestScript;
 import util.math.Vec;
 import world.Weather;
 import world.World;
@@ -99,7 +101,11 @@ public class WorldData {
 	 * @param zone
 	 */
 	private void tryToStartQuests(boolean[] description) {
-		for(Quest quest : Quest.values){
+		Iterator<QuestScript> it = Res.getQuests();
+		
+		while(it.hasNext()){
+			QuestScript quest = it.next();
+			
 			boolean attributesMatch = true;
 			for(int attrib : quest.getStartAttributes()){
 				if(!description[attrib]) attributesMatch = false;
@@ -151,5 +157,8 @@ public class WorldData {
 	public void save(DataOutputStream output) {
 		// TODO Auto-generated method stub
 		
+	}
+	public void addQuest(ActiveQuest newOne) {
+		quests.add(newOne);
 	}
 }

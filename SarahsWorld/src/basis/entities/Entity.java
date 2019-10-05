@@ -3,6 +3,7 @@ package basis.entities;
 import extra.Main;
 import extra.things.traits.Animating.AnimatingPlugin;
 import extra.things.traits.Attachement.AttachementPlugin;
+import extra.things.traits.Sticky.StickPlugin;
 import moveToLWJGLCore.DefaultListElement;
 import moveToLWJGLCore.Listable;
 import util.math.Vec;
@@ -20,6 +21,7 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 	protected Column realLink;
 	protected boolean linked = false;
 	public boolean real = false;
+	public boolean removed = false;
 	public double yOffset;
 	public Species<?> type;
 	public Vec pos;
@@ -129,8 +131,11 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 			if(plugin != null) plugin.remove();
 		}
 		Main.game().world.thingWindow.remove(this);
+		this.removed = true;
 	}
 	public void showUpAfterHiding(Column link) {
+		if(removed)
+			throw new RuntimeException("Thing has already been removed");
 		this.realLink = link;
 		this.newLink = link;
 		applyLink();
@@ -160,6 +165,10 @@ public abstract class Entity extends DefaultListElement<Entity> implements Lista
 
 	public void setLinked(boolean linked) {
 		this.linked = linked;
+	}
+	
+	public boolean hasBeenRemoved() {
+		return removed;
 	}
 	
 	public String save(){return "";};

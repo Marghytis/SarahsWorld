@@ -3,13 +3,17 @@ package world.generation.zones;
 import java.util.Random;
 
 import extra.things.ThingType;
-import util.math.*;
+import util.math.Function;
+import util.math.UsefulF;
 import world.data.Column;
-import world.generation.*;
+import world.generation.Biome;
+import world.generation.BiomeManager;
+import world.generation.Zone;
+import world.generation.ZoneAttribute;
 
 public class Oasis extends Zone {
 	
-	public static boolean[] description = describe(Attribute.MOIST, Attribute.HOT, Attribute.TREES, Attribute.LAKES);
+	public static boolean[] description = describe(ZoneAttribute.MOIST, ZoneAttribute.HOT, ZoneAttribute.TREES, ZoneAttribute.LAKES);
 
 	/**Start and end points of curve segment*/
 	double xStart, yStart, xNearShore, xFarShore, xEnd;

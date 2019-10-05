@@ -42,9 +42,19 @@ public class WorldListener implements Listener {
 		worldPos.set(mousePos);
 		world.window.toWorldPos(worldPos);
 		Thing[] livingsClickedOn = world.thingWindow.livingsAt(worldPos);
-		
+
 		switch(button){
 		case 0://ATTACK
+			if(Settings.getBoolean("DEBUGGING")) {
+				if(input.isKeyDown(Key.BOMB.key)) {
+					int radius = 200;
+					world.editor.makeCrater(worldPos.copy(), radius);
+				} else if(input.isKeyDown(Key.METEOR.key)){
+					double speed = 400;
+					Vec dir = worldPos.minus(world.window.toWorldPos(input.buttonsPressed[button]).copy()).normalize();
+					ThingType.MOVING_EFFECT.defaultSpawner.spawn(world.landscapeWindow.at(worldPos.x).column(), worldPos.copy(), new Meteor(dir, speed), dir.scale(speed));
+				}
+			}
 			if(world.avatar.physicsPlug.waterDepth() == 0){
 				world.avatar.attack.attack(world.avatar.invPlug.getSelectedItem(), worldPos, livingsClickedOn);
 			}

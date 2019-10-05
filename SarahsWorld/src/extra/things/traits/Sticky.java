@@ -19,11 +19,17 @@ public class Sticky extends Trait {
 			super(thing);
 		}
 
-		public boolean action(double delta){
-			this.thing.pos.set(thingToStickTo.pos);
-			return true;
+		@Override
+		public void update(double delta){
+			if(thingToStickTo != null) {
+				if(thingToStickTo.hasBeenRemoved()) {
+					removeFromThing();
+				} else {
+					this.thing.pos.set(thingToStickTo.pos);
+				}
+			}
 		}
-		
+
 		public void stickTo(Entity thing) {
 			thingToStickTo = thing;
 			this.thing.physicsPlug.disable();

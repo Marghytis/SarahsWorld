@@ -3,8 +3,12 @@ package basis;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
+import quest.script.QuestScript;
 import quest.script.Script;
 import quest.script.ScriptParser;
 import render.TexAtlas;
@@ -20,6 +24,7 @@ public class ResourceDatabase {
 	static Hashtable<String, TexAtlas> texAtlases = new Hashtable<>();
 	
 	static Hashtable<String, Script> scripts = new Hashtable<>();
+	static List<QuestScript> quests = new ArrayList<>();
 	
 	public static TexAtlas getAtlas(String key) {
 		TexAtlas out = texAtlases.get(key);
@@ -138,6 +143,10 @@ public class ResourceDatabase {
 		return scripts.get(name);
 	}
 	
+	public static Iterator<QuestScript> getQuests() {
+		return quests.iterator();
+	}
+	
 	public static void readScriptTable(String tablePath) {
 
 		BufferedReader reader;
@@ -151,6 +160,8 @@ public class ResourceDatabase {
 				if(words.length != 0 && !words[0].startsWith("//")) {
 					Script script = ScriptParser.parseScriptFile(words[0]);
 					scripts.put(script.getName(), script);
+					if(script instanceof QuestScript)
+						quests.add((QuestScript)script);
 				}
 				// read next line
 				line = reader.readLine();

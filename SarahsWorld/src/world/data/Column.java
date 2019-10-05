@@ -92,6 +92,31 @@ public class Column extends ColumnListElement {
 		this.collisionYFluid += dy;
 	}
 	
+	public void shiftColumnTop(double dy) {
+		
+		this.collisionYSolid += dy;
+		this.collisionYFluid += dy;
+		
+		int index = 0;//getTopFluidVertex().getYIndex();
+		
+		while(index < Biome.layerCount-1 && dy != 0) {
+			
+			if(vertices[index].getY() < collisionYFluid) {
+				dy = 0;
+			} else {
+				dy = collisionYFluid - vertices[index].getY();
+				if(vertices[index+1].getY() >= collisionYFluid) {
+					vertices[index].setTransitionHeight(0);
+				}
+			}
+			vertices[index].setNewY(vertices[index].getY() + dy);
+			
+			
+			index++;
+		}
+		
+	}
+	
 	/**
 	 * Searches the upper most Vertex that's not empty and whose average solidity is geater than 1.
 	 * @param vertices
