@@ -1,9 +1,7 @@
 package basis.effects.particleEffects;
 
-import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 

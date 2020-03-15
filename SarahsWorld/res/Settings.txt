@@ -19,7 +19,7 @@ boolean	SOUND								true
 boolean	MUSIC								false
 boolean	DEBUGGING							true
 boolean IMMORTAL							true
-String	ZONETYPE							TEST
+String	ZONETYPE							FIR_FORREST
 boolean RENDER_THINGS						true
 boolean FRICTION							true
 boolean AIR_FRICTION						true

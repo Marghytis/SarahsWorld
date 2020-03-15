@@ -3,6 +3,7 @@ package world.window;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -41,7 +42,7 @@ public class TerrainWindow extends ArrayWorldWindow {
 	//Variables that are local in nature, but are defined once to save time.
 	int layersDrawn = 0;
 	ArrayList<Patch> waterPatches = new ArrayList<>();
-	Patch[] currentPatches;
+	List<Patch> existingPatches = new ArrayList<>();
 
 	public TerrainWindow(ColumnListElement anchor, int columnRadius) throws WorldTooSmallException {
 		super(anchor, columnRadius);
@@ -54,11 +55,6 @@ public class TerrainWindow extends ArrayWorldWindow {
 						new VAP(Vertex.maxMatCount, GL11.GL_BYTE, true, 2*Float.BYTES + 2*Float.BYTES),//in_Alphas
 						new VAP(1, GL11.GL_BYTE, true, 2*Float.BYTES + 2*Float.BYTES + Vertex.maxMatCount)
 				));
-		
-		currentPatches = new Patch[Vertex.maxMatCount];
-		for(int i = 0; i < currentPatches.length; i++) {
-			currentPatches[i] = new Patch(0, 0, 0, null);
-		}
 	}
 	
 	public void reload() {
@@ -124,24 +120,30 @@ public class TerrainWindow extends ArrayWorldWindow {
 		drawPatches2(pointsX*pointsY*indicesPerQuad, false);
 	}
 	private void drawWater(){
-		drawPatches(0, true);
+		drawWaterPatches(0);
 		if(Settings.getBoolean("DRAW_TRANSITIONS"))
-			drawPatches(pointsX*pointsY*indicesPerQuad, true);
+			drawWaterPatches(pointsX*pointsY*indicesPerQuad);
 	}
 	
-	private void drawPatches(int indicesOffset, boolean water){
-		//for each material every patch of this material gets rendered.
+	/**
+	  *	For each material every patch of this material gets rendered.
+	*/
+	private void drawWaterPatches(int indicesOffset){
 		int oneBeforeStart = (startIndexLeft()+pointsX-1)%columns.length;
-		for(int i = 0; i < Material.values().length-1; i++){
-			if(i == Material.WATER.ordinal() && !water) continue;
-			else if(i != Material.WATER.ordinal() && water) continue;
-			Material.values()[i].tex.file.bind();
-			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
+			
+			//bind material texture
+			Material.WATER.tex.file.bind();
+			
+			//loop through the layers from the bottom up
+			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){
+				
 				int started = -1, index = 0, column = startIndexLeft();
-				do {//while(column != indexShift), loop through all columns
+				//loop through all columns
+				do {
+					//started == -1 means there is currently no active patch
 					if(started == -1){
 						for(int j = 0; j < Vertex.maxMatCount; j++){
-							if(columns[column].column().vertices(y).mats()[j].ordinal() == i){//a new patch starts here
+							if(columns[column].column().vertices(y).mats()[j] == Material.WATER){//a new patch starts here
 								started = column;
 								index = j;
 								break;//There might rise problems, if the same material appears twice in a single vertex...
@@ -149,32 +151,40 @@ public class TerrainWindow extends ArrayWorldWindow {
 						}
 
 						//the current patch ends here. if there is an open patch it gets rendered cut
-					} else if(columns[column].column().vertices(y).mats()[index].ordinal() != i || column == oneBeforeStart){
+					} else if(columns[column].column().vertices(y).mats()[index] != Material.WATER || column == oneBeforeStart){
 						drawPatch(y, started, column, indicesOffset, index);
 						started = -1;
 					}
 					column = (column+1)%columns.length;
 				} while(column != startIndexLeft());
 			}
-		}
+		
 		layersDrawn += pointsY;
 	}
 	
+	/**
+	 * For each layer all patches are rendered from left to right, independent of their materials
+	 * @param indicesOffset
+	 * @param water
+	 */
 	private void drawPatches2(int indicesOffset, boolean water){
 		//for each material every patch of this material gets rendered.
 		int oneBeforeStart = substract1From(startIndexLeft());
-		deactivatePatches();
+		int[] patchEnds = new int[Vertex.maxMatCount]; 
+		for(int i = 0; i < patchEnds.length; i++) patchEnds[i] = -1;
 		//loop all layers
 		for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){//draw from the bottom up
 			//loop all columns in this layer
-			int  column = startIndexLeft(), matIndex = columns[column].column().vertices(y).getFirstMatIndex(), endColumn = column;
+			int  column = startIndexLeft();
+			int endColumn = column;
 			do {
 				//loop all material slots
-				matIndex = columns[column].column().vertices(y).getFirstMatIndex();
+				int matIndex = columns[column].column().vertices(y).getFirstMatIndex();
 				int matIndex2 = 0;
 				do {
-					
-					findAndDrawSinglePatch(column, y, matIndex2, indicesOffset, water, oneBeforeStart);
+					//if there is currently no patch in this material slot or the last one has just finished, find the next patch
+					if(patchEnds[matIndex] == -1 || patchEnds[matIndex] == column)
+						patchEnds[matIndex] = findAndDrawSinglePatch(column, y, matIndex2, indicesOffset, water, oneBeforeStart);
 					
 					
 					matIndex2 = (matIndex2+1)%Vertex.maxMatCount;
@@ -182,65 +192,57 @@ public class TerrainWindow extends ArrayWorldWindow {
 				
 				column = add1To(column);
 			} while(column != endColumn);
-			deactivatePatches();
+			for(int i = 0; i < patchEnds.length; i++) patchEnds[i] = -1;
 		}
 		layersDrawn += pointsY;
 	}
 	
-	private void deactivatePatches() {
-		for(Patch p : currentPatches)
-			p.deactivate();
-	}
-	
-	private void findAndDrawSinglePatch(int iStartColumn, int iLayer, int iMat, int indicesOffset, boolean water, int oneBeforeStart) {
-		//if an active patch ends here, deactivate it
-		if(currentPatches[iMat].active() && currentPatches[iMat].end == iStartColumn){
-			currentPatches[iMat].deactivate();
-		}
-		//start a new patch
-		if((!currentPatches[iMat].active() || currentPatches[iMat].end == -1)
-				&& columns[iStartColumn].column().vertices(iLayer).mats(iMat) != Material.AIR){
-			
-			currentPatches[iMat].set(iLayer, iMat, iStartColumn, columns[iStartColumn].column().vertices(iLayer).mats(iMat));
+	private int findAndDrawSinglePatch(int iStartColumn, int iLayer, int iMat, int indicesOffset, boolean water, int oneBeforeStart) {
+		
+		if(columns[iStartColumn].column().vertices(iLayer).mats(iMat) == Material.AIR){
+			return -1;
+			//start a new patch, if there is no AIR at this vertex
+		} else {
 			
 			//search for patch end
 			int end = iStartColumn;
-			//count up column2 while the layer still contains this material and the landscape window didn't end.
-			while(columns[end].column().vertices(iLayer).mats(iMat) == currentPatches[iMat].mat && end != oneBeforeStart) {
+			//count up end while the layer still contains this material and the landscape window didn't end.
+			while(columns[end].column().vertices(iLayer).mats(iMat) == columns[iStartColumn].column().vertices(iLayer).mats(iMat) && end != oneBeforeStart) {
 				end = add1To(end);
 			}
-			drawPatch(currentPatches[iMat], end, indicesOffset, water);
+			
+			//create patch
+			Patch patch = new Patch(iLayer, iMat, iStartColumn, end, columns[iStartColumn].column().vertices(iLayer).mats(iMat));
+			
+			//draw patch
+			drawPatch(patch, end, indicesOffset, water);
+			
+			//return the end index of the newly created patch
+			return end;
 		}
 	}
 	
+	/**
+	 * A Patch is a connected area that is to be filled with a single material (maybe varying opacity) and is contained in one layer
+	 * @author Mario
+	 *
+	 */
 	private static class Patch {
-		public int start, end, yIndex, matIndex;
+		/** yIndex of the layer this Patch belongs to */
+		public int yIndex;
+		/** Indices of the first and last column that make up this Patch (indices in the column array of this window)*/
+		public int start, end;
+		/** Index of this Patches material in the vertices material arrays*/
+		public int matIndex;
+		/** The corresponding material of this Patch*/
 		public Material mat;
-		boolean active = false;
-		public Patch(int yIndex, int matIndex, int start, Material mat) {
-			this.yIndex = yIndex;
-			this.matIndex = matIndex;
-			this.start = start;
+		
+		public Patch(int iLayer, int iMat, int iStartColumn, int iEndColumn, Material mat) {
+			this.yIndex = iLayer;
+			this.matIndex = iMat;
+			this.start = iStartColumn;
 			this.mat = mat;
-			this.end = -1;
-		}
-		
-		public void set(int yIndex, int matIndex, int start, Material mat) {
-			this.yIndex = yIndex;
-			this.matIndex = matIndex;
-			this.start = start;
-			this.mat = mat;
-			this.end = -1;
-			active = true;
-		}
-		
-		public boolean active() {
-			return active;
-		}
-		
-		public void deactivate() {
-			active = false;
-			set(-1, -1, -1, null);
+			this.end = iEndColumn;
 		}
 	}
 	
@@ -255,17 +257,25 @@ public class TerrainWindow extends ArrayWorldWindow {
 	}
 	
 	private void drawPatch(int yIndex, int start, int end, int indicesOffset, int index){
+		//Position and size of the patch in the vertex buffer.
+		//1 is the part up to the array end (may end before the array end, then no. 2 is ignored
+		//2 is the part which is folded around to the beginning of the column array, if the Patch crosses the end
 		int pos1 = (yIndex*pointsX + start)*indicesPerQuad,
-				size1 = (end - start)*indicesPerQuad,
-				pos2 = 0, size2 = 0;
-			if(end < start){
-				size1 = (columns.length - start)*indicesPerQuad;//Yes, not -1, because linke this, the last and the first point will be connected.
-				pos2 = (yIndex*pointsX + 0)*indicesPerQuad;
-				size2 = (end - 0)*indicesPerQuad;
-			}
-			GL20.glUniform1i(Res.landscapeShader.uniformLoc("matSlot"), index);
-			/*draw patch*/  GL11.glDrawElements(Settings.getInt("DRAW"), size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
-			if(size2 != 0)	GL11.glDrawElements(Settings.getInt("DRAW"), size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
+				size1 = (end - start)*indicesPerQuad;
+		int pos2 = 0, size2 = 0;
+		
+		//if the Patch is split by the array end, cut it into two parts
+		if(end < start){
+			size1 = (columns.length - start)*indicesPerQuad;//Yes, not -1, because like this, the last and the first point will be connected.
+			pos2 = (yIndex*pointsX + 0)*indicesPerQuad;
+			size2 = (end - 0)*indicesPerQuad;
+		}
+		
+		//select the material in the shader
+		GL20.glUniform1i(Res.landscapeShader.uniformLoc("matSlot"), index);
+		
+		/*draw patch*/  GL11.glDrawElements(Settings.getInt("DRAW"), size1, GL11.GL_UNSIGNED_INT, (pos1 + indicesOffset)*Integer.BYTES);
+		if(size2 != 0)	GL11.glDrawElements(Settings.getInt("DRAW"), size2, GL11.GL_UNSIGNED_INT, (pos2 + indicesOffset)*Integer.BYTES);
 	}
 	
 	protected void addAt(ColumnListElement c, int index) {
