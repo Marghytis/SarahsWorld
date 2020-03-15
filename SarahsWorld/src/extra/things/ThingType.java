@@ -397,22 +397,43 @@ public class ThingType extends Species<Thing> {
 			t.movementPlug.setAccWalking(750*(0.5*World.rand.nextDouble()+0.75));
 		};
 	};
+										static final Animation[] panda = {
+												new Animation("stand", Res.getAtlas("panda"), 0, 0),
+												new Animation("punch", Res.getAtlas("panda"), 6, 0,/**/1, 2, 3, 4, 5, 6),
+												new Animation("getHit", Res.getAtlas("panda"), 20, 1,/**/0)};
+	public static final ThingType PANDA = new ThingType("PANDA", Res.getAtlas("panda"), 10, true
+			,new Animating(panda[0], new Rect(Res.getAtlas("panda").pixelCoords), 0, 0, 3, false, panda)
+			,new Life(10, 2),
+			new ContainedItems(10)
+			,new Movement("stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand", "stand")
+			,new Attacking(10, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 2, new CloseRange(300, -300, 300))})
+			,new Physics(50, 300),
+			new LogicCombination((t, delta) -> {
+
+//				if(t.followPlug.followTarget(delta)){//follow
+//					t.attack.attack("punch", t.followPlug.getTarget());//attack
+//				} else if(t.followPlug.getTarget() == null){
+//					t.walkAroundPlug.walkAround(delta);//walk around
+//				}
+			})) {
+	};
+
 											static final Animation[] cat_giant = {
 											new Animation("stand", Res.getAtlas("cat_giant"), 0, 0),
-											new Animation("walk", Res.getAtlas("cat_giant"), 10, 0,/**/1, 2, 3, 4),
-											new Animation("sprint", Res.getAtlas("cat_giant"), 20, 0,/**/1, 2, 3, 4),
-											new Animation("attack", Res.getAtlas("cat_giant"), 30, 1,/**/2, 0, 1, 2)};
-	public static final ThingType CAT_GIANT = new ThingType("CAT_GIANT", Res.getAtlas("cat_giant"), 10, true
+											new Animation("walk", Res.getAtlas("cat_giant"), 5, 0,/**/1, 2, 3, 4),
+											new Animation("sprint", Res.getAtlas("cat_giant"), 10, 0,/**/1, 2, 3, 4),
+											new Animation("punch", Res.getAtlas("cat_giant"), 5, 1,/**/2, 0, 1, 2)};
+	public static final ThingType CAT_GIANT = new ThingType("CAT_GIANT", Res.getAtlas("cat_giant"), 20, true
 			,new Animating(cat_giant[0], new Rect(Res.getAtlas("cat_giant").pixelCoords), 0, 0, 4, false, cat_giant)
 			,new Life(10, 2),
 			new ContainedItems(10)
 			,new Movement("stand", "walk", "walk", "sprint", "walk", "stand", "stand", "stand", "stand", "stand", "stand")
 			,new Attacking(10, 0.05, new Technique[]{new Technique("punch", WeaponType.PUNCH, 2, 2, 2, new CloseRange(300, -300, 300))})
-			,new Following(500.0, 300, SARAH)
+			,new Following(500.0, 30, SARAH)
 			,new WalkAround()
-			,new Physics(50, 300),
+			,new Physics(1, 1),
 			new LogicCombination((t, delta) -> {
-				
+//				
 				if(t.followPlug.followTarget(delta)){//follow
 					t.attack.attack("punch", t.followPlug.getTarget());//attack
 				} else if(t.followPlug.getTarget() == null){
@@ -567,7 +588,7 @@ public class ThingType extends Species<Thing> {
 											{new Animation(Res.getAtlas("tree_jungle"), 0, 1)},
 											{new Animation(Res.getAtlas("tree_jungle"), 0, 2)},
 											{new Animation(Res.getAtlas("tree_jungle"), 0, 3)}};
-	public static final ThingType TREE_NORMAL = new ThingType("TREE_NORMAL", Res.getAtlas("tree"), 50
+	public static final ThingType TREE_NORMAL = new ThingType("TREE_NORMAL", Res.getAtlas("tree"), 100
 				,new Animating(tree_normal[0][0], new Rect(Res.getAtlas("tree").pixelCoords), 0, 1, 1, false, tree_normal),
 				containsItemsButNoCoins) {
 			

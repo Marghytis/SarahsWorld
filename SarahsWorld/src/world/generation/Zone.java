@@ -35,7 +35,8 @@ public abstract class Zone {
 		WINTER((r,b,o,l) -> new Winter(r, b, o, l), Biome.WINTER_FORREST),
 		TEST((r,b,o,l) -> new Test(r, b, o, l), Biome.TEST),
 		FIR_FORREST((r,b,o,l) -> new Mountains(r, b, o, l), Biome.FIR_FORREST),
-		BAMBOO_FORREST((r,b,o,l) -> new Useful(r, Biome.BAMBOO_FORREST, b, o, 3000, 100, l), Biome.BAMBOO_FORREST);
+		BAMBOO_FORREST((r,b,o,l) -> new Useful(r, Biome.BAMBOO_FORREST, b, o, 3000, 100, l), Biome.BAMBOO_FORREST),
+		NORMAL_FORREST((r,b,o,l) -> new Useful(r, Biome.NORMAL_FORREST, b, o, 3000, 100, l), Biome.NORMAL_FORREST);
 		public ZoneSupplier supply;
 		public Biome startBiome;
 		

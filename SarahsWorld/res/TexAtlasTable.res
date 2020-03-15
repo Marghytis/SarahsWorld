@@ -4,7 +4,7 @@ TexFile	NPC_plus_Handheld_Items	res/creatures/NPC_and_handheld_Items.png
 
 //Static	things			(offsetY	is	location	of	point	on	floor)
 TexAtlas	cloud			res/objects/Cloud.png			d	d	d	d	1	1	-0.5f	0
-TexAtlas	tree			res/objects/Tree.png			d	d	d	d	1	3	-0.5f	0
+TexAtlas	tree			res/objects/Tree.png			d	d	d	d	1	3	-0.5f	-0.26
 TexAtlas	tree_fir		res/objects/Fir.png				d	d	d	d	1	3	-0.5	-0.1
 TexAtlas	tree_firSnow	res/objects/Fir_Snow.png		d	d	d	d	1	3	-0.5	-0.2
 TexAtlas	tree_grave		res/objects/GraveTree.png		d	d	d	d	1	2	-0.5f	-0.2

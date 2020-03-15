@@ -11,12 +11,12 @@ public class Snow implements ParticleEffect{
 	
 	public static final ParticleType SNOWFLAKE = new ParticleType(Res.getTex("snowFlakeParticle"));
 	
-	public ParticleEmitter drops = new ParticleEmitter(4000, 100, SNOWFLAKE, 9f){
+	public ParticleEmitter drops = new ParticleEmitter(4000, 20, SNOWFLAKE, 7f){
 
 		public void makeParticle(Particle p) {
 			p.pos.set(pos.x + (random.nextDouble()*width), pos.y);
 			p.vel.set((random.nextFloat() - 0.5f)*050f, -100+(random.nextFloat()*30));//-0.8f
-			p.col.set(0.9f, 0.9f, 0.9f, 0.8f);
+			p.col.set(0.85f, 0.85f, 0.85f, 0.8f);
 			p.rad = 1;
 		}
 
@@ -53,7 +53,7 @@ public class Snow implements ParticleEffect{
 	};
 
 	public Vec pos;
-	public double width, density;
+	public double width, density, lifetime;
 	
 	public Snow(Vec vec, float width, double density){
 		this.pos = vec.copy();
@@ -78,7 +78,7 @@ public class Snow implements ParticleEffect{
 
 	@Override
 	public boolean living() {
-		return false;
+		return true;
 	}
 
 	@Override

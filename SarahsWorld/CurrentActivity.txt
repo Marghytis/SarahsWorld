@@ -1,10 +1,24 @@
-Sarah now crashes into the ground at the beginning using a script
-To do (crater):
-_ Water maybe should flow into the resulting hole.
-_ Creatures and other objects should react
-	-> need physics for objects like trees?? That's a huge task..
-	-> maybe just delete everything in the crater area
-_ make the crater a bit more rough
-To do (meteor impact -> explosion) 
-_ make pieces of the terrain fly around?
-_ camera shaking
+Main quest
+	Sarah now crashes into the ground at the beginning using a script
+		To do (crater):
+		_ Water maybe should flow into the resulting hole.
+			-> Model water as connected springs at each column
+		_ Creatures and other objects should react
+			-> delete things in a bigger radius
+			-> outside that make plants bent away (in a shockwave?)
+		To do (meteor impact -> explosion) 
+		_ make pieces of the terrain fly around?
+		_ camera shaking
+	Tutorial
+		_ Display quest text on screen
+			-> as it's own menu? Following Sarah or position relative to screen?
+
+Bamboo forest:
+	_ add Pandas
+	_ change sky color
+	
+Make playable Version
+	Add tutorial
+	show all biomes
+	trading
+	more quests

@@ -16,10 +16,16 @@ _frozen lakes in winter biome
 _take every item -> einblenden, dass man was bekommen hat
 _water splashing when swimming
 _allow to change vertices' x-position -> would give huge possibilities for world generation and manipulation (e.g. water edges, smooth deformation)
+_maybe put Sarah a bit lower then the screen center? Then the ground takes up less space.
+_fire breathing spell
+_fire spreading in forest
+_water physics (as damped connected springs)
+_shader physics effects (waves on water surface, plants bending in the wind, things burning to ash, ...)
 
 optimisation:
 _vaos for name tags (make it a real effect)
 _landscape don't calculate all patches every frame
+_remove stuttering when many things visible
 
 debug:
 

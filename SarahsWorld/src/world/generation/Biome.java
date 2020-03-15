@@ -33,7 +33,7 @@ public enum Biome {
 			new EffectSpawner[]{
 			}
 	),
-	BAMBOO_FORREST(new Color(0.2f, 0.4f, 0.65f), new Color(0.73f, 0.84f, 0.95f),
+	BAMBOO_FORREST(new Color(0.2f, 0.4f, 0.65f), new Color(0.103f, 0.492f, 0.074f),
 			new Stratum[]{
 					null,
 					new Stratum(Material.SOIL, 50, 3.0, 0.15, 40, 5, 4),
@@ -50,6 +50,30 @@ public enum Biome {
 					new ThingSpawner(spawnZ(ThingType.BAMBOO, -0.2, 0.2), 3),
 					new ThingSpawner(spawnZ(ThingType.FLOWER_JUNGLE, -0.2, 0.2), 0.2),
 					new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.02),
+					new ThingSpawner(ThingType.PANDA.defaultSpawner, 0.02),
+				},
+				new EffectSpawner[]{
+				}
+		),
+	NORMAL_FORREST(new Color(0.2f, 0.4f, 0.65f), new Color(0.103f, 0.492f, 0.074f),
+			new Stratum[]{
+					null,
+					new Stratum(Material.GRASS, 50, 3.0, 0.15, 40, 5, 4),
+					new Stratum(Material.EARTH, 100.0, 20.0, 3, 40, 5, 4),
+					new Stratum(Material.STONE2, 50, 20.0, 20, 40, 5, 4),
+					new Stratum(Material.STONE, 100, 20.0, 20, 40, 5, 4),
+					new Stratum(Material.STONE2, 100, 20.0, 20, 40, 5, 4),
+					null,
+					new Stratum(Material.STONE, 1000.0, 200.0, 20, 40, 5, 5),
+					null
+				},
+			new ThingSpawner[]{
+					new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.1),
+					new ThingSpawner(spawnZ(ThingType.TREE_NORMAL, -0.2, 0.2), 0.16),
+					new ThingSpawner(spawnZ(ThingType.FLOWER_NORMAL, -0.2, 0.2), 0.2),
+					new ThingSpawner(spawnZ(ThingType.BUSH_NORMAL, -0.2, 0.2), 0.2),
+					new ThingSpawner(ThingType.BUTTERFLY.defaultSpawner, 0.02),
+					new ThingSpawner(ThingType.CAT_GIANT.defaultSpawner, 0.02),
 				},
 				new EffectSpawner[]{
 				}
@@ -196,7 +220,7 @@ public enum Biome {
 			},
 			new EffectSpawner[]{
 			}),
-	WINTER_FORREST(new Color(0.91f, 0.94f, 0.94f), new Color(0.73f, 0.82f, 0.86f),
+	WINTER_FORREST(new Color(0.93f, 0.96f, 0.96f), new Color(0.73f, 0.82f, 0.86f),
 			new Stratum[]{
 				null,
 				new Stratum(Material.SNOW, 20.0, 20.0, 5, 40, 2, 4),
@@ -212,7 +236,8 @@ public enum Biome {
 				new ThingSpawner(ThingType.TREE_FIR_SNOW.defaultSpawner, 0.3)
 				,new ThingSpawner(ThingType.CLOUD.defaultSpawner, 0.05)
 				,new ThingSpawner((c, pos, ed) -> new Thing(ThingType.RABBIT, c, pos, 1), 0.01)
-				,new ThingSpawner((c, pos, ed) -> new Thing(ThingType.HEART, c, pos, 1), 0.04)
+				,new ThingSpawner((c, pos, ed) -> new Thing(ThingType.HEART, c, pos, 1), 0.04),
+				new ThingSpawner((c, pos, ed) -> new Thing(ThingType.WORLD_EFFECT, c, pos, Main.game().world.data.getWeather().snow),1)
 //				,new ThingSpawner((w, p, f) -> new ThingProps(ThingType.VILLAGER, w,p, f), 0.01)	
 			},
 			new EffectSpawner[]{

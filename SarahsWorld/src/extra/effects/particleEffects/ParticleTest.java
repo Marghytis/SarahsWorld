@@ -72,7 +72,8 @@ public class ParticleTest extends Core implements Game, Updater, Renderer, Liste
 		getWindow().setListeners(this);
 		
 
-		effects.addEffect(new Meteor(new Vec(1, 0), 400));
+		//effects.addEffect(new Meteor(new Vec(1, 0), 400));
+		effects.addEffect(new Snow(new Vec(-SIZE_HALF.w, SIZE_HALF.h), 2000, 10));
 	}
 	
 	public void requestTermination() {
