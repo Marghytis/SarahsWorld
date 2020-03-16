@@ -9,7 +9,7 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	protected ColumnListElement[] columns;
 	protected int center;
 	private int[] nextIndex;//is private because it really should not be changed outside this class
-	private boolean isBuilt = false;;
+	private boolean isBuilt = false;
 	
 	int sideLastInwards;
 	
@@ -68,6 +68,8 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 		if(ends[Dir.l].getIndex() > center-radius || ends[Dir.r].getIndex() < center + radius){
 			throw new WorldTooSmallException();
 		}
+		
+		arrayChanged();
 	}
 	
 	public void reload(double startX, double endX) {
@@ -76,18 +78,21 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 				addAt(columns[i], i);
 			}
 		}
+		arrayChanged();
 	}
 	
 	protected void shiftOutwards(int end) {
 		super.shiftOutwards(end);
 		addColumn(ends[end], end);
 		letAppear(ends[end], end);
+		arrayChanged();
 	}
 	
 	protected void shiftInwards(int end) {
 		letDisappear(ends[end]);
 		removeColumn(end);
 		super.shiftInwards(end);
+		arrayChanged();
 	}
 	
 	protected int startIndexLeft() {
@@ -133,6 +138,10 @@ public abstract class ArrayWorldWindow extends RealWorldWindow {
 	}
 	
 	protected void letDisappear(ColumnListElement c) {
+		//override
+	}
+	
+	protected void arrayChanged() {
 		//override
 	}
 	

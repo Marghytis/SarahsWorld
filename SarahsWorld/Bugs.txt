@@ -16,6 +16,8 @@ _when passing the maxVisible amount of things of a type (by spawning them/throwi
 _thing rendering still not working as expected when walking through a jungle
 _material transitions have some problems with the indices
 _speech bubble behaves strange when speaking to different characters directly after one another
+_in FIR_FORREST every other lake (on right side at least) has strange materials in the lake grounds vertices.
+_lakes in fir forrest glitch on the left side
 
 optional
 _schweben bei antigravity etc.

@@ -43,6 +43,8 @@ public class TerrainWindow extends ArrayWorldWindow {
 	int layersDrawn = 0;
 	ArrayList<Patch> waterPatches = new ArrayList<>();
 	List<Patch> existingPatches = new ArrayList<>();
+	
+	boolean patchesNeedUpdate = true;
 
 	public TerrainWindow(ColumnListElement anchor, int columnRadius) throws WorldTooSmallException {
 		super(anchor, columnRadius);
@@ -67,6 +69,9 @@ public class TerrainWindow extends ArrayWorldWindow {
 	}
 	
 	public void renderLandscape(){
+		if(patchesNeedUpdate)
+			updatePatches();
+		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		layersDrawn = 0;
 
@@ -93,6 +98,9 @@ public class TerrainWindow extends ArrayWorldWindow {
 	}
 	
 	public void renderWater(){
+		if(patchesNeedUpdate)
+			updatePatches();
+		
 		//WATER
 		Res.landscapeShader.bind();
 		Res.landscapeShader.set("transform", Render.offsetX, Render.offsetY, Render.scaleX, Render.scaleY);
@@ -114,60 +122,31 @@ public class TerrainWindow extends ArrayWorldWindow {
 	}
 	
 	private void drawNormalQuads(){
-		drawPatches2(0, false);
+		drawPatches3(0, existingPatches);
 	}
 	private void drawTransitionQuads(){
-		drawPatches2(pointsX*pointsY*indicesPerQuad, false);
+		drawPatches3(pointsX*pointsY*indicesPerQuad, existingPatches);
 	}
 	private void drawWater(){
-		drawWaterPatches(0);
+		drawPatches3(0, waterPatches);
 		if(Settings.getBoolean("DRAW_TRANSITIONS"))
-			drawWaterPatches(pointsX*pointsY*indicesPerQuad);
+			drawPatches3(pointsX*pointsY*indicesPerQuad, waterPatches);
+//		drawWaterPatches(0);
+//		if(Settings.getBoolean("DRAW_TRANSITIONS"))
+//			drawWaterPatches(pointsX*pointsY*indicesPerQuad);
 	}
 	
-	/**
-	  *	For each material every patch of this material gets rendered.
-	*/
-	private void drawWaterPatches(int indicesOffset){
-		int oneBeforeStart = (startIndexLeft()+pointsX-1)%columns.length;
-			
-			//bind material texture
-			Material.WATER.tex.file.bind();
-			
-			//loop through the layers from the bottom up
-			for(int y = pointsY-1; y >= 0 && layersDrawn + pointsY-y < Settings.getInt("LAYERS_TO_DRAW"); y--){
-				
-				int started = -1, index = 0, column = startIndexLeft();
-				//loop through all columns
-				do {
-					//started == -1 means there is currently no active patch
-					if(started == -1){
-						for(int j = 0; j < Vertex.maxMatCount; j++){
-							if(columns[column].column().vertices(y).mats()[j] == Material.WATER){//a new patch starts here
-								started = column;
-								index = j;
-								break;//There might rise problems, if the same material appears twice in a single vertex...
-							}
-						}
-
-						//the current patch ends here. if there is an open patch it gets rendered cut
-					} else if(columns[column].column().vertices(y).mats()[index] != Material.WATER || column == oneBeforeStart){
-						drawPatch(y, started, column, indicesOffset, index);
-						started = -1;
-					}
-					column = (column+1)%columns.length;
-				} while(column != startIndexLeft());
-			}
-		
-		layersDrawn += pointsY;
+	private void drawPatches3(int indicesOffset, List<Patch> patches) {
+		for(Patch patch : patches)
+			drawPatch(patch, indicesOffset);
 	}
 	
 	/**
 	 * For each layer all patches are rendered from left to right, independent of their materials
-	 * @param indicesOffset
-	 * @param water
 	 */
-	private void drawPatches2(int indicesOffset, boolean water){
+	private void updatePatches(){
+		waterPatches.clear();
+		existingPatches.clear();
 		//for each material every patch of this material gets rendered.
 		int oneBeforeStart = substract1From(startIndexLeft());
 		int[] patchEnds = new int[Vertex.maxMatCount]; 
@@ -184,20 +163,23 @@ public class TerrainWindow extends ArrayWorldWindow {
 				do {
 					//if there is currently no patch in this material slot or the last one has just finished, find the next patch
 					if(patchEnds[matIndex] == -1 || patchEnds[matIndex] == column)
-						patchEnds[matIndex] = findAndDrawSinglePatch(column, y, matIndex2, indicesOffset, water, oneBeforeStart);
+						patchEnds[matIndex] = findAndAddSinglePatch(column, y, matIndex2, oneBeforeStart);
 					
 					
 					matIndex2 = (matIndex2+1)%Vertex.maxMatCount;
 				} while(matIndex2 != matIndex);//matIndex2 returns back to matIndex, if no patch is here
+				//TODO: take care of the case where the same material appears twice in a single vertex...
 				
 				column = add1To(column);
 			} while(column != endColumn);
 			for(int i = 0; i < patchEnds.length; i++) patchEnds[i] = -1;
 		}
 		layersDrawn += pointsY;
+		
+		patchesNeedUpdate = false;
 	}
 	
-	private int findAndDrawSinglePatch(int iStartColumn, int iLayer, int iMat, int indicesOffset, boolean water, int oneBeforeStart) {
+	private int findAndAddSinglePatch(int iStartColumn, int iLayer, int iMat, int oneBeforeStart) {
 		
 		if(columns[iStartColumn].column().vertices(iLayer).mats(iMat) == Material.AIR){
 			return -1;
@@ -214,8 +196,11 @@ public class TerrainWindow extends ArrayWorldWindow {
 			//create patch
 			Patch patch = new Patch(iLayer, iMat, iStartColumn, end, columns[iStartColumn].column().vertices(iLayer).mats(iMat));
 			
-			//draw patch
-			drawPatch(patch, end, indicesOffset, water);
+			//add patch to it's respective patch list
+			if(patch.mat == Material.WATER)
+				waterPatches.add(patch);
+			else
+				existingPatches.add(patch);
 			
 			//return the end index of the newly created patch
 			return end;
@@ -246,14 +231,9 @@ public class TerrainWindow extends ArrayWorldWindow {
 		}
 	}
 	
-	private void drawPatch(Patch patch, int end, int indicesOffset, boolean water){
-		patch.end = end;
-		if(patch.mat == Material.WATER){
-			waterPatches.add(patch);
-		} else {
-			patch.mat.tex.file.bind();
-			drawPatch(patch.yIndex, patch.start, patch.end, indicesOffset, patch.matIndex);
-		}
+	private void drawPatch(Patch patch, int indicesOffset){
+		patch.mat.tex.file.bind();
+		drawPatch(patch.yIndex, patch.start, patch.end, indicesOffset, patch.matIndex);
 	}
 	
 	private void drawPatch(int yIndex, int start, int end, int indicesOffset, int index){
@@ -389,5 +369,10 @@ public class TerrainWindow extends ArrayWorldWindow {
 	}
 	private IntBuffer createIndexBuffer(int layers){
 		return createIndexBuffer(pointsX, layers);
+	}
+
+	@Override
+	protected void arrayChanged() {
+		patchesNeedUpdate = true;		
 	}
 }
